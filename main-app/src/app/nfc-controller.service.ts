@@ -52,8 +52,14 @@ export class NfcControllerService {
     return this.nfc.share([this.ndefMsg]);
   }
 
+  /**
+   * Subscribes to an NdefListener to receive data
+   * @param func function of what do do when data is received
+   */
   ReceiveData(){
-
+    let listener = this.nfc.addNdefListener(nfcEvent => {});
+    this.subscriptions.push(listener.subscribe());
+    return listener;
   }
 
   /**
@@ -64,5 +70,13 @@ export class NfcControllerService {
     this.subscriptions.forEach(sub => {
       sub.unsubscribe();
     });
+  }
+
+  /**
+   * Converts bytes to a string
+   * @param bytes what to convert
+   */
+  BytesToString(bytes){
+    return this.nfc.bytesToString(bytes);
   }
 }

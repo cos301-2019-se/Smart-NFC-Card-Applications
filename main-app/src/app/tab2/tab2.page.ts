@@ -21,15 +21,25 @@ export class Tab2Page {
   ) { }
 
   /**
-   * Initialize values when the view is entered (navigated to this tab)
+   * Triggers when the tab is navigated to
    */
   ionViewDidEnter() {
+    //Initialize message values 
     this.error_message = null;
     this.success_message = null;
     this.info_message = null;
+    // Gets and sets the business card
     this.cardService.GetOwnBusinessCard().then((val) => {
       this.card = val;
     });
+  }
+
+  /**
+   * Triggers when the tab is left
+   */
+  ionViewWillLeave(){
+    // Stops the NFC if the action wasn't completed
+    this.nfcService.Finish();
   }
 
   /**

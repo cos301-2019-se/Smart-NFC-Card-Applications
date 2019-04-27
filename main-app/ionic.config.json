@@ -1,0 +1,7 @@
+{
+  "name": "TabsTest",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}

@@ -14,6 +14,7 @@ export class Tab2Page {
   error_message: string;
   success_message: string;
   info_message: string;
+  check;
 
   constructor(
     private cardService: BusinessCardsService,
@@ -40,6 +41,7 @@ export class Tab2Page {
   ionViewWillLeave(){
     // Stops the NFC if the action wasn't completed
     this.nfcService.Finish();
+    clearInterval(this.check);
   }
 
   /**
@@ -79,10 +81,10 @@ export class Tab2Page {
   Retry(){
     // Show NFC settings to the user
     this.nfcService.ShowSettings();
-    let check = setInterval(() => {
+    this.check = setInterval(() => {
       this.nfcService.IsEnabled().then(() => {
         // If NFC got enabled, remove the check and try to share the card again
-        clearInterval(check);
+        clearInterval(this.check);
         this.ShareCard();
       })
     }, 1500);

@@ -7,7 +7,7 @@ Link is a business networking tool which aims to connect companies together, thr
 Link will allow employees of companies to exchange virtual business cards with other users of Link, as well as the location of the various offices of a company, to be used in a Maps application. These services can be used to facilitate the setup of a client visit.
 
 Link also allows for an employee of a company to easily setup hosting for this visiting client, by allowing setup and sharing of temporary physical access into the offices, temporary guest WiFi access and temporary cards for in-house (in-office) cashless purchases for the client.
-#### SRS
+#### Documents
 <a href="https://drive.google.com/open?id=1swdvi7OX4N970aLf8tLct4jZElQA7AJ2" target="_blank">SRS Document</a>
 #### Links
 <a href="https://github.com/cos301-2019-se/Smart-NFC-Card-Applications" target="_blank">Vast Expanse GitHub ![Github](https://i.imgur.com/Xqy7DfH.png)</a>

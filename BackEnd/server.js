@@ -17,7 +17,7 @@ const server = http.createServer((req, res) => {
 			testLogic.handle();
 			break;
 			
-		case "app":
+		/*case "app":
 			var AppLogic = require('./EndPoints/appLogic.js');
 			var appLogic = new AppLogic(req, res);
 			appLogic.handle();
@@ -27,14 +27,14 @@ const server = http.createServer((req, res) => {
 			var AdminLogic = require('./EndPoints/adminLogic.js');
 			var adminLogic = new AdminLogic(req, res);
 			adminLogic.handle();
-			break;
+			break;*/
 			
 		default:
 		
 			var responseObject = new Object();
 			var json = null;
 			responseObject.success = false;
-			responseObject.message = "The endpoint you are requesting does not exist.";
+			responseObject.message = "Invalid Endpoint";
 			responseObject.data = {};
 			json = JSON.stringify(responseObject);
 			

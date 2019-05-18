@@ -50,19 +50,45 @@ class SharedLogic
 	
 	checkAPIToken()
 	{
-		if(this.validAPITokenOnDB(this.from.body.apiKey))
+		
+		if(this.from.endpoint === "login")
 		{
-			this.from.serve();
+			this.login();
 		}
 		else
 		{
-			this.endServe(false, "Invalid API Key", null);
+			if(this.validAPITokenOnDB(this.from.body.apiKey))
+			{
+				this.from.serve();
+			}
+			else
+			{
+				this.endServe(false, "Invalid API Key", null);
+			}
 		}
 	}
 	
-	login(username, password)
+	login()
 	{
-		//returns the api key {api}
+		var user = this.from.body.username;
+		var pass = this.from.body.password;
+		
+		//var apiKeyAndID = this.crudController.correctUsernameAndPassword(user, pass);
+		var apiKeyAndID = {correct: true, apiKey: "209s8kal193a009723527dnsndm285228", id : 5};
+		
+		if(apiKeyAndID.correct === true)
+		{
+			var data = new Object();
+			data.apiKey = apiKeyAndID.apiKey;
+			data.id = apiKeyAndID.id;
+			this.endServe(true, "Login successful.", data);
+		}
+		else
+		{
+			this.endServe(false, "Incorrect username and/or password.", {});
+		}
+		
+		
 	}
 	
 	endServe(success, message, data)

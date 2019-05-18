@@ -89,10 +89,12 @@ class TestLogic
 		var employeeID = this.body.empID;
 		
 		var data = new Object();
-		data.firstName = "jared";
-		data.company = "Discovery";
 		data.empID = employeeID;
-		this.sharedLogic.endServe(true, "Business Card", data);
+		data.firstName = "Jared";
+		data.secondName = "O'Reilly";
+		data.company = "Discovery";
+		data.website = "www.discovery.co.za";
+		this.sharedLogic.endServe(true, "Business Card Details Retrieved", data);
 	}
 	
 	

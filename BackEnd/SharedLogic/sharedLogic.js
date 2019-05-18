@@ -6,6 +6,7 @@ class SharedLogic
 	{
 		this.from = from;
 		//this.crudController = new CRUDController();
+		this.crudController = null;
 	}
 	
 	initialHandle()
@@ -65,17 +66,15 @@ class SharedLogic
 	{
 		var responseObject = new Object();
 		var json = null;
+		responseObject.success = success;
+		responseObject.message = message;
 		if(success)
 		{
-			responseObject.success = success;
-			responseObject.message = message;
 			responseObject.data = data;
 			json = JSON.stringify(responseObject);
 		}
 		else
 		{
-			responseObject.success = success;
-			responseObject.message = message;
 			responseObject.data = {};
 			json = JSON.stringify(responseObject);
 		}

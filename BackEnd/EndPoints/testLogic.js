@@ -50,13 +50,23 @@ class TestLogic
 	{
 		//this.body can be accessed as an object!
 		//for example I will set the coolProperty attribute of this.body to 'deuces'
-		this.body.coolProperty = 'deuces';
+		//this.body.coolProperty = 'deuces';
 		//now I will make another attribute, which is the original url requested
-		this.body.url = this.req.url;
+		//this.body.url = this.req.url;
 		
 		//now I will make an object that will be passed to the response json (i.e. the data part)
 		//it is just a copy of what i got in from the POST request with my coolProperty attribute added
-		var data = this.body;
+		//var data = this.body;
+		
+		
+		switch(this.endpoint)
+		{
+			case "getBusinessCard":
+				this.getBusinessCard();
+				break;
+			default:
+				this.sharedLogic.endServe(false, "Invalid Endpoint", null);
+		}
 		
 		
 		
@@ -68,9 +78,17 @@ class TestLogic
 		finish the response by adding the stringified JSON response object
 		send out the response!
 		*/
-		this.sharedLogic.endServe(true, "In Test Subsystem", data);
+		//this.sharedLogic.endServe(true, "In Test Subsystem", data);
 		
 		
+	}
+	
+	getBusinessCard()
+	{
+		var data = new Object();
+		data.firstName = "jared";
+		data.company = "Discovery";
+		this.sharedLogic.endServe(true, "Business Card", data);
 	}
 	
 	

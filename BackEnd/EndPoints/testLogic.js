@@ -85,9 +85,13 @@ class TestLogic
 	
 	getBusinessCard()
 	{
+		
+		var employeeID = this.body.empID;
+		
 		var data = new Object();
 		data.firstName = "jared";
 		data.company = "Discovery";
+		data.empID = employeeID;
 		this.sharedLogic.endServe(true, "Business Card", data);
 	}
 	

@@ -34,6 +34,10 @@ class SharedLogic
 		this.checkAPIToken();
 	}
 	
+	//extractEndpoint()
+	//{
+	//}
+	
 	validAPITokenOnDB(apiToken)
 	{
 		//checks in DB

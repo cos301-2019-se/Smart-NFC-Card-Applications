@@ -11,6 +11,7 @@ class TestLogic
 		this.res = res;
 		this.sharedLogic = new SharedLogic(this);
 		this.body = "{}";
+		//this.endpoint = "";
 	}
 	
 	
@@ -67,7 +68,7 @@ class TestLogic
 		finish the response by adding the stringified JSON response object
 		send out the response!
 		*/
-		this.sharedLogic.endServe(true, "Returning JSON Body", data);
+		this.sharedLogic.endServe(true, "In Test Subsystem", data);
 		
 		
 	}

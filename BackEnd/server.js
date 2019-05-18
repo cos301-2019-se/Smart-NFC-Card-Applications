@@ -30,9 +30,17 @@ const server = http.createServer((req, res) => {
 			break;
 			
 		default:
-			res.statusCode = 404;
-			res.setHeader('Content-Type', 'text/html');
-			res.end('<h1>The endpoint you are requesting does not exist.</h1>');
+		
+			var responseObject = new Object();
+			var json = null;
+			responseObject.success = false;
+			responseObject.message = "The endpoint you are requesting does not exist.";
+			responseObject.data = {};
+			json = JSON.stringify(responseObject);
+			
+			res.statusCode = 200;
+			res.setHeader('Content-Type', 'application/json');
+			res.end(json);
 	}
 	
 });

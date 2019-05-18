@@ -32,12 +32,15 @@ class SharedLogic
 	convertBodyToJSON()
 	{
 		this.from.body = JSON.parse(this.from.body);
-		this.checkAPIToken();
+		this.extractEndpoint();
 	}
 	
-	//extractEndpoint()
-	//{
-	//}
+	extractEndpoint()
+	{
+		this.from.endpoint = this.from.req.url.substring(this.from.req.url.substring(1).indexOf("/")+2);
+		//console.log(this.from.endpoint);
+		this.checkAPIToken();
+	}
 	
 	validAPITokenOnDB(apiToken)
 	{

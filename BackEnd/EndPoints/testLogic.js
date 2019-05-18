@@ -11,7 +11,7 @@ class TestLogic
 		this.res = res;
 		this.sharedLogic = new SharedLogic(this);
 		this.body = "{}";
-		//this.endpoint = "";
+		this.endpoint = "";
 	}
 	
 	

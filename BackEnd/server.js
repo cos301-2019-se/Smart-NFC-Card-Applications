@@ -14,6 +14,7 @@ const server = http.createServer((req, res) => {
 		case "test":
 			var TestLogic = require('./EndPoints/testLogic.js');
 			var testLogic = new TestLogic(req, res);
+			console.log(req);
 			testLogic.handle();
 			break;
 

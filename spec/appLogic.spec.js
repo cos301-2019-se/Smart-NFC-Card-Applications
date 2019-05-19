@@ -18,7 +18,7 @@
  *	Constraints:
  */
 
-describe("Testing JS with Jasmine", function(){
+describe("appLogic.js", function(){
     it("is as easy as it gets!", function(){
         expect(true).toBe(true);
     })

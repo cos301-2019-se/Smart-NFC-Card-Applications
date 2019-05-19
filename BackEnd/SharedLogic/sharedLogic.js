@@ -68,13 +68,81 @@ class SharedLogic
 		}
 	}
 	
+	passwordHash(input)
+	{
+		return "12" + input + "34";
+	}
+	
+	
 	login()
 	{
+		
+		var subsystem = this.from.req.url.substring(1, this.from.req.url.substring(1).indexOf("/")+1);
 		var user = this.from.body.username;
 		var pass = this.from.body.password;
+		var apiKeyAndID = null;
 		
-		//var apiKeyAndID = this.crudController.correctUsernameAndPassword(user, pass);
-		var apiKeyAndID = {correct: true, apiKey: "209s8kal193a009723527dnsndm285228", id : 5};
+		//switch on the subsystem entered
+		switch(subsystem)
+		{
+			case "test": //test subsystem, just is correct
+				apiKeyAndID = {correct: true, apiKey: "209s8kal193a009723527dnsndm285228", id : 5};
+				
+				break;
+				
+				
+			case "app": //app subsystem, fetches by employee username
+				var employeeDetails = this.crudController.getEmployee(user);
+				//var employeeDetails = { passwordID : 5, employeeID: 45};
+				var passwordID = employeeDetails.passwordID;
+				
+				var passwordDetails = this.crudController.getPassword(passwordID);
+				//var passwordDetails = { hashedPassword : "12CoolPassword189salty9834", salt: "89salty98", apiKey : "1234"};
+				var hashedPassword = passwordDetails.hashedPassword;
+				var salt = passwordDetails.salt;
+				
+				var enteredHashedPassword = this.passwordHash(pass + salt);
+				
+				//check if hash(password, salt) is same as stored hash
+				if(enteredHashedPassword === hashedPassword)
+				{
+					apiKeyAndID = {correct: true, apiKey: passwordDetails.apiKey, id : employeeDetails.employeeID};
+				}
+				else
+				{
+					apiKeyAndID = {correct: false};
+				}
+				break;
+				
+				
+			case "admin": //admin subsystem, fetches by company username
+				var companyDetails = this.crudController.getCompany(user);
+				//var companyDetails = { passwordID : 76, companyID: 3};
+				var passwordID = companyDetails.passwordID;
+				
+				var passwordDetails = this.crudController.getPassword(passwordID);
+				//var passwordDetails = { hashedPassword : "12CoolPassword189salty9834", salt: "89salty98", apiKey : "4321"};
+				var hashedPassword = passwordDetails.hashedPassword;
+				var salt = passwordDetails.salt;
+				
+				var enteredHashedPassword = this.passwordHash(pass + salt);
+				
+				//check if hash(password, salt) is same as stored hash
+				if(enteredHashedPassword === hashedPassword)
+				{
+					apiKeyAndID = {correct: true, apiKey: passwordDetails.apiKey, id : companyDetails.companyID};
+				}
+				else
+				{
+					apiKeyAndID = {correct: false};
+				}
+				break;
+				
+				
+			default:
+				apiKeyAndID = {correct: false};		
+		}
+		
 		
 		if(apiKeyAndID.correct === true)
 		{

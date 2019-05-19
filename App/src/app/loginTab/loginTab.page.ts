@@ -20,6 +20,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BusinessCard } from '../models/business-card.model';
 import { BusinessCardsService } from '../business-cards.service';
+import { LocalStorageService } from '../local-storage.service';
 import { RequestModuleService } from '../request-module.service';
 
 /**
@@ -39,6 +40,8 @@ export class LoginTabPage implements OnInit {
   error: string;
   username: string = '';
   password: string = '';
+  apiKeyName: string = 'apiKey';
+  apiKey: string = null;
   title: string = 'Login';
   loggedIn: boolean = false;
   messageTimeout: number = 4000;
@@ -47,10 +50,12 @@ export class LoginTabPage implements OnInit {
    * Constructor that takes all injectables
    * @param cardService BusinessCardsService injectable
    * @param req RequestModuleService injectable
+   * @param storage LocalStorageService injectable
    */
   constructor(
     private cardService: BusinessCardsService,
-    private req: RequestModuleService
+    private req: RequestModuleService,
+    private storage: LocalStorageService
   ) { }
 
   /**
@@ -58,6 +63,12 @@ export class LoginTabPage implements OnInit {
    */
   ngOnInit() {
     this.resetMessages();
+    this.storage.Load(this.apiKeyName)
+    .then((key) => {
+      this.apiKey = key;
+      this.checkLoggedIn();
+    })
+    .catch();
   }
 
   /**
@@ -82,6 +93,7 @@ export class LoginTabPage implements OnInit {
       this.username = "";
       this.password = "";
       this.loggedIn = true;
+      this.storage.Save(this.apiKeyName, res['data']['api']);
       this.updateTitle();
     }
     else {
@@ -94,10 +106,11 @@ export class LoginTabPage implements OnInit {
    */
   logout(){
     this.resetMessages();
-    let res = this.req.logout(this.username, this.password);
+    let res = this.req.logout();
     if (res['success'] === true) {
       this.showSuccess(res['message'], this.messageTimeout);
       this.loggedIn = false;
+      this.storage.Save(this.apiKeyName, '');
       this.updateTitle();
     }
     else {
@@ -105,8 +118,23 @@ export class LoginTabPage implements OnInit {
     }
   }
 
+  /**
+   * Function that checks if the user is already logged in when the app starts
+   */
   private checkLoggedIn() {
-
+    if(this.apiKey === null || this.apiKey == '') {
+      this.loggedIn = false;
+    }
+    else {
+      let res = this.req.checkLoggedIn(this.apiKey);
+      if(res['success'] === true) {
+        this.loggedIn = true;
+      }
+      else {
+        this.loggedIn = false;
+      }
+    }
+    this.updateTitle();
   }
 
   /**

@@ -112,6 +112,25 @@ export class RequestModuleService {
   }
 
   /**
+   * Function to check if user is logged in
+   * @param api string stored api of the user
+   * @return JSON response from back-end server
+   */
+  checkLoggedIn(api: string) {
+    if(this.demoMode) {
+      if(this.loginStub['data']['api'] == api){
+        return this.logoutStub;
+      }
+      else {
+        return false;
+      }
+    }
+    else {
+      return this.post(`${this.baseUrl}/app/checkLoggedIn`, JSON.parse(`{api: ${api}}`));
+    }
+  }
+
+  /**
    * Function to get business card data
    * @param employeeId number Employee's id to get his business card
    * @return JSON response from back-end server

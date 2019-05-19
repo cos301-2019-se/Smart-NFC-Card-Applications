@@ -16,8 +16,8 @@ const server = http.createServer((req, res) => {
 			var testLogic = new TestLogic(req, res);
 			testLogic.handle();
 			break;
-			
-		/*case "app":
+
+		case "app":
 			var AppLogic = require('./EndPoints/appLogic.js');
 			var appLogic = new AppLogic(req, res);
 			appLogic.handle();
@@ -27,7 +27,7 @@ const server = http.createServer((req, res) => {
 			var AdminLogic = require('./EndPoints/adminLogic.js');
 			var adminLogic = new AdminLogic(req, res);
 			adminLogic.handle();
-			break;*/
+			break;
 			
 		default:
 		

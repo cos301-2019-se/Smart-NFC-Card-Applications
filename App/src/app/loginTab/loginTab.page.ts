@@ -94,6 +94,8 @@ export class LoginTabPage implements OnInit {
       this.password = "";
       this.loggedIn = true;
       this.storage.Save(this.apiKeyName, res['data']['api']);
+      let cardDetails = this.req.getBusinessCard(1)['data'];
+      this.cardService.setOwnBusinessCard(cardDetails);
       this.updateTitle();
     }
     else {

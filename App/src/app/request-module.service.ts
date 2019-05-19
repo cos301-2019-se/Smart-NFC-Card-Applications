@@ -48,11 +48,16 @@ export class RequestModuleService {
     "data" : { } 
   }`);
   businessCardStub: JSON = JSON.parse(`{ 
-    "companyName" : "Vast Expanse",
-    "employeeName" : "Wian du Plooy",
-    "contactNumber" : "080 000 0000",
-    "email" : "wiandp@vast-expanse.co.za",
-    "website" : "vast-expanse.co.za" 
+    "success" : true,
+    "message" : "Successfully logged out",
+    "data" : { 
+      "companyId" : "1",
+      "companyName" : "Vast Expanse",
+      "employeeName" : "Wian du Plooy",
+      "contactNumber" : "080 000 0000",
+      "email" : "wiandp@vast-expanse.co.za",
+      "website" : "vast-expanse.co.za" 
+    }     
   }`);
 
   /**

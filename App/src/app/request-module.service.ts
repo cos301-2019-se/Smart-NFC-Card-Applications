@@ -34,7 +34,19 @@ export class RequestModuleService {
 
   demoMode: boolean = true;
   baseUrl: string = "";
-  apiTokenStub: string = "";
+  loginStub: JSON = JSON.parse(`{ 
+    "success" : true,
+    "message" : "Successfully logged in",
+    "data" : {
+      "id" : 0,
+      "api" : "12345678123456781234567812345678"
+    } 
+  }`);
+  logoutStub: JSON = JSON.parse(`{ 
+    "success" : true,
+    "message" : "Successfully logged out",
+    "data" : { } 
+  }`);
   businessCardStub: JSON = JSON.parse(`{ 
     "companyName" : "Vast Expanse",
     "employeeName" : "Wian du Plooy",
@@ -54,31 +66,31 @@ export class RequestModuleService {
   /**
    * Makes a get request using http
    * @param url string what to get
-   * @return JSON response from get request
+   * @return Observable response from get request
    */
   private get(url: string) {
-    return this.http.get(url).subscribe(data => data);
+    return this.http.get(url);
   }
 
   /**
    * Makes a post request using http
    * @param url string where to post to
    * @param body JSON data to send
-   * @return JSON response from post request
+   * @return Observable response from post request
    */
   private post(url: string, body: JSON) {
-    return this.http.post(url, body).subscribe(data => data);
+    return this.http.post(url, body);
   }
 
   /**
    * Function to login a user
    * @param username string user's username / email
    * @param password string user's password
-   * @return string API key to use for future requests, returns null if login failed
+   * @return JSON response from back-end server
    */
   login(username: string, password: string) {
     if(this.demoMode) {
-      return this.apiTokenStub;
+      return this.loginStub;
     }
     else {
       let json: JSON = JSON.parse(`{ "username": "${username}", "password": "${password}" }`);
@@ -87,9 +99,22 @@ export class RequestModuleService {
   }
 
   /**
+   * Function to logout a user
+   * @return JSON response from back-end server
+   */
+  logout() {
+    if(this.demoMode) {
+      return this.logoutStub;
+    }
+    else {
+      return this.get(`${this.baseUrl}/app/logout`);
+    }
+  }
+
+  /**
    * Function to get business card data
    * @param employeeId number Employee's id to get his business card
-   * @return JSON object that has all the data of the business card
+   * @return JSON response from back-end server
    */
   getBusinessCard(employeeId: number) {
     if(this.demoMode) {

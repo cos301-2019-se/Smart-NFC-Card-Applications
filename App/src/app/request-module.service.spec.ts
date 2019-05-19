@@ -36,7 +36,13 @@ describe('RequestModuleService', () => {
   it('login should return stub data while in demo mode', () => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = true;
-    expect(service.login("", "")).toBe(service.apiTokenStub);
+    expect(service.login("", "")).toBe(service.loginStub);
+  });
+
+  it('logout should return stub data while in demo mode', () => {
+    const service: RequestModuleService = TestBed.get(RequestModuleService);
+    service.demoMode = true;
+    expect(service.logout()).toBe(service.logoutStub);
   });
 
   it('getBusinessCard should return stub data while in demo mode', () => {
@@ -46,6 +52,12 @@ describe('RequestModuleService', () => {
   });
 
   it('login should return data from back-end', () => {
+    const service: RequestModuleService = TestBed.get(RequestModuleService);
+    service.demoMode = false;
+    throw Error("Not implemented yet");
+  });
+
+  it('logout should return data from back-end', () => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = false;
     throw Error("Not implemented yet");

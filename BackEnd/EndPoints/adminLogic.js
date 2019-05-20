@@ -177,7 +177,7 @@ class AdminLogic
         }
         else{
             success = false;
-            message = "Parameters missing: "+presentReturn;
+            message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-1);
             data = null;
         }
@@ -316,7 +316,7 @@ class AdminLogic
         }
         else{
             success = false;
-            message = "Parameters missing: "+presentReturn;
+            message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-1);
             data = null;
         }

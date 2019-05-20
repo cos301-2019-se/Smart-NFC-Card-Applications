@@ -10,6 +10,7 @@
  *	Date		Author		Version		Changes
  *	-----------------------------------------------------------------------------------------
  *	2019/05/19	Tjaart		1.0		    Original
+ *  2019/05/20  Duncan      1.1         Fixed posting to endpoints
  *
  *	Functional Description:	This file is used to run Unit tests on the server
  *	Error Messages:
@@ -71,10 +72,15 @@ describe('Server.js', function(){
         let data = {};
 
         beforeAll(function(done){
-            Request.post(endpoint + "/test", {}, function(error, response, body){
+            var jsonDataObj = {}; // fill in data to send to endpoint
+            Request.post({
+                url: endpoint + "/test",
+                body: jsonDataObj,
+                json: true
+            }, function(error, response, body){
                 data.status = response.statusCode;
                 data.contentType = response.headers['content-type'];
-                data.body = JSON.parse(body);
+                data.body = response.body;
                 done();
             });
         });
@@ -102,13 +108,18 @@ describe('Server.js', function(){
 
     //http://localhost:3000/test/getBusinessCard - {}
     describe("POST " + endpoint + "/test/getBusinessCard", function () {
-        let data = {};
-
+        let data = new Object();
         beforeAll(function(done){
-            Request.post(endpoint + "/test/getBusinessCard", {employeeId: 1}, function(error, response, body){
+            var jsonDataObj = {}; // fill in data to send to endpoint
+            Request.post({
+                url: endpoint + "/test/getBusinessCard",
+                body: jsonDataObj,
+                json: true
+            }, function(error, response, body){
+            // Request.post(endpoint + "/test/getBusinessCard", {json: true, body:data}, function(error, response, body){
                 data.status = response.statusCode;
                 data.contentType = response.headers['content-type'];
-                data.body = JSON.parse(body);
+                data.body = response.body;
                 done();
             });
         });

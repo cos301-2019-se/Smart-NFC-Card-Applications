@@ -87,7 +87,7 @@ class TestLogic
 	{
 		let data = {};
 		let message;
-
+		var success;
 		if(this.body.employeeId) {
 			// return mock data
 			data.employeeName = "Tjaart";
@@ -97,12 +97,15 @@ class TestLogic
 			data.email = "u17021775@tuks.co.za";
 			data.website = "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications";
 			message = "Business card information loaded successfully";
+			success = true;
 		}
 		else{
 			message = "Invalid employeeId given";
+			success = false;
+			data = null;
 		}
 
-		this.sharedLogic.endServe(true, message, data);
+		this.sharedLogic.endServe(success, message, data);
 	}
 	
 	

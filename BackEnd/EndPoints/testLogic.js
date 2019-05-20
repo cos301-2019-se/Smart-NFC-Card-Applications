@@ -83,19 +83,24 @@ class TestLogic
 		
 	}
 	
-	getBusinessCard(employeeId)
+	getBusinessCard()
 	{
 		let data = {};
 		let message;
 
-		// return mock data
-		data.employeeName = "Tjaart";
-		data.employeeSurname = "Booyens";
-		data.companyName = "Vast Expanse";
-		data.cellphone = "0791807734";
-		data.email = "u17021775@tuks.co.za";
-		data.website = "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications";
-		message = "Mock business card information loaded successfully";
+		if(this.body.employeeId) {
+			// return mock data
+			data.employeeName = "Tjaart";
+			data.employeeSurname = "Booyens";
+			data.companyName = "Vast Expanse";
+			data.cellphone = "0791807734";
+			data.email = "u17021775@tuks.co.za";
+			data.website = "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications";
+			message = "Business card information loaded successfully";
+		}
+		else{
+			message = "Invalid employeeId given";
+		}
 
 		this.sharedLogic.endServe(true, message, data);
 	}

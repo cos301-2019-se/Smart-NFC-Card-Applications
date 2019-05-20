@@ -67,8 +67,7 @@ class AppLogic{
     serve(){
         switch(this.endpoint){
             case "getBusinessCard":
-                let employeeId = this.body.employeeId;
-                this.getBusinessCard(employeeId);
+                this.getBusinessCard();
                 break;
 
             default:
@@ -83,7 +82,7 @@ class AppLogic{
      *  @param employeeId int Employee ID that is sent through with the application
      *                        request.
      */
-    getBusinessCard(employeeId){
+    getBusinessCard(){
         let data = {};
         let message;
 
@@ -99,7 +98,7 @@ class AppLogic{
         }
         else{
             // get data by calling the crud controller
-            let employeeData = this.sharedLogic.crudController.getEmployee(employeeId);
+            let employeeData = this.sharedLogic.crudController.getEmployee(this.body.employeeId);
             let companyData = this.sharedLogic.crudController.getCompany(employeeData.companyId);
 
             data.employeeName = employeeData.employeeName;

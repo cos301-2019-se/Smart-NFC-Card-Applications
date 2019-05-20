@@ -21,7 +21,7 @@ const server = http.createServer((req, res) => {
 			var AppLogic = require('./EndPoints/appLogic.js');
 			var appLogic = new AppLogic(req, res);
 			appLogic.handle();
-			break;
+			break;*/
 			
 		case "admin":
 			var AdminLogic = require('./EndPoints/adminLogic.js');

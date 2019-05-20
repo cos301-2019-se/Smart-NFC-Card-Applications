@@ -242,11 +242,11 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.firstName)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.firstName) || !this.sharedLogic.validateAlpha(this.body.firstName)){
                 invalidParams = true;
                 invalidReturn += "firstName ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.surname)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.surname) || !this.sharedLogic.validateAlpha(this.body.surname)){
                 invalidParams = true;
                 invalidReturn += "surname ";
             }
@@ -262,7 +262,7 @@ class AdminLogic
                 invalidParams = true;
                 invalidReturn += "email ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId) ){
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
                 invalidParams = true;
                 invalidReturn += "companyId ";
             }
@@ -275,7 +275,7 @@ class AdminLogic
                 if(demoMode){
                     //return mock data
                     data.id = 10;
-                    message = "Employee Added! - Mock"
+                    message = "Employee Added! - Mock";
                     success = true;
                 }
                 else{

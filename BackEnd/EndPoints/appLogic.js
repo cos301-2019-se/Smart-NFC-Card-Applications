@@ -20,7 +20,6 @@
  */
 
 const SharedLogic = require("./../SharedLogic/sharedLogic.js");
-const demoMode = true;
 
 /**
  * 	Purpose:    This class handles the functionality that will be requested by the
@@ -96,7 +95,7 @@ class AppLogic{
 
         if(!this.body.employeeId){
             presentParams = true;
-            presentReturn += "employeeId ";
+            presentReturn += "employeeId, ";
         }
 
         // check if the parameters are valid if present
@@ -110,59 +109,60 @@ class AppLogic{
             }
 
             if(!invalidParams){
-                if(demoMode){
+                if(this.demoMode){
                     // return mock data
+                    success = true;
+                    message = "Business card information loaded successfully - Mock";
                     data.employeeName = "Tjaart";
                     data.employeeSurname = "Booyens";
                     data.cellphone = "0791807734";
                     data.email = "u17021775@tuks.co.za";
                     data.companyName = "Vast Expanse";
                     data.website = "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications";
-
-                    message = "Business card information loaded successfully - Mock";
-                    success = true;
                 }
                 else{
-                    // return data from crudController
-                    let employeeData = this.sharedLogic.crudController.getEmployee(this.body.employeeId);
-
-                    if(employeeData.success){
-                        let companyData = this.sharedLogic.crudController.getCompany(employeeData.companyId);
-
-                        if(companyData.success){
-                            success = true;
-                            message = "Business card information loaded successfully";
-                            data.employeeName = employeeData.employeeName;
-                            data.employeeSurname = employeeData.employeeSurname;
-                            data.cellphone = employeeData.cellphone;
-                            data.email = employeeData.email;
-                            data.companyName = companyData.companyName;
-                            data.website = companyData.website;
-                        }
-                        else{
-                            success = companyData.success;
-                            message = companyData.message;
-                            data = companyData.data;
-                        }
-                    }
-                    else{
-                        success = employeeData.success;
-                        message = employeeData.message;
-                        data = employeeData.data;
-                    }
+                    success = true;
+                    message = "Business card information loaded successfully";
+                    // // return data from crudController
+                    // let employeeData = this.sharedLogic.crudController.getEmployee(this.body.employeeId);
+                    //
+                    // if(employeeData.success){
+                    //     let companyData = this.sharedLogic.crudController.getCompany(employeeData.companyId);
+                    //
+                    //     if(companyData.success){
+                    //         success = true;
+                    //         message = "Business card information loaded successfully";
+                    //         data.employeeName = employeeData.employeeName;
+                    //         data.employeeSurname = employeeData.employeeSurname;
+                    //         data.cellphone = employeeData.cellphone;
+                    //         data.email = employeeData.email;
+                    //         data.companyName = companyData.companyName;
+                    //         data.website = companyData.website;
+                    //     }
+                    //     else{
+                    //         success = companyData.success;
+                    //         message = companyData.message;
+                    //         data = companyData.data;
+                    //     }
+                    // }
+                    // else{
+                    //     success = employeeData.success;
+                    //     message = employeeData.message;
+                    //     data = employeeData.data;
+                    // }
                 }
             }
             else{
                 success = false;
                 message = "Invalid Parameters: " + invalidReturn;
-                message = message.slice(0, message.length-1);
+                message = message.slice(0, message.length-2);
                 data = null;
             }
         }
         else{
             success = false;
             message = "Missing Parameters: " + presentReturn;
-            message = message.slice(0, message.length-1);
+            message = message.slice(0, message.length-2);
             data = null;
         }
 

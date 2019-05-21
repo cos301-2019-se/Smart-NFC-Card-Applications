@@ -33,15 +33,20 @@ describe('Server.js Unit Testing', function(){
         server.close();
     });
 
-    //http://localhost:3000 - {}
-    describe("POST " + endpoint, function () {
+    describe("POST " + endpoint + "/app/getBusinessCard", function () {
         let data = {};
-
         beforeAll(function(done){
-            Request.post(endpoint, {}, function(error, response, body){
+            var jsonDataObj = {
+                demoMode: true
+            }; // fill in data to send to endpoint
+            Request.post({
+                url: endpoint + "/app/getBusinessCard",
+                body: jsonDataObj,
+                json: true
+            }, function(error, response, body){
                 data.status = response.statusCode;
                 data.contentType = response.headers['content-type'];
-                data.body = JSON.parse(body);
+                data.body = response.body;
                 done();
             });
         });
@@ -54,27 +59,28 @@ describe('Server.js Unit Testing', function(){
             expect(data.contentType).toEqual('application/json');
         });
 
-        it('should return success = false', function(){
-            expect(data.body['success']).toEqual(false);
+        it('should return a json object = \n\t{\n\t' +
+            '    "success": false,\n\t' +
+            '    "message": "Missing Parameters: employeeId",\n\t' +
+            '    "data": {}\n\t' +
+            '}', function(){
+            expect(data.body).toEqual({
+                "success": false,
+                "message": "Missing Parameters: employeeId",
+                "data": {}
+            });
         });
-
-        it('should return message = \'Invalid Endpoint\'', function(){
-            expect(data.body['message']).toEqual('Invalid Endpoint');
-        });
-
-        it('should return data = {}', function(){
-            expect(data.body['data']).toEqual({});
-        })
     });
 
-    //http://localhost:3000/test - {}
-    describe("POST " + endpoint + "/test", function () {
+    describe("POST " + endpoint + "/app/getBusinessCard", function () {
         let data = {};
-
         beforeAll(function(done){
-            var jsonDataObj = {}; // fill in data to send to endpoint
+            var jsonDataObj = {
+                demoMode: true,
+                employeeId: 1
+            }; // fill in data to send to endpoint
             Request.post({
-                url: endpoint + "/test",
+                url: endpoint + "/app/getBusinessCard",
                 body: jsonDataObj,
                 json: true
             }, function(error, response, body){
@@ -89,59 +95,35 @@ describe('Server.js Unit Testing', function(){
             expect(data.status).toEqual(200);
         });
 
-        it('should return a json object', function(){
+        it('should set content type = application/json', function(){
             expect(data.contentType).toEqual('application/json');
         });
 
-        it('should return success = false', function(){
-            expect(data.body['success']).toEqual(false);
-        });
-
-        it('should return message = \'Invalid Endpoint\'', function(){
-            expect(data.body['message']).toEqual('Invalid Endpoint');
-        });
-
-        it('should return data = {}', function(){
-            expect(data.body['data']).toEqual({});
-        })
-    });
-
-    //http://localhost:3000/test/getBusinessCard - {}
-    describe("POST " + endpoint + "/test/getBusinessCard", function () {
-        let data = new Object();
-        beforeAll(function(done){
-            var jsonDataObj = {}; // fill in data to send to endpoint
-            Request.post({
-                url: endpoint + "/test/getBusinessCard",
-                body: jsonDataObj,
-                json: true
-            }, function(error, response, body){
-                data.status = response.statusCode;
-                data.contentType = response.headers['content-type'];
-                data.body = response.body;
-                done();
+        it('should return a json object = \n\t{\n\t' +
+            '    "success": true,\n\t' +
+            '    "message": "Business card information loaded successfully - Mock",\n\t' +
+            '    "data": {\n\t' +
+            '        "employeeName": "Tjaart",\n\t' +
+            '        "employeeSurname": "Booyens",\n\t' +
+            '        "cellphone": "0791807734",\n\t' +
+            '        "email": "u17021775@tuks.co.za",\n\t' +
+            '        "companyName": "Vast Expanse",\n\t' +
+            '        "website": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications"\n\t' +
+            '    }\n\t' +
+            '}', function(){
+            expect(data.body).toEqual({
+                "success": true,
+                "message": "Business card information loaded successfully - Mock",
+                "data": {
+                    "employeeName": "Tjaart",
+                    "employeeSurname": "Booyens",
+                    "cellphone": "0791807734",
+                    "email": "u17021775@tuks.co.za",
+                    "companyName": "Vast Expanse",
+                    "website": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications"
+                }
             });
         });
-
-        it('should return with statusCode 200', function(){
-            expect(data.status).toEqual(200);
-        });
-
-        it('should return a json object', function(){
-            expect(data.contentType).toEqual('application/json');
-        });
-
-        it('should return success = true', function(){
-            expect(data.body['success']).toEqual(false);
-        });
-
-        it('should return message = \'Invalid employeeId given\'', function(){
-            expect(data.body['message']).toEqual('Invalid employeeId given');
-        });
-
-        it('should return data = {}', function(){
-            expect(data.body['data']).toEqual({});
-        })
     });
 
     describe("POST " + endpoint + "/admin/addCompany", function () {

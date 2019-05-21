@@ -59,6 +59,7 @@ class SharedLogic
 		{
 			if(this.validAPITokenOnDB(this.from.body.apiKey))
 			{
+				this.from.demoMode = this.from.body.demoMode;
 				this.from.serve();
 			}
 			else

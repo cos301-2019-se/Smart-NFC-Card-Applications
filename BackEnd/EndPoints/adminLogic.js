@@ -21,7 +21,7 @@
  */
 
 var SharedLogic = require('./../SharedLogic/SharedLogic.js');
-var demoMode = true;
+// var demoMode = true;
 
 /**
  * 	Purpose:	This class is to allow the admin application of Link to complete its needed operations
@@ -99,19 +99,19 @@ class AdminLogic
 
         if(!this.body.name){
             presentParams = true;
-            presentReturn += "name ";
+            presentReturn += "name, ";
         }
         if(!this.body.website){
             presentParams = true;
-            presentReturn += "website ";
+            presentReturn += "website, ";
         }
         if(!this.body.username){
             presentParams = true;
-            presentReturn += "username ";
+            presentReturn += "username, ";
         }
         if(!this.body.password){
             presentParams = true;
-            presentReturn += "password ";
+            presentReturn += "password, ";
         }
 
         //check if the parameters are valid if parameters are present
@@ -120,23 +120,23 @@ class AdminLogic
             var invalidReturn = "";
             if(!this.sharedLogic.validateNonEmpty(this.body.name)){
                 invalidParams = true;
-                invalidReturn += "name ";
+                invalidReturn += "name, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.website)){
                 invalidParams = true;
-                invalidReturn += "website ";
+                invalidReturn += "website, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.username)){
                 invalidParams = true;
-                invalidReturn += "username ";
+                invalidReturn += "username, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.password)){
                 invalidParams = true;
-                invalidReturn += "password ";
+                invalidReturn += "password, ";
             }
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(demoMode){
+                if(this.demoMode){
                     //return mock data
                     data.id = 5;
                     message = this.body.name + " Added! - Mock";
@@ -171,14 +171,14 @@ class AdminLogic
             else{
                 success = false;
                 message = "Invalid Parameters: "+invalidReturn;
-                message = message.slice(0, message.length-1);
+                message = message.slice(0, message.length-2);
                 data = null;
             }
         }
         else{
             success = false;
             message = "Missing Parameters: "+presentReturn;
-            message = message.slice(0, message.length-1);
+            message = message.slice(0, message.length-2);
             data = null;
         }
         this.sharedLogic.endServe(success, message, data);
@@ -212,31 +212,31 @@ class AdminLogic
 
         if(!this.body.firstName){
             presentParams = true;
-            presentReturn += "firstName ";
+            presentReturn += "firstName, ";
         }
         if(!this.body.surname){
             presentParams = true;
-            presentReturn += "surname ";
+            presentReturn += "surname, ";
         }
         if(!this.body.title){
             presentParams = true;
-            presentReturn += "title ";
+            presentReturn += "title, ";
         }
         if(!this.body.cellphone){
             presentParams = true;
-            presentReturn += "cellphone ";
+            presentReturn += "cellphone, ";
         }
         if(!this.body.email){
             presentParams = true;
-            presentReturn += "email ";
+            presentReturn += "email, ";
         }
         if(!this.body.companyId){
             presentParams = true;
-            presentReturn += "companyId ";
+            presentReturn += "companyId, ";
         }
         if(!this.body.password){
             presentParams = true;
-            presentReturn += "password ";
+            presentReturn += "password, ";
         }
         //if parameters are present, validate if correct format
         if(!presentParams){
@@ -244,35 +244,35 @@ class AdminLogic
             var invalidReturn = "";
             if(!this.sharedLogic.validateNonEmpty(this.body.firstName) || !this.sharedLogic.validateAlpha(this.body.firstName)){
                 invalidParams = true;
-                invalidReturn += "firstName ";
+                invalidReturn += "firstName, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.surname) || !this.sharedLogic.validateAlpha(this.body.surname)){
                 invalidParams = true;
-                invalidReturn += "surname ";
+                invalidReturn += "surname, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.title)){
                 invalidParams = true;
-                invalidReturn += "title ";
+                invalidReturn += "title, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.cellphone) || !this.sharedLogic.validateCellphone(this.body.cellphone)){
                 invalidParams = true;
-                invalidReturn += "cellphone ";
+                invalidReturn += "cellphone, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.email) || !this.sharedLogic.validateEmail(this.body.email)){
                 invalidParams = true;
-                invalidReturn += "email ";
+                invalidReturn += "email, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
                 invalidParams = true;
-                invalidReturn += "companyId ";
+                invalidReturn += "companyId, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.password)){
                 invalidParams = true;
-                invalidReturn += "password ";
+                invalidReturn += "password, ";
             }
             //if valid parameters then execute function
             if(!invalidParams){
-                if(demoMode){
+                if(this.demoMode){
                     //return mock data
                     data.id = 10;
                     message = "Employee Added! - Mock";
@@ -310,14 +310,14 @@ class AdminLogic
             else{
                 success = false;
                 message = "Invalid Parameters: "+invalidReturn;
-                message = message.slice(0, message.length-1);
+                message = message.slice(0, message.length-2);
                 data = null;
             }
         }
         else{
             success = false;
             message = "Missing Parameters: "+presentReturn;
-            message = message.slice(0, message.length-1);
+            message = message.slice(0, message.length-2);
             data = null;
         }
         this.sharedLogic.endServe(success, message, data);

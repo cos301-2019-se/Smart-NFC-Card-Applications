@@ -44,11 +44,11 @@ function run(callback) {
 		var urlToSwitchOn = req.url.substring(1, req.url.substring(1).indexOf("/")+1);
 		switch(urlToSwitchOn)
 		{
-			/*case "test":
+			case "test":
 				var TestLogic = require('./EndPoints/testLogic.js');
 				var testLogic = new TestLogic(req, res);
 				testLogic.handle();
-				break;*/
+				break;
 
 			case "app":
 				var AppLogic = require('./EndPoints/appLogic.js');

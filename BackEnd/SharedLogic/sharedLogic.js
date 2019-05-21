@@ -48,6 +48,7 @@ class SharedLogic
 		this.from = from;
 		//this.crudController = new CRUDController();
 		this.crudController = null;
+		this.demoMode = null;
 	}
 	
 	/**
@@ -82,12 +83,61 @@ class SharedLogic
 	/**
      *  This function parses the String representation of the body into an object, assuming that the String]
 	 * 	is formatted as a JSON object. The result is a Javascript object, stored in this.from.body, which the
-	 *	(Other)Logic classes can then use to their discretion. This function then starts the endpoint extraction.
+	 *	(Other)Logic classes can then use to their discretion. This function then starts the body validation.
      */
 	convertBodyToJSON()
 	{
-		this.from.body = JSON.parse(this.from.body);
-		this.extractEndpoint();
+		if(this.from.body === "")
+		{
+			this.endServe(false, "No POST body received", null);
+		}
+		else
+		{
+			
+			try
+			{
+				this.from.body = JSON.parse(this.from.body);
+				this.from.demoMode = this.from.body.demoMode;
+				this.demoMode = this.from.body.demoMode;
+				this.validateBody();
+			}
+			catch(e)
+			{
+				if (e instanceof SyntaxError) 
+				{
+					this.endServe(false, "Invalid JSON object sent: " + e.message, null);
+				} 
+				else 
+				{
+					throw e;
+				}
+			}
+			
+			
+		}
+	}
+	
+	/**
+     *  This function checks that the body has either an API Key OR both a username and password. It then starts
+	 *	the endpoint extraction.
+     */
+	validateBody()
+	{
+		if(this.from.body.apiKey === undefined)
+		{
+			if(this.from.body.username === undefined || this.from.body.password === undefined)
+			{
+				this.endServe(false, "No API Key or not all login details provided", null);
+			}
+			else
+			{
+				this.extractEndpoint();
+			}
+		}
+		else
+		{
+			this.extractEndpoint();
+		}
 	}
 	
 	/**
@@ -130,7 +180,6 @@ class SharedLogic
 		{
 			if(this.validAPITokenOnDB(this.from.body.apiKey))
 			{
-				this.from.demoMode = this.from.body.demoMode;
 				this.from.serve();
 			}
 			else
@@ -149,7 +198,7 @@ class SharedLogic
      */
 	passwordHash(pass,salt)
 	{
-		return "12" + input + salt + "34";
+		return "12" + pass + salt + "34";
 	}
 	
 	/**
@@ -176,21 +225,37 @@ class SharedLogic
 		//switch on the subsystem entered
 		switch(subsystem)
 		{
-			case "test":
+			/*case "test":
 				apiKeyAndID = {correct: true, apiKey: "209s8kal193a009723527dnsndm285228", id : 5};
 				
-				break;
+				break;*/
 				
 				
 			case "app":
-				var employeeDetails = this.crudController.getEmployee(user);
-				//var employeeDetails = { passwordID : 5, employeeID: 45};
+				var employeeDetails = null;
+				if(this.demoMode)
+				{
+					employeeDetails = { passwordID : 5, employeeID: 45};
+				}
+				else
+				{
+					employeeDetails = this.crudController.getEmployee(user);
+				}
 				var passwordID = employeeDetails.passwordID;
 				
-				var passwordDetails = this.crudController.getPassword(passwordID);
-				//var passwordDetails = { hashedPassword : "12CoolPassword189salty9834", salt: "89salty98", apiKey : "1234"};
+				
+				var passwordDetails = null;
+				if(this.demoMode)
+				{
+					passwordDetails = { hashedPassword : "12CoolPassword189salty9834", salt: "89salty98", apiKey : "1234"};
+				}
+				else
+				{
+					passwordDetails = this.crudController.getPassword(passwordID);
+				}
 				var hashedPassword = passwordDetails.hashedPassword;
 				var salt = passwordDetails.salt;
+				
 				
 				var enteredHashedPassword = this.passwordHash(pass,salt);
 				
@@ -206,12 +271,26 @@ class SharedLogic
 				
 				
 			case "admin":
-				var companyDetails = this.crudController.getCompany(user);
-				//var companyDetails = { passwordID : 76, companyID: 3};
+				var companyDetails = null;
+				if(this.demoMode)
+				{
+					companyDetails = { passwordID : 76, companyID: 3};
+				}
+				else
+				{
+					companyDetails = this.crudController.getCompany(user);
+				}
 				var passwordID = companyDetails.passwordID;
 				
-				var passwordDetails = this.crudController.getPassword(passwordID);
-				//var passwordDetails = { hashedPassword : "12CoolPassword189salty9834", salt: "89salty98", apiKey : "4321"};
+				var passwordDetails = null;
+				if(this.demoMode)
+				{
+					passwordDetails = { hashedPassword : "12Discovery15Cool54saltboi4534", salt: "54saltboi45", apiKey : "5678"};
+				}
+				else
+				{
+					passwordDetails = this.crudController.getPassword(passwordID);
+				}
 				var hashedPassword = passwordDetails.hashedPassword;
 				var salt = passwordDetails.salt;
 				

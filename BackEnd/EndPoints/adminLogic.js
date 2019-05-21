@@ -15,12 +15,13 @@
  *	                            to facilitate all operations needed for the correct operation
  *	                            of the Admin of a company and Link
  *	Error Messages:
- *	Assumptions: 	None
+ *	Assumptions: 	This file assumes that a there exists a 'sharedLogic' and a 'crudController'
+ *                  class.
  *	Constraints: 	None
  */
 
 var SharedLogic = require('./../SharedLogic/SharedLogic.js');
-var demoMode = true;
+// var demoMode = true;
 
 /**
  * 	Purpose:	This class is to allow the admin application of Link to complete its needed operations
@@ -35,8 +36,8 @@ class AdminLogic
      *  Constructor for the class that sets up certain properties as well as instantiate
      *  a new sharedLogic object.
      *
-     *  @param req string Request sent from the application to the backend system
-     *  @param res string Response sent back to the application
+     *  @param req JSON Request sent from the application to the backend system
+     *  @param res JSON Response sent back to the application
      */
     constructor(req, res){
         this.req = req;
@@ -88,42 +89,98 @@ class AdminLogic
      *               }
      */
     addCompany(){
-        var data = new Object();
         var message;
+        var data = new Object();
         var success;
-        if(demoMode){
-            //return mock data
-            data.id = 5;
-            message = this.body.name + " Added! - Mock";
-            success = true;
+
+        //check to see if parameters are present
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(!this.body.name){
+            presentParams = true;
+            presentReturn += "name, ";
         }
-        else{
-            //return data from crudController
-            var passwordId = this.sharedLogic.crudController.createPassword(this.body.username, this.body.password);
+        if(!this.body.website){
+            presentParams = true;
+            presentReturn += "website, ";
+        }
+        if(!this.body.username){
+            presentParams = true;
+            presentReturn += "username, ";
+        }
+        if(!this.body.password){
+            presentParams = true;
+            presentReturn += "password, ";
+        }
 
-            if(passwordId.success){
-
-                var companyId = this.sharedLogic.crudController.createCompany(this.body.name, this.body.website, passwordId.data.id);
-
-                if(companyId.success){
-                    data.id = companyId.data.id;
-                    message = this.body.name + " Added!";
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.name)){
+                invalidParams = true;
+                invalidReturn += "name, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.website)){
+                invalidParams = true;
+                invalidReturn += "website, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.username)){
+                invalidParams = true;
+                invalidReturn += "username, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.password)){
+                invalidParams = true;
+                invalidReturn += "password, ";
+            }
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.id = 5;
+                    message = this.body.name + " Added! - Mock";
                     success = true;
                 }
                 else{
-                    data = null;
-                    message = companyId.message;
-                    success = false;
+                    //return data from crudController
+                    var passwordId = this.sharedLogic.crudController.createPassword(this.body.username, this.body.password);
+
+                    if(passwordId.success){
+
+                        var companyId = this.sharedLogic.crudController.createCompany(this.body.name, this.body.website, passwordId.data.id);
+
+                        if(companyId.success){
+                            data.id = companyId.data.id;
+                            message = this.body.name + " Added!";
+                            success = true;
+                        }
+                        else{
+                            data = null;
+                            message = companyId.message;
+                            success = false;
+                        }
+                    }
+                    else{
+                        data = null;
+                        message = passwordId.message;
+                        success = false
+                    }
                 }
             }
             else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
                 data = null;
-                message = passwordId.message;
-                success = false
             }
-
         }
-
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
         this.sharedLogic.endServe(success, message, data);
     }
 
@@ -148,43 +205,124 @@ class AdminLogic
         var data = new Object();
         var message;
         var success;
-        if(demoMode){
-            //return mock data
-            data.id = 10;
-            message = "Employee Added! - Mock"
-            success = true;
+
+        //check if parameters are present
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(!this.body.firstName){
+            presentParams = true;
+            presentReturn += "firstName, ";
         }
-        else{
-            //return data from crudController
-            var passwordId = this.sharedLogic.crudController.createPassword(this.body.email, this.body.email);
-
-            if(passwordId.success){
-
-                var employeeId = this.sharedLogic.crudController.createEmployee(this.body.firstName, this.body.surname,
-                    this.body.title, this.body.cellphone,
-                    this.body.email, this.body.companyId,
-                    passwordId.data.id);
-
-                if(employeeId.success){
-                    data.id = employeeId.data.id;
-                    message = "Employee Added!";
+        if(!this.body.surname){
+            presentParams = true;
+            presentReturn += "surname, ";
+        }
+        if(!this.body.title){
+            presentParams = true;
+            presentReturn += "title, ";
+        }
+        if(!this.body.cellphone){
+            presentParams = true;
+            presentReturn += "cellphone, ";
+        }
+        if(!this.body.email){
+            presentParams = true;
+            presentReturn += "email, ";
+        }
+        if(!this.body.companyId){
+            presentParams = true;
+            presentReturn += "companyId, ";
+        }
+        if(!this.body.password){
+            presentParams = true;
+            presentReturn += "password, ";
+        }
+        //if parameters are present, validate if correct format
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.firstName) || !this.sharedLogic.validateAlpha(this.body.firstName)){
+                invalidParams = true;
+                invalidReturn += "firstName, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.surname) || !this.sharedLogic.validateAlpha(this.body.surname)){
+                invalidParams = true;
+                invalidReturn += "surname, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.title)){
+                invalidParams = true;
+                invalidReturn += "title, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.cellphone) || !this.sharedLogic.validateCellphone(this.body.cellphone)){
+                invalidParams = true;
+                invalidReturn += "cellphone, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.email) || !this.sharedLogic.validateEmail(this.body.email)){
+                invalidParams = true;
+                invalidReturn += "email, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
+                invalidParams = true;
+                invalidReturn += "companyId, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.password)){
+                invalidParams = true;
+                invalidReturn += "password, ";
+            }
+            //if valid parameters then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.id = 10;
+                    message = "Employee Added! - Mock";
                     success = true;
                 }
                 else{
-                    data = null;
-                    message = employeeId.message;
-                    success = false;
+                    //return data from crudController
+                    var passwordId = this.sharedLogic.crudController.createPassword(this.body.email, this.body.email);
+
+                    if(passwordId.success){
+
+                        var employeeId = this.sharedLogic.crudController.createEmployee(this.body.firstName, this.body.surname,
+                            this.body.title, this.body.cellphone,
+                            this.body.email, this.body.companyId,
+                            passwordId.data.id);
+
+                        if(employeeId.success){
+                            data.id = employeeId.data.id;
+                            message = "Employee Added!";
+                            success = true;
+                        }
+                        else{
+                            data = null;
+                            message = employeeId.message;
+                            success = false;
+                        }
+                    }
+                    else{
+                        data = null;
+                        message = passwordId.message;
+                        success = false;
+                    }
                 }
             }
             else{
-                data = null;
-                message = passwordId.message;
                 success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
             }
         }
-
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
         this.sharedLogic.endServe(success, message, data);
     }
 
 }
+
 module.exports = AdminLogic;

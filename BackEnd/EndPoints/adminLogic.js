@@ -97,19 +97,19 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(!this.body.name){
+        if(this.body.name === undefined){
             presentParams = true;
             presentReturn += "name, ";
         }
-        if(!this.body.website){
+        if(this.body.website === undefined){
             presentParams = true;
             presentReturn += "website, ";
         }
-        if(!this.body.username){
+        if(this.body.username === undefined){
             presentParams = true;
             presentReturn += "username, ";
         }
-        if(!this.body.password){
+        if(this.body.password === undefined){
             presentParams = true;
             presentReturn += "password, ";
         }
@@ -138,7 +138,7 @@ class AdminLogic
             if(!invalidParams){
                 if(this.demoMode){
                     //return mock data
-                    data.id = 5;
+                    data.companyId = 5;
                     message = this.body.name + " Added! - Mock";
                     success = true;
                 }
@@ -210,31 +210,31 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(!this.body.firstName){
+        if(this.body.firstName === undefined){
             presentParams = true;
             presentReturn += "firstName, ";
         }
-        if(!this.body.surname){
+        if(this.body.surname === undefined){
             presentParams = true;
             presentReturn += "surname, ";
         }
-        if(!this.body.title){
+        if(this.body.title === undefined){
             presentParams = true;
             presentReturn += "title, ";
         }
-        if(!this.body.cellphone){
+        if(this.body.cellphone === undefined){
             presentParams = true;
             presentReturn += "cellphone, ";
         }
-        if(!this.body.email){
+        if(this.body.email === undefined){
             presentParams = true;
             presentReturn += "email, ";
         }
-        if(!this.body.companyId){
+        if(this.body.companyId === undefined){
             presentParams = true;
             presentReturn += "companyId, ";
         }
-        if(!this.body.password){
+        if(this.body.password === undefined){
             presentParams = true;
             presentReturn += "password, ";
         }
@@ -274,7 +274,7 @@ class AdminLogic
             if(!invalidParams){
                 if(this.demoMode){
                     //return mock data
-                    data.id = 10;
+                    data.employeeId = 10;
                     message = "Employee Added! - Mock";
                     success = true;
                 }

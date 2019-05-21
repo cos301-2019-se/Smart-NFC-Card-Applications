@@ -218,14 +218,14 @@ describe('Server.js Unit Testing', function(){
             '    "success": true,\n\t' +
             '    "message": "VastExpanse Added! - Mock",\n\t' +
             '    "data": {\n\t' +
-            '        "id": 5\n\t' +
+            '        "companyId": 5\n\t' +
             '    }\n\t' +
             '}', function () {
             expect(data.body).toEqual({
                 "success": true,
                 "message": "VastExpanse Added! - Mock",
                 "data": {
-                    "id": 5
+                    "companyId": 5
                 }
             })
 
@@ -270,14 +270,14 @@ describe('Server.js Unit Testing', function(){
             '    "success": true,\n\t' +
             '    "message": "Employee Added! - Mock",\n\t' +
             '    "data": {\n\t' +
-            '        "id": 10\n\t' +
+            '        "employeeId": 10\n\t' +
             '    }\n\t' +
             '}', function () {
             expect(data.body).toEqual({
                 "success": true,
                 "message": "Employee Added! - Mock",
                 "data": {
-                    "id": 10
+                    "employeeId": 10
                 }
             })
             

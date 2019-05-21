@@ -242,7 +242,7 @@ class SharedLogic
 	 * @return boolean Will return true if non-empty, false otherwise
 	 */
 	validateNonEmpty(required){
-		if(required){
+		if(required || required===0){
 			if(required.length === 0){
 				return false;
 			}

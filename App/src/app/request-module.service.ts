@@ -38,8 +38,8 @@ export class RequestModuleService {
     "success" : true,
     "message" : "Successfully logged in",
     "data" : {
-      "id" : 0,
-      "api" : "12345678123456781234567812345678"
+      "employeeId" : 0,
+      "apiKey" : "12345678123456781234567812345678"
     } 
   }`);
   logoutStub: JSON = JSON.parse(`{ 
@@ -123,29 +123,30 @@ export class RequestModuleService {
    */
   checkLoggedIn(api: string) {
     if(this.demoMode) {
-      if(this.loginStub['data']['api'] == api){
-        return this.logoutStub;
+      if(this.loginStub['data']['apiKey'] == api){
+        return this.loginStub;
       }
       else {
-        return false;
+        return this.logoutStub;
       }
     }
     else {
-      return this.post(`${this.baseUrl}/app/checkLoggedIn`, JSON.parse(`{api: ${api}}`));
+      return this.post(`${this.baseUrl}/app/checkLoggedIn`, JSON.parse(`{apiKey: ${api}}`));
     }
   }
 
   /**
    * Function to get business card data
    * @param employeeId number Employee's id to get his business card
+   * @param apiKey string API Key to authenticate request
    * @return JSON response from back-end server
    */
-  getBusinessCard(employeeId: number) {
+  getBusinessCard(employeeId: number, apiKey: string) {
     if(this.demoMode) {
       return this.businessCardStub;
     }
     else {
-      let json: JSON = JSON.parse(`{ "employeeId": ${employeeId} }`);
+      let json: JSON = JSON.parse(`{ "employeeId": ${employeeId}, "apiKey": "${apiKey}" }`);
       return this.post(`${this.baseUrl}/app/getBusinessCard`, json);
     }
   }

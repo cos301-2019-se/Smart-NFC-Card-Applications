@@ -39,6 +39,20 @@ describe('RequestModuleService', () => {
     expect(service.login("", "")).toBe(service.loginStub);
   });
 
+  it('checkLoggedIn should return true if apiKey was the same as the loginStub', () => {
+    const service: RequestModuleService = TestBed.get(RequestModuleService);
+    service.demoMode = true;
+    let res = service.login("", "");
+    expect(service.checkLoggedIn(res['data']['apiKey'])).toBe(service.loginStub);
+  });
+
+  it('checkLoggedIn should return false if apiKey was different from the loginStub', () => {
+    const service: RequestModuleService = TestBed.get(RequestModuleService);
+    service.demoMode = true;
+    service.login("", "");
+    expect(service.checkLoggedIn('wrong')).toBe(service.logoutStub);
+  });
+
   it('logout should return stub data while in demo mode', () => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = true;
@@ -48,7 +62,7 @@ describe('RequestModuleService', () => {
   it('getBusinessCard should return stub data while in demo mode', () => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = true;
-    expect(service.getBusinessCard(0)).toBe(service.businessCardStub);
+    expect(service.getBusinessCard(0, service.loginStub["data"]["apiKey"])).toBe(service.businessCardStub);
   });
 
   it('login should return data from back-end', () => {
@@ -64,6 +78,12 @@ describe('RequestModuleService', () => {
   });
 
   it('getBusinessCard should return data from back-end', () => {
+    const service: RequestModuleService = TestBed.get(RequestModuleService);
+    service.demoMode = false;
+    throw Error("Not implemented yet");
+  });
+
+  it('checkLoggedIn should return true if apiKey was the same as the loginStub', () => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = false;
     throw Error("Not implemented yet");

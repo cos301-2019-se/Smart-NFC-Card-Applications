@@ -582,7 +582,7 @@ describe('Server.js Unit Testing', function(){
         beforeAll(function(done){
             var jsonDataObj = {
 				username : "jaredoreilly@gmail.com",
-				password : "CoolPassword1",
+				password : "1234",
 				demoMode : true
 			}; // no data sent
             Request.post({
@@ -673,8 +673,8 @@ describe('Server.js Unit Testing', function(){
         let data = new Object();
         beforeAll(function(done){
             var jsonDataObj = {
-				username : "company@discovery.com",
-				password : "Discovery15Cool",
+				username : "piet.pompies@gmail.com",
+				password : "1234",
 				demoMode : true
 			}; // no data sent
             Request.post({
@@ -720,7 +720,7 @@ describe('Server.js Unit Testing', function(){
         let data = new Object();
         beforeAll(function(done){
             var jsonDataObj = {
-				username : "company@discovery.com",
+				username : "piet.pompies@gmail.com",
 				password : "WrongPassword",
 				demoMode : true
 			}; // no data sent

@@ -22,6 +22,7 @@
  */
  
  //var CRUDController = require('./../CRUDController/controller.js');
+ var crypto = require('crypto');
 
 /**
  * 	Purpose:    This class provides shared and common functionality to the (Other)Logic classes
@@ -198,7 +199,11 @@ class SharedLogic
      */
 	passwordHash(pass,salt)
 	{
-		return "12" + pass + salt + "34";
+		//sha256
+		
+		return crypto.createHash('sha256').update(pass + salt).digest('hex')
+		
+		//return "12" + pass + salt + "34";
 	}
 	
 	/**
@@ -247,7 +252,7 @@ class SharedLogic
 				var passwordDetails = null;
 				if(this.demoMode)
 				{
-					passwordDetails = { hashedPassword : "12CoolPassword189salty9834", salt: "89salty98", apiKey : "1234"};
+					passwordDetails = { hashedPassword : "b1070db9b04cb6901a9964841c8560f5c09bcbb6649db2d008daf4df81a65da7", salt: "40qY4HyU", apiKey : "1234"};
 				}
 				else
 				{
@@ -285,7 +290,7 @@ class SharedLogic
 				var passwordDetails = null;
 				if(this.demoMode)
 				{
-					passwordDetails = { hashedPassword : "12Discovery15Cool54saltboi4534", salt: "54saltboi45", apiKey : "5678"};
+					passwordDetails = { hashedPassword : "b1070db9b04cb6901a9964841c8560f5c09bcbb6649db2d008daf4df81a65da7", salt: "40qY4HyU", apiKey : "5678"};
 				}
 				else
 				{

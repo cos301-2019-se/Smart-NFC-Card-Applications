@@ -1,4 +1,4 @@
-class CRUDController {
+class CrudController {
 
 
     constructor() {
@@ -253,4 +253,4 @@ class CRUDController {
 }
 
 
-module.exports = CRUDController;
+module.exports = CrudController;

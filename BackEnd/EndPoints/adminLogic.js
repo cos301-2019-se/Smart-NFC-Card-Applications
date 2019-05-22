@@ -10,6 +10,7 @@
  *	Date		Author		Version		Changes
  *	-----------------------------------------------------------------------------------------
  *	2019/05/19	Duncan		1.0		Original
+ *  2019/05/22  Tjaart      1.1     Fixed require filename - sharedLogic.js
  *
  *	Functional Description:		 This class is used by our Link Admin Application in order
  *	                            to facilitate all operations needed for the correct operation
@@ -20,7 +21,7 @@
  *	Constraints: 	None
  */
 
-var SharedLogic = require('./../SharedLogic/SharedLogic.js');
+var SharedLogic = require('./../SharedLogic/sharedLogic.js');
 // var demoMode = true;
 
 /**

@@ -79,13 +79,13 @@ class AdminLogic
      *  Function that is called to create a company, will use SharedLogic's crudController in order to
      *  complete the operation
      *
-     *  @param  name string The company name
-     *  @param  website string The website belonging to the company
-     *  @param  username string The username of the company - for login purposes
-     *  @param  password string the password of the company - for login purposes
+     *  @param  companyName string The company name
+     *  @param  companyWebsite string The website belonging to the company
+     *  @param  companyUsername string The username of the company - for login purposes
+     *  @param  companyPassword string the password of the company - for login purposes
      *
      *  @return JSON {
-     *                  id : int The ID of the company being added
+     *                  companyId : int The ID of the company being added
      *               }
      */
     addCompany(){
@@ -97,19 +97,19 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.name === undefined){
+        if(this.body.companyName === undefined){
             presentParams = true;
             presentReturn += "name, ";
         }
-        if(this.body.website === undefined){
+        if(this.body.companyWebsite === undefined){
             presentParams = true;
             presentReturn += "website, ";
         }
-        if(this.body.username === undefined){
+        if(this.body.companyUsername === undefined){
             presentParams = true;
             presentReturn += "username, ";
         }
-        if(this.body.password === undefined){
+        if(this.body.companyPassword === undefined){
             presentParams = true;
             presentReturn += "password, ";
         }
@@ -118,19 +118,19 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.name)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyName)){
                 invalidParams = true;
                 invalidReturn += "name, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.website)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyWebsite)){
                 invalidParams = true;
                 invalidReturn += "website, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.username)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyUsername)){
                 invalidParams = true;
                 invalidReturn += "username, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.password)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyPassword)){
                 invalidParams = true;
                 invalidReturn += "password, ";
             }
@@ -138,21 +138,21 @@ class AdminLogic
             if(!invalidParams){
                 if(this.demoMode){
                     //return mock data
-                    data.companyId = 5;
-                    message = this.body.name + " Added! - Mock";
+                    data.companyId = 0;
+                    message = this.body.companyName + " Added! - Mock";
                     success = true;
                 }
                 else{
                     //return data from crudController
-                    var passwordId = this.sharedLogic.crudController.createPassword(this.body.username, this.body.password);
+                    var passwordId = this.sharedLogic.crudController.createPassword(this.body.companyUsername, this.body.companyPassword);
 
                     if(passwordId.success){
 
-                        var companyId = this.sharedLogic.crudController.createCompany(this.body.name, this.body.website, passwordId.data.id);
+                        var companyId = this.sharedLogic.crudController.createCompany(this.body.companyName, this.body.companyWebsite, passwordId.data.passwordId);
 
                         if(companyId.success){
-                            data.id = companyId.data.id;
-                            message = this.body.name + " Added!";
+                            data.companyId = companyId.data.companyId;
+                            message = this.body.companyName + " Added!";
                             success = true;
                         }
                         else{
@@ -189,16 +189,16 @@ class AdminLogic
      * to complete the operation. It will create an Employee belonging to the Company ID passed in through
      * the parameter
      *
-     * @param   firstName string The name of the employee
-     * @param   surname string The surname of the employee
-     * @param   title string The Title of the employee e.g Mr/Mrs
-     * @param   cellphone string The Cellphone number of the employee
-     * @param   email string The email address of the employee - used for login purposes
+     * @param   employeeFirstName string The name of the employee
+     * @param   employeeSurname string The surname of the employee
+     * @param   employeeTitle string The Title of the employee e.g Mr/Mrs
+     * @param   employeeCellphone string The Cellphone number of the employee
+     * @param   employeeEmail string The email address of the employee - used for login purposes
      * @param   companyId int The ID of the company to which the employee is being added to
-     * @param   password string The Password chosen by the employee - for login purposes
+     * @param   employeePassword string The Password chosen by the employee - for login purposes
      *
      * @return JSON {
-     *                  id : int The ID of the employee being added
+     *                  employeeId : int The ID of the employee being added
      *              }
      */
     addEmployee(){
@@ -210,23 +210,23 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.firstName === undefined){
+        if(this.body.employeeFirstName === undefined){
             presentParams = true;
             presentReturn += "firstName, ";
         }
-        if(this.body.surname === undefined){
+        if(this.body.employeeSurname === undefined){
             presentParams = true;
             presentReturn += "surname, ";
         }
-        if(this.body.title === undefined){
+        if(this.body.employeeTitle === undefined){
             presentParams = true;
             presentReturn += "title, ";
         }
-        if(this.body.cellphone === undefined){
+        if(this.body.employeeCellphone === undefined){
             presentParams = true;
             presentReturn += "cellphone, ";
         }
-        if(this.body.email === undefined){
+        if(this.body.employeeEmail === undefined){
             presentParams = true;
             presentReturn += "email, ";
         }
@@ -234,7 +234,7 @@ class AdminLogic
             presentParams = true;
             presentReturn += "companyId, ";
         }
-        if(this.body.password === undefined){
+        if(this.body.employeePassword === undefined){
             presentParams = true;
             presentReturn += "password, ";
         }
@@ -242,23 +242,23 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.firstName) || !this.sharedLogic.validateAlpha(this.body.firstName)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeFirstName) || !this.sharedLogic.validateAlpha(this.body.employeeFirstName)){
                 invalidParams = true;
                 invalidReturn += "firstName, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.surname) || !this.sharedLogic.validateAlpha(this.body.surname)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeSurname) || !this.sharedLogic.validateAlpha(this.body.employeeSurname)){
                 invalidParams = true;
                 invalidReturn += "surname, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.title)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeTitle)){
                 invalidParams = true;
                 invalidReturn += "title, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.cellphone) || !this.sharedLogic.validateCellphone(this.body.cellphone)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeCellphone) || !this.sharedLogic.validateCellphone(this.body.employeeCellphone)){
                 invalidParams = true;
                 invalidReturn += "cellphone, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.email) || !this.sharedLogic.validateEmail(this.body.email)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeEmail) || !this.sharedLogic.validateEmail(this.body.employeeEmail)){
                 invalidParams = true;
                 invalidReturn += "email, ";
             }
@@ -266,7 +266,7 @@ class AdminLogic
                 invalidParams = true;
                 invalidReturn += "companyId, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.password)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeePassword)){
                 invalidParams = true;
                 invalidReturn += "password, ";
             }
@@ -274,23 +274,24 @@ class AdminLogic
             if(!invalidParams){
                 if(this.demoMode){
                     //return mock data
-                    data.employeeId = 10;
+                    data.employeeId = 0;
                     message = "Employee Added! - Mock";
                     success = true;
                 }
                 else{
                     //return data from crudController
-                    var passwordId = this.sharedLogic.crudController.createPassword(this.body.email, this.body.email);
+
+                    var passwordId = this.sharedLogic.crudController.createPassword(this.body.employeeEmail, this.body.employeePassword);
 
                     if(passwordId.success){
 
-                        var employeeId = this.sharedLogic.crudController.createEmployee(this.body.firstName, this.body.surname,
-                            this.body.title, this.body.cellphone,
-                            this.body.email, this.body.companyId,
-                            passwordId.data.id);
+                        var employeeId = this.sharedLogic.crudController.createEmployee(this.body.employeeFirstName, this.body.employeeSurname,
+                            this.body.employeeTitle, this.body.employeeCellphone,
+                            this.body.employeeEmail, this.body.companyId,
+                            passwordId.data.passwordId);
 
                         if(employeeId.success){
-                            data.id = employeeId.data.id;
+                            data.employeeId = employeeId.data.employeeId;
                             message = "Employee Added!";
                             success = true;
                         }

@@ -85,7 +85,7 @@ class AdminLogic
      *  @param  password string the password of the company - for login purposes
      *
      *  @return JSON {
-     *                  id : int The ID of the company being added
+     *                  companyId : int The ID of the company being added
      *               }
      */
     addCompany(){
@@ -138,7 +138,7 @@ class AdminLogic
             if(!invalidParams){
                 if(this.demoMode){
                     //return mock data
-                    data.companyId = 5;
+                    data.companyId = 0;
                     message = this.body.name + " Added! - Mock";
                     success = true;
                 }
@@ -148,10 +148,10 @@ class AdminLogic
 
                     if(passwordId.success){
 
-                        var companyId = this.sharedLogic.crudController.createCompany(this.body.name, this.body.website, passwordId.data.id);
+                        var companyId = this.sharedLogic.crudController.createCompany(this.body.name, this.body.website, passwordId.data.passwordId);
 
                         if(companyId.success){
-                            data.id = companyId.data.id;
+                            data.companyId = companyId.data.companyId;
                             message = this.body.name + " Added!";
                             success = true;
                         }
@@ -198,7 +198,7 @@ class AdminLogic
      * @param   password string The Password chosen by the employee - for login purposes
      *
      * @return JSON {
-     *                  id : int The ID of the employee being added
+     *                  employeeId : int The ID of the employee being added
      *              }
      */
     addEmployee(){
@@ -274,7 +274,7 @@ class AdminLogic
             if(!invalidParams){
                 if(this.demoMode){
                     //return mock data
-                    data.employeeId = 10;
+                    data.employeeId = 0;
                     message = "Employee Added! - Mock";
                     success = true;
                 }
@@ -287,10 +287,10 @@ class AdminLogic
                         var employeeId = this.sharedLogic.crudController.createEmployee(this.body.firstName, this.body.surname,
                             this.body.title, this.body.cellphone,
                             this.body.email, this.body.companyId,
-                            passwordId.data.id);
+                            passwordId.data.passwordId);
 
                         if(employeeId.success){
-                            data.id = employeeId.data.id;
+                            data.employeeId = employeeId.data.employeeId;
                             message = "Employee Added!";
                             success = true;
                         }

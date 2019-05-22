@@ -193,10 +193,10 @@ describe('Server.js Unit Testing', function(){
         beforeAll(function(done){
             var jsonDataObj = {
                 apiKey : "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
-                name : "Vast Expanse",
-                website : "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications",
-                username : "piet.pompies@gmail.com",
-                password : "1234",
+                companyName : "Vast Expanse",
+                companyWebsite : "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications",
+                companyUsername : "piet.pompies@gmail.com",
+                companyPassword : "1234",
                 demoMode : true
             }; // fill in data to send to endpoint
             Request.post({
@@ -242,12 +242,12 @@ describe('Server.js Unit Testing', function(){
         beforeAll(function(done){
             var jsonDataObj = {
                 apiKey : "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
-                firstName : "Piet",
-                surname : "Pompies",
-                title : "Mr",
-                cellphone : "0791637273",
-                email : "piet.pompies@gmail.com",
-                password : "1234",
+                employeeFirstName : "Piet",
+                employeeSurname : "Pompies",
+                employeeTitle : "Mr",
+                employeeCellphone : "0791637273",
+                employeeEmail : "piet.pompies@gmail.com",
+                employeePassword : "1234",
                 companyId : 0,
                 demoMode : true
             }; // fill in data to send to endpoint
@@ -821,10 +821,10 @@ describe('Server.js Integration Testing', function(){
         beforeAll(function(done){
             var jsonDataObj = {
                 apiKey : "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
-                name : "Vast Expanse",
-                website : "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications",
-                username : "piet.pompies@gmail.com",
-                password : "1234"
+                companyName : "Vast Expanse",
+                companyWebsite : "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications",
+                companyUsername : "piet.pompies@gmail.com",
+                companyPassword : "1234"
             }; // fill in data to send to endpoint
             Request.post({
                 url: endpoint + "/admin/addCompany",
@@ -869,12 +869,12 @@ describe('Server.js Integration Testing', function(){
         beforeAll(function(done){
             var jsonDataObj = {
                 apiKey : "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
-                firstName : "Piet",
-                surname : "Pompies",
-                title : "Mr",
-                cellphone : "0791637273",
-                email : "piet.pompies@gmail.com",
-                password : "1234",
+                employeeFirstName : "Piet",
+                employeeSurname : "Pompies",
+                employeeTitle : "Mr",
+                employeeCellphone : "0791637273",
+                employeeEmail : "piet.pompies@gmail.com",
+                employeePassword : "1234",
                 companyId : 0
             }; // fill in data to send to endpoint
             Request.post({

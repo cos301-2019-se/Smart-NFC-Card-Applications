@@ -121,35 +121,33 @@ class AppLogic{
                     data.website = "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications";
                 }
                 else{
-                    success = true;
-                    message = "Business card information loaded successfully";
-                    // // return data from crudController
-                    // let employeeData = this.sharedLogic.crudController.getEmployee(this.body.employeeId);
-                    //
-                    // if(employeeData.success){
-                    //     let companyData = this.sharedLogic.crudController.getCompany(employeeData.companyId);
-                    //
-                    //     if(companyData.success){
-                    //         success = true;
-                    //         message = "Business card information loaded successfully";
-                    //         data.employeeName = employeeData.employeeName;
-                    //         data.employeeSurname = employeeData.employeeSurname;
-                    //         data.cellphone = employeeData.cellphone;
-                    //         data.email = employeeData.email;
-                    //         data.companyName = companyData.companyName;
-                    //         data.website = companyData.website;
-                    //     }
-                    //     else{
-                    //         success = companyData.success;
-                    //         message = companyData.message;
-                    //         data = companyData.data;
-                    //     }
-                    // }
-                    // else{
-                    //     success = employeeData.success;
-                    //     message = employeeData.message;
-                    //     data = employeeData.data;
-                    // }
+                    // return data from crudController
+                    let employeeData = this.sharedLogic.crudController.getEmployee(this.body.employeeId);
+
+                    if(employeeData.success){
+                        let companyData = this.sharedLogic.crudController.getCompany(employeeData.companyId);
+
+                        if(companyData.success){
+                            success = true;
+                            message = "Business card information loaded successfully";
+                            data.employeeName = employeeData.employeeName;
+                            data.employeeSurname = employeeData.employeeSurname;
+                            data.cellphone = employeeData.cellphone;
+                            data.email = employeeData.email;
+                            data.companyName = companyData.companyName;
+                            data.website = companyData.website;
+                        }
+                        else{
+                            success = companyData.success;
+                            message = companyData.message;
+                            data = companyData.data;
+                        }
+                    }
+                    else{
+                        success = employeeData.success;
+                        message = employeeData.message;
+                        data = employeeData.data;
+                    }
                 }
             }
             else{

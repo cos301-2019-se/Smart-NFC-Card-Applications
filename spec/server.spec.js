@@ -187,10 +187,11 @@ describe('Server.js Unit Testing', function(){
             '    "success": true,\n\t' +
             '    "message": "Business card information loaded successfully - Mock",\n\t' +
             '    "data": {\n\t' +
+            '        "employeeTitle": "Mr",\n\t' +
             '        "employeeName": "Tjaart",\n\t' +
             '        "employeeSurname": "Booyens",\n\t' +
-            '        "cellphone": "0791807734",\n\t' +
-            '        "email": "u17021775@tuks.co.za",\n\t' +
+            '        "employeeCellphone": "0791807734",\n\t' +
+            '        "employeeEmail": "u17021775@tuks.co.za",\n\t' +
             '        "companyName": "Vast Expanse",\n\t' +
             '        "website": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications"\n\t' +
             '    }\n\t' +
@@ -199,10 +200,11 @@ describe('Server.js Unit Testing', function(){
                 "success": true,
                 "message": "Business card information loaded successfully - Mock",
                 "data": {
+                    "employeeTitle": "Mr",
                     "employeeName": "Tjaart",
                     "employeeSurname": "Booyens",
-                    "cellphone": "0791807734",
-                    "email": "u17021775@tuks.co.za",
+                    "employeeCellphone": "0791807734",
+                    "employeeEmail": "u17021775@tuks.co.za",
                     "companyName": "Vast Expanse",
                     "website": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications"
                 }
@@ -242,10 +244,11 @@ describe('Server.js Unit Testing', function(){
             '    "success": true,\n\t' +
             '    "message": "Business card information loaded successfully - Mock",\n\t' +
             '    "data": {\n\t' +
+            '        "employeeTitle": "Mr",\n\t' +
             '        "employeeName": "Tjaart",\n\t' +
             '        "employeeSurname": "Booyens",\n\t' +
-            '        "cellphone": "0791807734",\n\t' +
-            '        "email": "u17021775@tuks.co.za",\n\t' +
+            '        "employeeCellphone": "0791807734",\n\t' +
+            '        "employeeEmail": "u17021775@tuks.co.za",\n\t' +
             '        "companyName": "Vast Expanse",\n\t' +
             '        "website": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications"\n\t' +
             '    }\n\t' +
@@ -254,10 +257,11 @@ describe('Server.js Unit Testing', function(){
                 "success": true,
                 "message": "Business card information loaded successfully - Mock",
                 "data": {
+                    "employeeTitle": "Mr",
                     "employeeName": "Tjaart",
                     "employeeSurname": "Booyens",
-                    "cellphone": "0791807734",
-                    "email": "u17021775@tuks.co.za",
+                    "employeeCellphone": "0791807734",
+                    "employeeEmail": "u17021775@tuks.co.za",
                     "companyName": "Vast Expanse",
                     "website": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications"
                 }
@@ -861,6 +865,116 @@ describe('Server.js Unit Testing', function(){
 				"data": {}
 			})
 
+        });
+    });
+});
+
+describe('Server.js Unit Testing', function() {
+    let server;
+    let endpoint = "http://localhost:3000";
+
+    beforeAll(function () {
+        server = Server.run();
+    });
+
+    afterAll(function () {
+        server.close();
+    });
+
+    // Tjaart
+    describe("POST " + endpoint + "/app/getBusinessCard", function () {
+        let data = {};
+        beforeAll(function(done){
+            var jsonDataObj = {
+                apiKey: "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
+                employeeId: 0
+            }; // no data sent
+            Request.post({
+                url: endpoint + "/app/getBusinessCard",
+                body: jsonDataObj,
+                json: true
+            }, function(error, response, body){
+                data.status = response.statusCode;
+                data.contentType = response.headers['content-type'];
+                data.body = response.body;
+                done();
+            });
+        });
+
+        it('should return with statusCode 200', function(){
+            expect(data.status).toEqual(200);
+        });
+
+        it('should set content type = application/json', function(){
+            expect(data.contentType).toEqual('application/json');
+        });
+
+        it('should return a json object = \n\t{\n\t' +
+            '    "success": true,\n\t' +
+            '    "message": "Business card information loaded successfully",\n\t' +
+            '    "data": {\n\t' +
+            '        "employeeTitle": "Mr",\n\t' +
+            '        "employeeName": "Piet",\n\t' +
+            '        "employeeSurname": "Pompies",\n\t' +
+            '        "employeeCellphone": "0791637273",\n\t' +
+            '        "employeeEmail": "piet.pompies@gmail.com",\n\t' +
+            '        "companyName": "Vast Expanse",\n\t' +
+            '        "website": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications"\n\t' +
+            '    }\n\t' +
+            '}' , function () {
+            expect(data.body).toEqual({
+                "success": true,
+                "message": "Business card information loaded successfully",
+                "data": {
+                    "employeeTitle": "Mr",
+                    "employeeName": "Piet",
+                    "employeeSurname": "Pompies",
+                    "employeeCellphone": "0791637273",
+                    "employeeEmail": "piet.pompies@gmail.com",
+                    "companyName": "Vast Expanse",
+                    "website": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications"
+                }
+            });
+        });
+    });
+
+    describe("POST " + endpoint + "/app/getBusinessCard", function () {
+        let data = {};
+        beforeAll(function(done){
+            var jsonDataObj = {
+                apiKey: "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
+                employeeId: 1
+            }; // no data sent
+            Request.post({
+                url: endpoint + "/app/getBusinessCard",
+                body: jsonDataObj,
+                json: true
+            }, function(error, response, body){
+                data.status = response.statusCode;
+                data.contentType = response.headers['content-type'];
+                data.body = response.body;
+                done();
+            });
+        });
+
+        it('should return with statusCode 200', function(){
+            expect(data.status).toEqual(200);
+        });
+
+        it('should set content type = application/json', function(){
+            expect(data.contentType).toEqual('application/json');
+        });
+
+        it('should return a json object = \n\t{\n\t' +
+            '    "success": false,\n\t' +
+            '    "message": "Employee ID Does Not Exist",\n\t' +
+            '    "data": {}\n\t' +
+            '}' , function () {
+            expect(data.body).toEqual({
+                "success": false,
+                "message": "Employee ID Does Not Exist",
+                "data": {}
+            });
         });
     });
 });

@@ -113,10 +113,11 @@ class AppLogic{
                     // return mock data
                     success = true;
                     message = "Business card information loaded successfully - Mock";
+                    data.employeeTitle = "Mr";
                     data.employeeName = "Tjaart";
                     data.employeeSurname = "Booyens";
-                    data.cellphone = "0791807734";
-                    data.email = "u17021775@tuks.co.za";
+                    data.employeeCellphone = "0791807734";
+                    data.employeeEmail = "u17021775@tuks.co.za";
                     data.companyName = "Vast Expanse";
                     data.website = "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications";
                 }
@@ -125,17 +126,18 @@ class AppLogic{
                     let employeeData = this.sharedLogic.crudController.getEmployee(this.body.employeeId);
 
                     if(employeeData.success){
-                        let companyData = this.sharedLogic.crudController.getCompany(employeeData.companyId);
+                        let companyData = this.sharedLogic.crudController.getCompany(employeeData.data.companyId);
 
                         if(companyData.success){
                             success = true;
                             message = "Business card information loaded successfully";
-                            data.employeeName = employeeData.employeeName;
-                            data.employeeSurname = employeeData.employeeSurname;
-                            data.cellphone = employeeData.cellphone;
-                            data.email = employeeData.email;
-                            data.companyName = companyData.companyName;
-                            data.website = companyData.website;
+                            data.employeeTitle = employeeData.data.employeeTitle;
+                            data.employeeName = employeeData.data.employeeName;
+                            data.employeeSurname = employeeData.data.employeeSurname;
+                            data.employeeCellphone = employeeData.data.employeeCellphone;
+                            data.employeeEmail = employeeData.data.employeeEmail;
+                            data.companyName = companyData.data.companyName;
+                            data.website = companyData.data.website;
                         }
                         else{
                             success = companyData.success;

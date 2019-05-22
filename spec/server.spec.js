@@ -715,16 +715,16 @@ describe('Server.js Unit Testing', function(){
         it('should return a json object \n\t{\n\t' +
             '    "success": true,\n\t' +
             '    "message": "Login successful.",\n\t' +
-            '    "data": {"apiKey": "1234",\n\t' +
-			'		"id": 45}\n\t' +
+            '    "data": {"apiKey": "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",\n\t' +
+			'		"id": 0}\n\t' +
             '}' , function () {
             expect(data.body).toEqual(
 			{
 				"success": true,
 				"message": "Login successful.",
 				"data": {
-					"apiKey": "1234",
-					"id": 45
+					"apiKey": "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
+					"id": 0
 				}
 			})
 
@@ -805,16 +805,16 @@ describe('Server.js Unit Testing', function(){
         it('should return a json object \n\t{\n\t' +
             '    "success": true,\n\t' +
             '    "message": "Login successful.",\n\t' +
-            '    "data": {"apiKey": "5678",\n\t' +
-			'		"id": 3}\n\t' +
+            '    "data": {"apiKey": "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",\n\t' +
+			'		"id": 0}\n\t' +
             '}' , function () {
             expect(data.body).toEqual(
 			{
 				"success": true,
 				"message": "Login successful.",
 				"data": {
-					"apiKey": "5678",
-					"id": 3
+					"apiKey": "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
+					"id": 0
 				}
 			})
 

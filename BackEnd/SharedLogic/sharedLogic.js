@@ -21,7 +21,7 @@
  *	Constraints:
  */
  
- //var CRUDController = require('./../CRUDController/controller.js');
+ var CrudController = require('./../CrudController/crudController.js');
  var crypto = require('crypto');
 
 /**
@@ -47,8 +47,7 @@ class SharedLogic
 	constructor(from)
 	{
 		this.from = from;
-		//this.crudController = new CRUDController();
-		this.crudController = null;
+		this.crudController = new CrudController();
 		this.demoMode = null;
 	}
 	
@@ -160,7 +159,25 @@ class SharedLogic
 	validAPITokenOnDB(apiToken)
 	{
 		//checks in DB
-		return true;
+		
+		if(this.demoMode)
+		{
+			return true;
+		}
+		else
+		{
+			var passwordDetails = this.crudController.getPassword(apiToken);
+			
+			if(passwordDetails.success)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		
 	}
 	
 	/**
@@ -225,7 +242,7 @@ class SharedLogic
 		var subsystem = this.from.req.url.substring(1, this.from.req.url.substring(1).indexOf("/")+1);
 		var user = this.from.body.username;
 		var pass = this.from.body.password;
-		var apiKeyAndID = null;
+		var apiKeyAndId = null;
 		
 		//switch on the subsystem entered
 		switch(subsystem)
@@ -240,38 +257,55 @@ class SharedLogic
 				var employeeDetails = null;
 				if(this.demoMode)
 				{
-					employeeDetails = { passwordID : 5, employeeID: 45};
+					employeeDetails = { success: true, data: {employeeId: 0, passwordId : 0}};
 				}
 				else
 				{
 					employeeDetails = this.crudController.getEmployee(user);
 				}
-				var passwordID = employeeDetails.passwordID;
-				
-				
-				var passwordDetails = null;
-				if(this.demoMode)
+				if(employeeDetails.success)
 				{
-					passwordDetails = { hashedPassword : "b1070db9b04cb6901a9964841c8560f5c09bcbb6649db2d008daf4df81a65da7", salt: "40qY4HyU", apiKey : "1234"};
+					employeeDetails = employeeDetails.data;
+					var passwordId = employeeDetails.passwordId;
+				
+				
+					var passwordDetails = null;
+					if(this.demoMode)
+					{
+						passwordDetails = { success: true, data: { passwordHash : "b1070db9b04cb6901a9964841c8560f5c09bcbb6649db2d008daf4df81a65da7", salt: "40qY4HyU", apiKey : "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^"}};
+					}
+					else
+					{
+						passwordDetails = this.crudController.getPassword(passwordId);
+					}
+					if(passwordDetails.success)
+					{
+						passwordDetails = passwordDetails.data;
+						var hashedPassword = passwordDetails.passwordHash;
+						var salt = passwordDetails.salt;
+						
+						
+						var enteredHashedPassword = this.passwordHash(pass,salt);
+						if(enteredHashedPassword === hashedPassword)
+						{
+							apiKeyAndId = {correct: true, apiKey: passwordDetails.apiKey, id : employeeDetails.employeeId};
+						}
+						else
+						{
+							apiKeyAndId = {correct: false};
+						}
+					}
+					else
+					{
+						apiKeyAndId = {correct: false};
+					}
 				}
 				else
 				{
-					passwordDetails = this.crudController.getPassword(passwordID);
+					apiKeyAndId = {correct: false};
 				}
-				var hashedPassword = passwordDetails.hashedPassword;
-				var salt = passwordDetails.salt;
 				
 				
-				var enteredHashedPassword = this.passwordHash(pass,salt);
-				
-				if(enteredHashedPassword === hashedPassword)
-				{
-					apiKeyAndID = {correct: true, apiKey: passwordDetails.apiKey, id : employeeDetails.employeeID};
-				}
-				else
-				{
-					apiKeyAndID = {correct: false};
-				}
 				break;
 				
 				
@@ -279,49 +313,68 @@ class SharedLogic
 				var companyDetails = null;
 				if(this.demoMode)
 				{
-					companyDetails = { passwordID : 76, companyID: 3};
+					companyDetails = { success: true, data: {companyId: 0, passwordId : 0}};
 				}
 				else
 				{
 					companyDetails = this.crudController.getCompany(user);
 				}
-				var passwordID = companyDetails.passwordID;
-				
-				var passwordDetails = null;
-				if(this.demoMode)
+				if(companyDetails.success)
 				{
-					passwordDetails = { hashedPassword : "b1070db9b04cb6901a9964841c8560f5c09bcbb6649db2d008daf4df81a65da7", salt: "40qY4HyU", apiKey : "5678"};
+					
+					companyDetails = companyDetails.data;
+					var passwordId = companyDetails.passwordId;
+				
+				
+					var passwordDetails = null;
+					if(this.demoMode)
+					{
+						passwordDetails = { success: true, data: { passwordHash : "b1070db9b04cb6901a9964841c8560f5c09bcbb6649db2d008daf4df81a65da7", salt: "40qY4HyU", apiKey : "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^"}};
+					}
+					else
+					{
+						passwordDetails = this.crudController.getPassword(passwordId);
+					}
+					if(passwordDetails.success)
+					{
+						passwordDetails = passwordDetails.data;
+						var hashedPassword = passwordDetails.passwordHash;
+						var salt = passwordDetails.salt;
+						
+						
+						var enteredHashedPassword = this.passwordHash(pass,salt);
+						
+						if(enteredHashedPassword === hashedPassword)
+						{
+							apiKeyAndId = {correct: true, apiKey: passwordDetails.apiKey, id : companyDetails.companyId};
+						}
+						else
+						{
+							apiKeyAndId = {correct: false};
+						}
+					}
+					else
+					{
+						apiKeyAndId = {correct: false};
+					}
 				}
 				else
 				{
-					passwordDetails = this.crudController.getPassword(passwordID);
-				}
-				var hashedPassword = passwordDetails.hashedPassword;
-				var salt = passwordDetails.salt;
-				
-				var enteredHashedPassword = this.passwordHash(pass,salt);
-				
-				if(enteredHashedPassword === hashedPassword)
-				{
-					apiKeyAndID = {correct: true, apiKey: passwordDetails.apiKey, id : companyDetails.companyID};
-				}
-				else
-				{
-					apiKeyAndID = {correct: false};
+					apiKeyAndId = {correct: false};
 				}
 				break;
 				
 				
 			default:
-				apiKeyAndID = {correct: false};		
+				apiKeyAndId = {correct: false};		
 		}
 		
 		
-		if(apiKeyAndID.correct === true)
+		if(apiKeyAndId.correct === true)
 		{
 			var data = new Object();
-			data.apiKey = apiKeyAndID.apiKey;
-			data.id = apiKeyAndID.id;
+			data.apiKey = apiKeyAndId.apiKey;
+			data.id = apiKeyAndId.id;
 			this.endServe(true, "Login successful.", data);
 		}
 		else

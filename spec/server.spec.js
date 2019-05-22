@@ -147,7 +147,7 @@ describe('Server.js Unit Testing', function(){
     });
 	
 	*/
-
+    // Duncan
     describe("POST " + endpoint + "/admin/addCompany", function () {
         let data = new Object();
         beforeAll(function(done){
@@ -776,7 +776,7 @@ describe('Server.js Integration Testing', function(){
         server.close();
     });
 
-
+    // Duncan
     describe("POST " + endpoint + "/admin/addCompany", function () {
         let data = new Object();
         beforeAll(function(done){

@@ -848,7 +848,7 @@ describe('Server.js Integration Testing', function(){
 
         it('should return a json object = \n\t{\n\t' +
             '    "success": true,\n\t' +
-            '    "message": "VastExpanse Added! - Mock",\n\t' +
+            '    "message": "VastExpanse Added!",\n\t' +
             '    "data": {\n\t' +
             '        "companyId": 0\n\t' +
             '    }\n\t' +
@@ -899,7 +899,7 @@ describe('Server.js Integration Testing', function(){
 
         it('should return a json object = \n\t{\n\t' +
             '    "success": true,\n\t' +
-            '    "message": "Employee Added! - Mock",\n\t' +
+            '    "message": "Employee Added!",\n\t' +
             '    "data": {\n\t' +
             '        "employeeId": 0\n\t' +
             '    }\n\t' +

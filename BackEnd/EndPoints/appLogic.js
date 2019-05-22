@@ -93,7 +93,7 @@ class AppLogic{
         let presentParams = false;
         let presentReturn = "";
 
-        if(!this.body.employeeId){
+        if(this.body.employeeId === undefined){
             presentParams = true;
             presentReturn += "employeeId, ";
         }
@@ -105,7 +105,7 @@ class AppLogic{
 
             if(!this.sharedLogic.validateNonEmpty(this.body.employeeId) || !this.sharedLogic.validateNumeric(this.body.employeeId)){
                 invalidParams = true;
-                invalidReturn += "employeeId ";
+                invalidReturn += "employeeId, ";
             }
 
             if(!invalidParams){

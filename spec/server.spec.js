@@ -869,6 +869,51 @@ describe('Server.js Unit Testing', function(){
 
         });
     });
+	
+	describe("CRUD - getEmployee correct ID", function () {
+        let data = new Object();
+        beforeAll(function(done){
+			
+			var CrudController = require("./../BackEnd/CrudController/crudController.js");
+			
+			var crudController = new CrudController();
+			data = crudController.getEmployee(0);
+			
+			
+			done();
+			
+        });
+
+        it('should return a json object \n\t{\n\t' +
+            '    "success": true,\n\t' +
+            '    "message": "Employee Retrieval Successful",\n\t' +
+            '    "data": { employeeId: 0,\n\t' +
+			'	 employeeTitle: \'Mr\',\n\t' +
+			'	 employeeName: \'Piet\',\n\t' +
+			'	 employeeSurname: \'Pompies\',\n\t' +
+			'	 employeeEmail: \'piet.pompies@gmail.com\',\n\t' +
+			'	 employeeCellphone: \'0791637273\',\n\t' +
+			'	 companyId: 0,\n\t' +
+			'	 passwordId: 0 \n\t' +
+			'	} \n\t' +
+            '}' , function () {
+            expect(data).toEqual(
+			{ success: true,
+			  message: 'Employee Retrieval Successful',
+			  data:
+			   { employeeId: 0,
+				 employeeTitle: 'Mr',
+				 employeeName: 'Piet',
+				 employeeSurname: 'Pompies',
+				 employeeEmail: 'piet.pompies@gmail.com',
+				 employeeCellphone: '0791637273',
+				 companyId: 0,
+				 passwordId: 0 
+				} 
+			})
+
+		});
+	});
 });
 
 //Integration Testing

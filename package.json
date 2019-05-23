@@ -1,0 +1,28 @@
+{
+  "name": "smart-nfc-application",
+  "version": "1.0.0",
+  "description": "Link is a mobile cross-platform business networking tool that aims to connect companies together using NFC technology. Link allows company employees to exchange virtual business cards, as well as locations of various offices of a company. Link also allows for an employee to easily setup hosting for when this client comes to visit the offices, by allowing setup and sharing of temporary physical access, temporary guest WiFi access and temporary cards for in-office cashless purchases.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node BackEnd/server.js",
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cos301-2019-se/Smart-NFC-Card-Applications.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications/issues"
+  },
+  "homepage": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications#readme",
+  "devDependencies": {
+    "jasmine": "^3.4.0",
+    "jasmine-console-reporter": "^3.1.0",
+    "request": "^2.88.0"
+  },
+  "dependencies": {
+    "crypto": "^1.0.1"
+  }
+}

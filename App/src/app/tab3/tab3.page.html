@@ -18,17 +18,17 @@
     <ion-item color='danger' *ngIf='error_message !== null'>
       <ion-icon name="close-circle"></ion-icon> {{ error_message }}
       <br>
-      <ion-button color="light" (click)='Retry()'>Settings</ion-button> 
+      <ion-button color="light" (click)='retry()'>Settings</ion-button> 
     </ion-item>
     <ion-list>
       <ion-reorder-group (ionItemReorder)="reorderItems($event)" disabled="false">
         <ion-card *ngFor="let card of cards">
             <ion-card-header>
               <ion-reorder class="reorder"></ion-reorder>
-              <ion-icon class="trash" name="trash" (click)='removeCard(card.companyName)'></ion-icon>
-              <ion-title (click)='toggleDetails(card.companyName)'>{{ card.companyName }}</ion-title>
+              <ion-icon class="trash" name="trash" (click)='removeCard(card.companyId)'></ion-icon>
+              <ion-title (click)='toggleDetails(card.companyId)'>{{ card.companyName }}</ion-title>
             </ion-card-header>     
-            <ion-card-content *ngIf='detailToggles != [] && detailToggles[card.companyName]'>
+            <ion-card-content *ngIf='detailToggles != [] && detailToggles[card.companyId]'>
               <ion-item>
                 <ion-label><ion-icon name="contact"></ion-icon> {{ card.employeeName }}</ion-label>
               </ion-item>
@@ -39,7 +39,7 @@
                 <ion-label><ion-icon name="mail"></ion-icon> {{ card.email }}</ion-label>
               </ion-item>
               <ion-item>
-                <ion-label><ion-icon name="pin"></ion-icon> {{ card.location }}</ion-label>
+                <ion-label><ion-icon name="globe"></ion-icon> {{ card.website }}</ion-label>
               </ion-item>
             </ion-card-content>
         </ion-card>

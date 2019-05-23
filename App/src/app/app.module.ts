@@ -11,6 +11,7 @@ import { AppComponent } from './app.component';
 import { NFC, Ndef, NdefRecord } from '@ionic-native/nfc/ngx';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { Platform } from '@ionic/angular';
+import { HttpClientModule } from '@angular/common/http';
 
 import { IonicStorageModule } from '@ionic/storage';
 import { LocalStorageService } from './local-storage.service';
@@ -24,7 +25,8 @@ import { NfcControllerService } from './nfc-controller.service';
     BrowserModule, 
     IonicModule.forRoot(), 
     AppRoutingModule,
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
+    HttpClientModule
   ],
   providers: [
     SplashScreen,

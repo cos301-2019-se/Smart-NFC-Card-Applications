@@ -12,6 +12,8 @@ Link also allows for an employee of a company to easily setup hosting for this v
 
 <a href="https://drive.google.com/open?id=1BeMIac5VKvBbbL0QCiJc8nr2GHKz21pA" target="_blank">Architectural Design and Justification Document</a>
 
+<a href="https://drive.google.com/open?id=1F5ZGR5Caus5CzifUpx02ziJNKzhjZLhS" target="_blank">User Manual</a>
+
 <a href="https://drive.google.com/open?id=1vXwddKcuzh3WUNKIdZdVtggryy20A1c2" target="_blank">Coding Standards Document</a>
 
 <a href="https://drive.google.com/open?id=1JsXwUw1GJNYbZO9kzuJQ3CNWYU9-lNCc" target="_blank">Testing Policy</a>

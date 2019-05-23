@@ -7,7 +7,7 @@ class CrudController {
 
     createCompany(name, website, passwordId) {
         var response;
-        if (this.validateAlpha(name) && this.validateWebsite(website) && this.validateNumeric(passwordId)) {
+        if (this.validateNonEmpty(name) && this.validateWebsite(website) && this.validateNumeric(passwordId)) {
             if (this.demoMode) {
                 response = this.buildDefaultResponseObject(true, "Company Creation Successful", false, false);
                 response.data.companyId = 0;
@@ -24,12 +24,15 @@ class CrudController {
         var response;
 
         var isUsername = false;
-        if(this.validateEmail(idOrUsername)){
-            isUsername = true
+        var isId = false;
+        if(/[a-zA-Z]/.test(idOrUsername)){ // check if parameter contains at least one character
+            isUsername = true 
+        }else if(this.validateNumeric(idOrUsername)){
+            isId = true;
         }
 
         if (this.demoMode) {
-            if (isUsername || idOrUsername === 0) {
+            if (isUsername || (isId && idOrUsername === 0)) {
                 response = this.buildDefaultResponseObject(true, "Company Retrieval Successful", false, false);
                 response.data.companyId = 0;
                 response.data.companyName = "Vast Expanse";
@@ -38,8 +41,10 @@ class CrudController {
             } else {
                 if(isUsername){
                     response = this.buildDefaultResponseObject(false, "Company Username Does Not Exist", true);
-                }else{
+                }else if(isId){
                     response = this.buildDefaultResponseObject(false, "Company ID Does Not Exist", true);
+                }else{
+                    response = this.buildDefaultResponseObject(false, "Invalid Company Parameters Provided", true);
                 }
 
             }
@@ -55,8 +60,8 @@ class CrudController {
     }
     deleteCompany(id) {
         return this.buildDefaultResponseObject(false, "Unimplemented", true);
-
     }
+
     createEmployee(firstName, surname, title, cellphone, email, companyId, passwordId) {
         var response;
 
@@ -73,11 +78,11 @@ class CrudController {
 
         }
     }
-    // note that this 
+
     getEmployee(idOrUsername) {
         var response;
         var isUsername = false;
-        if(this.validateEmail(idOrUsername)){
+        if(this.validateEmail(idOrUsername)){ //assuming employee username must be an email
             isUsername = true
         }
 
@@ -115,7 +120,7 @@ class CrudController {
     createPassword(username, password) {
         var response;
         if (this.demoMode) {
-            if (this.validateEmail(username) && this.validateNonEmpty(password)) {
+            if (/[a-zA-Z]/.test(username) && this.validateNonEmpty(password)) { //username just needs a character. more complex regex can be updated
                 response = this.buildDefaultResponseObject(true, "Password Creation Successful", false, false);
                 response.data.passwordId = 0;
             } else {

@@ -32,32 +32,33 @@ import { HttpClient } from '@angular/common/http';
 })
 export class RequestModuleService {
 
-  demoMode: boolean = true;
-  baseUrl: string = "";
-  loginStub: JSON = JSON.parse(`{ 
-    "success" : true,
-    "message" : "Successfully logged in",
-    "data" : {
-      "employeeId" : 0,
-      "apiKey" : "12345678123456781234567812345678"
-    } 
+  demoMode: boolean = false;
+  baseUrl: string = "https://smart-nfc-application.herokuapp.com";
+  loginStub: JSON = JSON.parse(`{
+    "success": true,
+    "message": "Login successful.",
+    "data": {
+        "apiKey": "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
+        "id": 0
+    }
   }`);
   logoutStub: JSON = JSON.parse(`{ 
     "success" : true,
-    "message" : "Successfully logged out",
+    "message" : "Logout successful.",
     "data" : { } 
   }`);
-  businessCardStub: JSON = JSON.parse(`{ 
-    "success" : true,
-    "message" : "Successfully logged out",
-    "data" : { 
-      "companyId" : "1",
-      "companyName" : "Vast Expanse",
-      "employeeName" : "Wian du Plooy",
-      "contactNumber" : "080 000 0000",
-      "email" : "wiandp@vast-expanse.co.za",
-      "website" : "vast-expanse.co.za" 
-    }     
+  businessCardStub: JSON = JSON.parse(`{
+    "success": true,
+    "message": "Business card information loaded successfully",
+    "data": {
+        "employeeTitle": "Mr",
+        "employeeName": "Piet",
+        "employeeSurname": "Pompies",
+        "employeeCellphone": "0791637273",
+        "employeeEmail": "piet.pompies@gmail.com",
+        "companyName": "Vast Expanse",
+        "website": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications"
+    }
   }`);
 
   /**
@@ -98,7 +99,7 @@ export class RequestModuleService {
       return this.loginStub;
     }
     else {
-      let json: JSON = JSON.parse(`{ "username": "${username}", "password": "${password}" }`);
+      let json: JSON = JSON.parse(`{ "username": "${username.trim()}", "password": "${password.trim()}" }`);
       return this.post(`${this.baseUrl}/app/login`, json);
     }
   }
@@ -112,7 +113,8 @@ export class RequestModuleService {
       return this.logoutStub;
     }
     else {
-      return this.get(`${this.baseUrl}/app/logout`);
+      //return this.get(`${this.baseUrl}/app/logout`);
+      return this.logoutStub;
     }
   }
 

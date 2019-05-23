@@ -46,14 +46,6 @@ describe('LoginTabPage', () => {
     expect(component.loggedIn).toBe(false);
   });
 
-  it('login should dissappear after successful login', () => {
-    component.username = 'admin';
-    component.password = 'password';
-    component.login();
-    expect(component.title).toBe("Menu");
-    expect(component.loggedIn).toBe(true);
-  });
-
   it('login should show after successful logout', () => {
     component.logout();
     expect(component.title).toBe("Login");

@@ -20,6 +20,7 @@
 import { TestBed } from '@angular/core/testing';
 import { RequestModuleService } from './request-module.service';
 import { HttpClientModule } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 describe('RequestModuleService', () => {
   beforeEach(() => TestBed.configureTestingModule({
@@ -68,24 +69,29 @@ describe('RequestModuleService', () => {
   it('login should return data from back-end', () => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = false;
-    throw Error("Not implemented yet");
+    (<Observable<object>>service.login("piet.pompies@gmail.com", "1234")).subscribe(res => {
+      expect(res).toBe(service.loginStub);
+    });
   });
 
   it('logout should return data from back-end', () => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = false;
-    throw Error("Not implemented yet");
+    expect(service.logout()).toBe(service.logoutStub);
   });
 
   it('getBusinessCard should return data from back-end', () => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = false;
-    throw Error("Not implemented yet");
+    (<Observable<object>>service.getBusinessCard(service.loginStub['data']['id'], service.loginStub['data']['apiKey'])).subscribe(res => {
+      expect(res).toBe(service.businessCardStub);
+    });
   });
 
   it('checkLoggedIn should return true if apiKey was the same as the loginStub', () => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
-    service.demoMode = false;
-    throw Error("Not implemented yet");
+    service.demoMode = true;
+    let res = service.login("piet.pompies@gmail.com", "1234");
+    expect(service.checkLoggedIn(res['data']['apiKey'])).toBe(service.loginStub);
   });
 });

@@ -73,8 +73,8 @@ export class BusinessCardsService {
    * @param location string Employee's branch location
    * @retun Promise returns promise from saving to storage
    */
-  setOwnBusinessCard({companyId, companyName, employeeName, contactNumber, email, website, location}) {
-    let businessCard: BusinessCard = this.createBusinessCard(companyId, companyName, employeeName, contactNumber, email, website, location);
+  setOwnBusinessCard({companyId, companyName, employeeTitle, employeeName, employeeSurname, employeeCellphone, employeeEmail, website, location}) {
+    let businessCard: BusinessCard = this.createBusinessCard(companyId, companyName, `${employeeTitle} ${employeeName} ${employeeSurname}`, employeeCellphone, employeeEmail, website, location);
     return this.storage.Save(this.ownBusinessCardKey, businessCard);
   }
 

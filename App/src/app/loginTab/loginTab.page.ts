@@ -22,6 +22,7 @@ import { BusinessCard } from '../models/business-card.model';
 import { BusinessCardsService } from '../business-cards.service';
 import { LocalStorageService } from '../local-storage.service';
 import { RequestModuleService } from '../request-module.service';
+import { Observable } from 'rxjs';
 
 /**
 * Purpose:	This class provides the login tab component
@@ -87,21 +88,24 @@ export class LoginTabPage implements OnInit {
       this.showError("Please enter a username and password.", this.messageTimeout);
       return;
     }
-    let res = this.req.login(this.username, this.password);
-    if (res['success'] === true) {
-      this.showSuccess(res['message'], this.messageTimeout);
-      this.username = "";
-      this.password = "";
-      this.loggedIn = true;
-      let apiKey = res['data']['apiKey'];
-      this.storage.Save(this.apiKeyName, apiKey);
-      let cardDetails = this.req.getBusinessCard(res['data']['employeeId'], apiKey)['data'];
-      this.cardService.setOwnBusinessCard(cardDetails);
-      this.updateTitle();
-    }
-    else {
-      this.showError(res['message'], this.messageTimeout);
-    }
+    (<Observable<object>>this.req.login(this.username, this.password)).subscribe(res => {
+      if (res['success'] === true) {
+        this.username = "";
+        this.password = "";
+        this.loggedIn = true;
+        let apiKey = res['data']['apiKey'];
+        this.storage.Save(this.apiKeyName, apiKey);
+        (<Observable<object>>this.req.getBusinessCard(res['data']['id'], apiKey)).subscribe(response => {
+          let cardDetails = response['data'];
+          this.cardService.setOwnBusinessCard(cardDetails);
+          this.updateTitle();
+        })
+        this.showSuccess(res['message'], this.messageTimeout);
+      }
+      else {
+        this.showError(res['message'], this.messageTimeout);
+      }
+    });
   }
 
   /**
@@ -125,7 +129,8 @@ export class LoginTabPage implements OnInit {
    * Function that checks if the user is already logged in when the app starts
    */
   private checkLoggedIn() {
-    if(this.apiKey === null || this.apiKey == '') {
+    this.loggedIn = false;
+    /*if(this.apiKey === null || this.apiKey == '') {
       this.loggedIn = false;
     }
     else {
@@ -136,7 +141,7 @@ export class LoginTabPage implements OnInit {
       else {
         this.loggedIn = false;
       }
-    }
+    }*/
     this.updateTitle();
   }
 

@@ -413,6 +413,9 @@ class SharedLogic
 		
 		this.from.res.statusCode = 200;
 		this.from.res.setHeader('Content-Type', 'application/json');
+		this.from.res.setHeader('Access-Control-Allow-Origin', '*');
+		this.from.res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+		this.from.res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With, Accept');
 		this.from.res.end(json);
 	}
 

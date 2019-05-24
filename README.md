@@ -8,7 +8,9 @@ Link will allow employees of companies to exchange virtual business cards with o
 
 Link also allows for an employee of a company to easily setup hosting for this visiting client, by allowing setup and sharing of temporary physical access into the offices, temporary guest WiFi access and temporary cards for in-house (in-office) cashless purchases for the client.
 #### Documents
-<a href="https://drive.google.com/open?id=1aXvuHdT08NugQ41IPRPf3ejZuNMxCK9g" target="_blank">SRS Document</a>
+<a href="https://drive.google.com/open?id=117krmXktY6nteFHLFlJUYwfYO1PNEL-e" target="_blank">SRS Document (Demo 1)</a>
+
+<a href="https://drive.google.com/open?id=1aXvuHdT08NugQ41IPRPf3ejZuNMxCK9g" target="_blank">SRS Document (Demo 2)</a>
 
 <a href="https://drive.google.com/open?id=1BeMIac5VKvBbbL0QCiJc8nr2GHKz21pA" target="_blank">Architectural Design and Justification Document</a>
 

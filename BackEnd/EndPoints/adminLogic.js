@@ -68,10 +68,10 @@ class AdminLogic
         {
             //Companies
             case "addCompany":
-                this.addCompany();  //TODO
+                this.addCompany();  //INTEGRATE
                 break;
             case "editCompany":
-                this.editCompany();//TODO
+                this.editCompany(); //INTEGRATE
                 break;
             case "deleteCompany":
                 this.deleteCompany();//TODO
@@ -119,7 +119,7 @@ class AdminLogic
 
             //Employees
             case "addEmployee":
-                this.addEmployee();//TODO
+                this.addEmployee();//INTEGRATE
                 break;
             case "addEmployees":
                 this.addEmployees();//TODO
@@ -171,19 +171,19 @@ class AdminLogic
 
         if(this.body.companyName === undefined){
             presentParams = true;
-            presentReturn += "name, ";
+            presentReturn += "companyName, ";
         }
         if(this.body.companyWebsite === undefined){
             presentParams = true;
-            presentReturn += "website, ";
+            presentReturn += "companyWebsite, ";
         }
         if(this.body.companyUsername === undefined){
             presentParams = true;
-            presentReturn += "username, ";
+            presentReturn += "companyUsername, ";
         }
         if(this.body.companyPassword === undefined){
             presentParams = true;
-            presentReturn += "password, ";
+            presentReturn += "companyPassword, ";
         }
 
         //check if the parameters are valid if parameters are present
@@ -192,19 +192,19 @@ class AdminLogic
             var invalidReturn = "";
             if(!this.sharedLogic.validateNonEmpty(this.body.companyName)){
                 invalidParams = true;
-                invalidReturn += "name, ";
+                invalidReturn += "companyName, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.companyWebsite)){
                 invalidParams = true;
-                invalidReturn += "website, ";
+                invalidReturn += "companyWebsite, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.companyUsername)){
                 invalidParams = true;
-                invalidReturn += "username, ";
+                invalidReturn += "companyUsername, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.companyPassword)){
                 invalidParams = true;
-                invalidReturn += "password, ";
+                invalidReturn += "companyPassword, ";
             }
             //if parameters are valid then execute function
             if(!invalidParams){
@@ -256,7 +256,93 @@ class AdminLogic
         this.sharedLogic.endServe(success, message, data);
     }
 
-    editCompany(){}
+    /**
+     *  Function that is called to edit a companies details
+     *  @param companyId
+     *  @param companyName
+     *  @param companyWebsite
+     *  @param companyUsername
+     *
+     *  @return JSON {
+     *                  companyId : int The company ID that has just be edited
+     *               }
+     */
+    editCompany(){
+        var message;
+        var data = new Object();
+        var success;
+
+        //check to see if parameters are present
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(this.body.companyId === undefined){
+            presentParams = true;
+            presentReturn += "companyId, ";
+        }
+        if(this.body.companyName === undefined){
+            presentParams = true;
+            presentReturn += "companyName, ";
+        }
+        if(this.body.companyWebsite === undefined){
+            presentParams = true;
+            presentReturn += "companyWebsite, ";
+        }
+        if(this.body.companyUsername === undefined){
+            presentParams = true;
+            presentReturn += "companyWebsite, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
+                invalidParams = true;
+                invalidReturn += "companyId, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyName)){
+                invalidParams = true;
+                invalidReturn += "companyName, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyWebsite)){
+                invalidParams = true;
+                invalidReturn += "companyWebsite, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyUsername)){
+                invalidParams = true;
+                invalidReturn += "companyUsername, ";
+            }
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.companyId = this.body.companyId;
+                    message = this.body.companyName + " edited! - Mock";
+                    success = true;
+                }
+                else{
+                    //return data from crudController
+                    success = false;
+                    message = "Edit Company not integrated yet";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+
+    }
 
     deleteCompany(){}
 
@@ -284,18 +370,18 @@ class AdminLogic
 
     getRooms(){}
 
-
     /**
      * Function that is called to create an employee, will use SharedLogic's crudController in order
      * to complete the operation. It will create an Employee belonging to the Company ID passed in through
      * the parameter
      *
-     * @param   employeeFirstName string The name of the employee
+     * @param   employeeName string The name of the employee
      * @param   employeeSurname string The surname of the employee
      * @param   employeeTitle string The Title of the employee e.g Mr/Mrs
      * @param   employeeCellphone string The Cellphone number of the employee
      * @param   employeeEmail string The email address of the employee - used for login purposes
      * @param   companyId int The ID of the company to which the employee is being added to
+     * @param   buildingId int The building that the employee works at
      * @param   employeePassword string The Password chosen by the employee - for login purposes
      *
      * @return JSON {
@@ -311,65 +397,73 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.employeeFirstName === undefined){
+        if(this.body.employeeName === undefined){
             presentParams = true;
-            presentReturn += "firstName, ";
+            presentReturn += "employeeName, ";
         }
         if(this.body.employeeSurname === undefined){
             presentParams = true;
-            presentReturn += "surname, ";
+            presentReturn += "employeeSurname, ";
         }
         if(this.body.employeeTitle === undefined){
             presentParams = true;
-            presentReturn += "title, ";
+            presentReturn += "employeeTitle, ";
         }
         if(this.body.employeeCellphone === undefined){
             presentParams = true;
-            presentReturn += "cellphone, ";
+            presentReturn += "employeeCellphone, ";
         }
         if(this.body.employeeEmail === undefined){
             presentParams = true;
-            presentReturn += "email, ";
+            presentReturn += "employeeEmail, ";
         }
         if(this.body.companyId === undefined){
             presentParams = true;
             presentReturn += "companyId, ";
         }
+        if(this.body.buildingId === undefined){
+            presentParams = true;
+            presentReturn += "buildingId, ";
+        }
         if(this.body.employeePassword === undefined){
             presentParams = true;
-            presentReturn += "password, ";
+            presentReturn += "employeePassword, ";
         }
         //if parameters are present, validate if correct format
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.employeeFirstName) || !this.sharedLogic.validateAlpha(this.body.employeeFirstName)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeName) || !this.sharedLogic.validateAlpha(this.body.employeeName)){
                 invalidParams = true;
-                invalidReturn += "firstName, ";
+                invalidReturn += "employeeName, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.employeeSurname) || !this.sharedLogic.validateAlpha(this.body.employeeSurname)){
                 invalidParams = true;
-                invalidReturn += "surname, ";
+                invalidReturn += "employeeSurname, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.employeeTitle)){
                 invalidParams = true;
-                invalidReturn += "title, ";
+                invalidReturn += "employeeTitle, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.employeeCellphone) || !this.sharedLogic.validateCellphone(this.body.employeeCellphone)){
                 invalidParams = true;
-                invalidReturn += "cellphone, ";
+                invalidReturn += "employeeCellphone, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.employeeEmail) || !this.sharedLogic.validateEmail(this.body.employeeEmail)){
                 invalidParams = true;
-                invalidReturn += "email, ";
+                invalidReturn += "employeeEmail, ";
             }
             if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
                 invalidParams = true;
                 invalidReturn += "companyId, ";
             }
+            if(!this.sharedLogic.validateNonEmpty(this.body.buildingId) || !this.sharedLogic.validateNumeric(this.body.buildingId)){
+                invalidParams = true;
+                invalidReturn += "buildingId, ";
+            }
             if(!this.sharedLogic.validateNonEmpty(this.body.employeePassword)){
                 invalidParams = true;
-                invalidReturn += "password, ";
+                invalidReturn += "employeePassword, ";
             }
             //if valid parameters then execute function
             if(!invalidParams){
@@ -386,7 +480,7 @@ class AdminLogic
 
                     if(passwordId.success){
 
-                        var employeeId = this.sharedLogic.crudController.createEmployee(this.body.employeeFirstName, this.body.employeeSurname,
+                        var employeeId = this.sharedLogic.crudController.createEmployee(this.body.employeeName, this.body.employeeSurname,
                             this.body.employeeTitle, this.body.employeeCellphone,
                             this.body.employeeEmail, this.body.companyId,
                             passwordId.data.passwordId);

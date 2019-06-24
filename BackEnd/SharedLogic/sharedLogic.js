@@ -136,7 +136,7 @@ class SharedLogic
 		}
 		else
 		{
-			this.crudController.apiKey = this.from.body.apiKey;
+			this.crudController.initialize(this.from.body.apiKey);
 			this.extractEndpoint();
 		}
 	}

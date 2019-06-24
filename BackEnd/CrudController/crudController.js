@@ -27,6 +27,10 @@
 *	@author:	Savvas Panagiotou
 *	@version:	1.0
 */
+
+const { Pool, Client } = require('pg');
+
+
 class CrudController {
 
     /**
@@ -35,7 +39,40 @@ class CrudController {
     constructor() {
         this.demoMode = true;
 		this.apiKey = null;
+		this.isEmployee = true;
+		
+		this.client = new Client({
+		  user: 'postgres',
+		  host: 'localhost',
+		  database: 'link',
+		  password: 'nbuser',
+		  port: 5432,
+		});
+		
+		this.client.connect();
+		
+		/*this.client.query('SELECT * FROM client WHERE macaddress = $1', [cientID], 
+		(err, res) => {
+			if (err) 
+			{
+				console.log(err.stack);
+			} 
+			else 
+			{
+				console.log(res);
+			}
+			this.client.end();
+		});*/
     }
+	
+	
+	initialize(apiKey)
+	{
+		
+	}
+	
+	
+	
     /**
      * Create a company with the specified name, website and password ID
      * @param name The name of the company

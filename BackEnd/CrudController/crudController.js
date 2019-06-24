@@ -34,6 +34,7 @@ class CrudController {
      */
     constructor() {
         this.demoMode = true;
+		this.apiKey = null;
     }
     /**
      * Create a company with the specified name, website and password ID
@@ -329,6 +330,90 @@ class CrudController {
     deletePassword(id) {
         return this.buildDefaultResponseObject(false, "Unimplemented", true);
     }
+	
+	
+	//Company
+	
+	
+	
+	
+	
+	
+	//Building
+	
+	
+	
+	
+	
+	//Password
+	
+	
+	
+	
+	
+	//Room
+	
+	
+	
+	
+	//NFCAccessPoints
+	
+	
+	
+	
+	
+	//Employee
+	
+	
+	
+	
+	//Client
+	
+	
+	
+	//WiFiParams
+	
+	
+	
+	
+	//TempWifiAccess
+	
+	
+	
+	
+	//VisitorPackage
+	
+	
+	
+	
+	//TPA
+	
+	
+	
+	
+	
+	//TPAxRoom
+	
+	
+	
+	
+	//Wallet
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
     /**
      * Constructs an object complies with the standard response format and which is used by all response methods in this class

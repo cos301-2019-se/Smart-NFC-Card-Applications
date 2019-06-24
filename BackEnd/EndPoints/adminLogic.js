@@ -74,10 +74,10 @@ class AdminLogic
                 this.editCompany(); //INTEGRATE
                 break;
             case "deleteCompany":
-                this.deleteCompany();//TODO
+                this.deleteCompany();//INTEGRATE - DONT DO
                 break;
             case "getCompany":
-                this.getCompany();//TODO
+                this.getCompany();//INTEGRATE
                 break;
             case "getCompanies":
                 this.getCompanies();//TODO
@@ -344,9 +344,127 @@ class AdminLogic
 
     }
 
-    deleteCompany(){}
+    /**
+     *  This function is used by the Link admin to delete an existing company
+     *
+     *  @param companyId int The company to be deleted
+     *
+     *  @return JSON {
+     *                  companyId : int The ID of the company just deleted
+     *               }
+     */
+    deleteCompany(){
+        var message;
+        var data = new Object();
+        var success;
 
-    getCompany(){}
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(this.body.companyId === undefined){
+            presentParams = true;
+            presentReturn += "companyId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
+                invalidParams = true;
+                invalidReturn += "companyId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.companyId = this.body.companyId;
+                    message = "Deleted! - Mock";
+                    success = true;
+                }
+                else{
+                    //return data from crudController
+                    success = false;
+                    message = "Delete Company not implemented";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     * @param companyId
+     *
+     * @return JSON {
+     *                  //TODO
+     *              }
+     */
+    getCompany(){
+        var message;
+        var data = new Object();
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(this.body.companyId === undefined){
+            presentParams = true;
+            presentReturn += "companyId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
+                invalidParams = true;
+                invalidReturn += "companyId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.companyName = "Vast Expanse";
+                    data.website = "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications";
+                    data.companyId = this.body.companyId;
+                    data.passwordId = 0;
+                    message = "Retrieved "+data.companyName+"! - Mock";
+                    success = true;
+                }
+                else{
+                    //return data from crudController
+                    success = false;
+                    message = "Get Company not implemented";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);}
 
     getCompanies(){}
 

@@ -11,6 +11,7 @@
  *	-----------------------------------------------------------------------------------------
  *	2019/05/19	Duncan		1.0		Original
  *  2019/05/22  Tjaart      1.1     Fixed require filename - sharedLogic.js
+ *  2019/06/24  Duncan      2.0     Started functions for demo 3
  *
  *	Functional Description:		 This class is used by our Link Admin Application in order
  *	                            to facilitate all operations needed for the correct operation
@@ -65,12 +66,82 @@ class AdminLogic
     serve(){
         switch(this.endpoint)
         {
+            //Companies
             case "addCompany":
-                this.addCompany();
+                this.addCompany();  //TODO
                 break;
+            case "editCompany":
+                this.editCompany();//TODO
+                break;
+            case "deleteCompany":
+                this.deleteCompany();//TODO
+                break;
+            case "getCompany":
+                this.getCompany();//TODO
+                break;
+            case "getCompanies":
+                this.getCompanies();//TODO
+                break;
+
+            //Buildings
+            case "addBuilding":
+                this.addBuilding();//TODO
+                break;
+            case "editBuilding":
+                this.editBuilding();//TODO
+                break;
+            case "deleteBuilding":
+                this.deleteBuilding();//TODO
+                break;
+            case "getBuilding":
+                this.getBuilding();//TODO
+                break;
+            case "getBuildings":
+                this.getBuildings();//TODO
+                break;
+
+            //Rooms
+            case "addRoom":
+                this.addRooms();//TODO
+                break;
+            case "editRoom":
+                this.editRooms();//TODO
+                break;
+            case "deleteRoom":
+                this.deleteRooms();//TODO
+                break;
+            case "getRoom":
+                this.getRoom();//TODO
+                break;
+            case "getRooms":
+                this.getRooms();//TODO
+                break;
+
+            //Employees
             case "addEmployee":
-                this.addEmployee();
+                this.addEmployee();//TODO
                 break;
+            case "addEmployees":
+                this.addEmployees();//TODO
+                break;
+            case "editEmployee":
+                this.editEmployees();//TODO
+                break;
+            case "deleteEmployee":
+                this.deleteEmployee();//TODO
+                break;
+            case "getEmployee":
+                this.getEmployee();//TODO
+                break;
+            case "getEmployees":
+                this.getEmployees();//TODO
+                break;
+
+            //password
+            case "editPassword":
+                this.editPassword();//TODO
+                break;
+
             default:
                 this.sharedLogic.endServe(false, "Invalid Endpoint", null);
         }

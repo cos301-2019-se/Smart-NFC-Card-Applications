@@ -102,13 +102,13 @@ class AdminLogic
 
             //Rooms
             case "addRoom":
-                this.addRooms();//TODO
+                this.addRoom();//TODO
                 break;
             case "editRoom":
-                this.editRooms();//TODO
+                this.editRoom();//TODO
                 break;
             case "deleteRoom":
-                this.deleteRooms();//TODO
+                this.deleteRoom();//TODO
                 break;
             case "getRoom":
                 this.getRoom();//TODO
@@ -125,7 +125,7 @@ class AdminLogic
                 this.addEmployees();//TODO
                 break;
             case "editEmployee":
-                this.editEmployees();//TODO
+                this.editEmployee();//TODO
                 break;
             case "deleteEmployee":
                 this.deleteEmployee();//TODO
@@ -255,6 +255,35 @@ class AdminLogic
         }
         this.sharedLogic.endServe(success, message, data);
     }
+
+    editCompany(){}
+
+    deleteCompany(){}
+
+    getCompany(){}
+
+    getCompanies(){}
+
+    addBuilding(){}
+
+    editBuilding(){}
+
+    deleteBuilding(){}
+
+    getBuilding(){}
+
+    getBuildings(){}
+
+    addRoom(){}
+
+    editRoom(){}
+
+    deleteRoom(){}
+
+    getRoom(){}
+
+    getRooms(){}
+
 
     /**
      * Function that is called to create an employee, will use SharedLogic's crudController in order
@@ -395,6 +424,18 @@ class AdminLogic
         }
         this.sharedLogic.endServe(success, message, data);
     }
+
+    addEmployees(){}
+
+    editEmployee(){}
+
+    deleteEmployee(){}
+
+    getEmployee(){}
+
+    getEmployees(){}
+
+    editPassword(){}
 
 }
 

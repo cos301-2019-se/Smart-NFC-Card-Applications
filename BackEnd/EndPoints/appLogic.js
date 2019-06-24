@@ -10,6 +10,7 @@
  *	Date		Author		Version		Changes
  *	-----------------------------------------------------------------------------------------
  *	2019/05/19	Tjaart		1.0		    Original
+ *  2019/06/24  Tjaart      2.0         Added functions
  *
  *	Functional Description:	This class handles the functionality that will be requested by the
  *                          application to the backend system. It handles functionality like
@@ -61,9 +62,41 @@ class AppLogic{
      */
     serve(){
         switch(this.endpoint){
+            // Business Card
             case "getBusinessCard":
-                this.getBusinessCard();
+                this.getBusinessCard();     // INTEGRATE
                 break;
+            // Client
+            case "addClient":
+                this.addClient();           // TODO
+                break;
+            case "editClient":
+                this.editClient();          // TODO
+                break;
+            case "getClient":
+                this.getClient();           // TODO
+                break;
+            case "deleteClient":
+                this.deleteClient();        // TODO
+                break;
+            // WIFI
+            case "addTempWifi":
+                this.addTempWifi();         // TODO
+                break;
+            case "editTempWifi":
+                this.editTempWifi();        // TODO
+                break;
+            case "getTempWifi":
+                this.getTempWifi();         // TODO
+                break;
+            case "deleteTempWifi":
+                this.deleteTempWifi();      // TODO
+                break;
+            // TPA
+
+            // Wallet
+
+            // Visitor Package
             default:
                 this.sharedLogic.endServe(false, "Invalid Endpoint", null);
         }
@@ -83,6 +116,8 @@ class AppLogic{
      *                  companyName: string Name of the company
      *                  website: string Link to the company's website
      *               }
+     *
+     *  @TODO Integrate with CrudController and Application
      */
     getBusinessCard(){
         let success;
@@ -129,15 +164,27 @@ class AppLogic{
                         let companyData = this.sharedLogic.crudController.getCompany(employeeData.data.companyId);
 
                         if(companyData.success){
-                            success = true;
-                            message = "Business card information loaded successfully";
-                            data.employeeTitle = employeeData.data.employeeTitle;
-                            data.employeeName = employeeData.data.employeeName;
-                            data.employeeSurname = employeeData.data.employeeSurname;
-                            data.employeeCellphone = employeeData.data.employeeCellphone;
-                            data.employeeEmail = employeeData.data.employeeEmail;
-                            data.companyName = companyData.data.companyName;
-                            data.website = companyData.data.website;
+                            let buildingData = this.sharedLogic.crudController.getBuilding(employeeData.data.buildingId);
+
+                            if(buildingData.success){
+                                success = true;
+                                message = "Business card information loaded successfully";
+                                data.companyName = companyData.data.companyName;
+                                data.companyWebsite = companyData.data.companyWebsite;
+                                data.branchName = buildingData.data.branchName;
+                                data.latitude = buildingData.data.latitude;
+                                data.longitude = buildingData.data.longitude;
+                                data.employeeName = employeeData.data.employeeName;
+                                data.employeeSurname = employeeData.data.employeeSurname;
+                                data.employeeTitle = employeeData.data.employeeTitle;
+                                data.employeeCellphone = employeeData.data.employeeCellphone;
+                                data.employeeEmail = employeeData.data.employeeEmail;
+                            }
+                            else{
+                                success = companyData.success;
+                                message = companyData.message;
+                                data = companyData.data;
+                            }
                         }
                         else{
                             success = companyData.success;
@@ -165,8 +212,142 @@ class AppLogic{
             message = message.slice(0, message.length-2);
             data = null;
         }
-
         this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     *  Function that creates a new client and adds it to the database
+     *
+     *  @param macAddress string Mac Address of clients device
+     *
+     *  @return JSON {
+     *                  clientId: int ID for client
+     *               }
+     */
+    addClient() {
+        let success;
+        let message;
+        let data = {};
+
+        // check to see if parameters are present
+        let presentParams = false;
+        let presentReturn = "";
+
+        if (this.body.macAddress === undefined) {
+            presentParams = true;
+            presentReturn += "macAddress, ";
+        }
+
+        // check if the parameters are valid if present
+        if (!presentParams) {
+            let invalidParams = false;
+            let invalidReturn = "";
+
+            if (!this.sharedLogic.validateNonEmpty(this.body.employeeId) || !this.sharedLogic.validateNumeric(this.body.employeeId)) {
+                invalidParams = true;
+                invalidReturn += "employeeId, ";
+            }
+
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: " + presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     *  Function to edit a clients details
+     *
+     *  @param clientId int ID of client
+     *
+     *  @return JSON {
+     *                  clientId: int ID of client
+     *               }
+     */
+    editClient(){
+
+    }
+
+    /**
+     *  Function to return a client object
+     *
+     *  @param clientId int ID of client
+     *
+     *  @return JSON {
+     *
+     *               }
+     */
+    getClient(){
+
+    }
+
+    /**
+     *  Function to delete a client from the database
+     *
+     *  @param clientId int ID of client
+     *
+     *  @return JSON {
+     *                  clientId: int ID of client
+     *               }
+     */
+    deleteClient(){
+
+    }
+
+    /**
+     *  Function to add temporary wifi access
+     *
+     *  @param wifiAccessParamsId int ID of WiFi access point
+     *
+     *  @return JSON {
+     *                  wifiTempAccessId: int ID of temporary wifi access detail
+     *               }
+     */
+    addTempWifi(){
+
+    }
+
+    /**
+     *  Function to edit temporary wifi access
+     *
+     *  @param wifiAccessParamsId int ID of WiFi access point
+     *  @param wifiTempAccessId int ID of temporary wifi access
+     *
+     *  @return JSON {
+     *                  wifiTempAccessId: int ID of temporary wifi access
+     *               }
+     */
+    editTempWifi(){
+
+    }
+
+    /**
+     *  Function to get temporary wifi access
+     *
+     *  @param wifiTempAccessId int ID of temporary wifi access
+     *
+     *  @return JSON {
+     *
+     *               }
+     */
+    getTempWifi(){
+
+    }
+
+    /**
+     *  Function to delete temporary wifi access
+     *
+     *  @param wifiTempAccess int ID of temporary wifi access
+     *
+     *  @return JSON {
+     *                  wifiTempAccess: int ID of temporary wifi access
+     *               }
+     */
+    deleteTempWifi(){
+
     }
 }
 

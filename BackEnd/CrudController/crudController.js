@@ -55,7 +55,8 @@ class CrudController {
 		(err, res) => {
 			if (err) 
 			{
-				console.log(err.stack);
+                console.log(err.stack);
+                return returnDatabaseError(err);
 			} 
 			else 
 			{
@@ -68,10 +69,12 @@ class CrudController {
 	
 	initialize(apiKey)
 	{
-		
+		///////////////////////////////////////////////////////////// TODO
 	}
-	
-	
+    
+    returnDatabaseError(errorMessage){
+       return buildDefaultResponseObject(false, "Database query failed: " + errorMessage , true);
+    }
 	
     /**
      * Create a company with the specified name, website and password ID
@@ -372,75 +375,114 @@ class CrudController {
 	//Company
 	
 	
-	
+    //CR
+
+    //UD
 	
 	
 	
 	//Building
 	
 	
+    //CR
+    
+    //UD
 	
 	
 	
 	//Password
 	
 	
+    //CR
+    
+    //UD
 	
 	
 	
 	//Room
 	
+    //CR
+    
+    //UD
 	
 	
 	
 	//NFCAccessPoints
 	
 	
+    //CR
+    
+    //UD
 	
 	
 	
 	//Employee
 	
+    //CR
+    
+    //UD
 	
 	
 	
 	//Client
 	
+    //CR
+    
+    //UD
 	
 	
 	//WiFiParams
 	
 	
+    //CR
+    
+    //UD
 	
 	
 	//TempWifiAccess
 	
 	
+    //CR
+    
+    //UD
 	
 	
 	//VisitorPackage
 	
-	
+    //CR
+    
+    //UD
 	
 	
 	//TPA
 	
 	
+    //CR
+    
+    //UD
 	
 	
 	
-	//TPAxRoom
-	
+    //TPAxRoom
+    
+    //CR
+    
+    //UD
 	
 	
 	
 	//Wallet
 	
+    //CR
+    
+    //UD
 	
 	
-	
-	
-	
+
+    //Jared Helpers
+    
+    
+    //Savva Helpers
 	
 	
 	

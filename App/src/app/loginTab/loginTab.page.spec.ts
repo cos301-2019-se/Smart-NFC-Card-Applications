@@ -6,9 +6,9 @@ import { LoginTabPage } from './loginTab.page';
 import { IonicStorageModule } from '@ionic/storage';
 import { HttpClientModule } from '@angular/common/http';
 
-import { BusinessCardsService } from '../business-cards.service';
-import { LocalStorageService } from '../local-storage.service';
-import { RequestModuleService } from '../request-module.service';
+import { BusinessCardsService } from '../services/business-cards.service';
+import { LocalStorageService } from '../services/local-storage.service';
+import { RequestModuleService } from '../services/request-module.service';
 
 describe('LoginTabPage', () => {
   let component: LoginTabPage;

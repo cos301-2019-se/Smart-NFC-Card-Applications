@@ -14,9 +14,9 @@ import { Platform } from '@ionic/angular';
 import { HttpClientModule } from '@angular/common/http';
 
 import { IonicStorageModule } from '@ionic/storage';
-import { LocalStorageService } from './local-storage.service';
-import { BusinessCardsService } from './business-cards.service';
-import { NfcControllerService } from './nfc-controller.service';
+import { LocalStorageService } from './services/local-storage.service';
+import { BusinessCardsService } from './services/business-cards.service';
+import { NfcControllerService } from './services/nfc-controller.service';
 
 @NgModule({
   declarations: [AppComponent],

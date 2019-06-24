@@ -6,10 +6,10 @@ import { Tab2Page } from './tab2.page';
 import { NFC, Ndef } from '@ionic-native/nfc/ngx';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 
-import { NfcControllerService } from '../nfc-controller.service';
+import { NfcControllerService } from '../services/nfc-controller.service';
 import { IonicStorageModule } from '@ionic/storage';
-import { BusinessCardsService } from '../business-cards.service';
-import { LocalStorageService } from '../local-storage.service';
+import { BusinessCardsService } from '../services/business-cards.service';
+import { LocalStorageService } from '../services/local-storage.service';
 
 describe('Tab2Page', () => {
   let component: Tab2Page;

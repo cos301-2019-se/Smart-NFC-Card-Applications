@@ -19,9 +19,9 @@
 
 import { Component, OnInit } from '@angular/core';
 import { BusinessCard } from '../models/business-card.model';
-import { BusinessCardsService } from '../business-cards.service';
-import { LocalStorageService } from '../local-storage.service';
-import { RequestModuleService } from '../request-module.service';
+import { BusinessCardsService } from '../services/business-cards.service';
+import { LocalStorageService } from '../services/local-storage.service';
+import { RequestModuleService } from '../services/request-module.service';
 import { Observable } from 'rxjs';
 
 /**

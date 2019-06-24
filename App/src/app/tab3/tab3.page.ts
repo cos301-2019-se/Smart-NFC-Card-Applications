@@ -18,9 +18,9 @@
 */
 
 import { Component } from '@angular/core';
-import { BusinessCardsService } from '../business-cards.service';
+import { BusinessCardsService } from '../services/business-cards.service';
 import { BusinessCard } from '../models/business-card.model';
-import { NfcControllerService } from '../nfc-controller.service';
+import { NfcControllerService } from '../services/nfc-controller.service';
 
 /**
 * Purpose:	This class provides the component that allows viewing of shared cards as well as adding new ones

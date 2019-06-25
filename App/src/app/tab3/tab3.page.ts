@@ -10,6 +10,7 @@
 *	Date		    Author		Version		Changes
 *	-----------------------------------------------------------------------------------------
 *	2019/05/19	Wian		  1.0		    Original
+*	2019/06/25	Wian		  1.1		    Added changes to allow navigation on tap of location
 *
 *	Functional Description:   This file provides the component that allows viewing shared cards
 *	Error Messages:   “Error”
@@ -26,7 +27,7 @@ import { NfcControllerService } from '../services/nfc-controller.service';
 * Purpose:	This class provides the component that allows viewing of shared cards as well as adding new ones
 *	Usage:		This component can be used to view and add business cards to a locally stored list
 *	@author:	Wian du Plooy
-*	@version:	1.0
+*	@version:	1.1
 */
 @Component({
   selector: 'app-tab3',

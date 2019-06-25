@@ -102,16 +102,16 @@ class AdminLogic
 
             //Rooms
             case "addRoom":
-                this.addRoom();//TODO
+                this.addRoom();//INTEGRATE
                 break;
             case "editRoom":
-                this.editRoom();//TODO
+                this.editRoom();//INTEGRATE
                 break;
             case "deleteRoom":
-                this.deleteRoom();//TODO
+                this.deleteRoom();//INTEGRATE - DONT DO
                 break;
             case "getRoom":
-                this.getRoom();//TODO
+                this.getRoom();//INTEGRATE
                 break;
             case "getRooms":
                 this.getRooms();//TODO
@@ -731,12 +731,12 @@ class AdminLogic
     }
 
     /**
-     *  This function is used by the company admin to delete an existing company
+     *  This function is used by the company admin to delete an existing building
      *
      *  @param buildingId int The building to be deleted
      *
      *  @return JSON {
-     *                  building : int The ID of the building just deleted
+     *                  buildingId : int The ID of the building just deleted
      *               }
      */
     deleteBuilding(){
@@ -825,8 +825,9 @@ class AdminLogic
             if(!invalidParams){
                 if(this.demoMode){
                     //return mock data
-                    message = "Building Retrieved! - Mock";
-                    success = true;
+                    success = false;
+                    message = "Get Building body not known";
+                    data = null;
                 }
                 else{
                     //return data from crudController
@@ -877,15 +878,313 @@ class AdminLogic
         this.sharedLogic.endServe(success, message, data);
     }
 
-    addRoom(){}
+    /**
+     * This Function used to add a room to a specific buildings
+     *
+     * @param roomName string The name of the room being added
+     * @param parentRoomList string A comma separated list of the rooms preceding the room being added
+     * @param buildingId int the building
+     *
+     * @return JSON {
+     *                  roomId
+     *              }
+     */
+    addRoom(){
+        var message;
+        var data = new Object();
+        var success;
 
-    editRoom(){}
+        var presentParams = false;
+        var presentReturn = "";
 
-    deleteRoom(){}
+        if(this.body.roomName === undefined){
+            presentParams = true;
+            presentReturn += "roomName, ";
+        }
+        if(this.body.parentRoomList === undefined){
+            presentParams = true;
+            presentReturn += "parentRoomList, ";
+        }
+        if(this.body.buildingId === undefined){
+            presentParams = true;
+            presentReturn += "buildingId, ";
+        }
 
-    getRoom(){}
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.roomName)){
+                invalidParams = true;
+                invalidReturn += "roomName, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.parentRoomList)){
+                invalidParams = true;
+                invalidReturn += "parentRoomList, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.buildingId) || !this.sharedLogic.validateNumeric(this.body.buildingId)){
+                invalidParams = true;
+                invalidReturn += "buildingId, ";
+            }
 
-    getRooms(){}
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.roomId = 0;
+                    message = "Room added! - Mock";
+                    success = true;
+                }
+                else{
+                    //return data from crudController
+                    success = false;
+                    message = "Add Room not integrated";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     * This Function will be used to edit a room belonging to a building
+     *
+     * @param roomId int The ID of the room to be changed
+     * @param roomName string The new name of the room being changed
+     * @param parentRoomList string a comma separated list of the parent rooms
+     *
+     * @return JSON {
+     *                  roomId int The ID of the room just changed
+     *              }
+     */
+    editRoom(){
+        var message;
+        var data = new Object();
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(this.body.roomId === undefined){
+            presentParams = true;
+            presentReturn += "roomId, ";
+        }
+        if(this.body.roomName === undefined){
+            presentParams = true;
+            presentReturn += "roomName, ";
+        }
+        if(this.body.parentRoomList === undefined){
+            presentParams = true;
+            presentReturn += "parentRoomList, ";
+        }
+
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.roomId) || !this.sharedLogic.validateNumeric(this.body.roomId)){
+                invalidParams = true;
+                invalidReturn += "roomId, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.roomName)){
+                invalidParams = true;
+                invalidReturn += "roomName, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.parentRoomList)){
+                invalidParams = true;
+                invalidReturn += "parentRoomList, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.roomId = this.body.roomId;
+                    message = "Room edited! - Mock";
+                    success = true;
+                }
+                else{
+                    //return data from crudController
+                    success = false;
+                    message = "Edit Room not integrated";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     *  This function is used by the company admin to delete an existing room
+     *
+     *  @param roomId int The room to be deleted
+     *
+     *  @return JSON {
+     *                  roomId : int The ID of the room just deleted
+     *               }
+     */
+    deleteRoom(){
+        var message;
+        var data = new Object();
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(this.body.roomId === undefined){
+            presentParams = true;
+            presentReturn += "roomId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.roomId) || !this.sharedLogic.validateNumeric(this.body.roomId)){
+                invalidParams = true;
+                invalidReturn += "roomId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.roomId = this.body.roomId;
+                    message = "Building Deleted! - Mock";
+                    success = true;
+                }
+                else{
+                    //return data from crudController
+                    success = false;
+                    message = "Delete room not implemented";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     * This function will be used to return a single Room object
+     *
+     * @param roomId int The Room ID used to get the Room object
+     *
+     * @return JSON {
+     *                  //TODO
+     *              }
+     */
+    getRoom(){
+        var message;
+        var data = new Object();
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(this.body.roomId === undefined){
+            presentParams = true;
+            presentReturn += "roomId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.roomId) || !this.sharedLogic.validateNumeric(this.body.roomId)){
+                invalidParams = true;
+                invalidReturn += "roomId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    success = false;
+                    message = "Get Room body not known";
+                    data = null;
+                }
+                else{
+                    //return data from crudController
+                    success = false;
+                    message = "Get Room not integrated";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     * This function will be used to retrieve all the buildings belonging to a certain company
+     *
+     * @return JSON {
+     *                  //TODO
+     *              }
+     */
+    getRooms(){
+        var message;
+        var success;
+        var data = new Object();
+        if(this.demoMode){
+            //return mock data
+            success = false;
+            message = "Get Rooms body not known";
+            data = null;
+        }
+        else{
+            //return data from crudController
+            success = false;
+            message = "Get Rooms not integrated";
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
 
     /**
      * Function that is called to create an employee, will use SharedLogic's crudController in order

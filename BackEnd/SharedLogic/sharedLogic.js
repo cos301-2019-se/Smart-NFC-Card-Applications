@@ -123,13 +123,63 @@ class SharedLogic
      */
 	validateBody()
 	{
+		/*
+		var me = this;
 		
-		
-		
-		
-		//var id = this.crudController.createCompany("Cool", "www.blah.co.za", 1);
-		
-		//console.log("id is: " + id);
+		me.crudController.createPassword("username",'hash','salt','apiKey','2019-06-26 18:00:00.123', function(passwordId)
+		{
+			console.log(passwordId);
+			me.crudController.createClient("macaddress", function(clientId)
+			{
+				console.log(clientId);
+				me.crudController.createWallet(300.0,100.0,function(linkWalletId)
+				{
+					console.log(linkWalletId);
+					me.crudController.createTPA(function(tpaId)
+					{
+						console.log(tpaId);
+						me.crudController.createCompany('companyName','companyWebsite',passwordId.data.passwordId,function(companyId)
+						{
+							console.log(companyId);
+							me.crudController.createWiFiParams('ssid','networkType','password',function(wifiParamsId)
+							{
+								console.log(wifiParamsId);
+								me.crudController.createBuilding('latitude','longitude','branchName',companyId.data.companyId,wifiParamsId.data.wifiParamsId,function(buildingId)
+								{
+									console.log(buildingId);
+									me.crudController.createRoom('roomName','parentRoomList',buildingId.data.buildingId,function(roomId)
+									{
+										console.log(roomId);
+										me.crudController.createNFCAccessPoints(roomId.data.roomId,function(nfcReaderId)
+										{
+											console.log(nfcReaderId);
+											me.crudController.createTempWifiAccess(wifiParamsId.data.wifiParamsId,function(tempWifiAccessId)
+											{
+												console.log(tempWifiAccessId);
+												me.crudController.createTPAxRoom(tpaId.data.tpaId,roomId.data.roomId,function(tpaxroomId)
+												{
+													console.log(tpaxroomId);
+													me.crudController.createEmployee('firstName','surname','title','cellphone','email',companyId.data.companyId,buildingId.data.buildingId,passwordId.data.passwordId,function(employeeId)
+													{
+														console.log(employeeId);
+														me.crudController.createVisitorPackage(null,null,linkWalletId.data.linkWalletId,employeeId.data.employeeId,clientId.data.clientId,'2019-06-26 12:00:00.123','2019-06-26 19:00:00.123',function(visitorPackageId)
+														{
+															console.log(visitorPackageId);
+															
+														});
+													});
+												});
+											});
+										});
+									});
+								});
+							});
+						});
+					});
+				});
+			});
+		});
+		*/
 		
 			
 		

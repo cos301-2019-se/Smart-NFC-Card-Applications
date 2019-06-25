@@ -63,303 +63,7 @@ class CrudController {
     returnDatabaseError(errorMessage){
        return this.buildDefaultResponseObject(false, "Database query failed: " + errorMessage , true);
     }
-	
-    /**
-     * Create a company with the specified name, website and password ID
-     * @param name The name of the company
-     * @param website The website of the company
-     * @param passwordId The password ID of the company
-     * @return JSON {
-     *                  success : boolean The success status of the response
-     *                  message : string The message associated with the response
-     *                  data : { 
-     *                   companyId : int The ID of the company being added
-     *                   }
-     *               }
-     *        
-     */
-	 /*
-    createCompany(name, website, passwordId) {
-        var response;
-        if (this.validateNonEmpty(name) && this.validateWebsite(website) && this.validateNumeric(passwordId)) {
-            if (this.demoMode) {
-                response = this.buildDefaultResponseObject(true, "Company Creation Successful", false, false);
-                response.data.companyId = 0;
-            } else {
-                // fetch from database
-            }
-        } else {
-            response = this.buildDefaultResponseObject(false, "Invalid Company Details Provided", true);
-        }
-        return response;
-    }*/
 
-    /**
-     * Retrieves a company with the specified ID or Username. Returns a failure message
-     * @param idOrUsername The ID or the Username of a company to be fetched from the databaase 
-     * @return JSON {
-     *                  success : boolean The success status of the response
-     *                  message : string The message associated with the response
-     *                  data : { 
-     *                      companyId : int The ID of the company being added
-     *                      companyName : string The name of the company
-     *                      website : string The website of the company
-     *                      passwordId : int The password ID of the company
-     *                   }
-     *               }
-     *        
-     */
-    getCompany(idOrUsername) {
-        var response;
-
-        var isUsername = false;
-        var isId = false;
-        if (/[a-zA-Z]/.test(idOrUsername)) { // check if parameter contains at least one character
-            isUsername = true
-        } else if (this.validateNumeric(idOrUsername)) {
-            isId = true;
-        }
-
-        if (this.demoMode) {
-            if (isUsername || (isId && idOrUsername === 0)) {
-                response = this.buildDefaultResponseObject(true, "Company Retrieval Successful", false, false);
-                response.data.companyId = 0;
-                response.data.companyName = "Vast Expanse";
-                response.data.website = "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications"
-                response.data.passwordId = 0
-            } else {
-                if (isUsername) {
-                    response = this.buildDefaultResponseObject(false, "Company Username Does Not Exist", true);
-                } else if (isId) {
-                    response = this.buildDefaultResponseObject(false, "Company ID Does Not Exist", true);
-                } else {
-                    response = this.buildDefaultResponseObject(false, "Invalid Company Parameters Provided", true);
-                }
-
-            }
-            return response;
-        } else {
-            //check database
-        }
-    }
-
-    /**
-     * UNIMPLEMENTED: Update the details of the company based on the input parameters
-     * @param id The ID of the company 
-     * @param name The name of the ompany
-     * @param website The website of the company
-     * @param passwordId The password ID of the company
-     */
-    updateCompany(id, name, website, passwordId) {
-        return this.buildDefaultResponseObject(false, "Unimplemented", true);
-    }
-
-    /**
-     * UNIMPLEMENTED: Deletes a company given a company ID
-     * @param id The ID of the company
-     */
-    deleteCompany(id) {
-        return this.buildDefaultResponseObject(false, "Unimplemented", true);
-    }
-
-    /**
-     * Creates an employee with the provided details
-     * @param firstName The first name of the employee
-     * @param surname The surname of the employee
-     * @param title The title of the employee e.g. Mrs
-     * @param cellphone The cell phone number of the employee (as a string)
-     * @param email The email of the employee
-     * @param companyId The company ID of the employee
-     * @param passwordId The password ID of the employee
-     * @return JSON {
-     *                  success : boolean The success status of the response
-     *                  message : string The message associated with the response
-     *                  data : { 
-     *                      employeeId : int The ID of the Employee that was added
-     *                   }
-     *               }
-     */
-    createEmployee(firstName, surname, title, cellphone, email, companyId, passwordId) {
-        var response;
-
-        if (this.validateAlpha(firstName) && this.validateAlpha(surname) && this.validateNonEmpty(title) && this.validateCellphone(cellphone) && this.validateEmail(email) && this.validateNumeric(companyId) && this.validateNumeric(passwordId)) {
-            if (this.demoMode) {
-                response = this.buildDefaultResponseObject(true, "Successfully Created Employee", false, false);
-                response.data.employeeId = 0;
-                return response;
-            } else {
-                //check database
-            }
-        } else {
-            return this.buildDefaultResponseObject(false, "Invalid Employee Information Provided", true);
-
-        }
-    }
-
-    /**
-     * Retrieves the employee with the specified ID or Username (depending on which parameter was provided)
-     * @param idOrUsername The ID or the Username of the employee
-     * @return JSON {
-     *                  success : boolean The success status of the response
-     *                  message : string The message associated with the response
-     *                  data : { 
-     *                      employeeId : int The ID of the Employee
-     *                      employeeTitle : string The Title of the Employee 
-     *                      employeeName : string the Name of the Employee
-     *                      employeeSurname : string the Surname of the Employee
-     *                      employeeEmail : string the Email of the Employee
-     *                      employeeCellphone : string the Cellphone number of the Employee
-     *                      companyId : int the Company ID of the Employee
-     *                      passwordId : int the Password ID of the Employee
-     *                   }
-     *               }
-     */
-    getEmployee(idOrUsername) {
-        var response;
-        var isUsername = false;
-        if (this.validateEmail(idOrUsername)) { //assuming employee username must be an email
-            isUsername = true
-        }
-
-        if (this.demoMode) {
-            if (isUsername || idOrUsername === 0) {
-                response = this.buildDefaultResponseObject(true, "Employee Retrieval Successful", false, false);
-                response.data.employeeId = 0;
-                response.data.employeeTitle = "Mr";
-                response.data.employeeName = "Piet";
-                response.data.employeeSurname = "Pompies";
-                response.data.employeeEmail = "piet.pompies@gmail.com";
-                response.data.employeeCellphone = "0791637273";
-                response.data.companyId = 0;
-                response.data.passwordId = 0;
-            } else {
-                if (isUsername) {
-                    response = this.buildDefaultResponseObject(false, "Employee Username Does Not Exist", true);
-                } else {
-                    response = this.buildDefaultResponseObject(false, "Employee ID Does Not Exist", true);
-                }
-
-            }
-            return response;
-        } else {
-            //check database
-        }
-    }
-
-    /**
-     * UNIMPLEMENTED: Updates the details of an Employee in the database
-     * @param id The ID of the employee
-     * @param firstName The first name of the employee
-     * @param surname The surname of the employee
-     * @param title The title of the employee e.g. Mrs
-     * @param cellphone The cellphone number of the employee as a string
-     * @param email The email of the employee
-     * @param companyId The company ID of the employee
-     * @param passwordId The password ID of the employee
-     */
-    updateEmployee(id, firstName, surname, title, cellphone, email, companyId, passwordId) {
-        return this.buildDefaultResponseObject(false, "Unimplemented", true);
-    }
-    /**
-     * UNIMPLEMENTED: Deletes an employee from the database given the specified ID 
-     * @param id The ID of the employee
-     */
-    deleteEmployee(id) {
-        return this.buildDefaultResponseObject(false, "Unimplemented", true);
-    }
-
-    /**
-     * Creates a new password in the database
-     * @param username The username to be linked to the new password
-     * @param password The new password
-     * @return JSON {
-     *                  success : boolean The success status of the response
-     *                  message : string The message associated with the response
-     *                  data : { 
-     *                      passwordId : int The ID of the password created
-     *                   }
-     *               }
-     */
-    createPassword(username, password) {
-        var response;
-        if (this.demoMode) {
-            if (/[a-zA-Z]/.test(username) && this.validateNonEmpty(password)) { //username just needs a character. more complex regex can be updated
-                response = this.buildDefaultResponseObject(true, "Password Creation Successful", false, false);
-                response.data.passwordId = 0;
-            } else {
-                response = this.buildDefaultResponseObject(false, "Invalid Password Information Provided", true);
-            }
-            return response;
-        } else {
-            //check database
-        }
-    }
-
-    /**
-     * Retrieves details about a password 
-     * @param idOrApiKey The ID or API Key used to identify a password
-     * @return JSON {
-     *                  success : boolean The success status of the response
-     *                  message : string The message associated with the response
-     *                  data : { 
-     *                      passwordId : int The password ID
-     *                      username : string The username
-     *                      passwordHash : string The password in hashed form
-     *                      salt : string The salt of associated with the password
-     *                      apiKey : string The API Key associeated with the password
-     *                      expiryDate : string The expiry date of the API Key
-     *                   }
-     *               }
-     */
-    getPassword(idOrApiKey) {
-        var response;
-        var isId = false;
-        if (this.validateNumeric(idOrApiKey)) { // weak check needs improvement
-            isId = true;
-        }
-
-        if (this.demoMode) {
-            if ((isId && idOrApiKey == 0) || (idOrApiKey === "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^")) {
-                response = this.buildDefaultResponseObject(true, "Password Retrieval Successful", false, false);
-                response.data.passwordId = 0;
-                response.data.username = "piet.pompies@gmail.com";
-                response.data.passwordHash = "b1070db9b04cb6901a9964841c8560f5c09bcbb6649db2d008daf4df81a65da7";
-                response.data.salt = "40qY4HyU";
-                response.data.apiKey = "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^";
-                response.data.expiryDate = "9999-99-99";
-            } else {
-                if (isId) {
-                    response = this.buildDefaultResponseObject(false, "Password ID Does Not Exist", true);
-                } else {
-                    response = this.buildDefaultResponseObject(false, "Password API Key Does Not Exist", true);
-
-                }
-
-            }
-            return response;
-
-        } else {
-            //check database
-        }
-    }
-
-    /**
-     * UNIMPLEMENTED: Updates a given password entry in the database
-     * @param id The ID of a password
-     * @param username The username associated with the password
-     * @param password The new password 
-     */
-    updatePassword(id, username, password) {
-        return this.buildDefaultResponseObject(false, "Unimplemented", true);
-    }
-    /**
-     * UNIMPLEMENTED: Deletes the password associated with the given ID
-     * @param id The ID of the password
-     */
-    deletePassword(id) {
-        return this.buildDefaultResponseObject(false, "Unimplemented", true);
-    }
-	
 	
 	//Company
 	
@@ -368,18 +72,18 @@ class CrudController {
 	*	@param companyName 
 	*	@param companyWebsite 
 	*	@param passwordId 
+	*	@param function(return)
 	*	@return { companyId }
 	*/
-	createCompany(companyName, companyWebsite, passwordId, callback)
+	createCompany(companyName,companyWebsite,passwordId,callback)
 	{
-		
 		var c = [];
 		var v = [];
 				
 		this.bigAppend(Object.keys({companyName})[0], companyName, c, v);
 		this.bigAppend(Object.keys({companyWebsite})[0], companyWebsite, c, v);
 		this.bigAppend(Object.keys({passwordId})[0], passwordId, c, v);
-		
+					
 		var ret = null;
 		
 		this.client.query(this.constructInsert("Company", "companyId", c, v),
@@ -399,8 +103,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});
-		
+		});		
 		
 	}
 	
@@ -417,14 +120,16 @@ class CrudController {
 	
 	/**
 	*	Creates a new building
-	*	@param companyName 
-	*	@param companyWebsite 
-	*	@param passwordId 
-	*	@return { companyId }
+	*	@param latitude 
+	*	@param longitude 
+	*	@param branchName 
+	*	@param companyId 
+	*	@param wifiParamsId 
+	*	@param function(return)
+	*	@return { buildingId }
 	*/
 	createBuilding(latitude,longitude,branchName,companyId,wifiParamsId,callback)
 	{
-		
 		var c = [];
 		var v = [];
 				
@@ -443,14 +148,14 @@ class CrudController {
 			{
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			} 
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added building", false, false);
 				ret.data.buildingId = res.rows[0].buildingid;
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			}
 		});		
@@ -466,9 +171,18 @@ class CrudController {
 	
 	//Password
 	
+	/**
+	*	Creates a new password
+	*	@param username 
+	*	@param hash 
+	*	@param salt 
+	*	@param apiKey 
+	*	@param expirationDate 
+	*	@param function(return)
+	*	@return { passwordId }
+	*/
 	createPassword(username,hash,salt,apiKey,expirationDate,callback)
 	{
-		
 		var c = [];
 		var v = [];
 				
@@ -509,6 +223,14 @@ class CrudController {
 	
 	//Room
 	
+	/**
+	*	Creates a new room
+	*	@param roomName 
+	*	@param parentRoomList 
+	*	@param buildingId 
+	*	@param function(return)
+	*	@return { roomId }
+	*/
 	createRoom(roomName,parentRoomList,buildingId,callback)
 	{
 		var c = [];
@@ -527,14 +249,14 @@ class CrudController {
 			{
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			} 
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added room", false, false);
 				ret.data.roomId = res.rows[0].roomid;
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			}
 		});		
@@ -549,6 +271,12 @@ class CrudController {
 	
 	//NFCAccessPoints
 	
+	/**
+	*	Creates a new nfcaccesspoints
+	*	@param roomId 
+	*	@param function(return)
+	*	@return { nfcReaderId }
+	*/
 	createNFCAccessPoints(roomId,callback)
 	{
 		var c = [];
@@ -565,14 +293,14 @@ class CrudController {
 			{
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			} 
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added nfcaccesspoints", false, false);
 				ret.data.nfcReaderId = res.rows[0].nfcreaderid;
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			}
 		});		
@@ -588,6 +316,19 @@ class CrudController {
 	
 	//Employee
 	
+	/**
+	*	Creates a new employee
+	*	@param firstName 
+	*	@param surname 
+	*	@param title 
+	*	@param cellphone 
+	*	@param email 
+	*	@param companyId 
+	*	@param buildingId 
+	*	@param passwordId 
+	*	@param function(return)
+	*	@return { employeeId }
+	*/
 	createEmployee(firstName,surname,title,cellphone,email,companyId,buildingId,passwordId,callback)
 	{
 		var c = [];
@@ -611,14 +352,14 @@ class CrudController {
 			{
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			} 
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added employee", false, false);
 				ret.data.employeeId = res.rows[0].employeeid;
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			}
 		});		
@@ -633,6 +374,12 @@ class CrudController {
 	
 	//Client
 	
+	/**
+	*	Creates a new client
+	*	@param macAddress 
+	*	@param function(return)
+	*	@return { clientId }
+	*/
 	createClient(macAddress,callback)
 	{
 		var c = [];
@@ -649,14 +396,14 @@ class CrudController {
 			{
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			} 
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added client", false, false);
 				ret.data.clientId = res.rows[0].clientid;
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			}
 		});		
@@ -670,6 +417,14 @@ class CrudController {
 	
 	//WiFiParams
 	
+	/**
+	*	Creates a new wifiparams
+	*	@param ssid 
+	*	@param networkType 
+	*	@param password 
+	*	@param function(return)
+	*	@return { wifiParamsId }
+	*/
 	createWiFiParams(ssid,networkType,password,callback)
 	{
 		var c = [];
@@ -688,14 +443,14 @@ class CrudController {
 			{
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			} 
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added wifiparams", false, false);
 				ret.data.wifiParamsId = res.rows[0].wifiparamsid;
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			}
 		});		
@@ -709,6 +464,12 @@ class CrudController {
 	
 	//TempWifiAccess
 	
+	/**
+	*	Creates a new tempwifiaccess
+	*	@param wifiParamsId 
+	*	@param function(return)
+	*	@return { tempWifiAccessId }
+	*/
 	createTempWifiAccess(wifiParamsId,callback)
 	{
 		var c = [];
@@ -725,14 +486,14 @@ class CrudController {
 			{
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			} 
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added tempwifiaccess", false, false);
 				ret.data.tempWifiAccessId = res.rows[0].tempwifiaccessid;
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			}
 		});		
@@ -747,6 +508,18 @@ class CrudController {
 	
 	//VisitorPackage
 	
+	/**
+	*	Creates a new visitorpackage
+	*	@param tempWifiAccessId 
+	*	@param tpaId 
+	*	@param linkWalletId 
+	*	@param employeeId 
+	*	@param clientId 
+	*	@param startTime 
+	*	@param endTime 
+	*	@param function(return)
+	*	@return { visitorPackageId }
+	*/
 	createVisitorPackage(tempWifiAccessId,tpaId,linkWalletId,employeeId,clientId,startTime,endTime,callback)
 	{
 		var c = [];
@@ -769,14 +542,14 @@ class CrudController {
 			{
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			} 
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added visitorpackage", false, false);
 				ret.data.visitorPackageId = res.rows[0].visitorpackageid;
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			}
 		});		
@@ -790,7 +563,12 @@ class CrudController {
 	
 	//TPA
 	
-	createTPA(callback) //careful!
+	/**
+	*	Creates a new tpa
+	*	@param function(return)
+	*	@return { tpaId }
+	*/
+	createTPA(callback)
 	{
 		var c = [];
 		var v = [];
@@ -798,23 +576,23 @@ class CrudController {
 					
 		var ret = null;
 		
-		//make own insert
+		var query = "INSERT INTO TPA DEFAULT VALUES RETURNING tpaid";
 		
-		this.client.query(this.constructInsert("TPA", "tpaId", c, v),
+		this.client.query(query,
 		v, (err, res) => 
 		{
 			if (err) 
 			{
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			} 
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added tpa", false, false);
 				ret.data.tpaId = res.rows[0].tpaid;
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			}
 		});		
@@ -830,7 +608,14 @@ class CrudController {
 	
     //TPAxRoom
 	
-	createTPAxRoom(tpaId, roomId,callback)
+	/**
+	*	Creates a new tpaxroom
+	*	@param tpaId 
+	*	@param roomId 
+	*	@param function(return)
+	*	@return { tpaId }
+	*/
+	createTPAxRoom(tpaId,roomId,callback)
 	{
 		var c = [];
 		var v = [];
@@ -840,23 +625,23 @@ class CrudController {
 					
 		var ret = null;
 		
-		//make own insert
+		var query = "INSERT INTO TPAxRoom(tpaId,roomId) VALUES ($1,$2) RETURNING CONCAT(tpaId, '_', roomId) AS tpaxroomid;";
 		
-		this.client.query(this.constructInsert("TPAxRoom", "tpaId", c, v),
+		this.client.query(query,
 		v, (err, res) => 
 		{
 			if (err) 
 			{
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			} 
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added tpaxroom", false, false);
-				ret.data.tpaId = res.rows[0].tpaid;
-				this.client.end();
+				ret.data.tpaxroomId = res.rows[0].tpaxroomid;
+				//this.client.end();
 				callback(ret);
 			}
 		});		
@@ -871,6 +656,13 @@ class CrudController {
 	
 	//Wallet
 	
+	/**
+	*	Creates a new wallet
+	*	@param maxLimit 
+	*	@param spent 
+	*	@param function(return)
+	*	@return { linkWalletId }
+	*/
 	createWallet(maxLimit,spent,callback)
 	{
 		var c = [];
@@ -888,14 +680,14 @@ class CrudController {
 			{
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			} 
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added wallet", false, false);
 				ret.data.linkWalletId = res.rows[0].linkwalletid;
-				this.client.end();
+				//this.client.end();
 				callback(ret);
 			}
 		});		

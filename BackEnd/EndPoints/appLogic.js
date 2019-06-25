@@ -21,6 +21,7 @@
  */
 
 const SharedLogic = require("./../SharedLogic/sharedLogic.js");
+let me = null;
 
 /**
  * 	Purpose:    This class handles the functionality that will be requested by the
@@ -44,6 +45,7 @@ class AppLogic{
         this.sharedLogic = new SharedLogic(this);
         this.body = "{}";
         this.endpoint = "";
+        me = this;
     }
 
     /**
@@ -64,7 +66,7 @@ class AppLogic{
         switch(this.endpoint){
             // Business Card
             case "getBusinessCard":
-                this.getBusinessCard();     // INTEGRATE
+                this.getBusinessCard();
                 break;
 
             // Client
@@ -94,7 +96,31 @@ class AppLogic{
             case "deleteTempWifi":
                 this.deleteTempWifi();      // TODO
                 break;
+
             // TPA
+            case "addTpa":
+                this.addTpa();              // TODO
+                break;
+            case "getTpa":
+                this.getTpa();              // TODO
+                break;
+            case "deleteTpa":
+                this.deleteTpa();           // TODO
+                break;
+
+            // TPA X ROOM
+            case "addTpaRoom":
+                this.addTpaRoom();          // TODO
+                break;
+            case "editTpaRoom":
+                this.editTpaRoom();         // TODO
+                break;
+            case "getTpaRoom":
+                this.getTpaRoom();          // TODO
+                break;
+            case "deleteTpaRoom":
+                this.deleteTpaRoom();       // TODO
+                break;
 
             // Wallet
             case "addWallet":
@@ -139,17 +165,20 @@ class AppLogic{
      *  @param employeeId int ID of an employee
      *
      *  @return JSON {
+     *                  businessCardId: string Concatenation of company and employee ID
+     *                  companyName: string Name of the company
+     *                  companyWebsite: string Link to the company's website
+     *                  branchName: string Name of company branch
+     *                  latitude: string Latitude value of building
+     *                  longitude: string Longitude value of building
      *                  employeeName: string Name of the employee
      *                  employeeSurname: string Surname of the employee
-     *                  cellphone: string Cellphone number of the employee
-     *                  email: string Email of the employee
-     *                  companyName: string Name of the company
-     *                  website: string Link to the company's website
+     *                  employeeTitle: string Title of the employee
+     *                  employeeCellphone: string Cellphone number of the employee
+     *                  employeeEmail: string Email of the employee
      *               }
      *
      *  @TODO Integrate with CrudController and Application
-     *  @TODO Return correct data
-     *  @TODO Test
      */
     getBusinessCard(){
         let success;
@@ -175,60 +204,65 @@ class AppLogic{
                 invalidReturn += "employeeId, ";
             }
 
-            if(!invalidParams){
-                if(this.demoMode){
-                    // return mock data
+            if(!invalidParams) {
+                // MOCK
+                if (this.demoMode) {
                     success = true;
                     message = "Business card information loaded successfully - Mock";
-                    data.employeeTitle = "Mr";
+                    data.businessCardId = "0_0";
+                    data.companyName = "Vast Expanse";
+                    data.companyWebsite = "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications";
+                    data.branchName = "University of Pretoria";
+                    data.latitude = "10";
+                    data.longitude = "11";
                     data.employeeName = "Tjaart";
                     data.employeeSurname = "Booyens";
+                    data.employeeTitle = "Mr";
                     data.employeeCellphone = "0791807734";
                     data.employeeEmail = "u17021775@tuks.co.za";
-                    data.companyName = "Vast Expanse";
-                    data.website = "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications";
                 }
-                else{
-                    // return data from crudController
-                    let employeeData = this.sharedLogic.crudController.getEmployee(this.body.employeeId);
-
-                    if(employeeData.success){
-                        let companyData = this.sharedLogic.crudController.getCompany(employeeData.data.companyId);
-
-                        if(companyData.success){
-                            let buildingData = this.sharedLogic.crudController.getBuilding(employeeData.data.buildingId);
-
-                            if(buildingData.success){
-                                success = true;
-                                message = "Business card information loaded successfully";
-                                data.companyName = companyData.data.companyName;
-                                data.companyWebsite = companyData.data.companyWebsite;
-                                data.branchName = buildingData.data.branchName;
-                                data.latitude = buildingData.data.latitude;
-                                data.longitude = buildingData.data.longitude;
-                                data.employeeName = employeeData.data.employeeName;
-                                data.employeeSurname = employeeData.data.employeeSurname;
-                                data.employeeTitle = employeeData.data.employeeTitle;
-                                data.employeeCellphone = employeeData.data.employeeCellphone;
-                                data.employeeEmail = employeeData.data.employeeEmail;
-                            }
-                            else{
-                                success = companyData.success;
-                                message = companyData.message;
-                                data = companyData.data;
-                            }
+                // ACTUAL
+                else {
+                    me.sharedLogic.crudController.getEmployee(me.body.employeeId, function (employeeData) {
+                        if (employeeData.success) {
+                            me.sharedLogic.crudController.getCompany(employeeData.data.companyId, function (companyData) {
+                                if (companyData.success) {
+                                    me.sharedLogic.crudController.getBuilding(employeeData.data.buildingId, function (buildingData) {
+                                        if (buildingData.success) {
+                                            success = true;
+                                            message = "Business card information loaded successfully";
+                                            data.businessCardId = companyData.data.companyId + "_" + employeeData.data.employeeId;
+                                            data.companyName = companyData.data.companyName;
+                                            data.companyWebsite = companyData.data.companyWebsite;
+                                            data.branchName = buildingData.data.branchName;
+                                            data.latitude = buildingData.data.latitude;
+                                            data.longitude = buildingData.data.longitude;
+                                            data.employeeName = employeeData.data.employeeName;
+                                            data.employeeSurname = employeeData.data.employeeSurname;
+                                            data.employeeTitle = employeeData.data.employeeTitle;
+                                            data.employeeCellphone = employeeData.data.employeeCellphone;
+                                            data.employeeEmail = employeeData.data.employeeEmail;
+                                        } else {
+                                            success = buildingData.success;
+                                            message = buildingData.message;
+                                            data = buildingData.data;
+                                            me.sharedLogic.endServe(success, message, data);
+                                        }
+                                    });
+                                } else {
+                                    success = companyData.success;
+                                    message = companyData.message;
+                                    data = companyData.data;
+                                    me.sharedLogic.endServe(success, message, data);
+                                }
+                            });
+                        } else {
+                            success = employeeData.success;
+                            message = employeeData.message;
+                            data = employeeData.data;
+                            me.sharedLogic.endServe(success, message, data);
                         }
-                        else{
-                            success = companyData.success;
-                            message = companyData.message;
-                            data = companyData.data;
-                        }
-                    }
-                    else{
-                        success = employeeData.success;
-                        message = employeeData.message;
-                        data = employeeData.data;
-                    }
+                    });
                 }
             }
             else{
@@ -1092,6 +1126,122 @@ class AppLogic{
             data = null;
         }
         this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     *  Function to add a new TPA
+     *
+     *  @return JSON {
+     *                  tpaId: int ID of TPA created
+     *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
+     */
+    addTpa(){
+
+    }
+
+    /**
+     *  Function to retrieve a TPA
+     *
+     *  @param tpaId int ID of TPA
+     *
+     *  @return JSON {
+     *
+     *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
+     */
+    getTpa(){
+
+    }
+
+    /**
+     *  Function to delete a TPA
+     *
+     *  @param tpaId int ID of TPA
+     *
+     *  @return JSON {
+     *                  tpaId: int ID of TPA
+     *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
+     */
+    deleteTpa(){
+
+    }
+
+    /**
+     *  Function to add a room to the TPA
+     *
+     *  @param tpaId int ID of TPA
+     *  @param roomId int ID of room client needs access to
+     *
+     *  @return JSON {
+     *                  tpaId: int ID of TPA
+     *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
+     */
+    addTpaRoom(){
+
+    }
+
+    /**
+     *  Function to edit a room for a TPA
+     *
+     *  @param tpaId int ID of TPA
+     *  @param roomId int ID of the new room
+     *
+     *  @return JSON {
+     *                  tpaId: int ID of TPA
+     *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
+     */
+    editTpaRoom(){
+
+    }
+
+    /**
+     *  Function to retrieve the rooms of a TPA
+     *
+     *  @param tpaId int ID of TPA
+     *
+     *  @return JSON {
+     *
+     *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
+     */
+    getTpaRoom(){
+
+    }
+
+    /**
+     *  Function to delete a room from a TPA
+     *
+     *  @param tpaId int ID of TPA
+     *  @param roomId int ID of Room
+     *
+     *  @return JSON {
+     *                  tpaId: int ID of TPA
+     *               }
+     */
+    deleteTpaRoom(){
+
     }
 
     /**

@@ -80,12 +80,12 @@ class AdminLogic
                 this.getCompany();//INTEGRATE
                 break;
             case "getCompanies":
-                this.getCompanies();//TODO
+                this.getCompanies();//INTEGRATE
                 break;
 
             //Buildings
             case "addBuilding":
-                this.addBuilding();//TODO
+                this.addBuilding();//INTEGRATE
                 break;
             case "editBuilding":
                 this.editBuilding();//TODO
@@ -447,7 +447,7 @@ class AdminLogic
                 else{
                     //return data from crudController
                     success = false;
-                    message = "Get Company not implemented";
+                    message = "Get Company not integrated";
                     data = null;
                 }
             }
@@ -464,13 +464,271 @@ class AdminLogic
             message = message.slice(0, message.length-2);
             data = null;
         }
-        this.sharedLogic.endServe(success, message, data);}
+        this.sharedLogic.endServe(success, message, data);
+    }
 
-    getCompanies(){}
+    /**
+     * This function will be used by Link admins to get a list of all the registered companies
+     *
+     * @return Array of JSON {
+     *                          //TODO
+     *                      }
+     */
+    getCompanies(){
+        var message;
+        var success;
+        var data = new Object();
+        if(this.demoMode){
+            //return mock data
+            success = false;
+            message = "Get Companies body not known";
+            data = null;
+        }
+        else{
+            //return data from crudController
+            success = false;
+            message = "Get Companies not implemented";
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
 
-    addBuilding(){}
+    /**
+     * This function will be used to create buildings belonging to a specific company
+     *
+     * @param buildingBranchName string The Name of the branch i.e Link Johannesburg
+     * @param buildingLatitude string The latitude of the building being created
+     * @param buildingLongitude string The longitude of the building being created
+     * @param companyId int The company ID that the building belongs to
+     * @param networkSsid string The name of the wifi for guests to connect for
+     * @param networkType string The type of the wifi network for guests to connect to
+     * @param networkPassword string The password for the wifi network for access to the wifi for guests
+     *
+     * @return JSON {
+     *                  buildingId int The ID of the building
+     *              }
+     */
+    addBuilding(){
+        var message;
+        var data = new Object();
+        var success;
 
-    editBuilding(){}
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(this.body.buildingBranchName === undefined){
+            presentParams = true;
+            presentReturn += "buildingBranchName, ";
+        }
+        if(this.body.buildingLatitude === undefined){
+            presentParams = true;
+            presentReturn += "buildingLatitude, ";
+        }
+        if(this.body.buildingLongitude === undefined){
+            presentParams = true;
+            presentReturn += "buildingLongitude, ";
+        }
+        if(this.body.companyId === undefined){
+            presentParams = true;
+            presentReturn += "companyId, ";
+        }
+        if(this.body.networkSsid === undefined){
+            presentParams = true;
+            presentReturn += "networkSsid, ";
+        }
+        if(this.body.networkType === undefined){
+            presentParams = true;
+            presentReturn += "networkType, ";
+        }
+        if(this.body.networkPassword === undefined){
+            presentParams = true;
+            presentReturn += "networkPassword, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.buildingBranchName)){
+                invalidParams = true;
+                invalidReturn += "buildingBranchName, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.buildingLatitude)){
+                invalidParams = true;
+                invalidReturn += "buildingLatitude, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.buildingLongitude)){
+                invalidParams = true;
+                invalidReturn += "buildingLongitude, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
+                invalidParams = true;
+                invalidReturn += "companyId, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.networkSsid)){
+                invalidParams = true;
+                invalidReturn += "networkSsid, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.networkType)){
+                invalidParams = true;
+                invalidReturn += "networkType, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.networkPassword)){
+                invalidParams = true;
+                invalidReturn += "networkPassword, ";
+            }
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.buildingId = 0;
+                    message = "Building added! - Mock";
+                    success = true;
+                }
+                else{
+                    //return data from crudController
+                    success = false;
+                    message = "Add Building not integrated";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     * This function will be used to update a buildings details
+     *
+     * @param buildingId int The building ID of the building to be changed
+     * @param buildingBranchName string The new name of the branch
+     * @param buildingLatitude string The new Latitude of the branch
+     * @param buildingLongitude string the new Longitude of the branch
+     * @param wifiParamId int The wifi param ID corresponding to the wifi table belonging to that building
+     * @param networkSsid string The new network SSID of the building
+     * @param networkType string The new Type of the network of the building
+     * @param networkPassword string The new Password of the network
+     *
+     * @return JSON {
+     *                  buildingId int The ID of the building being updated
+     *              }
+     */
+    editBuilding(){
+        var message;
+        var data = new Object();
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(this.body.buildingId === undefined){
+            presentParams = true;
+            presentReturn += "buildingId, ";
+        }
+        if(this.body.buildingBranchName === undefined){
+            presentParams = true;
+            presentReturn += "buildingBranchName, ";
+        }
+        if(this.body.buildingLatitude === undefined){
+            presentParams = true;
+            presentReturn += "buildingLatitude, ";
+        }
+        if(this.body.buildingLongitude === undefined){
+            presentParams = true;
+            presentReturn += "buildingLongitude, ";
+        }
+        if(this.body.wifiParamId === undefined){
+            presentParams = true;
+            presentReturn += "wifiParamId, ";
+        }
+        if(this.body.networkSsid === undefined){
+            presentParams = true;
+            presentReturn += "networkSsid, ";
+        }
+        if(this.body.networkType === undefined){
+            presentParams = true;
+            presentReturn += "networkType, ";
+        }
+        if(this.body.networkPassword === undefined){
+            presentParams = true;
+            presentReturn += "networkPassword, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.buildingId) || !this.sharedLogic.validateNumeric(this.body.buildingId)){
+                invalidParams = true;
+                invalidReturn += "buildingId, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.buildingBranchName)){
+                invalidParams = true;
+                invalidReturn += "buildingBranchName, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.buildingLatitude)){
+                invalidParams = true;
+                invalidReturn += "buildingLatitude, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.buildingLongitude)){
+                invalidParams = true;
+                invalidReturn += "buildingLongitude, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.wifiParamId) || !this.sharedLogic.validateNumeric(this.body.wifiParamId)){
+                invalidParams = true;
+                invalidReturn += "wifiParamId, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.networkSsid)){
+                invalidParams = true;
+                invalidReturn += "networkSsid, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.networkType)){
+                invalidParams = true;
+                invalidReturn += "networkType, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.networkPassword)){
+                invalidParams = true;
+                invalidReturn += "networkPassword, ";
+            }
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.buildingId = this.body.buildingId;
+                    message = "Building edited! - Mock";
+                    success = true;
+                }
+                else{
+                    //return data from crudController
+                    success = false;
+                    message = "Edit Building not integrated";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
 
     deleteBuilding(){}
 

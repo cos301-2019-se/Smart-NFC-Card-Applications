@@ -107,6 +107,88 @@ class CrudController {
 		
 	}
 	
+	/**
+	*	Retrieves a company using companyId
+	*	@param companyId 
+	*	@param function(return)
+	*	@return { companyId, companyName, companyWebsite, passwordId }
+	*/
+	getCompanyByCompanyId(companyId, callback)
+	{
+		var query = 'SELECT * FROM Company WHERE companyId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [companyId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Company with that matching companyId");
+				ret = this.returnDatabaseError("no rows in Company with that matching companyId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved company", false, false);
+				ret.data.companyId = res.rows[0].companyid;
+				ret.data.companyName = res.rows[0].companyname;
+				ret.data.companyWebsite = res.rows[0].companywebsite;
+				ret.data.passwordId = res.rows[0].passwordid;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+
+	/**
+	*	Retrieves a company using passwordId
+	*	@param passwordId 
+	*	@param function(return)
+	*	@return { companyId, companyName, companyWebsite, passwordId }
+	*/
+	getCompanyByPasswordId(passwordId, callback)
+	{
+		var query = 'SELECT * FROM Company WHERE passwordId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [passwordId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Company with that matching passwordId");
+				ret = this.returnDatabaseError("no rows in Company with that matching passwordId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved company", false, false);
+				ret.data.companyId = res.rows[0].companyid;
+				ret.data.companyName = res.rows[0].companyname;
+				ret.data.companyWebsite = res.rows[0].companywebsite;
+				ret.data.passwordId = res.rows[0].passwordid;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
 
 	
 	
@@ -162,6 +244,49 @@ class CrudController {
 		
 	}
 	
+	/**
+	*	Retrieves a building using buildingId
+	*	@param buildingId 
+	*	@param function(return)
+	*	@return { buildingId, latitude, longitude, branchName, companyId, wifiParamsId }
+	*/
+	getBuildingByBuildingId(buildingId, callback)
+	{
+		var query = 'SELECT * FROM Building WHERE buildingId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [buildingId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Building with that matching buildingId");
+				ret = this.returnDatabaseError("no rows in Building with that matching buildingId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved building", false, false);
+				ret.data.buildingId = res.rows[0].buildingid;
+				ret.data.latitude = res.rows[0].latitude;
+				ret.data.longitude = res.rows[0].longitude;
+				ret.data.branchName = res.rows[0].branchname;
+				ret.data.companyId = res.rows[0].companyid;
+				ret.data.wifiParamsId = res.rows[0].wifiparamsid;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
 	
     //CR
     
@@ -215,6 +340,135 @@ class CrudController {
 		
 	}
 	
+	/**
+	*	Retrieves a password using passwordId
+	*	@param passwordId 
+	*	@param function(return)
+	*	@return { passwordId, username, hash, salt, apiKey, expirationDate }
+	*/
+	getPasswordByPasswordId(passwordId, callback)
+	{
+		var query = 'SELECT * FROM Password WHERE passwordId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [passwordId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Password with that matching passwordId");
+				ret = this.returnDatabaseError("no rows in Password with that matching passwordId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved password", false, false);
+				ret.data.passwordId = res.rows[0].passwordid;
+				ret.data.username = res.rows[0].username;
+				ret.data.hash = res.rows[0].hash;
+				ret.data.salt = res.rows[0].salt;
+				ret.data.apiKey = res.rows[0].apikey;
+				ret.data.expirationDate = res.rows[0].expirationdate;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+
+	/**
+	*	Retrieves a password using username
+	*	@param username 
+	*	@param function(return)
+	*	@return { passwordId, username, hash, salt, apiKey, expirationDate }
+	*/
+	getPasswordByUsername(username, callback)
+	{
+		var query = 'SELECT * FROM Password WHERE username = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [username], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Password with that matching username");
+				ret = this.returnDatabaseError("no rows in Password with that matching username");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved password", false, false);
+				ret.data.passwordId = res.rows[0].passwordid;
+				ret.data.username = res.rows[0].username;
+				ret.data.hash = res.rows[0].hash;
+				ret.data.salt = res.rows[0].salt;
+				ret.data.apiKey = res.rows[0].apikey;
+				ret.data.expirationDate = res.rows[0].expirationdate;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+
+	/**
+	*	Retrieves a password using apiKey
+	*	@param apiKey 
+	*	@param function(return)
+	*	@return { passwordId, username, hash, salt, apiKey, expirationDate }
+	*/
+	getPasswordByApiKey(apiKey, callback)
+	{
+		var query = 'SELECT * FROM Password WHERE apiKey = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [apiKey], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Password with that matching apiKey");
+				ret = this.returnDatabaseError("no rows in Password with that matching apiKey");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved password", false, false);
+				ret.data.passwordId = res.rows[0].passwordid;
+				ret.data.username = res.rows[0].username;
+				ret.data.hash = res.rows[0].hash;
+				ret.data.salt = res.rows[0].salt;
+				ret.data.apiKey = res.rows[0].apikey;
+				ret.data.expirationDate = res.rows[0].expirationdate;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
     //CR
     
     //UD
@@ -263,6 +517,47 @@ class CrudController {
 		
 	}
 	
+	/**
+	*	Retrieves a room using roomId
+	*	@param roomId 
+	*	@param function(return)
+	*	@return { roomId, roomName, parentRoomList, buildingId }
+	*/
+	getRoomByRoomId(roomId, callback)
+	{
+		var query = 'SELECT * FROM Room WHERE roomId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [roomId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Room with that matching roomId");
+				ret = this.returnDatabaseError("no rows in Room with that matching roomId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved room", false, false);
+				ret.data.roomId = res.rows[0].roomid;
+				ret.data.roomName = res.rows[0].roomname;
+				ret.data.parentRoomList = res.rows[0].parentroomlist;
+				ret.data.buildingId = res.rows[0].buildingid;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
     //CR
     
     //UD
@@ -305,6 +600,45 @@ class CrudController {
 			}
 		});		
 		
+	}
+	
+	/**
+	*	Retrieves a nfcaccesspoints using nfcReaderId
+	*	@param nfcReaderId 
+	*	@param function(return)
+	*	@return { nfcReaderId, roomId }
+	*/
+	getNFCAccessPointsByNfcReaderId(nfcReaderId, callback)
+	{
+		var query = 'SELECT * FROM NFCAccessPoints WHERE nfcReaderId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [nfcReaderId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in NFCAccessPoints with that matching nfcReaderId");
+				ret = this.returnDatabaseError("no rows in NFCAccessPoints with that matching nfcReaderId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved nfcaccesspoints", false, false);
+				ret.data.nfcReaderId = res.rows[0].nfcreaderid;
+				ret.data.roomId = res.rows[0].roomid;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
 	}
 	
 	
@@ -365,6 +699,98 @@ class CrudController {
 		});		
 		
 	}
+	
+	/**
+	*	Retrieves a employee using employeeId
+	*	@param employeeId 
+	*	@param function(return)
+	*	@return { employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId }
+	*/
+	getEmployeeByEmployeeId(employeeId, callback)
+	{
+		var query = 'SELECT * FROM Employee WHERE employeeId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [employeeId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Employee with that matching employeeId");
+				ret = this.returnDatabaseError("no rows in Employee with that matching employeeId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved employee", false, false);
+				ret.data.employeeId = res.rows[0].employeeid;
+				ret.data.firstName = res.rows[0].firstname;
+				ret.data.surname = res.rows[0].surname;
+				ret.data.title = res.rows[0].title;
+				ret.data.cellphone = res.rows[0].cellphone;
+				ret.data.email = res.rows[0].email;
+				ret.data.companyId = res.rows[0].companyid;
+				ret.data.buildingId = res.rows[0].buildingid;
+				ret.data.passwordId = res.rows[0].passwordid;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+
+	/**
+	*	Retrieves a employee using passwordId
+	*	@param passwordId 
+	*	@param function(return)
+	*	@return { employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId }
+	*/
+	getEmployeeByPasswordId(passwordId, callback)
+	{
+		var query = 'SELECT * FROM Employee WHERE passwordId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [passwordId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Employee with that matching passwordId");
+				ret = this.returnDatabaseError("no rows in Employee with that matching passwordId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved employee", false, false);
+				ret.data.employeeId = res.rows[0].employeeid;
+				ret.data.firstName = res.rows[0].firstname;
+				ret.data.surname = res.rows[0].surname;
+				ret.data.title = res.rows[0].title;
+				ret.data.cellphone = res.rows[0].cellphone;
+				ret.data.email = res.rows[0].email;
+				ret.data.companyId = res.rows[0].companyid;
+				ret.data.buildingId = res.rows[0].buildingid;
+				ret.data.passwordId = res.rows[0].passwordid;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
 
     //CR
     
@@ -408,6 +834,84 @@ class CrudController {
 			}
 		});		
 		
+	}
+	
+	/**
+	*	Retrieves a client using clientId
+	*	@param clientId 
+	*	@param function(return)
+	*	@return { clientId, macAddress }
+	*/
+	getClientByClientId(clientId, callback)
+	{
+		var query = 'SELECT * FROM Client WHERE clientId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [clientId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Client with that matching clientId");
+				ret = this.returnDatabaseError("no rows in Client with that matching clientId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved client", false, false);
+				ret.data.clientId = res.rows[0].clientid;
+				ret.data.macAddress = res.rows[0].macaddress;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+
+	/**
+	*	Retrieves a client using macAddress
+	*	@param macAddress 
+	*	@param function(return)
+	*	@return { clientId, macAddress }
+	*/
+	getClientByMacAddress(macAddress, callback)
+	{
+		var query = 'SELECT * FROM Client WHERE macAddress = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [macAddress], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Client with that matching macAddress");
+				ret = this.returnDatabaseError("no rows in Client with that matching macAddress");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved client", false, false);
+				ret.data.clientId = res.rows[0].clientid;
+				ret.data.macAddress = res.rows[0].macaddress;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
 	}
 	
     //CR
@@ -457,6 +961,47 @@ class CrudController {
 		
 	}
 	
+	/**
+	*	Retrieves a wifiparams using wifiParamsId
+	*	@param wifiParamsId 
+	*	@param function(return)
+	*	@return { wifiParamsId, ssid, networkType, password }
+	*/
+	getWiFiParamsByWifiParamsId(wifiParamsId, callback)
+	{
+		var query = 'SELECT * FROM WiFiParams WHERE wifiParamsId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [wifiParamsId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in WiFiParams with that matching wifiParamsId");
+				ret = this.returnDatabaseError("no rows in WiFiParams with that matching wifiParamsId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved wifiparams", false, false);
+				ret.data.wifiParamsId = res.rows[0].wifiparamsid;
+				ret.data.ssid = res.rows[0].ssid;
+				ret.data.networkType = res.rows[0].networktype;
+				ret.data.password = res.rows[0].password;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
     //CR
     
     //UD
@@ -498,6 +1043,45 @@ class CrudController {
 			}
 		});		
 		
+	}
+	
+	/**
+	*	Retrieves a tempwifiaccess using tempWifiAccessId
+	*	@param tempWifiAccessId 
+	*	@param function(return)
+	*	@return { tempWifiAccessId, wifiParamsId }
+	*/
+	getTempWifiAccessByTempWifiAccessId(tempWifiAccessId, callback)
+	{
+		var query = 'SELECT * FROM TempWifiAccess WHERE tempWifiAccessId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [tempWifiAccessId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in TempWifiAccess with that matching tempWifiAccessId");
+				ret = this.returnDatabaseError("no rows in TempWifiAccess with that matching tempWifiAccessId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tempwifiaccess", false, false);
+				ret.data.tempWifiAccessId = res.rows[0].tempwifiaccessid;
+				ret.data.wifiParamsId = res.rows[0].wifiparamsid;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
 	}
 	
 	
@@ -556,6 +1140,186 @@ class CrudController {
 		
 	}
 	
+	/**
+	*	Retrieves a visitorpackage using visitorPackageId
+	*	@param visitorPackageId 
+	*	@param function(return)
+	*	@return { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime }
+	*/
+	getVisitorPackageByVisitorPackageId(visitorPackageId, callback)
+	{
+		var query = 'SELECT * FROM VisitorPackage WHERE visitorPackageId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [visitorPackageId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in VisitorPackage with that matching visitorPackageId");
+				ret = this.returnDatabaseError("no rows in VisitorPackage with that matching visitorPackageId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved visitorpackage", false, false);
+				ret.data.visitorPackageId = res.rows[0].visitorpackageid;
+				ret.data.tempWifiAccessId = res.rows[0].tempwifiaccessid;
+				ret.data.tpaId = res.rows[0].tpaid;
+				ret.data.linkWalletId = res.rows[0].linkwalletid;
+				ret.data.employeeId = res.rows[0].employeeid;
+				ret.data.clientId = res.rows[0].clientid;
+				ret.data.startTime = res.rows[0].starttime;
+				ret.data.endTime = res.rows[0].endtime;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+
+	/**
+	*	Retrieves a visitorpackage using tempWifiAccessId
+	*	@param tempWifiAccessId 
+	*	@param function(return)
+	*	@return { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime }
+	*/
+	getVisitorPackageByTempWifiAccessId(tempWifiAccessId, callback)
+	{
+		var query = 'SELECT * FROM VisitorPackage WHERE tempWifiAccessId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [tempWifiAccessId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in VisitorPackage with that matching tempWifiAccessId");
+				ret = this.returnDatabaseError("no rows in VisitorPackage with that matching tempWifiAccessId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved visitorpackage", false, false);
+				ret.data.visitorPackageId = res.rows[0].visitorpackageid;
+				ret.data.tempWifiAccessId = res.rows[0].tempwifiaccessid;
+				ret.data.tpaId = res.rows[0].tpaid;
+				ret.data.linkWalletId = res.rows[0].linkwalletid;
+				ret.data.employeeId = res.rows[0].employeeid;
+				ret.data.clientId = res.rows[0].clientid;
+				ret.data.startTime = res.rows[0].starttime;
+				ret.data.endTime = res.rows[0].endtime;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+
+	/**
+	*	Retrieves a visitorpackage using tpaId
+	*	@param tpaId 
+	*	@param function(return)
+	*	@return { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime }
+	*/
+	getVisitorPackageByTpaId(tpaId, callback)
+	{
+		var query = 'SELECT * FROM VisitorPackage WHERE tpaId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [tpaId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in VisitorPackage with that matching tpaId");
+				ret = this.returnDatabaseError("no rows in VisitorPackage with that matching tpaId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved visitorpackage", false, false);
+				ret.data.visitorPackageId = res.rows[0].visitorpackageid;
+				ret.data.tempWifiAccessId = res.rows[0].tempwifiaccessid;
+				ret.data.tpaId = res.rows[0].tpaid;
+				ret.data.linkWalletId = res.rows[0].linkwalletid;
+				ret.data.employeeId = res.rows[0].employeeid;
+				ret.data.clientId = res.rows[0].clientid;
+				ret.data.startTime = res.rows[0].starttime;
+				ret.data.endTime = res.rows[0].endtime;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+
+	/**
+	*	Retrieves a visitorpackage using linkWalletId
+	*	@param linkWalletId 
+	*	@param function(return)
+	*	@return { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime }
+	*/
+	getVisitorPackageByLinkWalletId(linkWalletId, callback)
+	{
+		var query = 'SELECT * FROM VisitorPackage WHERE linkWalletId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [linkWalletId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in VisitorPackage with that matching linkWalletId");
+				ret = this.returnDatabaseError("no rows in VisitorPackage with that matching linkWalletId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved visitorpackage", false, false);
+				ret.data.visitorPackageId = res.rows[0].visitorpackageid;
+				ret.data.tempWifiAccessId = res.rows[0].tempwifiaccessid;
+				ret.data.tpaId = res.rows[0].tpaid;
+				ret.data.linkWalletId = res.rows[0].linkwalletid;
+				ret.data.employeeId = res.rows[0].employeeid;
+				ret.data.clientId = res.rows[0].clientid;
+				ret.data.startTime = res.rows[0].starttime;
+				ret.data.endTime = res.rows[0].endtime;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
     //CR
     
     //UD
@@ -597,6 +1361,44 @@ class CrudController {
 			}
 		});		
 		
+	}
+	
+	/**
+	*	Retrieves a tpa using tpaId
+	*	@param tpaId 
+	*	@param function(return)
+	*	@return { tpaId }
+	*/
+	getTPAByTpaId(tpaId, callback)
+	{
+		var query = 'SELECT * FROM TPA WHERE tpaId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [tpaId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in TPA with that matching tpaId");
+				ret = this.returnDatabaseError("no rows in TPA with that matching tpaId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tpa", false, false);
+				ret.data.tpaId = res.rows[0].tpaid;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
 	}
 	
 	
@@ -647,6 +1449,84 @@ class CrudController {
 		});		
 		
 	}
+	
+		/**
+	*	Retrieves a tpaxroom using tpaId
+	*	@param tpaId 
+	*	@param function(return)
+	*	@return { tpaId, roomId }
+	*/
+	getTPAxRoomByTpaId(tpaId, callback)
+	{
+		var query = 'SELECT * FROM TPAxRoom WHERE tpaId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [tpaId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in TPAxRoom with that matching tpaId");
+				ret = this.returnDatabaseError("no rows in TPAxRoom with that matching tpaId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tpaxroom", false, false);
+				ret.data.tpaId = res.rows[0].tpaid;
+				ret.data.roomId = res.rows[0].roomid;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+
+	/**
+	*	Retrieves a tpaxroom using roomId
+	*	@param roomId 
+	*	@param function(return)
+	*	@return { tpaId, roomId }
+	*/
+	getTPAxRoomByRoomId(roomId, callback)
+	{
+		var query = 'SELECT * FROM TPAxRoom WHERE roomId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [roomId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in TPAxRoom with that matching roomId");
+				ret = this.returnDatabaseError("no rows in TPAxRoom with that matching roomId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tpaxroom", false, false);
+				ret.data.tpaId = res.rows[0].tpaid;
+				ret.data.roomId = res.rows[0].roomid;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
     
     //CR
     
@@ -692,6 +1572,46 @@ class CrudController {
 			}
 		});		
 		
+	}
+	
+	/**
+	*	Retrieves a wallet using linkWalletId
+	*	@param linkWalletId 
+	*	@param function(return)
+	*	@return { linkWalletId, maxLimit, spent }
+	*/
+	getWalletByLinkWalletId(linkWalletId, callback)
+	{
+		var query = 'SELECT * FROM Wallet WHERE linkWalletId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [linkWalletId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Wallet with that matching linkWalletId");
+				ret = this.returnDatabaseError("no rows in Wallet with that matching linkWalletId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved wallet", false, false);
+				ret.data.linkWalletId = res.rows[0].linkwalletid;
+				ret.data.maxLimit = res.rows[0].maxlimit;
+				ret.data.spent = res.rows[0].spent;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
 	}
 	
     //CR

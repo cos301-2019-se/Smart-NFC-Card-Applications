@@ -181,6 +181,13 @@ class SharedLogic
 		});
 		*/
 		
+		
+		var me = this;
+		me.crudController.getPasswordByPasswordId(45, function(passwordRow)
+		{
+			console.log(passwordRow);
+		});
+		
 			
 		
 		

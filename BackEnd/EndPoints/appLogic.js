@@ -66,6 +66,7 @@ class AppLogic{
             case "getBusinessCard":
                 this.getBusinessCard();     // INTEGRATE
                 break;
+
             // Client
             case "addClient":
                 this.addClient();           // TODO
@@ -79,6 +80,7 @@ class AppLogic{
             case "deleteClient":
                 this.deleteClient();        // TODO
                 break;
+
             // WIFI
             case "addTempWifi":
                 this.addTempWifi();         // TODO
@@ -95,8 +97,36 @@ class AppLogic{
             // TPA
 
             // Wallet
+            case "addWallet":
+                this.addWallet();           // TODO
+                break;
+            case "editWallet":
+                this.editWallet();          // TODO
+                break;
+            case "getWallet":
+                this.getWallet();           // TODO
+                break;
+            case "deleteWallet":
+                this.deleteWallet();        // TODO
+                break;
 
             // Visitor Package
+            case "addVisitorPackage":
+                this.addVisitorPackage();   // TODO
+                break;
+            case "editVisitorPackage":
+                this.editVisitorPackage();  // TODO
+                break;
+            case "getVisitorPackage":
+                this.getVisitorPackage();   // TODO
+                break;
+            case "getVisitorPackages":
+                this.getVisitorPackages();  // TODO
+                break;
+            case "deleteVisitorPackage":
+                this.deleteVisitorPackage();// TODO
+                break;
+
             default:
                 this.sharedLogic.endServe(false, "Invalid Endpoint", null);
         }
@@ -118,6 +148,8 @@ class AppLogic{
      *               }
      *
      *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
      */
     getBusinessCard(){
         let success;
@@ -218,11 +250,15 @@ class AppLogic{
     /**
      *  Function that creates a new client and adds it to the database
      *
-     *  @param macAddress string Mac Address of clients device
+     *  @param macAddress string Mac Address of client device
      *
      *  @return JSON {
      *                  clientId: int ID for client
      *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
      */
     addClient() {
         let success;
@@ -233,21 +269,40 @@ class AppLogic{
         let presentParams = false;
         let presentReturn = "";
 
-        if (this.body.macAddress === undefined) {
+        if(this.body.macAddress === undefined) {
             presentParams = true;
             presentReturn += "macAddress, ";
         }
 
         // check if the parameters are valid if present
-        if (!presentParams) {
+        if(!presentParams) {
             let invalidParams = false;
             let invalidReturn = "";
 
-            if (!this.sharedLogic.validateNonEmpty(this.body.employeeId) || !this.sharedLogic.validateNumeric(this.body.employeeId)) {
+            if(!this.sharedLogic.validateNonEmpty(this.body.macAddress)) {
                 invalidParams = true;
-                invalidReturn += "employeeId, ";
+                invalidReturn += "macAddress, ";
             }
 
+            if(!invalidParams){
+                if(this.demoMode){
+                    // return mock data
+                    success = true;
+                    message = "Client added successfully - Mock";
+                    data.clientId = 0;
+                }
+                else{
+                    success = true;
+                    message = "addClient not implemented in crudController";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: " + invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
         }
         else{
             success = false;
@@ -262,13 +317,77 @@ class AppLogic{
      *  Function to edit a clients details
      *
      *  @param clientId int ID of client
+     *  @param macAddress string Mac Address of client device
      *
      *  @return JSON {
      *                  clientId: int ID of client
      *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
      */
     editClient(){
+        let success;
+        let message;
+        let data = {};
 
+        // check to see if parameters are present
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.macAddress === undefined) {
+            presentParams = true;
+            presentReturn += "macAddress, ";
+        }
+
+        if(this.body.clientId === undefined){
+            presentParams = true;
+            presentReturn += "clientId, ";
+        }
+
+        // check if the parameters are valid if present
+        if(!presentParams) {
+            let invalidParams = false;
+            let invalidReturn = "";
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.macAddress)){
+                invalidParams = true;
+                invalidReturn += "macAddress, ";
+            }
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.clientId)){
+                invalidParams = true;
+                invalidReturn += "clientId, ";
+            }
+
+            if(!invalidParams){
+                if(this.demoMode){
+                    // return mock data
+                    success = true;
+                    message = "Client edited successfully - Mock";
+                    data.clientId = 0;
+                }
+                else{
+                    success = true;
+                    message = "editClient not implemented in crudController";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: " + invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: " + presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
@@ -279,9 +398,62 @@ class AppLogic{
      *  @return JSON {
      *
      *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
      */
     getClient(){
+        let success;
+        let message;
+        let data = {};
 
+        // check to see if parameters are present
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.clientId === undefined){
+            presentParams = true;
+            presentReturn += "clientId, ";
+        }
+
+        // check if the parameters are valid if present
+        if(!presentParams) {
+            let invalidParams = false;
+            let invalidReturn = "";
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.clientId)){
+                invalidParams = true;
+                invalidReturn += "clientId, ";
+            }
+
+            if(!invalidParams){
+                if(this.demoMode){
+                    // return mock data
+                    success = true;
+                    message = "Client retrieved successfully - Mock";
+                    data.clientId = 0;
+                }
+                else{
+                    success = true;
+                    message = "getClient not implemented in crudController";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: " + invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: " + presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
@@ -292,9 +464,62 @@ class AppLogic{
      *  @return JSON {
      *                  clientId: int ID of client
      *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
      */
     deleteClient(){
+        let success;
+        let message;
+        let data = {};
 
+        // check to see if parameters are present
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.clientId === undefined){
+            presentParams = true;
+            presentReturn += "clientId, ";
+        }
+
+        // check if the parameters are valid if present
+        if(!presentParams) {
+            let invalidParams = false;
+            let invalidReturn = "";
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.clientId)){
+                invalidParams = true;
+                invalidReturn += "clientId, ";
+            }
+
+            if(!invalidParams){
+                if(this.demoMode){
+                    // return mock data
+                    success = true;
+                    message = "Client deleted successfully - Mock";
+                    data.clientId = 0;
+                }
+                else{
+                    success = true;
+                    message = "deleteClient not implemented in crudController";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: " + invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: " + presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
@@ -305,9 +530,62 @@ class AppLogic{
      *  @return JSON {
      *                  wifiTempAccessId: int ID of temporary wifi access detail
      *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
      */
     addTempWifi(){
+        let success;
+        let message;
+        let data = {};
 
+        // check to see if parameters are present
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.wifiAccessParamsId === undefined){
+            presentParams = true;
+            presentReturn += "wifiAccessParamsId, ";
+        }
+
+        // check if the parameters are valid if present
+        if(!presentParams) {
+            let invalidParams = false;
+            let invalidReturn = "";
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.wifiAccessParamsId)){
+                invalidParams = true;
+                invalidReturn += "clientId, ";
+            }
+
+            if(!invalidParams){
+                if(this.demoMode){
+                    // return mock data
+                    success = true;
+                    message = "WiFi access details added successfully - Mock";
+                    data.wifiTempAccessId = 0;
+                }
+                else{
+                    success = true;
+                    message = "addWifi not implemented in crudController";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: " + invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: " + presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
@@ -319,9 +597,72 @@ class AppLogic{
      *  @return JSON {
      *                  wifiTempAccessId: int ID of temporary wifi access
      *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
      */
     editTempWifi(){
+        let success;
+        let message;
+        let data = {};
 
+        // check to see if parameters are present
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.wifiAccessParamsId === undefined){
+            presentParams = true;
+            presentReturn += "wifiAccessParamsId, ";
+        }
+
+        if(this.body.wifiTempAccessId === undefined){
+            presentParams = true;
+            presentReturn += "wifiTempAccessId, ";
+        }
+
+        // check if the parameters are valid if present
+        if(!presentParams) {
+            let invalidParams = false;
+            let invalidReturn = "";
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.wifiAccessParamsId)){
+                invalidParams = true;
+                invalidReturn += "wifiAccessParamsId, ";
+            }
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.wifiTempAccessId)){
+                invalidParams = true;
+                invalidReturn += "wifiTempAccessId, ";
+            }
+
+            if(!invalidParams){
+                if(this.demoMode){
+                    // return mock data
+                    success = true;
+                    message = "WiFi access details edited successfully - Mock";
+                    data.wifiTempAccessId = 0;
+                }
+                else{
+                    success = true;
+                    message = "editWifi not implemented in crudController";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: " + invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: " + presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
@@ -332,9 +673,62 @@ class AppLogic{
      *  @return JSON {
      *
      *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
      */
     getTempWifi(){
+        let success;
+        let message;
+        let data = {};
 
+        // check to see if parameters are present
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.wifiTempAccessId === undefined){
+            presentParams = true;
+            presentReturn += "wifiTempAccessId, ";
+        }
+
+        // check if the parameters are valid if present
+        if(!presentParams) {
+            let invalidParams = false;
+            let invalidReturn = "";
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.wifiTempAccessId)){
+                invalidParams = true;
+                invalidReturn += "wifiTempAccessId, ";
+            }
+
+            if(!invalidParams){
+                if(this.demoMode){
+                    // return mock data
+                    success = true;
+                    message = "WiFi access details retrieved successfully - Mock";
+                    data.wifiTempAccessId = 0;
+                }
+                else{
+                    success = true;
+                    message = "getWifi not implemented in crudController";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: " + invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: " + presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
@@ -345,8 +739,454 @@ class AppLogic{
      *  @return JSON {
      *                  wifiTempAccess: int ID of temporary wifi access
      *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
      */
     deleteTempWifi(){
+        let success;
+        let message;
+        let data = {};
+
+        // check to see if parameters are present
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.wifiTempAccessId === undefined){
+            presentParams = true;
+            presentReturn += "wifiTempAccessId, ";
+        }
+
+        // check if the parameters are valid if present
+        if(!presentParams) {
+            let invalidParams = false;
+            let invalidReturn = "";
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.wifiTempAccessId)){
+                invalidParams = true;
+                invalidReturn += "wifiTempAccessId, ";
+            }
+
+            if(!invalidParams){
+                if(this.demoMode){
+                    // return mock data
+                    success = true;
+                    message = "WiFi access details deleted successfully - Mock";
+                    data.wifiTempAccessId = 0;
+                }
+                else{
+                    success = true;
+                    message = "deleteWifi not implemented in crudController";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: " + invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: " + presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     *  Function to add a wallet
+     *
+     *  @param limit float Limit a customer can spend
+     *  @param spent float Amount spent by customer
+     *
+     *  @return JSON {
+     *                  walletId: int ID of customer wallet
+     *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
+     */
+    addWallet(){
+        let success;
+        let message;
+        let data = {};
+
+        // check to see if parameters are present
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.limit === undefined){
+            presentParams = true;
+            presentReturn += "limit, ";
+        }
+
+        if(this.body.spent === undefined){
+            presentParams = true;
+            presentReturn += "spent, ";
+        }
+
+        // check if the parameters are valid if present
+        if(!presentParams) {
+            let invalidParams = false;
+            let invalidReturn = "";
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.limit)){
+                invalidParams = true;
+                invalidReturn += "limit, ";
+            }
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.spent)){
+                invalidParams = true;
+                invalidReturn += "spent, ";
+            }
+
+            if(!invalidParams){
+                if(this.demoMode){
+                    // return mock data
+                    success = true;
+                    message = "Wallet details added successfully - Mock";
+                    data.walletId = 0;
+                }
+                else{
+                    success = true;
+                    message = "addWallet not implemented in crudController";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: " + invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: " + presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     *  Function to edit wallet details
+     *
+     *  @param walletId int ID of the wallet to update
+     *  @param limit float Limit a customer can spend
+     *  @param spent float Amount spent by customer
+     *
+     *  @return JSON {
+     *                  walletId: int ID of customer wallet
+     *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
+     */
+    editWallet(){
+        let success;
+        let message;
+        let data = {};
+
+        // check to see if parameters are present
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.walletId === undefined){
+            presentParams = true;
+            presentReturn += "walletId, ";
+        }
+
+        if(this.body.limit === undefined){
+            presentParams = true;
+            presentReturn += "limit, ";
+        }
+
+        if(this.body.spent === undefined){
+            presentParams = true;
+            presentReturn += "spent, ";
+        }
+
+        // check if the parameters are valid if present
+        if(!presentParams) {
+            let invalidParams = false;
+            let invalidReturn = "";
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.walletId)){
+                invalidParams = true;
+                invalidReturn += "walletId, ";
+            }
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.limit)){
+                invalidParams = true;
+                invalidReturn += "limit, ";
+            }
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.spent)){
+                invalidParams = true;
+                invalidReturn += "spent, ";
+            }
+
+            if(!invalidParams){
+                if(this.demoMode){
+                    // return mock data
+                    success = true;
+                    message = "Wallet details edited successfully - Mock";
+                    data.walletId = 0;
+                }
+                else{
+                    success = true;
+                    message = "editWallet not implemented in crudController";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: " + invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: " + presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     *  Function to retrieve wallet details
+     *
+     *  @param walletId int ID of the wallet to update
+     *
+     *  @return JSON {
+     *
+     *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
+     */
+    getWallet(){
+        let success;
+        let message;
+        let data = {};
+
+        // check to see if parameters are present
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.walletId === undefined){
+            presentParams = true;
+            presentReturn += "walletId, ";
+        }
+
+        // check if the parameters are valid if present
+        if(!presentParams) {
+            let invalidParams = false;
+            let invalidReturn = "";
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.walletId)){
+                invalidParams = true;
+                invalidReturn += "walletId, ";
+            }
+
+            if(!invalidParams){
+                if(this.demoMode){
+                    // return mock data
+                    success = true;
+                    message = "Wallet details retrieved successfully - Mock";
+                    data.walletId = 0;
+                }
+                else{
+                    success = true;
+                    message = "getWallet not implemented in crudController";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: " + invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: " + presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     *  Function to delete wallet details
+     *
+     *  @param walletId int ID of the wallet to update
+     *
+     *  @return JSON {
+     *                  walletId: int ID of the wallet to update
+     *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
+     */
+    deleteWallet(){
+        let success;
+        let message;
+        let data = {};
+
+        // check to see if parameters are present
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.walletId === undefined){
+            presentParams = true;
+            presentReturn += "walletId, ";
+        }
+
+        // check if the parameters are valid if present
+        if(!presentParams) {
+            let invalidParams = false;
+            let invalidReturn = "";
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.walletId)){
+                invalidParams = true;
+                invalidReturn += "walletId, ";
+            }
+
+            if(!invalidParams){
+                if(this.demoMode){
+                    // return mock data
+                    success = true;
+                    message = "Wallet details edited successfully - Mock";
+                    data.walletId = 0;
+                }
+                else{
+                    success = true;
+                    message = "editWallet not implemented in crudController";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: " + invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: " + presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     *  Function to add a visitor package
+     *
+     *  @param employeeId int ID of employee that created the visitor package
+     *  @param startTime date Start Date of the visitor package
+     *  @param endTime date End Date of the visitor package
+     *  @param macAddress string Mac Address of client device
+     *  @param wifiAccessParamsId int ID of WiFi access point
+     *  @param limit float Limit a customer can spend
+     *  @param spent float Amount spent by customer
+     *
+     *  @return JSON {
+     *                  visitorPackageId: int ID of visitor package created
+     *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
+     */
+    addVisitorPackage(){
+
+    }
+
+    /**
+     *  Function to edit a visitor package
+     *
+     *  @param visitorPackageId int ID of visitor package to edit
+     *  @param employeeId int ID of employee that created the visitor package
+     *  @param startTime date Start Date of the visitor package
+     *  @param endTime date End Date of the visitor package
+     *  @param macAddress string Mac Address of client device
+     *  @param wifiAccessParamsId int ID of WiFi access point
+     *  @param limit float Limit a customer can spend
+     *  @param spent float Amount spent by customer
+     *
+     *  @return JSON {
+     *                  visitorPackageId: int ID of visitor package created
+     *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
+     */
+    editVisitorPackage(){
+
+    }
+
+    /**
+     *  Function to retrieve a visitor package
+     *
+     *  @param visitorPackageId int ID of visitor package
+     *
+     *  @return JSON {
+     *
+     *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
+     */
+    getVisitorPackage(){
+
+    }
+
+    /**
+     *  Function to retrieve all visitor packages for an employee
+     *
+     *  @param employeeId int ID of the employee
+     *
+     *  @return JSON array
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
+     */
+    getVisitorPackages(){
+
+    }
+
+    /**
+     *  Function to delete a visitor package
+     *
+     *  @param visitorPackageId int ID of visitor package
+     *
+     *  @return JSON {
+     *
+     *               }
+     *
+     *  @TODO Integrate with CrudController and Application
+     *  @TODO Return correct data
+     *  @TODO Test
+     */
+    deleteVisitorPackage(){
 
     }
 }

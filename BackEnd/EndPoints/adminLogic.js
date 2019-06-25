@@ -88,16 +88,16 @@ class AdminLogic
                 this.addBuilding();//INTEGRATE
                 break;
             case "editBuilding":
-                this.editBuilding();//TODO
+                this.editBuilding();//INTEGRATE
                 break;
             case "deleteBuilding":
-                this.deleteBuilding();//TODO
+                this.deleteBuilding();//INTEGRATE - DONT DO
                 break;
             case "getBuilding":
-                this.getBuilding();//TODO
+                this.getBuilding();//INTEGRATE
                 break;
             case "getBuildings":
-                this.getBuildings();//TODO
+                this.getBuildings();//INTEGRATE
                 break;
 
             //Rooms
@@ -379,7 +379,7 @@ class AdminLogic
                 if(this.demoMode){
                     //return mock data
                     data.companyId = this.body.companyId;
-                    message = "Deleted! - Mock";
+                    message = "Company Deleted! - Mock";
                     success = true;
                 }
                 else{
@@ -487,7 +487,7 @@ class AdminLogic
         else{
             //return data from crudController
             success = false;
-            message = "Get Companies not implemented";
+            message = "Get Companies not integrated";
             data = null;
         }
         this.sharedLogic.endServe(success, message, data);
@@ -730,11 +730,152 @@ class AdminLogic
         this.sharedLogic.endServe(success, message, data);
     }
 
-    deleteBuilding(){}
+    /**
+     *  This function is used by the company admin to delete an existing company
+     *
+     *  @param buildingId int The building to be deleted
+     *
+     *  @return JSON {
+     *                  building : int The ID of the building just deleted
+     *               }
+     */
+    deleteBuilding(){
+        var message;
+        var data = new Object();
+        var success;
 
-    getBuilding(){}
+        var presentParams = false;
+        var presentReturn = "";
 
-    getBuildings(){}
+        if(this.body.buildingId === undefined){
+            presentParams = true;
+            presentReturn += "buildingId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.buildingId) || !this.sharedLogic.validateNumeric(this.body.buildingId)){
+                invalidParams = true;
+                invalidReturn += "buildingId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.buildingId = this.body.buildingId;
+                    message = "Building Deleted! - Mock";
+                    success = true;
+                }
+                else{
+                    //return data from crudController
+                    success = false;
+                    message = "Delete building not implemented";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     * This function will be used to return a single Building object
+     *
+     * @param buildingId int The building ID used to get the building object
+     *
+     * @return JSON {
+     *                  //TODO
+     *              }
+     */
+    getBuilding(){
+        var message;
+        var data = new Object();
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(this.body.buildingId === undefined){
+            presentParams = true;
+            presentReturn += "buildingId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.buildingId) || !this.sharedLogic.validateNumeric(this.body.buildingId)){
+                invalidParams = true;
+                invalidReturn += "buildingId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    message = "Building Retrieved! - Mock";
+                    success = true;
+                }
+                else{
+                    //return data from crudController
+                    success = false;
+                    message = "Get Building not integrated";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     * This function will be used to retrieve all the buildings belonging to a certain company
+     *
+     * @return JSON {
+     *                  //TODO
+     *              }
+     */
+    getBuildings(){
+        var message;
+        var success;
+        var data = new Object();
+        if(this.demoMode){
+            //return mock data
+            success = false;
+            message = "Get Buildings body not known";
+            data = null;
+        }
+        else{
+            //return data from crudController
+            success = false;
+            message = "Get Buildings not integrated";
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
 
     addRoom(){}
 

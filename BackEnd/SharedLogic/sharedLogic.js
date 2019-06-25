@@ -273,22 +273,6 @@ class SharedLogic
 	}
 	
 	/**
-     *  This function takes in a password and a salt, and then hashes that password and salt combination
-	 *	according to how it was hashed and salted before being stored on the DB (for correctness). This is
-	 *	not implemented yet, as a hashing and salting scheme has not yet been picked.
-	 *	@param pass String The password entered by the user
-	 *	@param salt String The salt associated with that user on the DB
-     */
-	passwordHash(pass,salt)
-	{
-		//sha256
-		
-		return crypto.createHash('sha256').update(pass + salt).digest('hex')
-		
-		//return "12" + pass + salt + "34";
-	}
-	
-	/**
      *  This function will perform the login for either an employee or a company (based on the subsystem
 	 *	component of the url, extracted from the request's url). The username and password are extracted
 	 *	from the body of the POST request, and then the following happens:
@@ -576,6 +560,60 @@ class SharedLogic
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+     *  This function generates a random string of length 200, conforming to our api key format
+     */
+	genApiKey()
+	{
+		return randomString(200);
+	}
+	
+	/**
+     *  This function generates a random string of length 20, conforming to our salt format
+     */
+	genSalt()
+	{
+		return randomString(20);
+	}
+	
+	/**
+     *  This function takes in a password, generates a random salt and then hashes them using the hash
+	 *  function selected and used in the passwordHash function, returning that hash
+	 *	@param pass String The password entered by the user
+     */
+	genHash(pass)
+	{
+		return passwordHash(pass,genSalt());
+	}
+	
+	/**
+     *  This function takes in a password and a salt, and then hashes that password and salt combination
+	 *	according to how it was hashed and salted before being stored on the DB (for correctness). This is
+	 *	not implemented yet, as a hashing and salting scheme has not yet been picked.
+	 *	@param pass String The password entered by the user
+	 *	@param salt String The salt associated with that user on the DB
+     */
+	passwordHash(pass,salt)
+	{
+		//sha256
+		
+		return crypto.createHash('sha256').update(pass + salt).digest('hex')
+		
+		//return "12" + pass + salt + "34";
+	}
+	
+	randomString(length) 
+	{
+		var result = '';
+		var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+		var choiceLength = chars.length;
+		for(var i = 0; i < length; i++) 
+		{
+			result += chars.charAt(Math.floor(Math.random() * choiceLength));
+		}
+		return result;
 	}
 }
 

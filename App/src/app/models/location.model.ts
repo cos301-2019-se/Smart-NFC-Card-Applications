@@ -26,32 +26,42 @@
 export class LocationModel {    
     private latitude: number = 0;
     private longitude: number = 0;
+    private label: string = "";
 
     /**
      * Function constructs a location object
-     * @param _latitude number to set as latitude
-     * @param _longitude number to set as longitude
+     * @param latitude number to set as latitude
+     * @param longitude number to set as longitude
      * @return LocationModel object
      */
-    constructor(_latitude: number, _longitude: number){
-        this.setLatitude(_latitude);
-        this.setLongitude(_longitude);
+    constructor(latitude: number, longitude: number, label: string){
+        this.setLatitude(latitude);
+        this.setLongitude(longitude);
+        this.setLabel(label);
     }
 
     /**
      * Setter for latitude
-     * @param _latitude number to set as latitude 
+     * @param latitude number to set as latitude 
      */
-    setLatitude(_latitude: number){
-        this.latitude = _latitude;
+    setLatitude(latitude: number){
+        this.latitude = latitude;
     }
 
     /**
      * Setter for longitude
-     * @param _longitude number to set as latitude 
+     * @param longitude number to set as latitude 
      */
-    setLongitude(_longitude: number){
-        this.longitude = _longitude;
+    setLongitude(longitude: number){
+        this.longitude = longitude;
+    }
+
+    /**
+     * Setter for label
+     * @param label string to set as the label 
+     */
+    setLabel(label: string){
+        this.label = label;
     }
 
     /**
@@ -68,5 +78,13 @@ export class LocationModel {
      */
     getLongitude(){
         return this.longitude;
+    }
+
+    /**
+     * Getter for label
+     * @return string label
+     */
+    getLabel(){
+        return this.label;
     }
 }

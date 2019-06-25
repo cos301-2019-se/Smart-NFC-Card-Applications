@@ -71,15 +71,17 @@ export class LocationService {
    * @param accept Function that should trigger if it can navigate you
    * @param reject Function that should trigger if it cannot navigate you
    */
-  navigate(latitude: number, longitude: number, accept: Function, reject: Function){
+  navigate(destination: LocationModel, accept: Function, reject: Function){
     let source: LocationModel;
-    let destination: LocationModel = new LocationModel(latitude, longitude);
     this.getCurrentPosition()
     .then(res => {
-      source = new LocationModel(res.coords.latitude, res.coords.longitude);
+      source = new LocationModel(res.coords.latitude, res.coords.longitude, "Current Location");
       return this.getDirections(source, destination);
     }).catch(err => reject(err))    
-    .then(accept()).catch(err => reject(err))
+    .then(
+      success => accept(),
+      error => reject(error)
+    ).catch(err => reject(err))
     
   }
 }

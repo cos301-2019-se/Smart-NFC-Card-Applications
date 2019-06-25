@@ -20,6 +20,7 @@
 import { Injectable } from '@angular/core';
 import { LocalStorageService } from './local-storage.service';
 import { BusinessCard } from '../models/business-card.model';
+import { LocationModel } from '../models/location.model';
 
 /**
 * Purpose:	This class provides the business card service injectable
@@ -50,7 +51,7 @@ export class BusinessCardsService {
    * @param location string Employee's branch location
    * @return BusinessCard created
    */
-  private createBusinessCard(companyId: number, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: string) {
+  private createBusinessCard(companyId: number, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: LocationModel) {
     let businessCard: BusinessCard = new BusinessCard();
     businessCard.companyId = companyId;
     businessCard.companyName = companyName;
@@ -66,15 +67,21 @@ export class BusinessCardsService {
    * Function to set the stored business card
    * @param companyId number Company's id
    * @param companyName string Company's name
+   * @param employeeTitle string Employee's title
    * @param employeeName string Employee's name
+   * @param employeeSurname string Employee's surname
    * @param contactNumber string Employee's contact number
    * @param email string Employee's email address
    * @param website string Company's website
-   * @param location string Employee's branch location
+   * @param branchName string Employee's branch name
+   * @param latitude string Employee's branch latitude
+   * @param longitude string Employee's branch longitude
    * @retun Promise returns promise from saving to storage
    */
-  setOwnBusinessCard({companyId, companyName, employeeTitle, employeeName, employeeSurname, employeeCellphone, employeeEmail, website, location}) {
-    let businessCard: BusinessCard = this.createBusinessCard(companyId, companyName, `${employeeTitle} ${employeeName} ${employeeSurname}`, employeeCellphone, employeeEmail, website, location);
+  setOwnBusinessCard({companyId, companyName, employeeTitle, employeeName, employeeSurname, employeeCellphone, employeeEmail, website, branchName, latitude, longitude}) {
+    let employeeFullName = `${employeeTitle} ${employeeName} ${employeeSurname}`;
+    let location = new LocationModel(latitude, longitude, branchName);
+    let businessCard: BusinessCard = this.createBusinessCard(companyId, companyName, employeeFullName, employeeCellphone, employeeEmail, website, location);
     return this.storage.Save(this.ownBusinessCardKey, businessCard);
   }
 
@@ -96,7 +103,7 @@ export class BusinessCardsService {
    * @param location string Employee's branch location
    * @retun Promise returns promise from saving to storage
    */
-  addBusinessCard(companyId: number, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: string) {
+  addBusinessCard(companyId: number, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: LocationModel) {
     let businessCard: BusinessCard = this.createBusinessCard(companyId, companyName, employeeName, contactNumber, email, website, location);
     return this.getBusinessCards().then((cards) => {
       cards.unshift(businessCard);

@@ -10,6 +10,9 @@ import { NfcControllerService } from '../services/nfc-controller.service';
 import { IonicStorageModule } from '@ionic/storage';
 import { BusinessCardsService } from '../services/business-cards.service';
 import { LocalStorageService } from '../services/local-storage.service';
+import { LocationService } from '../services/location.service';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
 
 describe('Tab3Page', () => {
   let component: Tab3Page;
@@ -28,6 +31,9 @@ describe('Tab3Page', () => {
         BusinessCardsService,
         NfcControllerService,
         NFC, Ndef,
+        LocationService,
+        Geolocation,
+        LaunchNavigator
       ]
     }).compileComponents();
   }));

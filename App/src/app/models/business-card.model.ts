@@ -17,6 +17,8 @@
 *	Constraints: 	None
 */
 
+import { LocationModel } from './location.model';
+
 /**
 *   Purpose:	This class provides the BusinessCard model
 *	Usage:		This class can be used to generate business card objects
@@ -30,5 +32,5 @@ export class BusinessCard {
     contactNumber: string;
     email: string;
     website: string;
-    location: string;
+    location: LocationModel;
 }

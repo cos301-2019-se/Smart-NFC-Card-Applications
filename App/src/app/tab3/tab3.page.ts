@@ -22,6 +22,8 @@ import { Component } from '@angular/core';
 import { BusinessCardsService } from '../services/business-cards.service';
 import { BusinessCard } from '../models/business-card.model';
 import { NfcControllerService } from '../services/nfc-controller.service';
+import { LocationService } from '../services/location.service';
+import { LocationModel } from '../models/location.model';
 
 /**
 * Purpose:	This class provides the component that allows viewing of shared cards as well as adding new ones
@@ -49,7 +51,8 @@ export class Tab3Page {
    */
   constructor(
     private cardService: BusinessCardsService,
-    private nfcService: NfcControllerService
+    private nfcService: NfcControllerService,
+    private locationService: LocationService
   ) { }
 
   /**
@@ -184,6 +187,29 @@ export class Tab3Page {
         this.addCard();
       })
     }, 1500);
+  }
+
+  /**
+   * Function that opens the navigator with directions from current position to destination
+   * @param destination where to go to
+   */
+  navigate(destination){
+    this.error_message = null;
+    this.success_message = null;
+    this.info_message = "Please wait while navigator is launched";
+    let dest = new LocationModel(destination.latitude, destination.longitude, destination.label);    
+    setTimeout(() => {this.info_message = null;}, 5000);
+    this.locationService.navigate(dest, () => {
+      this.info_message = null;
+      this.error_message = null;
+      this.success_message = "Navigator launching";
+      setTimeout(() => {this.success_message = null;}, 5000);
+    }, (err) => {
+      this.info_message = null;
+      this.success_message = null;
+      this.error_message = `Could not open launcher: ${err}`;
+      setTimeout(() => {this.error_message = null;}, 5000);
+    });
   }
 
 }

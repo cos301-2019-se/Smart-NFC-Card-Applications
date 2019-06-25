@@ -10,6 +10,7 @@
 *	Date		    Author		Version		Changes
 *	-----------------------------------------------------------------------------------------
 *	2019/05/19	Wian		  1.0		    Original
+*	2019/06/25	Wian		  1.1		    Added changes to allow navigation on tap of location
 *
 *	Functional Description:   This file provides the component that allows sharing of cards
 *	Error Messages:   “Error”
@@ -21,6 +22,8 @@ import { Component, OnInit } from '@angular/core';
 import { BusinessCardsService } from '../services/business-cards.service';
 import { BusinessCard } from '../models/business-card.model';
 import { NfcControllerService } from '../services/nfc-controller.service';
+import { LocationService } from '../services/location.service';
+import { LocationModel } from '../models/location.model';
 
 /**
 * Purpose:	This class provides the component that allows sharing of cards
@@ -46,10 +49,12 @@ export class Tab2Page {
    * Constructor that takes all injectables
    * @param cardService BusinessCardsService injectable
    * @param nfcService NfcControllerService injectable
+   * @param locationService LocationService injectable
    */
   constructor(
     private cardService: BusinessCardsService,
-    private nfcService: NfcControllerService
+    private nfcService: NfcControllerService,
+    private locationService: LocationService
   ) { }
 
   /**
@@ -119,5 +124,28 @@ export class Tab2Page {
         this.shareCard();
       })
     }, 1500);
+  }
+
+  /**
+   * Function that opens the navigator with directions from current position to destination
+   * @param destination where to go to
+   */
+  navigate(destination){
+    this.error_message = null;
+    this.success_message = null;
+    this.info_message = "Please wait while navigator is launched";
+    let dest = new LocationModel(destination.latitude, destination.longitude, destination.label);    
+    setTimeout(() => {this.info_message = null;}, 5000);
+    this.locationService.navigate(dest, () => {
+      this.info_message = null;
+      this.error_message = null;
+      this.success_message = "Navigator launching";
+      setTimeout(() => {this.success_message = null;}, 5000);
+    }, (err) => {
+      this.info_message = null;
+      this.success_message = null;
+      this.error_message = `Could not open launcher: ${err}`;
+      setTimeout(() => {this.error_message = null;}, 5000);
+    });
   }
 }

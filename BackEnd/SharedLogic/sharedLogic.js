@@ -123,6 +123,20 @@ class SharedLogic
      */
 	validateBody()
 	{
+		
+		
+		
+		
+		//var id = this.crudController.createCompany("Cool", "www.blah.co.za", 1);
+		
+		//console.log("id is: " + id);
+		
+			
+		
+		
+		
+			
+			
 		if(this.from.body.apiKey === undefined)
 		{
 			if(this.from.body.username === undefined || this.from.body.password === undefined)
@@ -135,7 +149,7 @@ class SharedLogic
 			}
 		}
 		else
-		{
+		{			
 			this.crudController.initialize(this.from.body.apiKey);
 			this.extractEndpoint();
 		}

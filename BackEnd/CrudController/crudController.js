@@ -51,19 +51,7 @@ class CrudController {
 		
 		this.client.connect();
 		
-		/*this.client.query('SELECT * FROM client WHERE macaddress = $1', [cientID], 
-		(err, res) => {
-			if (err) 
-			{
-                console.log(err.stack);
-                return returnDatabaseError(err);
-			} 
-			else 
-			{
-				console.log(res);
-			}
-			this.client.end();
-		});*/
+		
     }
 	
 	
@@ -73,7 +61,7 @@ class CrudController {
 	}
     
     returnDatabaseError(errorMessage){
-       return buildDefaultResponseObject(false, "Database query failed: " + errorMessage , true);
+       return this.buildDefaultResponseObject(false, "Database query failed: " + errorMessage , true);
     }
 	
     /**
@@ -90,6 +78,7 @@ class CrudController {
      *               }
      *        
      */
+	 /*
     createCompany(name, website, passwordId) {
         var response;
         if (this.validateNonEmpty(name) && this.validateWebsite(website) && this.validateNumeric(passwordId)) {
@@ -103,7 +92,7 @@ class CrudController {
             response = this.buildDefaultResponseObject(false, "Invalid Company Details Provided", true);
         }
         return response;
-    }
+    }*/
 
     /**
      * Retrieves a company with the specified ID or Username. Returns a failure message
@@ -374,6 +363,49 @@ class CrudController {
 	
 	//Company
 	
+	/**
+	*	Creates a new company
+	*	@param companyName 
+	*	@param companyWebsite 
+	*	@param passwordId 
+	*	@return { companyId }
+	*/
+	createCompany(companyName, companyWebsite, passwordId, callback)
+	{
+		
+		var c = [];
+		var v = [];
+				
+		this.bigAppend(Object.keys({companyName})[0], companyName, c, v);
+		this.bigAppend(Object.keys({companyWebsite})[0], companyWebsite, c, v);
+		this.bigAppend(Object.keys({passwordId})[0], passwordId, c, v);
+		
+		var ret = null;
+		
+		this.client.query(this.constructInsert("Company", "companyId", c, v),
+		v, (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully added company", false, false);
+				ret.data.companyId = res.rows[0].companyid;
+				//this.client.end();
+				callback(ret);
+			}
+		});
+		
+		
+	}
+	
+
+	
 	
     //CR
 
@@ -382,6 +414,48 @@ class CrudController {
 	
 	
 	//Building
+	
+	/**
+	*	Creates a new building
+	*	@param companyName 
+	*	@param companyWebsite 
+	*	@param passwordId 
+	*	@return { companyId }
+	*/
+	createBuilding(latitude,longitude,branchName,companyId,wifiParamsId,callback)
+	{
+		
+		var c = [];
+		var v = [];
+				
+		this.bigAppend(Object.keys({latitude})[0], latitude, c, v);
+		this.bigAppend(Object.keys({longitude})[0], longitude, c, v);
+		this.bigAppend(Object.keys({branchName})[0], branchName, c, v);
+		this.bigAppend(Object.keys({companyId})[0], companyId, c, v);
+		this.bigAppend(Object.keys({wifiParamsId})[0], wifiParamsId, c, v);
+					
+		var ret = null;
+		
+		this.client.query(this.constructInsert("Building", "buildingId", c, v),
+		v, (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} 
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully added building", false, false);
+				ret.data.buildingId = res.rows[0].buildingid;
+				this.client.end();
+				callback(ret);
+			}
+		});		
+		
+	}
 	
 	
     //CR
@@ -392,6 +466,40 @@ class CrudController {
 	
 	//Password
 	
+	createPassword(username,hash,salt,apiKey,expirationDate,callback)
+	{
+		
+		var c = [];
+		var v = [];
+				
+		this.bigAppend(Object.keys({username})[0], username, c, v);
+		this.bigAppend(Object.keys({hash})[0], hash, c, v);
+		this.bigAppend(Object.keys({salt})[0], salt, c, v);
+		this.bigAppend(Object.keys({apiKey})[0], apiKey, c, v);
+		this.bigAppend(Object.keys({expirationDate})[0], expirationDate, c, v);
+					
+		var ret = null;
+		
+		this.client.query(this.constructInsert("Password", "passwordId", c, v),
+		v, (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully added password", false, false);
+				ret.data.passwordId = res.rows[0].passwordid;
+				//this.client.end();
+				callback(ret);
+			}
+		});		
+		
+	}
 	
     //CR
     
@@ -401,6 +509,38 @@ class CrudController {
 	
 	//Room
 	
+	createRoom(roomName,parentRoomList,buildingId,callback)
+	{
+		var c = [];
+		var v = [];
+				
+		this.bigAppend(Object.keys({roomName})[0], roomName, c, v);
+		this.bigAppend(Object.keys({parentRoomList})[0], parentRoomList, c, v);
+		this.bigAppend(Object.keys({buildingId})[0], buildingId, c, v);
+					
+		var ret = null;
+		
+		this.client.query(this.constructInsert("Room", "roomId", c, v),
+		v, (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} 
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully added room", false, false);
+				ret.data.roomId = res.rows[0].roomid;
+				this.client.end();
+				callback(ret);
+			}
+		});		
+		
+	}
+	
     //CR
     
     //UD
@@ -408,6 +548,36 @@ class CrudController {
 	
 	
 	//NFCAccessPoints
+	
+	createNFCAccessPoints(roomId,callback)
+	{
+		var c = [];
+		var v = [];
+				
+		this.bigAppend(Object.keys({roomId})[0], roomId, c, v);
+					
+		var ret = null;
+		
+		this.client.query(this.constructInsert("NFCAccessPoints", "nfcReaderId", c, v),
+		v, (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} 
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully added nfcaccesspoints", false, false);
+				ret.data.nfcReaderId = res.rows[0].nfcreaderid;
+				this.client.end();
+				callback(ret);
+			}
+		});		
+		
+	}
 	
 	
     //CR
@@ -418,6 +588,43 @@ class CrudController {
 	
 	//Employee
 	
+	createEmployee(firstName,surname,title,cellphone,email,companyId,buildingId,passwordId,callback)
+	{
+		var c = [];
+		var v = [];
+				
+		this.bigAppend(Object.keys({firstName})[0], firstName, c, v);
+		this.bigAppend(Object.keys({surname})[0], surname, c, v);
+		this.bigAppend(Object.keys({title})[0], title, c, v);
+		this.bigAppend(Object.keys({cellphone})[0], cellphone, c, v);
+		this.bigAppend(Object.keys({email})[0], email, c, v);
+		this.bigAppend(Object.keys({companyId})[0], companyId, c, v);
+		this.bigAppend(Object.keys({buildingId})[0], buildingId, c, v);
+		this.bigAppend(Object.keys({passwordId})[0], passwordId, c, v);
+					
+		var ret = null;
+		
+		this.client.query(this.constructInsert("Employee", "employeeId", c, v),
+		v, (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} 
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully added employee", false, false);
+				ret.data.employeeId = res.rows[0].employeeid;
+				this.client.end();
+				callback(ret);
+			}
+		});		
+		
+	}
+
     //CR
     
     //UD
@@ -426,6 +633,36 @@ class CrudController {
 	
 	//Client
 	
+	createClient(macAddress,callback)
+	{
+		var c = [];
+		var v = [];
+				
+		this.bigAppend(Object.keys({macAddress})[0], macAddress, c, v);
+					
+		var ret = null;
+		
+		this.client.query(this.constructInsert("Client", "clientId", c, v),
+		v, (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} 
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully added client", false, false);
+				ret.data.clientId = res.rows[0].clientid;
+				this.client.end();
+				callback(ret);
+			}
+		});		
+		
+	}
+	
     //CR
     
     //UD
@@ -433,6 +670,37 @@ class CrudController {
 	
 	//WiFiParams
 	
+	createWiFiParams(ssid,networkType,password,callback)
+	{
+		var c = [];
+		var v = [];
+				
+		this.bigAppend(Object.keys({ssid})[0], ssid, c, v);
+		this.bigAppend(Object.keys({networkType})[0], networkType, c, v);
+		this.bigAppend(Object.keys({password})[0], password, c, v);
+					
+		var ret = null;
+		
+		this.client.query(this.constructInsert("WiFiParams", "wifiParamsId", c, v),
+		v, (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} 
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully added wifiparams", false, false);
+				ret.data.wifiParamsId = res.rows[0].wifiparamsid;
+				this.client.end();
+				callback(ret);
+			}
+		});		
+		
+	}
 	
     //CR
     
@@ -440,6 +708,36 @@ class CrudController {
 	
 	
 	//TempWifiAccess
+	
+	createTempWifiAccess(wifiParamsId,callback)
+	{
+		var c = [];
+		var v = [];
+				
+		this.bigAppend(Object.keys({wifiParamsId})[0], wifiParamsId, c, v);
+					
+		var ret = null;
+		
+		this.client.query(this.constructInsert("TempWifiAccess", "tempWifiAccessId", c, v),
+		v, (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} 
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully added tempwifiaccess", false, false);
+				ret.data.tempWifiAccessId = res.rows[0].tempwifiaccessid;
+				this.client.end();
+				callback(ret);
+			}
+		});		
+		
+	}
 	
 	
     //CR
@@ -449,12 +747,79 @@ class CrudController {
 	
 	//VisitorPackage
 	
+	createVisitorPackage(tempWifiAccessId,tpaId,linkWalletId,employeeId,clientId,startTime,endTime,callback)
+	{
+		var c = [];
+		var v = [];
+				
+		this.bigAppend(Object.keys({tempWifiAccessId})[0], tempWifiAccessId, c, v);
+		this.bigAppend(Object.keys({tpaId})[0], tpaId, c, v);
+		this.bigAppend(Object.keys({linkWalletId})[0], linkWalletId, c, v);
+		this.bigAppend(Object.keys({employeeId})[0], employeeId, c, v);
+		this.bigAppend(Object.keys({clientId})[0], clientId, c, v);
+		this.bigAppend(Object.keys({startTime})[0], startTime, c, v);
+		this.bigAppend(Object.keys({endTime})[0], endTime, c, v);
+					
+		var ret = null;
+		
+		this.client.query(this.constructInsert("VisitorPackage", "visitorPackageId", c, v),
+		v, (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} 
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully added visitorpackage", false, false);
+				ret.data.visitorPackageId = res.rows[0].visitorpackageid;
+				this.client.end();
+				callback(ret);
+			}
+		});		
+		
+	}
+	
     //CR
     
     //UD
 	
 	
 	//TPA
+	
+	createTPA(callback) //careful!
+	{
+		var c = [];
+		var v = [];
+				
+					
+		var ret = null;
+		
+		//make own insert
+		
+		this.client.query(this.constructInsert("TPA", "tpaId", c, v),
+		v, (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} 
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully added tpa", false, false);
+				ret.data.tpaId = res.rows[0].tpaid;
+				this.client.end();
+				callback(ret);
+			}
+		});		
+		
+	}
 	
 	
     //CR
@@ -464,6 +829,39 @@ class CrudController {
 	
 	
     //TPAxRoom
+	
+	createTPAxRoom(tpaId, roomId,callback)
+	{
+		var c = [];
+		var v = [];
+				
+		this.bigAppend(Object.keys({tpaId})[0], tpaId, c, v);
+		this.bigAppend(Object.keys({roomId})[0], roomId, c, v);
+					
+		var ret = null;
+		
+		//make own insert
+		
+		this.client.query(this.constructInsert("TPAxRoom", "tpaId", c, v),
+		v, (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} 
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully added tpaxroom", false, false);
+				ret.data.tpaId = res.rows[0].tpaid;
+				this.client.end();
+				callback(ret);
+			}
+		});		
+		
+	}
     
     //CR
     
@@ -473,6 +871,37 @@ class CrudController {
 	
 	//Wallet
 	
+	createWallet(maxLimit,spent,callback)
+	{
+		var c = [];
+		var v = [];
+				
+		this.bigAppend(Object.keys({maxLimit})[0], maxLimit, c, v);
+		this.bigAppend(Object.keys({spent})[0], spent, c, v);
+					
+		var ret = null;
+		
+		this.client.query(this.constructInsert("Wallet", "linkWalletId", c, v),
+		v, (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} 
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully added wallet", false, false);
+				ret.data.linkWalletId = res.rows[0].linkwalletid;
+				this.client.end();
+				callback(ret);
+			}
+		});		
+		
+	}
+	
     //CR
     
     //UD
@@ -480,6 +909,38 @@ class CrudController {
 	
 
     //Jared Helpers
+	
+	constructInsert(tableName, tableIdName, columns, values)
+	{
+		var query = "INSERT INTO " + tableName + "(";
+		var columnsString = columns.join(',');
+		var prepVals = [];
+		for(var i = 1; i <= values.length; i++)
+		{
+			if((typeof values[i-1]) === 'string' && !values[i-1].startsWith("201"))
+			{
+				prepVals.push("$" + i + "::text");
+			}
+			else
+			{
+				prepVals.push("$" + i);
+			}
+		}
+		var valuesString = prepVals.join(',');
+		query += columnsString;
+		query += ") VALUES (";
+		query += valuesString;
+		query += ") RETURNING " + tableIdName + ";";
+		return query;
+	}
+	
+	bigAppend(val1, val2, list1, list2)
+	{
+		list1.push(val1);
+		list2.push(val2);
+	}
+	
+	
     
     
     //Savva Helpers

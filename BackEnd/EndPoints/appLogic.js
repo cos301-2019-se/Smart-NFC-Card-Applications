@@ -223,11 +223,11 @@ class AppLogic{
                 }
                 // ACTUAL
                 else {
-                    me.sharedLogic.crudController.getEmployee(me.body.employeeId, function (employeeData) {
+                    me.sharedLogic.crudController.getEmployeeByEmployeeId(me.body.employeeId, function (employeeData) {
                         if (employeeData.success) {
-                            me.sharedLogic.crudController.getCompany(employeeData.data.companyId, function (companyData) {
+                            me.sharedLogic.crudController.getCompanyByCompanyId(employeeData.data.companyId, function (companyData) {
                                 if (companyData.success) {
-                                    me.sharedLogic.crudController.getBuilding(employeeData.data.buildingId, function (buildingData) {
+                                    me.sharedLogic.crudController.getBuildingByBuildingId(employeeData.data.buildingId, function (buildingData) {
                                         if (buildingData.success) {
                                             success = true;
                                             message = "Business card information loaded successfully";

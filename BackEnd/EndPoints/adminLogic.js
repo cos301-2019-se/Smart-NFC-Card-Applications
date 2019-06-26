@@ -114,7 +114,7 @@ class AdminLogic
                 this.getRoom();//INTEGRATE
                 break;
             case "getRooms":
-                this.getRooms();//TODO
+                this.getRooms();//INTEGRATE
                 break;
 
             //Employees
@@ -125,21 +125,21 @@ class AdminLogic
                 this.addEmployees();//TODO
                 break;
             case "editEmployee":
-                this.editEmployee();//TODO
+                this.editEmployee();//INTEGRATE
                 break;
             case "deleteEmployee":
-                this.deleteEmployee();//TODO
+                this.deleteEmployee();//INTEGRATE - DONT DO
                 break;
             case "getEmployee":
-                this.getEmployee();//TODO
+                this.getEmployee();//INTEGRATE
                 break;
             case "getEmployees":
-                this.getEmployees();//TODO
+                this.getEmployees();//INTEGRATE
                 break;
 
             //password
             case "editPassword":
-                this.editPassword();//TODO
+                this.editPassword();//INTEGRATE
                 break;
 
             default:
@@ -258,6 +258,7 @@ class AdminLogic
 
     /**
      *  Function that is called to edit a companies details
+     *
      *  @param companyId
      *  @param companyName
      *  @param companyWebsite
@@ -406,7 +407,9 @@ class AdminLogic
     }
 
     /**
-     * @param companyId
+     * Function used to get an individual company Object using the company ID
+     *
+     * @param companyId int The ID used to retrieve the company object
      *
      * @return JSON {
      *                  //TODO
@@ -855,9 +858,9 @@ class AdminLogic
     /**
      * This function will be used to retrieve all the buildings belonging to a certain company
      *
-     * @return JSON {
-     *                  //TODO
-     *              }
+     * @return an Array of JSON {
+     *                              //TODO
+     *                          }
      */
     getBuildings(){
         var message;
@@ -1163,9 +1166,9 @@ class AdminLogic
     /**
      * This function will be used to retrieve all the buildings belonging to a certain company
      *
-     * @return JSON {
-     *                  //TODO
-     *              }
+     * @return an Array of JSON {
+     *                              //TODO
+     *                          }
      */
     getRooms(){
         var message;
@@ -1335,17 +1338,359 @@ class AdminLogic
         this.sharedLogic.endServe(success, message, data);
     }
 
+    /**
+     * Function to add a bulk amount of employees, it will create employees belonging to a company ID
+     * Params are an array of objects containing the parameters
+     *
+     * @param   employeeName string The name of the employee
+     * @param   employeeSurname string The surname of the employee
+     * @param   employeeTitle string The Title of the employee e.g Mr/Mrs
+     * @param   employeeCellphone string The Cellphone number of the employee
+     * @param   employeeEmail string The email address of the employee - used for login purposes
+     * @param   companyId int The ID of the company to which the employee is being added to
+     * @param   buildingId int The building that the employee works at
+     * @param   employeePassword string The Password chosen by the employee - for login purposes
+     */
     addEmployees(){}
 
-    editEmployee(){}
+    /**
+     * Function used to change an employees details
+     *
+     * @param employeeId int The ID of the employee to be changed
+     * @param employeeName string The name of the employee
+     * @param employeeSurname string The surname of the employee
+     * @param employeeTitle string The Title of the employee e.g Mr/Mrs
+     * @param employeeCellphone string The Cellphone number of the employee
+     * @param employeeEmail string The email address of the employee - used for login purposes
+     * @param buildingId int The building that the employee works at
+     *
+     * @return JSON {
+     *                  employeeId : int The ID of the employee being added
+     *              }
+     */
+    editEmployee(){
+        var message;
+        var data = new Object();
+        var success;
 
-    deleteEmployee(){}
+        var presentParams = false;
+        var presentReturn = "";
 
-    getEmployee(){}
+        if(this.body.employeeId === undefined){
+            presentParams = true;
+            presentReturn += "employeeId, ";
+        }
+        if(this.body.employeeName === undefined){
+            presentParams = true;
+            presentReturn += "employeeName, ";
+        }
+        if(this.body.employeeSurname === undefined){
+            presentParams = true;
+            presentReturn += "employeeSurname, ";
+        }
+        if(this.body.employeeTitle === undefined){
+            presentParams = true;
+            presentReturn += "employeeTitle, ";
+        }
+        if(this.body.employeeCellphone === undefined){
+            presentParams = true;
+            presentReturn += "employeeCellphone, ";
+        }
+        if(this.body.employeeEmail === undefined){
+            presentParams = true;
+            presentReturn += "employeeEmail, ";
+        }
+        if(this.body.buildingId === undefined){
+            presentParams = true;
+            presentReturn += "buildingId, ";
+        }
 
-    getEmployees(){}
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeId) || !this.sharedLogic.validateNumeric(this.body.employeeId)){
+                invalidParams = true;
+                invalidReturn += "employeeId, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeName) || !this.sharedLogic.validateAlpha(this.body.employeeName)){
+                invalidParams = true;
+                invalidReturn += "employeeName, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeSurname) || !this.sharedLogic.validateAlpha(this.body.employeeSurname)){
+                invalidParams = true;
+                invalidReturn += "employeeSurname, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeTitle)){
+                invalidParams = true;
+                invalidReturn += "employeeTitle, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeCellphone) || !this.sharedLogic.validateCellphone(this.body.employeeCellphone)){
+                invalidParams = true;
+                invalidReturn += "employeeCellphone, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeEmail) || !this.sharedLogic.validateEmail(this.body.employeeEmail)){
+                invalidParams = true;
+                invalidReturn += "employeeEmail, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.buildingId) || !this.sharedLogic.validateNumeric(this.body.buildingId)){
+                invalidParams = true;
+                invalidReturn += "buildingId, ";
+            }
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.employeeId = this.body.employeeId;
+                    message = "Employee edited! - Mock";
+                    success = true;
+                }
+                else{
+                    //return data from crudController
+                    success = false;
+                    message = "Edit Employee not integrated";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
 
-    editPassword(){}
+    /**
+     *  This function is used by the company admin to delete an existing Employee
+     *
+     *  @param employeeId int The Employee to be deleted
+     *
+     *  @return JSON {
+     *                  employeeId : int The ID of the Employee just deleted
+     *               }
+     */
+    deleteEmployee(){
+        var message;
+        var data = new Object();
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(this.body.employeeId === undefined){
+            presentParams = true;
+            presentReturn += "employeeId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeId) || !this.sharedLogic.validateNumeric(this.body.employeeId)){
+                invalidParams = true;
+                invalidReturn += "employeeId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.employeeId = this.body.employeeId;
+                    message = "employeeId Deleted! - Mock";
+                    success = true;
+                }
+                else{
+                    //return data from crudController
+                    success = false;
+                    message = "Delete Employee not implemented";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     * This function will be used to return a single Employee object
+     *
+     * @param employeeId int The Employee ID used to get the Employee object
+     *
+     * @return JSON {
+     *                  //TODO
+     *              }
+     */
+    getEmployee(){
+        var message;
+        var data = new Object();
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(this.body.employeeId === undefined){
+            presentParams = true;
+            presentReturn += "employeeId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeId) || !this.sharedLogic.validateNumeric(this.body.employeeId)){
+                invalidParams = true;
+                invalidReturn += "employeeId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    success = false;
+                    message = "Get Employee body not known";
+                    data = null;
+                }
+                else{
+                    //return data from crudController
+                    success = false;
+                    message = "Get Employee not integrated";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     * This function will be used to retrieve all the buildings belonging to a certain company
+     *
+     * @return an Array of JSON {
+     *                              //TODO
+     *                          }
+     */
+    getEmployees(){
+        var message;
+        var success;
+        var data = new Object();
+        if(this.demoMode){
+            //return mock data
+            success = false;
+            message = "Get Employees body not known";
+            data = null;
+        }
+        else{
+            //return data from crudController
+            success = false;
+            message = "Get Employees not integrated";
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     * This Function will be used to change the password
+     *
+     * @params apiKey
+     * @params oldPassword
+     * @params newPassword
+     *
+     * @return {}
+     */
+    editPassword(){
+        var message;
+        var data = new Object();
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(this.body.apiKey === undefined){
+            presentParams = true;
+            presentReturn += "apiKey, ";
+        }
+        if(this.body.oldPassword === undefined){
+            presentParams = true;
+            presentReturn += "oldPassword, ";
+        }
+        if(this.body.newPassword === undefined){
+            presentParams = true;
+            presentReturn += "newPassword, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.apiKey)){
+                invalidParams = true;
+                invalidReturn += "apiKey, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.oldPassword)){
+                invalidParams = true;
+                invalidReturn += "oldPassword, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.newPassword)){
+                invalidParams = true;
+                invalidReturn += "newPassword, ";
+            }
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    success = false;
+                    message = "Edit Password body not known";
+                    data = null;
+                }
+                else{
+                    //return data from crudController
+                    success = false;
+                    message = "Edit Password not integrated";
+                    data = null;
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+        }
+        this.sharedLogic.endServe(success, message, data);
+    }
 
 }
 

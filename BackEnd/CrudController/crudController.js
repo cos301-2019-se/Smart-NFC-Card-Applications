@@ -287,6 +287,106 @@ class CrudController {
 		});	
 	}
 	
+	/**
+	*	Retrieves a set of buildings using companyId
+	*	@param companyId 
+	*	@param function(return)
+	*	@return [ { buildingId, latitude, longitude, branchName, companyId, wifiParamsId } ]
+	*/
+	getBuildingsByCompanyId(companyId, callback)
+	{
+		var query = 'SELECT * FROM Building WHERE companyId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [companyId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Building with that matching companyId");
+				ret = this.returnDatabaseError("no rows in Building with that matching companyId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved buildings", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.buildingId = res.rows[i].buildingid;
+					obj.latitude = res.rows[i].latitude;
+					obj.longitude = res.rows[i].longitude;
+					obj.branchName = res.rows[i].branchname;
+					obj.companyId = res.rows[i].companyid;
+					obj.wifiParamsId = res.rows[i].wifiparamsid;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
+		/**
+	*	Retrieves a set of buildings using wifiParamsId
+	*	@param wifiParamsId 
+	*	@param function(return)
+	*	@return [ { buildingId, latitude, longitude, branchName, companyId, wifiParamsId } ]
+	*/
+	getBuildingsByWifiParamsId(wifiParamsId, callback)
+	{
+		var query = 'SELECT * FROM Building WHERE wifiParamsId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [wifiParamsId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Building with that matching wifiParamsId");
+				ret = this.returnDatabaseError("no rows in Building with that matching wifiParamsId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved buildings", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.buildingId = res.rows[i].buildingid;
+					obj.latitude = res.rows[i].latitude;
+					obj.longitude = res.rows[i].longitude;
+					obj.branchName = res.rows[i].branchname;
+					obj.companyId = res.rows[i].companyid;
+					obj.wifiParamsId = res.rows[i].wifiparamsid;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
 	
     //CR
     
@@ -558,6 +658,54 @@ class CrudController {
 		});	
 	}
 	
+	/**
+	*	Retrieves a set of rooms using buildingId
+	*	@param buildingId 
+	*	@param function(return)
+	*	@return [ { roomId, roomName, parentRoomList, buildingId } ]
+	*/
+	getRoomsByBuildingId(buildingId, callback)
+	{
+		var query = 'SELECT * FROM Room WHERE buildingId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [buildingId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Room with that matching buildingId");
+				ret = this.returnDatabaseError("no rows in Room with that matching buildingId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved rooms", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.roomId = res.rows[i].roomid;
+					obj.roomName = res.rows[i].roomname;
+					obj.parentRoomList = res.rows[i].parentroomlist;
+					obj.buildingId = res.rows[i].buildingid;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
     //CR
     
     //UD
@@ -635,6 +783,52 @@ class CrudController {
 				ret = this.buildDefaultResponseObject(true, "Successfully retrieved nfcaccesspoints", false, false);
 				ret.data.nfcReaderId = res.rows[0].nfcreaderid;
 				ret.data.roomId = res.rows[0].roomid;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
+	/**
+	*	Retrieves a set of nfcaccesspointss using roomId
+	*	@param roomId 
+	*	@param function(return)
+	*	@return [ { nfcReaderId, roomId } ]
+	*/
+	getNFCAccessPointssByRoomId(roomId, callback)
+	{
+		var query = 'SELECT * FROM NFCAccessPoints WHERE roomId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [roomId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in NFCAccessPoints with that matching roomId");
+				ret = this.returnDatabaseError("no rows in NFCAccessPoints with that matching roomId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved nfcaccesspointss", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.nfcReaderId = res.rows[i].nfcreaderid;
+					obj.roomId = res.rows[i].roomid;
+					
+					ret.data.push(obj);
+				}
 				//this.client.end();
 				callback(ret);
 			}
@@ -786,6 +980,112 @@ class CrudController {
 				ret.data.companyId = res.rows[0].companyid;
 				ret.data.buildingId = res.rows[0].buildingid;
 				ret.data.passwordId = res.rows[0].passwordid;
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
+	/**
+	*	Retrieves a set of employees using companyId
+	*	@param companyId 
+	*	@param function(return)
+	*	@return [ { employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId } ]
+	*/
+	getEmployeesByCompanyId(companyId, callback)
+	{
+		var query = 'SELECT * FROM Employee WHERE companyId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [companyId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Employee with that matching companyId");
+				ret = this.returnDatabaseError("no rows in Employee with that matching companyId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved employees", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.employeeId = res.rows[i].employeeid;
+					obj.firstName = res.rows[i].firstname;
+					obj.surname = res.rows[i].surname;
+					obj.title = res.rows[i].title;
+					obj.cellphone = res.rows[i].cellphone;
+					obj.email = res.rows[i].email;
+					obj.companyId = res.rows[i].companyid;
+					obj.buildingId = res.rows[i].buildingid;
+					obj.passwordId = res.rows[i].passwordid;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+
+	/**
+	*	Retrieves a set of employees using buildingId
+	*	@param buildingId 
+	*	@param function(return)
+	*	@return [ { employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId } ]
+	*/
+	getEmployeesByBuildingId(buildingId, callback)
+	{
+		var query = 'SELECT * FROM Employee WHERE buildingId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [buildingId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Employee with that matching buildingId");
+				ret = this.returnDatabaseError("no rows in Employee with that matching buildingId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved employees", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.employeeId = res.rows[i].employeeid;
+					obj.firstName = res.rows[i].firstname;
+					obj.surname = res.rows[i].surname;
+					obj.title = res.rows[i].title;
+					obj.cellphone = res.rows[i].cellphone;
+					obj.email = res.rows[i].email;
+					obj.companyId = res.rows[i].companyid;
+					obj.buildingId = res.rows[i].buildingid;
+					obj.passwordId = res.rows[i].passwordid;
+					
+					ret.data.push(obj);
+				}
 				//this.client.end();
 				callback(ret);
 			}
@@ -1084,6 +1384,52 @@ class CrudController {
 		});	
 	}
 	
+	/**
+	*	Retrieves a set of tempwifiaccesss using wifiParamsId
+	*	@param wifiParamsId 
+	*	@param function(return)
+	*	@return [ { tempWifiAccessId, wifiParamsId } ]
+	*/
+	getTempWifiAccesssByWifiParamsId(wifiParamsId, callback)
+	{
+		var query = 'SELECT * FROM TempWifiAccess WHERE wifiParamsId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [wifiParamsId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in TempWifiAccess with that matching wifiParamsId");
+				ret = this.returnDatabaseError("no rows in TempWifiAccess with that matching wifiParamsId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tempwifiaccesss", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.tempWifiAccessId = res.rows[i].tempwifiaccessid;
+					obj.wifiParamsId = res.rows[i].wifiparamsid;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
 	
     //CR
     
@@ -1320,6 +1666,110 @@ class CrudController {
 		});	
 	}
 	
+	/**
+	*	Retrieves a set of visitorpackages using employeeId
+	*	@param employeeId 
+	*	@param function(return)
+	*	@return [ { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime } ]
+	*/
+	getVisitorPackagesByEmployeeId(employeeId, callback)
+	{
+		var query = 'SELECT * FROM VisitorPackage WHERE employeeId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [employeeId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in VisitorPackage with that matching employeeId");
+				ret = this.returnDatabaseError("no rows in VisitorPackage with that matching employeeId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved visitorpackages", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.visitorPackageId = res.rows[i].visitorpackageid;
+					obj.tempWifiAccessId = res.rows[i].tempwifiaccessid;
+					obj.tpaId = res.rows[i].tpaid;
+					obj.linkWalletId = res.rows[i].linkwalletid;
+					obj.employeeId = res.rows[i].employeeid;
+					obj.clientId = res.rows[i].clientid;
+					obj.startTime = res.rows[i].starttime;
+					obj.endTime = res.rows[i].endtime;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+
+	/**
+	*	Retrieves a set of visitorpackages using clientId
+	*	@param clientId 
+	*	@param function(return)
+	*	@return [ { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime } ]
+	*/
+	getVisitorPackagesByClientId(clientId, callback)
+	{
+		var query = 'SELECT * FROM VisitorPackage WHERE clientId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [clientId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in VisitorPackage with that matching clientId");
+				ret = this.returnDatabaseError("no rows in VisitorPackage with that matching clientId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved visitorpackages", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.visitorPackageId = res.rows[i].visitorpackageid;
+					obj.tempWifiAccessId = res.rows[i].tempwifiaccessid;
+					obj.tpaId = res.rows[i].tpaid;
+					obj.linkWalletId = res.rows[i].linkwalletid;
+					obj.employeeId = res.rows[i].employeeid;
+					obj.clientId = res.rows[i].clientid;
+					obj.startTime = res.rows[i].starttime;
+					obj.endTime = res.rows[i].endtime;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
     //CR
     
     //UD
@@ -1450,13 +1900,13 @@ class CrudController {
 		
 	}
 	
-		/**
-	*	Retrieves a tpaxroom using tpaId
+	/**
+	*	Retrieves a set tpaxrooms using tpaId
 	*	@param tpaId 
 	*	@param function(return)
-	*	@return { tpaId, roomId }
+	*	@return [ { tpaId, roomId } ]
 	*/
-	getTPAxRoomByTpaId(tpaId, callback)
+	getTPAxRoomsByTpaId(tpaId, callback)
 	{
 		var query = 'SELECT * FROM TPAxRoom WHERE tpaId = $1';
 		
@@ -1480,22 +1930,29 @@ class CrudController {
 			}
 			else 
 			{
-				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tpaxroom", false, false);
-				ret.data.tpaId = res.rows[0].tpaid;
-				ret.data.roomId = res.rows[0].roomid;
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tpaxrooms", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.tpaId = res.rows[i].tpaid;
+					obj.roomId = res.rows[i].roomid;
+					
+					ret.data.push(obj);
+				}
 				//this.client.end();
 				callback(ret);
 			}
 		});	
 	}
-
+	
 	/**
-	*	Retrieves a tpaxroom using roomId
+	*	Retrieves a set tpaxrooms using roomId
 	*	@param roomId 
 	*	@param function(return)
-	*	@return { tpaId, roomId }
+	*	@return [ { tpaId, roomId } ]
 	*/
-	getTPAxRoomByRoomId(roomId, callback)
+	getTPAxRoomsByRoomId(roomId, callback)
 	{
 		var query = 'SELECT * FROM TPAxRoom WHERE roomId = $1';
 		
@@ -1519,14 +1976,22 @@ class CrudController {
 			}
 			else 
 			{
-				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tpaxroom", false, false);
-				ret.data.tpaId = res.rows[0].tpaid;
-				ret.data.roomId = res.rows[0].roomid;
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tpaxrooms", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.tpaId = res.rows[i].tpaid;
+					obj.roomId = res.rows[i].roomid;
+					
+					ret.data.push(obj);
+				}
 				//this.client.end();
 				callback(ret);
 			}
 		});	
 	}
+	
     
     //CR
     

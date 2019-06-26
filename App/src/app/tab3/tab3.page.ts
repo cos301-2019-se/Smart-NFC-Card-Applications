@@ -23,6 +23,7 @@ import { BusinessCardsService } from '../services/business-cards.service';
 import { BusinessCard } from '../models/business-card.model';
 import { NfcControllerService } from '../services/nfc-controller.service';
 import { LocationService } from '../services/location.service';
+import { WifiService } from '../services/wifi.service';
 import { LocationModel } from '../models/location.model';
 
 /**
@@ -52,7 +53,8 @@ export class Tab3Page {
   constructor(
     private cardService: BusinessCardsService,
     private nfcService: NfcControllerService,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private wifiService: WifiService
   ) { }
 
   /**
@@ -64,7 +66,7 @@ export class Tab3Page {
     this.success_message = null;
     this.info_message = null;
     // Gets the business cards
-    this.loadCards(); 
+    this.loadCards();  
   }
 
   /**

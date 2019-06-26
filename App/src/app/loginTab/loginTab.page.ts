@@ -10,6 +10,7 @@
 *	Date		    Author		Version		Changes
 *	-----------------------------------------------------------------------------------------
 *	2019/05/19	Wian		  1.0		    Original
+*	2019/06/26	Wian		  1.1		    Added functionality to create visitor package
 *
 *	Functional Description:   This class provides the app's login tab's logic
 *	Error Messages:   “Error”
@@ -23,6 +24,8 @@ import { BusinessCardsService } from '../services/business-cards.service';
 import { LocalStorageService } from '../services/local-storage.service';
 import { RequestModuleService } from '../services/request-module.service';
 import { Observable } from 'rxjs';
+import { ModalController } from '@ionic/angular';
+import { CreateVisitorPackagePage } from '../create-visitor-package/create-visitor-package.page';
 
 /**
 * Purpose:	This class provides the login tab component
@@ -45,6 +48,7 @@ export class LoginTabPage implements OnInit {
   apiKey: string = null;
   title: string = 'Login';
   loggedIn: boolean = false;
+  isBusy: boolean = false;
   messageTimeout: number = 4000;
 
   /**
@@ -52,11 +56,13 @@ export class LoginTabPage implements OnInit {
    * @param cardService BusinessCardsService injectable
    * @param req RequestModuleService injectable
    * @param storage LocalStorageService injectable
+   * @param modalController ModalController injectable
    */
   constructor(
     private cardService: BusinessCardsService,
     private req: RequestModuleService,
-    private storage: LocalStorageService
+    private storage: LocalStorageService,
+    private modalController: ModalController
   ) { }
 
   /**
@@ -88,6 +94,7 @@ export class LoginTabPage implements OnInit {
       this.showError("Please enter a username and password.", this.messageTimeout);
       return;
     }
+    this.isBusy = true;
     (<Observable<object>>this.req.login(this.username, this.password)).subscribe(res => {
       if (res['success'] === true) {
         this.username = "";
@@ -105,6 +112,7 @@ export class LoginTabPage implements OnInit {
       else {
         this.showError(res['message'], this.messageTimeout);
       }
+      this.isBusy = false;
     });
   }
 
@@ -194,4 +202,15 @@ export class LoginTabPage implements OnInit {
     }, timeout);
   }
 
+  /**
+   * Function that displays the Create Visitor Package modal
+   */
+  async openCreateVisitorPackageModal() {
+    const modal = await this.modalController.create({
+      component: CreateVisitorPackagePage,
+      showBackdrop: true,
+      animated: true
+    });  
+    return await modal.present();  
+  }
 }

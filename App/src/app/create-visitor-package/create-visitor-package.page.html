@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Setup Package</ion-title>
+    <ion-buttons slot='end'>
+      <ion-button (click)="closeModal()">Cancel</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item>
+    <ion-label>Visitor</ion-label>
+    <ion-button>Assign Visitor</ion-button>
+  </ion-item>
+  <ion-item>
+    <ion-label>Start Date</ion-label>
+    <ion-datetime display-format="DD/MM/YYYY" picker-format="DD MMMM YYYY" placeholder='{{placeholderDate}}'></ion-datetime>
+  </ion-item>
+  <ion-item>
+    <ion-label>End Date</ion-label>
+    <ion-datetime display-format="DD/MM/YYYY" picker-format="DD MMMM YYYY" placeholder='{{placeholderDate}}'></ion-datetime>
+  </ion-item>
+  <ion-item>
+    <ion-label>Physical Access</ion-label>
+    <ion-select>
+      <ion-select-option value="" selected>None</ion-select-option>
+      <ion-select-option value="Lobby">Lobby</ion-select-option>
+      <ion-select-option value="Offices">Offices</ion-select-option>
+      <ion-select-option value="Labs">Labs</ion-select-option>
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <ion-label>Give WiFi Access</ion-label>
+    <ion-checkbox></ion-checkbox>
+  </ion-item>
+  <ion-item>
+    <ion-label>Spending Limit</ion-label>
+    <ion-input type="number" inputmode='numeric' placeholder='100.00'></ion-input>
+  </ion-item>
+  <br>
+  <ion-button expand="block" fill="outline">Create Package</ion-button>
+</ion-content>

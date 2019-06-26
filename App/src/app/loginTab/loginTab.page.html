@@ -6,7 +6,8 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf='!loggedIn'>  
+<ion-content *ngIf='!loggedIn'>
+  <ion-progress-bar *ngIf='isBusy' type="indeterminate"></ion-progress-bar>  
   <ion-item *ngIf='success' color='success'>
     <ion-label>
       {{ success }}
@@ -23,10 +24,11 @@
   </ion-item>
   <ion-item>
     <ion-label position="floating">Password</ion-label>
-    <ion-input [(ngModel)]='password'></ion-input>
+    <ion-input type='password' [(ngModel)]='password'></ion-input>
   </ion-item>
   <br>
   <ion-button expand="block" fill="outline" (click)='login()'>Login</ion-button>
+  <ion-button expand="block" fill="outline" (click)='openCreateVisitorPackageModal()'>Create Visitor Package</ion-button>
 </ion-content>
 
 <ion-content *ngIf='loggedIn'>  

@@ -7,6 +7,7 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { CreateVisitorPackagePageModule } from './create-visitor-package/create-visitor-package.module'
 
 import { NFC, Ndef, NdefRecord } from '@ionic-native/nfc/ngx';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
@@ -29,7 +30,8 @@ import { LocationService } from './services/location.service'
     IonicModule.forRoot(), 
     AppRoutingModule,
     IonicStorageModule.forRoot(),
-    HttpClientModule
+    HttpClientModule,
+    CreateVisitorPackagePageModule
   ],
   providers: [
     SplashScreen,

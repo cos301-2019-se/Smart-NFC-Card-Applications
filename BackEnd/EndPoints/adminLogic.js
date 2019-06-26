@@ -22,6 +22,8 @@
  */
 
 var SharedLogic = require('./../SharedLogic/sharedLogic.js');
+var me = null;
+
 // var demoMode = true;
 
 /**
@@ -46,6 +48,7 @@ class AdminLogic
         this.sharedLogic = new SharedLogic(this);
         this.body = "{}";
         this.endpoint = "";
+		me = this;
     }
 
     /**
@@ -90,6 +93,7 @@ class AdminLogic
      *               }
      */
     addCompany(){
+		
         var message;
         var data = new Object();
         var success;
@@ -136,53 +140,80 @@ class AdminLogic
                 invalidReturn += "password, ";
             }
             //if parameters are valid then execute function
-            if(!invalidParams){
+            if(!invalidParams)
+			{
                 if(this.demoMode){
                     //return mock data
                     data.companyId = 0;
                     message = this.body.companyName + " Added! - Mock";
                     success = true;
                 }
-                else{
+                else
+				{
                     //return data from crudController
-                    var passwordId = this.sharedLogic.crudController.createPassword(this.body.companyUsername, this.body.companyPassword);
+					var hash = "hash"; 
+					var salt = "salt";
+					var apiKey = "apikey11";
+					var expirationDate = "2016-06-22 19:10:25.123";
+					
+					
+                    me.sharedLogic.crudController.createPassword(me.body.companyUsername, hash, salt, apiKey, expirationDate, function(passwordId) 
+					{
+						console.log(passwordId);
+						if(passwordId.success)
+						{
 
-                    if(passwordId.success){
-
-                        var companyId = this.sharedLogic.crudController.createCompany(this.body.companyName, this.body.companyWebsite, passwordId.data.passwordId);
-
-                        if(companyId.success){
-                            data.companyId = companyId.data.companyId;
-                            message = this.body.companyName + " Added!";
-                            success = true;
-                        }
-                        else{
-                            data = null;
-                            message = companyId.message;
-                            success = false;
-                        }
-                    }
-                    else{
-                        data = null;
-                        message = passwordId.message;
-                        success = false
-                    }
+							me.sharedLogic.crudController.createCompany(me.body.companyName, me.body.companyWebsite, passwordId.data.passwordId, function(companyId)
+							{
+								console.log(companyId);
+								if(companyId.success){
+									data.companyId = companyId.data.companyId;
+									message = me.body.companyName + " Added!";
+									success = true;
+									me.sharedLogic.endServe(success, message, data);
+								}
+								else
+								{
+									data = null;
+									message = companyId.message;
+									success = false;
+									me.sharedLogic.endServe(success, message, data);
+								}
+							});
+						}
+						else
+						{
+							
+							data = null;
+							message = passwordId.message;
+							success = false;
+							console.log("here");
+							//console.log(me);
+							me.sharedLogic.endServe(success, message, data);
+						}
+					});
                 }
             }
-            else{
+            else
+			{
                 success = false;
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
+				this.sharedLogic.endServe(success, message, data);
             }
         }
-        else{
+        else
+		{
             success = false;
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
+			this.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
+		
+		
+		
     }
 
     /**

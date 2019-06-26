@@ -611,6 +611,10 @@ class SharedLogic
 		//return "12" + pass + salt + "34";
 	}
 	
+	/**
+     *  This function generates a random alphanumeric string of a certain length
+	 *	@param length the length of the random string to generate
+     */
 	randomString(length) 
 	{
 		var result = '';
@@ -622,6 +626,49 @@ class SharedLogic
 		}
 		return result;
 	}
+	
+	/**
+     *  This function returns the date of now + addHours many hours, wrapping around with days
+	 *	@param the amount of hours to add on
+     */
+	getDate(addHours)
+	{
+        var currentDate     = new Date();
+        var year    = currentDate.getFullYear();
+        var month   = currentDate.getMonth()+1;
+        var day     = currentDate.getDate();
+        var hour    = currentDate.getHours() + addHours;
+        var minute  = currentDate.getMinutes();
+        var second  = currentDate.getSeconds();
+        var milliSecond = currentDate.getMilliseconds();
+
+        if(month.toString().length === 1) {
+            month = '0'+month;
+        }
+        if(hour >= 24){
+            day += 1;
+            hour -= 24;
+        }
+        if(hour.toString().length === 1) {
+            hour = '0'+hour;
+        }
+        if(day.toString().length === 1) {
+            day = '0'+day;
+        }
+        if(minute.toString().length === 1) {
+            minute = '0'+minute;
+        }
+        if(second.toString().length === 1) {
+            second = '0'+second;
+        }
+        if(milliSecond.toString().length === 1) {
+            milliSecond = '0'+milliSecond;
+        }
+        var dateTime = year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second+'.'+milliSecond;
+        return dateTime;
+    }
+	
+	
 }
 
 module.exports = SharedLogic;

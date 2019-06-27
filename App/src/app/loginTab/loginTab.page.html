@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      {{ title }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf='!loggedIn'>  
+  <ion-item *ngIf='success' color='success'>
+    <ion-label>
+      {{ success }}
+    </ion-label>
+  </ion-item>
+  <ion-item *ngIf='error' color='danger'>
+    <ion-label>
+      {{ error }}
+    </ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Username/Email</ion-label>
+    <ion-input [(ngModel)]='username'></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Password</ion-label>
+    <ion-input [(ngModel)]='password'></ion-input>
+  </ion-item>
+  <br>
+  <ion-button expand="block" fill="outline" (click)='login()'>Login</ion-button>
+</ion-content>
+
+<ion-content *ngIf='loggedIn'>  
+  <ion-item *ngIf='success' color='success'>
+    <ion-label>
+      {{ success }}
+    </ion-label>
+  </ion-item>
+  <ion-item *ngIf='error' color='danger'>
+    <ion-label>
+      {{ error }}
+    </ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-label>
+      Welcome
+    </ion-label>
+  </ion-item>
+  <ion-button expand="block" fill="outline" (click)='logout()'>Logout</ion-button>
+</ion-content>

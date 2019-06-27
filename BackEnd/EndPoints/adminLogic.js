@@ -69,10 +69,10 @@ class AdminLogic
         {
             //Companies
             case "addCompany":
-                this.addCompany();  //TEST
+                this.addCompany();
                 break;
             case "editCompany":
-                this.editCompany(); //TEST
+                this.editCompany(); //SAVVAS FIX
                 break;
             case "deleteCompany":
                 this.deleteCompany();//DONT DO
@@ -173,6 +173,7 @@ class AdminLogic
      *               }
      */
     addCompany(){
+
         var message;
         var data = new Object();
         var success;
@@ -234,37 +235,31 @@ class AdminLogic
                     var hash = me.sharedLogic.passwordHash(me.body.companyPassword,salt);
                     var expDate = me.sharedLogic.getDate(0);
                     var apiKey = me.sharedLogic.genApiKey(); //need to check for duplicates
+                    me.sharedLogic.crudController.createPassword(me.body.companyUsername, hash, salt, apiKey, expDate, function (passwordObj) {
 
-                    var passwordObj = new Object();
-                    while(passwordObj===undefined || (passwordObj.message.includes("apiKeyThing") && !passwordObj.message.includes("duplicateUsernameThing"))){//TODO change param to actual string if duplicate API KEYS
-                        me.sharedLogic.crudController.createPassword(me.body.companyUsername, hash, salt, apiKey, expDate, function(password){
-                            passwordObj = password;
-                        });
-                    }
+                        if(passwordObj.success){
 
-                    if(passwordObj.success){
+                            me.sharedLogic.crudController.createCompany(me.body.companyName, me.body.companyWebsite, passwordObj.data.passwordId, function (companyObj) {
 
-                        me.sharedLogic.crudController.createCompany(me.body.companyName, me.body.companyWebsite, passwordObj.data.passwordId, function (companyObj) {
+                                if (companyObj.success) {
+                                    message = me.body.companyName + " Added!";
+                                    me.sharedLogic.endServe(companyObj.success, message, companyObj.data);
+                                } else {
 
-                            if (companyObj.success) {
-                                data = companyObj.data;
-                                message = me.body.companyName + " Added!";
-                                success = true;
-                                me.sharedLogic.endServe(success, message, data);
-                            } else {
-                                data = null;
-                                message = companyObj.message;
-                                success = false;
-                                me.sharedLogic.endServe(success, message, data);
-                            }
-                        });
-                    }
-                    else{
-                        data = null;
-                        message = passwordObj.message;
-                        success = false;
-                        me.sharedLogic.endServe(success, message, data);
-                    }
+                                    me.sharedLogic.crudController.deletePassword(passwordObj.data.passwordId, function(deletePasswordObj){
+                                        me.sharedLogic.endServe(companyObj.success, companyObj.message, null);
+                                    });
+                                }
+                            });
+                        }
+                        else{
+                            if(passwordObj.message.includes("password_apikey_key"))
+                                message = "Please try again - Api Key Duplicate";
+                            else
+                                message = passwordObj.message;
+                            me.sharedLogic.endServe(passwordObj.success, message, null);
+                        }
+                    });
                 }
             }
             else{
@@ -291,6 +286,7 @@ class AdminLogic
      *  @param companyName string the Name of the company
      *  @param companyWebsite string the website belonging to the company
      *  @param companyUsername string the username of the company
+     *  @param passwordId int The password ID belonging to the company
      *
      *  @return JSON {
      *                  companyId : int The company ID that has just be edited
@@ -321,6 +317,11 @@ class AdminLogic
             presentParams = true;
             presentReturn += "companyUsername, ";
         }
+        if(me.body.passwordId === undefined){
+            presentParams = true;
+            presentReturn += "passwordId, ";
+        }
+
         //check if the parameters are valid if parameters are present
         if(!presentParams){
             var invalidParams = false;
@@ -341,6 +342,10 @@ class AdminLogic
                 invalidParams = true;
                 invalidReturn += "companyUsername, ";
             }
+            if(!me.sharedLogic.validateNonEmpty(me.body.passwordId)){
+                invalidParams = true;
+                invalidReturn += "passwordId, ";
+            }
             //if parameters are valid then execute function
             if(!invalidParams){
                 if(me.demoMode){
@@ -353,38 +358,29 @@ class AdminLogic
                 else{
                     //return data from crudController
 
-                    me.sharedLogic.crudController.getPasswordByApiKey(me.body.apiKey, function(passwordObj){
+                    me.sharedLogic.crudController.updatePassword(me.body.passwordId, me.body.username, undefined, undefined, undefined, undefined, function(updatePasswordObj){
 
-                       if(passwordObj.success){
-                           me.sharedLogic.crudController.updatePassword(passwordObj.data.passwordId, me.body.username, undefined, undefined, undefined, undefined, function(updatePasswordObj){
+                        if(updatePasswordObj.success){
+                            me.sharedLogic.crudController.updateCompany(me.body.companyId, me.body.companyName, me.body.companyWebsite, undefined, function(companyObj){
 
-                               if(updatePasswordObj.success){
-                                   me.sharedLogic.crudController.updateCompany(me.body.companyId, me.body.companyName, me.body.companyWebsite, undefined, function(companyObj){
-
-                                      if(companyObj.success){
-                                          success = companyObj.success;
-                                          message = me.body.companyName + " edited!";
-                                          data.companyId = me.body.companyId;
-                                          me.sharedLogic.endServe(success, message, data);
-                                      }
-                                      else{
-                                          success = companyObj.success;
-                                          message = companyObj.message;
-                                          data = null;
-                                          me.sharedLogic.endServe(success, message, data);
-                                      }
-                                   });
-                               }
-                               else{
-                                   me.sharedLogic.endServe(updatePasswordObj.success, updatePasswordObj.message, null);
-                               }
-                           });
-                       }
-                       else{
-                           me.sharedLogic.endServe(passwordObj.success, passwordObj.message, null);
-                       }
+                                if(companyObj.success){
+                                    success = companyObj.success;
+                                    message = me.body.companyName + " edited!";
+                                    data.companyId = me.body.companyId;
+                                    me.sharedLogic.endServe(success, message, data);
+                                }
+                                else{
+                                    success = companyObj.success;
+                                    message = companyObj.message;
+                                    data = null;
+                                    me.sharedLogic.endServe(success, message, data);
+                                }
+                            });
+                        }
+                        else{
+                            me.sharedLogic.endServe(updatePasswordObj.success, updatePasswordObj.message, null);
+                        }
                     });
-
                 }
             }
             else{
@@ -1694,7 +1690,7 @@ class AdminLogic
                     var apiKey = me.sharedLogic.genApiKey(); //need to check for duplicates
 
                     var passwordObj = new Object();
-                    while(passwordObj===undefined || (passwordObj.message.includes("apiKeyThing") && !passwordObj.message.includes("duplicateUsernameThing"))){//TODO change param to actual string if duplicate API KEYS
+                    while(passwordObj.message===undefined || (passwordObj.message.includes("password_apikey_key") && !passwordObj.message.includes("password_username_key"))){//TODO change param to actual string if duplicate API KEYS
                         me.sharedLogic.crudController.createPassword(me.body.employeeEmail, hash, salt, apiKey, expDate, function(password){
                             passwordObj = password;
                         });

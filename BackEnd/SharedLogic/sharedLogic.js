@@ -123,6 +123,65 @@ class SharedLogic
      */
 	validateBody()
 	{
+		
+		/*
+		var me = this;
+		
+		me.crudController.createPassword("username1",'hash','salt','apiKey1','2019-06-26 18:00:00.123', function(passwordId)
+		{
+			console.log(passwordId);
+		me.crudController.createClient("macaddress1", function(clientId)
+			{
+				console.log(clientId);
+		me.crudController.createWallet(300.0,100.0,function(linkWalletId)
+				{
+					console.log(linkWalletId);
+		me.crudController.createTPA(function(tpaId)
+					{
+						console.log(tpaId);
+		me.crudController.createCompany('companyName','companyWebsite',passwordId.data.passwordId,function(companyId)
+						{
+							console.log(companyId);
+		me.crudController.createWiFiParams('ssid','networkType','password',function(wifiParamsId)
+							{
+								console.log(wifiParamsId);
+		me.crudController.createBuilding('latitude','longitude','branchName',companyId.data.companyId,wifiParamsId.data.wifiParamsId,function(buildingId)
+								{
+									console.log(buildingId);
+		me.crudController.createRoom('roomName','parentRoomList',buildingId.data.buildingId,function(roomId)
+									{
+										console.log(roomId);
+		me.crudController.createNFCAccessPoints(roomId.data.roomId,function(nfcReaderId)
+										{
+											console.log(nfcReaderId);
+		me.crudController.createTempWifiAccess(wifiParamsId.data.wifiParamsId,function(tempWifiAccessId)
+											{
+												console.log(tempWifiAccessId);
+		me.crudController.createTPAxRoom(tpaId.data.tpaId,roomId.data.roomId,function(tpaxroomId)
+												{
+													console.log(tpaxroomId);
+		me.crudController.createEmployee('firstName','surname','title','cellphone','email',companyId.data.companyId,buildingId.data.buildingId,passwordId.data.passwordId,function(employeeId)
+													{
+														console.log(employeeId);
+		me.crudController.createVisitorPackage(null,null,linkWalletId.data.linkWalletId,employeeId.data.employeeId,clientId.data.clientId,'2019-06-26 12:00:00.123','2019-06-26 19:00:00.123',function(visitorPackageId)
+														{
+															console.log(visitorPackageId);
+															
+														});
+													});
+												});
+											});
+										});
+									});
+								});
+							});
+						});
+					});
+				});
+			});
+		});
+		*/	
+			
 		if(this.from.body.apiKey === undefined)
 		{
 			if(this.from.body.username === undefined || this.from.body.password === undefined)
@@ -135,7 +194,8 @@ class SharedLogic
 			}
 		}
 		else
-		{
+		{			
+			this.crudController.initialize(this.from.body.apiKey);
 			this.extractEndpoint();
 		}
 	}
@@ -159,7 +219,8 @@ class SharedLogic
 	validAPITokenOnDB(apiToken)
 	{
 		//checks in DB
-		
+        return true;
+
 		if(this.demoMode)
 		{
 			return true;
@@ -205,22 +266,6 @@ class SharedLogic
 				this.endServe(false, "Invalid API Key", null);
 			}
 		}
-	}
-	
-	/**
-     *  This function takes in a password and a salt, and then hashes that password and salt combination
-	 *	according to how it was hashed and salted before being stored on the DB (for correctness). This is
-	 *	not implemented yet, as a hashing and salting scheme has not yet been picked.
-	 *	@param pass String The password entered by the user
-	 *	@param salt String The salt associated with that user on the DB
-     */
-	passwordHash(pass,salt)
-	{
-		//sha256
-		
-		return crypto.createHash('sha256').update(pass + salt).digest('hex')
-		
-		//return "12" + pass + salt + "34";
 	}
 	
 	/**
@@ -512,6 +557,107 @@ class SharedLogic
 		}
 		return false;
 	}
+	
+	/**
+     *  This function generates a random string of length 200, conforming to our api key format
+     */
+	genApiKey()
+	{
+		return this.randomString(200);
+	}
+	
+	/**
+     *  This function generates a random string of length 20, conforming to our salt format
+     */
+	genSalt()
+	{
+		return this.randomString(20);
+	}
+	
+	/**
+     *  This function takes in a password, generates a random salt and then hashes them using the hash
+	 *  function selected and used in the passwordHash function, returning that hash
+	 *	@param pass String The password entered by the user
+     */
+	genHash(pass)
+	{
+		return passwordHash(pass,genSalt());
+	}
+	
+	/**
+     *  This function takes in a password and a salt, and then hashes that password and salt combination
+	 *	according to how it was hashed and salted before being stored on the DB (for correctness). This is
+	 *	not implemented yet, as a hashing and salting scheme has not yet been picked.
+	 *	@param pass String The password entered by the user
+	 *	@param salt String The salt associated with that user on the DB
+     */
+	passwordHash(pass,salt)
+	{
+		//sha256
+		
+		return crypto.createHash('sha256').update(pass + salt).digest('hex')
+		
+		//return "12" + pass + salt + "34";
+	}
+	
+	/**
+     *  This function generates a random alphanumeric string of a certain length
+	 *	@param length the length of the random string to generate
+     */
+	randomString(length) 
+	{
+		var result = '';
+		var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+		var choiceLength = chars.length;
+		for(var i = 0; i < length; i++) 
+		{
+			result += chars.charAt(Math.floor(Math.random() * choiceLength));
+		}
+		return result;
+	}
+	
+	/**
+     *  This function returns the date of now + addHours many hours, wrapping around with days
+	 *	@param the amount of hours to add on
+     */
+	getDate(addHours)
+	{
+        var currentDate     = new Date();
+        var year    = currentDate.getFullYear();
+        var month   = currentDate.getMonth()+1;
+        var day     = currentDate.getDate();
+        var hour    = currentDate.getHours() + addHours;
+        var minute  = currentDate.getMinutes();
+        var second  = currentDate.getSeconds();
+        var milliSecond = currentDate.getMilliseconds();
+
+        if(month.toString().length === 1) {
+            month = '0'+month;
+        }
+        if(hour >= 24){
+            day += 1;
+            hour -= 24;
+        }
+        if(hour.toString().length === 1) {
+            hour = '0'+hour;
+        }
+        if(day.toString().length === 1) {
+            day = '0'+day;
+        }
+        if(minute.toString().length === 1) {
+            minute = '0'+minute;
+        }
+        if(second.toString().length === 1) {
+            second = '0'+second;
+        }
+        if(milliSecond.toString().length === 1) {
+            milliSecond = '0'+milliSecond;
+        }
+        var dateTime = year+'-'+month+'-'+day+' '+hour+':'+minute+':'+second+'.'+milliSecond;
+        return dateTime;
+    }
+	
+	
 }
 
 module.exports = SharedLogic;

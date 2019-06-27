@@ -1,8 +1,33 @@
+/**
+*	File Name:	    tab3.page.ts
+*	Project:		    Smart-NFC-Application
+*	Orginization:	  VastExpanse
+*	Copyright:	    © Copyright 2019 University of Pretoria
+*	Classes:	      Tab3Page
+*	Related documents:	None
+*
+*	Update History:
+*	Date		    Author		Version		Changes
+*	-----------------------------------------------------------------------------------------
+*	2019/05/19	Wian		  1.0		    Original
+*
+*	Functional Description:   This file provides the component that allows viewing shared cards
+*	Error Messages:   “Error”
+*	Assumptions:  That all the injectables are working
+*	Constraints: 	None
+*/
+
 import { Component } from '@angular/core';
 import { BusinessCardsService } from '../business-cards.service';
 import { BusinessCard } from '../models/business-card.model';
 import { NfcControllerService } from '../nfc-controller.service';
 
+/**
+* Purpose:	This class provides the component that allows viewing of shared cards as well as adding new ones
+*	Usage:		This component can be used to view and add business cards to a locally stored list
+*	@author:	Wian du Plooy
+*	@version:	1.0
+*/
 @Component({
   selector: 'app-tab3',
   templateUrl: 'tab3.page.html',
@@ -16,13 +41,18 @@ export class Tab3Page {
   info_message: string;
   check;
 
+  /**
+   * Constructor that takes all injectables
+   * @param cardService BusinessCardsService injectable
+   * @param nfcService NfcControllerService injectable
+   */
   constructor(
     private cardService: BusinessCardsService,
     private nfcService: NfcControllerService
   ) { }
 
   /**
-   * Triggers when the tab is navigated to
+   * Function triggers when the tab is navigated to
    */
   ionViewDidEnter() {
     //Initialize message values 
@@ -34,7 +64,7 @@ export class Tab3Page {
   }
 
   /**
-   * Triggers when the tab is left
+   * Function triggers when the tab is left
    */
   ionViewWillLeave(){
     // Stops the NFC if the action wasn't completed
@@ -43,16 +73,16 @@ export class Tab3Page {
   }
 
   /**
-   * Loads the cards from the service or sets it to empty if it doesn't exist
+   * Function that loads the cards from the service or sets it to empty if it doesn't exist
    */
   loadCards(){
     // Get cards
-    this.cardService.GetBusinessCards().then((val) => {      
+    this.cardService.getBusinessCards().then((val) => {      
       this.cards = val;
       // If it is null, set it as an empty array
       if (this.cards == null) {
         this.cards = []
-        this.cardService.SetBusinessCards([]);
+        this.cardService.setBusinessCards([]);
       }
       // Setup the toggle booleans
       this.setupToggles();
@@ -60,7 +90,7 @@ export class Tab3Page {
   }
 
   /**
-   * Reorders the lists and saves the order to the local storage
+   * Function reorders the lists and saves the order to the local storage
    * @param ev reorder event
    */
   reorderItems(ev) {
@@ -72,11 +102,11 @@ export class Tab3Page {
     this.detailToggles.splice(ev.detail.to, 0, toggleMove);
     ev.detail.complete();
     // Save it to the local storage
-    this.cardService.SetBusinessCards(this.cards);
+    this.cardService.setBusinessCards(this.cards);
   }
 
   /**
-   * Listens for an NFC Tag with the Bank Card
+   * Function listens for an NFC Tag with the Business Card
    */
   addCard(){
     //Reset message values 
@@ -100,7 +130,7 @@ export class Tab3Page {
         setTimeout(() => {this.success_message = null;}, 5000);
         this.info_message = null;
         // Add the card to the local storage
-        this.cardService.AddBusinessCard(json.companyName, json.employeeName, json.contactNumber, json.email, json.location)
+        this.cardService.addBusinessCard(json.companyId, json.companyName, json.employeeName, json.contactNumber, json.email, json.website, json.location)
         .then(() => {
           this.loadCards();
         });
@@ -113,11 +143,11 @@ export class Tab3Page {
   }
 
   /**
-   * Removes a business card
-   * @param companyName Company to remove
+   * Function removes a business card from the list
+   * @param companyId number Id of business card to remove
    */
-  removeCard(companyName){
-    this.cardService.RemoveBusinessCard(companyName).then(() => {
+  removeCard(companyId: number){
+    this.cardService.removeBusinessCard(companyId).then(() => {
       this.loadCards();
     });
   }
@@ -128,22 +158,22 @@ export class Tab3Page {
   setupToggles(){
     this.detailToggles = [];
     this.cards.forEach(card => {
-      this.detailToggles[card.companyName] = false;
+      this.detailToggles[card.companyId] = false;
     });
   }
 
   /**
-   * Toggles the business card detail of a company
-   * @param companyName Company to toggle
+   * Function toggles the business card detail of a company
+   * @param companyId number Id of business card to toggle
    */
-  toggleDetails(companyName){
-    this.detailToggles[companyName] = !this.detailToggles[companyName];
+  toggleDetails(companyId: number){
+    this.detailToggles[companyId] = !this.detailToggles[companyId];
   }
 
   /**
-   * Waits for NFC to become enabled and retries adding
+   * Function waits for NFC to become enabled and retries adding
    */
-  Retry(){
+  retry(){
     // Show NFC settings to the user
     this.nfcService.ShowSettings();
     this.check = setInterval(() => {

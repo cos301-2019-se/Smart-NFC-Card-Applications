@@ -1,8 +1,33 @@
+/**
+*	File Name:	    tab2.page.ts
+*	Project:		    Smart-NFC-Application
+*	Orginization:	  VastExpanse
+*	Copyright:	    © Copyright 2019 University of Pretoria
+*	Classes:	      Tab2Page
+*	Related documents:	None
+*
+*	Update History:
+*	Date		    Author		Version		Changes
+*	-----------------------------------------------------------------------------------------
+*	2019/05/19	Wian		  1.0		    Original
+*
+*	Functional Description:   This file provides the component that allows sharing of cards
+*	Error Messages:   “Error”
+*	Assumptions:  That all the injectables are working
+*	Constraints: 	None
+*/
+
 import { Component, OnInit } from '@angular/core';
 import { BusinessCardsService } from '../business-cards.service';
 import { BusinessCard } from '../models/business-card.model';
 import { NfcControllerService } from '../nfc-controller.service';
 
+/**
+* Purpose:	This class provides the component that allows sharing of cards
+*	Usage:		This class can be used to share the saved business card to other using NFC
+*	@author:	Wian du Plooy
+*	@version:	1.0
+*/
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
@@ -16,13 +41,19 @@ export class Tab2Page {
   info_message: string;
   check;
 
+
+  /**
+   * Constructor that takes all injectables
+   * @param cardService BusinessCardsService injectable
+   * @param nfcService NfcControllerService injectable
+   */
   constructor(
     private cardService: BusinessCardsService,
     private nfcService: NfcControllerService
   ) { }
 
   /**
-   * Triggers when the tab is navigated to
+   * Function that triggers when the tab is navigated to
    */
   ionViewDidEnter() {
     //Initialize message values 
@@ -30,13 +61,13 @@ export class Tab2Page {
     this.success_message = null;
     this.info_message = null;
     // Gets and sets the business card
-    this.cardService.GetOwnBusinessCard().then((val) => {
+    this.cardService.getOwnBusinessCard().then((val) => {
       this.card = val;
     });
   }
 
   /**
-   * Triggers when the tab is left
+   * Function that triggers when the tab is left
    */
   ionViewWillLeave(){
     // Stops the NFC if the action wasn't completed
@@ -45,20 +76,20 @@ export class Tab2Page {
   }
 
   /**
-   * Share the current set business card
+   * Function that shares the current set business card
    */
-  ShareCard(){
+  shareCard(){
     // Resets some values
     this.error_message = null;
     this.success_message = null;
     this.info_message = null;
-    this.cardService.GetOwnBusinessCard().then((val) => {
+    this.cardService.getOwnBusinessCard().then((val) => {
       this.card = val;
     });
     // Displays info to the user
     this.info_message = `Hold the phone against the receiving phone.`;
     // Uses NFC Service to send business card
-    this.nfcService.SendData(this.card.companyName, JSON.stringify(this.card))
+    this.nfcService.SendData(this.card.companyId, JSON.stringify(this.card))
     .then(() => {
       // If it was successfull, display a success message to the user for 5s
       this.success_message = `Shared ${this.card.companyName} Business Card`;
@@ -76,16 +107,16 @@ export class Tab2Page {
   }
 
   /**
-   * Waits for NFC to become enabled and retries sharing
+   * Function that waits for NFC to become enabled and retries sharing
    */
-  Retry(){
+  retry(){
     // Show NFC settings to the user
     this.nfcService.ShowSettings();
     this.check = setInterval(() => {
       this.nfcService.IsEnabled().then(() => {
         // If NFC got enabled, remove the check and try to share the card again
         clearInterval(this.check);
-        this.ShareCard();
+        this.shareCard();
       })
     }, 1500);
   }

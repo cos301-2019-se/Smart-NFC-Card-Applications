@@ -10,6 +10,8 @@ import { NfcControllerService } from '../services/nfc-controller.service';
 import { IonicStorageModule } from '@ionic/storage';
 import { BusinessCardsService } from '../services/business-cards.service';
 import { LocalStorageService } from '../services/local-storage.service';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
 
 describe('Tab2Page', () => {
   let component: Tab2Page;
@@ -28,6 +30,8 @@ describe('Tab2Page', () => {
         BusinessCardsService,
         NfcControllerService,
         NFC, Ndef,
+        Geolocation,
+        LaunchNavigator
       ]
     }).compileComponents();
   }));

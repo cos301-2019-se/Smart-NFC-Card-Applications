@@ -21,6 +21,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 /**
 * Purpose:	This class provides the injectable service
@@ -93,11 +94,14 @@ export class RequestModuleService {
    * Function to login a user
    * @param username string user's username / email
    * @param password string user's password
-   * @return JSON response from back-end server
+   * @return Observable<Object> response containing json from back-end server
    */
   login(username: string, password: string) {
     if(this.demoMode) {
-      return this.loginStub;
+      return new Observable<Object>(observer => {
+        observer.next(this.loginStub);
+        observer.complete();
+      });
     }
     else {
       let json: JSON = JSON.parse(`{ "username": "${username.trim()}", "password": "${password.trim()}" }`);
@@ -107,30 +111,39 @@ export class RequestModuleService {
 
   /**
    * Function to logout a user
-   * @return JSON response from back-end server
+   * @param api string stored api of the user
+   * @return Observable<Object> response containing json from back-end server
    */
-  logout() {
+  logout(api: string) {
     if(this.demoMode) {
-      return this.logoutStub;
+      return new Observable<Object>(observer => {
+        observer.next(this.logoutStub);
+        observer.complete();
+      });
     }
     else {
-      //return this.get(`${this.baseUrl}/app/logout`);
-      return this.logoutStub;
+      return this.post(`${this.baseUrl}/app/logout`, JSON.parse(`{apiKey: ${api}}`));
     }
   }
 
   /**
    * Function to check if user is logged in
    * @param api string stored api of the user
-   * @return JSON response from back-end server
+   * @return Observable<Object> response containing json from back-end server
    */
   checkLoggedIn(api: string) {
     if(this.demoMode) {
       if(this.loginStub['data']['apiKey'] == api){
-        return this.loginStub;
+        return new Observable<Object>(observer => {
+          observer.next(this.loginStub);
+          observer.complete();
+        });
       }
       else {
-        return this.logoutStub;
+        return new Observable<Object>(observer => {
+          observer.next(this.logoutStub);
+          observer.complete();
+        });
       }
     }
     else {
@@ -142,11 +155,14 @@ export class RequestModuleService {
    * Function to get business card data
    * @param employeeId number Employee's id to get his business card
    * @param apiKey string API Key to authenticate request
-   * @return JSON response from back-end server
+   * @return Observable<Object> response containing json from back-end server
    */
   getBusinessCard(employeeId: number, apiKey: string) {
     if(this.demoMode) {
-      return this.businessCardStub;
+      return new Observable<Object>(observer => {
+        observer.next(this.businessCardStub);
+        observer.complete();
+      });
     }
     else {
       let json: JSON = JSON.parse(`{ "employeeId": ${employeeId}, "apiKey": "${apiKey}" }`);

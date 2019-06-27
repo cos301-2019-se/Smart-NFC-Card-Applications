@@ -9,6 +9,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { BusinessCardsService } from '../services/business-cards.service';
 import { LocalStorageService } from '../services/local-storage.service';
 import { RequestModuleService } from '../services/request-module.service';
+import { ModalController, AngularDelegate } from '@ionic/angular';
 
 describe('LoginTabPage', () => {
   let component: LoginTabPage;
@@ -25,7 +26,8 @@ describe('LoginTabPage', () => {
       providers: [
         LocalStorageService,
         BusinessCardsService,
-        RequestModuleService
+        RequestModuleService,
+        ModalController, AngularDelegate
       ]
     }).compileComponents();
   }));

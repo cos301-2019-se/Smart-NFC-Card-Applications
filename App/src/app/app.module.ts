@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
-import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
+import { IonicModule, IonicRouteStrategy, ModalController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -42,6 +42,7 @@ import { LocationService } from './services/location.service'
     Geolocation, 
     LaunchNavigator,
     NFC, Ndef, NfcControllerService,
+    ModalController,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

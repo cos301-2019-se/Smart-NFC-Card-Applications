@@ -34,39 +34,56 @@ describe('RequestModuleService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('login should return stub data while in demo mode', () => {
+  it('login should return stub data while in demo mode', (done) => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = true;
-    expect(service.login("", "")).toBe(service.loginStub);
+    service.login("","").subscribe(data => {
+      expect(data).toBe(service.loginStub);
+      done();
+    });
   });
 
-  it('checkLoggedIn should return true if apiKey was the same as the loginStub', () => {
+  it('checkLoggedIn should return true if apiKey was the same as the loginStub', (done) => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = true;
-    let res = service.login("", "");
-    expect(service.checkLoggedIn(res['data']['apiKey'])).toBe(service.loginStub);
+    service.login("", "").subscribe(res => {
+      service.checkLoggedIn(res['data']['apiKey']).subscribe(data => {
+        expect(data).toBe(service.loginStub);
+        done();
+      });
+    });
   });
 
-  it('checkLoggedIn should return false if apiKey was different from the loginStub', () => {
+  it('checkLoggedIn should return false if apiKey was different from the loginStub', (done) => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = true;
-    service.login("", "");
-    expect(service.checkLoggedIn('wrong')).toBe(service.logoutStub);
+    service.login("", "").subscribe(res => {
+      service.checkLoggedIn("wrong").subscribe(data => {
+        expect(data).toBe(service.logoutStub);
+        done();
+      });
+    });
   });
 
-  it('logout should return stub data while in demo mode', () => {
+  it('logout should return stub data while in demo mode', (done) => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = true;
-    expect(service.logout()).toBe(service.logoutStub);
+    service.logout("").subscribe(data => {
+      expect(data).toBe(service.logoutStub);
+      done();
+    });
   });
 
-  it('getBusinessCard should return stub data while in demo mode', () => {
+  it('getBusinessCard should return stub data while in demo mode', (done) => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = true;
-    expect(service.getBusinessCard(0, service.loginStub["data"]["apiKey"])).toBe(service.businessCardStub);
+    service.getBusinessCard(0, service.loginStub["data"]["apiKey"]).subscribe(data => {
+      expect(data).toBe(service.businessCardStub);
+      done();
+    });
   });
 
-  it('login should return data from back-end', () => {
+  /*it('login should return data from back-end', () => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = false;
     (<Observable<object>>service.login("piet.pompies@gmail.com", "1234")).subscribe(res => {
@@ -93,5 +110,5 @@ describe('RequestModuleService', () => {
     service.demoMode = true;
     let res = service.login("piet.pompies@gmail.com", "1234");
     expect(service.checkLoggedIn(res['data']['apiKey'])).toBe(service.loginStub);
-  });
+  });*/
 });

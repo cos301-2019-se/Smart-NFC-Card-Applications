@@ -95,14 +95,14 @@ export class LoginTabPage implements OnInit {
       return;
     }
     this.isBusy = true;
-    (<Observable<object>>this.req.login(this.username, this.password)).subscribe(res => {
+    this.req.login(this.username, this.password).subscribe(res => {
       if (res['success'] === true) {
         this.username = "";
         this.password = "";
         this.loggedIn = true;
         let apiKey = res['data']['apiKey'];
         this.storage.Save(this.apiKeyName, apiKey);
-        (<Observable<object>>this.req.getBusinessCard(res['data']['id'], apiKey)).subscribe(response => {
+        this.req.getBusinessCard(res['data']['id'], apiKey).subscribe(response => {
           let cardDetails = response['data'];
           this.cardService.setOwnBusinessCard(cardDetails);
           this.updateTitle();
@@ -121,7 +121,7 @@ export class LoginTabPage implements OnInit {
    */
   logout(){
     this.resetMessages();
-    let res = this.req.logout();
+    let res = this.req.logout(this.apiKey);
     if (res['success'] === true) {
       this.showSuccess(res['message'], this.messageTimeout);
       this.loggedIn = false;

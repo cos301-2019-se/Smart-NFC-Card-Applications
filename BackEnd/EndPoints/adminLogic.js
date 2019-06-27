@@ -75,7 +75,7 @@ class AdminLogic
                 this.editCompany(); //TEST
                 break;
             case "deleteCompany":
-                this.deleteCompany();//DONT DO
+                this.deleteCompany();// DONT DO
                 break;
             case "getCompanyByCompanyId":
                 this.getCompanyByCompanyId();//TEST
@@ -319,7 +319,7 @@ class AdminLogic
         }
         if(me.body.companyUsername === undefined){
             presentParams = true;
-            presentReturn += "companyWebsite, ";
+            presentReturn += "companyUsername, ";
         }
         //check if the parameters are valid if parameters are present
         if(!presentParams){
@@ -352,20 +352,39 @@ class AdminLogic
                 }
                 else{
                     //return data from crudController
-                    me.sharedLogic.crudController.updateCompany(me.body.companyId, me.body.companyName, me.body.companyWebsite, undefined, function(companyObj){
-                       if(companyObj.success){
-                           success = companyObj.success;
-                           message = me.body.companyName + " edited!";
-                           data.companyId = me.body.companyId;
-                           me.sharedLogic.endServe(success, message, data);
+
+                    me.sharedLogic.crudController.getPasswordByApiKey(me.body.apiKey, function(passwordObj){
+
+                       if(passwordObj.success){
+                           me.sharedLogic.crudController.updatePassword(passwordObj.data.passwordId, me.body.username, undefined, undefined, undefined, undefined, function(updatePasswordObj){
+
+                               if(updatePasswordObj.success){
+                                   me.sharedLogic.crudController.updateCompany(me.body.companyId, me.body.companyName, me.body.companyWebsite, undefined, function(companyObj){
+
+                                      if(companyObj.success){
+                                          success = companyObj.success;
+                                          message = me.body.companyName + " edited!";
+                                          data.companyId = me.body.companyId;
+                                          me.sharedLogic.endServe(success, message, data);
+                                      }
+                                      else{
+                                          success = companyObj.success;
+                                          message = companyObj.message;
+                                          data = null;
+                                          me.sharedLogic.endServe(success, message, data);
+                                      }
+                                   });
+                               }
+                               else{
+                                   me.sharedLogic.endServe(updatePasswordObj.success, updatePasswordObj.message, null);
+                               }
+                           });
                        }
                        else{
-                           success = companyObj.success;
-                           message = companyObj.message;
-                           data = null;
-                           me.sharedLogic.endServe(success, message, data);
+                           me.sharedLogic.endServe(passwordObj.success, passwordObj.message, null);
                        }
                     });
+
                 }
             }
             else{
@@ -402,7 +421,7 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.companyId === undefined){
+        if(me.body.companyId === undefined){
             presentParams = true;
             presentReturn += "companyId, ";
         }
@@ -410,24 +429,31 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.companyId) || !me.sharedLogic.validateNumeric(me.body.companyId)){
                 invalidParams = true;
                 invalidReturn += "companyId, ";
             }
 
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(this.demoMode){
+                if(me.demoMode){
                     //return mock data
-                    data.companyId = this.body.companyId;
+                    data.companyId = me.body.companyId;
                     message = "Company Deleted! - Mock";
                     success = true;
+                    me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Delete Company not implemented";
-                    data = null;
+                    me.sharedLogic.crudController.deleteCompany(me.body.companyId, function(companyObj){
+                        if(companyObj.success){
+                            data.companyId = me.body.companyId;
+                            me.sharedLogic.endServe(companyObj.success, companyObj.message, data);
+                        }
+                        else{
+                            me.sharedLogic.endServe(companyObj.success, companyObj.message, null);
+                        }
+                    });
                 }
             }
             else{
@@ -435,6 +461,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
+                me.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -442,8 +469,9 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
+
     }
 
     /**
@@ -456,6 +484,7 @@ class AdminLogic
      *                  companyWebsite string The website of the company
      *                  companyId int the ID of the retrieved company
      *                  passwordId int The ID of the password record belonging to that company
+     *                  username string The username of the company
      *              }
      */
     getCompanyByCompanyId(){
@@ -495,11 +524,18 @@ class AdminLogic
                     //return data from crudController
                     me.sharedLogic.crudController.getCompanyByCompanyId(me.body.companyId, function(companyObj){
                         if(companyObj.success){
-                            success = companyObj.success;
-                            message = "Retrieved "+ companyObj.data.companyName+"!";
-                            data = companyObj.data;
-                            me.sharedLogic.endServe(success, message, data);
-
+                            me.sharedLogic.crudController.getPasswordByPasswordId(companyObj.data.passwordId, function(passwordObj){
+                                if(passwordObj.success){
+                                    success = passwordObj.success;
+                                    message = "Retrieved "+ companyObj.data.companyName+"!";
+                                    data = companyObj.data;
+                                    data.username = passwordObj.data.username;
+                                    me.sharedLogic.endServe(success, message, data);
+                                }
+                                else{
+                                    me.sharedLogic.endServe(passwordObj.success, passwordObj.message, null);
+                                }
+                            });
                         }else{
                             success = companyObj.success;
                             message = companyObj.message;
@@ -575,11 +611,18 @@ class AdminLogic
                     //return data from crudController
                     me.sharedLogic.crudController.getCompanyByPasswordId(me.body.passwordId, function(companyObj){
                         if(companyObj.success){
-                            success = companyObj.success;
-                            message = "Retrieved "+ companyObj.data.companyName+"!";
-                            data = companyObj.data;
-                            me.sharedLogic.endServe(success, message, data);
-
+                            me.sharedLogic.crudController.getPasswordByPasswordId(companyObj.data.passwordId, function(passwordObj){
+                                if(passwordObj.success){
+                                    success = passwordObj.success;
+                                    message = "Retrieved "+ companyObj.data.companyName+"!";
+                                    data = companyObj.data;
+                                    data.username = passwordObj.data.username;
+                                    me.sharedLogic.endServe(success, message, data);
+                                }
+                                else{
+                                    me.sharedLogic.endServe(passwordObj.success, passwordObj.message, null);
+                                }
+                            });
                         }else{
                             success = companyObj.success;
                             message = companyObj.message;
@@ -1820,22 +1863,38 @@ class AdminLogic
                 }
                 else{
                     //return data from crudController
-                    me.sharedLogic.crudController.updateEmployee(me.body.employeeId, me.body.employeeName, me.body.employeeSurname, me.body.employeeTitle,
-                                                                me.body.employeeCellphone, me.body.employeeEmail, undefined, me.body.buildingId,
-                                                                undefined, function(employeeObj){
-                        if(employeeObj.success){
-                            success = employeeObj.success;
-                            message = "Employee Edited!";
-                            data.employeeId = me.body.employeeId;
-                            me.sharedLogic.endServe(success, message, data);
+                    me.sharedLogic.crudController.getPasswordByApiKey(me.body.apiKey, function(passwordObj){
+                        if(passwordObj.success){
+                            me.sharedLogic.crudController.updatePassword(passwordObj.data.passwordId, me.body.employeeEmail,undefined, undefined, undefined, undefined, function(updatePasswordObj){
+                               if(updatePasswordObj.success){
+
+                                   me.sharedLogic.crudController.updateEmployee(me.body.employeeId, me.body.employeeName, me.body.employeeSurname, me.body.employeeTitle,
+                                                                               me.body.employeeCellphone, me.body.employeeEmail, undefined, me.body.buildingId,
+                                                                               undefined, function(employeeObj){
+                                       if(employeeObj.success){
+                                           success = employeeObj.success;
+                                           message = "Employee Edited!";
+                                           data.employeeId = me.body.employeeId;
+                                           me.sharedLogic.endServe(success, message, data);
+                                       }
+                                       else{
+                                           success = employeeObj.success;
+                                           message = employeeObj.message;
+                                           data = null;
+                                           me.sharedLogic.endServe(success, message, data);
+                                       }
+                                   });
+                               }
+                               else{
+                                   me.sharedLogic.endServe(passwordObj.success, passwordObj.message, null);
+                               }
+                            });
                         }
                         else{
-                            success = employeeObj.success;
-                            message = employeeObj.message;
-                            data = null;
-                            me.sharedLogic.endServe(success, message, data);
+                            me.sharedLogic.endServe(passwordObj.success, passwordObj.message, null);
                         }
                     });
+
                 }
             }
             else{
@@ -2218,7 +2277,6 @@ class AdminLogic
      * This Function will be used to change the password
      *
      * @params apiKey
-     * @params username
      * @params oldPassword
      * @params newPassword
      *
@@ -2236,10 +2294,6 @@ class AdminLogic
             presentParams = true;
             presentReturn += "apiKey, ";
         }
-        if(me.body.username === undefined){
-            presentParams = true;
-            presentReturn += "username, ";
-        }
         if(me.body.oldPassword === undefined){
             presentParams = true;
             presentReturn += "oldPassword, ";
@@ -2255,10 +2309,6 @@ class AdminLogic
             if(!me.sharedLogic.validateNonEmpty(me.body.apiKey)){
                 invalidParams = true;
                 invalidReturn += "apiKey, ";
-            }
-            if(!me.sharedLogic.validateNonEmpty(me.body.username)){
-                invalidParams = true;
-                invalidReturn += "username, ";
             }
             if(!me.sharedLogic.validateNonEmpty(me.body.oldPassword)){
                 invalidParams = true;
@@ -2283,7 +2333,7 @@ class AdminLogic
                         if(apiKeyObj.success){
                             if(apiKeyObj.data.hash === me.sharedLogic.passwordHash(me.body.oldPassword,apiKeyObj.data.salt)){
                                 var newSalt = me.sharedLogic.genSalt();
-                                me.sharedLogic.crudController.updatePassword(undefined, me.body.username, me.sharedLogic.passwordHash(me.body.newPassword,newSalt), newSalt, undefined, undefined, function(passwordObj){
+                                me.sharedLogic.crudController.updatePassword(undefined, undefined, me.sharedLogic.passwordHash(me.body.newPassword,newSalt), newSalt, undefined, undefined, function(passwordObj){
                                    if(passwordObj.success) {
                                         success = passwordObj.success;
                                         message = "Password Successfully changed!";

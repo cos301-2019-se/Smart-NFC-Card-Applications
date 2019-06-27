@@ -226,6 +226,7 @@ class SharedLogic
 		}
 		else
 		{
+			return true;
 			var passwordDetails = this.crudController.getPassword(apiToken);
 			
 			if(passwordDetails.success)

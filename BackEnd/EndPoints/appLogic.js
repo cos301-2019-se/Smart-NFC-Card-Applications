@@ -110,8 +110,6 @@ class AppLogic{
      *                  employeeCellphone: string Cellphone number of the employee
      *                  employeeEmail: string Email of the employee
      *               }
-     *
-     *  @TODO Integrate with CrudController and Application
      */
     getBusinessCard(){
         let success;
@@ -605,7 +603,7 @@ class AppLogic{
         }
         else{
             me.sharedLogic.crudController.createTPAxRoom(tpaId, roomId,function (ret) {
-                data.tpaId = ret.data.tpa_roomId;
+                data.tpa_roomId = ret.data.tpa_roomId;
             });
         }
         return data;
@@ -631,7 +629,7 @@ class AppLogic{
             data;
         }
         else{
-            me.sharedLogic.crudController.updateTpaRoom(tpaIdCurrent, roomIdCurrent, tpaId, roomId,function (ret) {
+            me.sharedLogic.crudController.updateTPAxRoom(tpaIdCurrent, roomIdCurrent, tpaId, roomId,function (ret) {
                 data = ret.data;
             });
         }
@@ -680,7 +678,7 @@ class AppLogic{
             data;
         }
         else{
-            me.sharedLogic.crudController.deleteTpaRoom(tpaId, roomId,function (ret) {
+            me.sharedLogic.crudController.deleteTPAxRoom(tpaId, roomId,function (ret) {
                 data = ret.data;
             });
         }
@@ -694,7 +692,7 @@ class AppLogic{
      *  @param startTime date Start Date of the visitor package
      *  @param endTime date End Date of the visitor package
      *  @param macAddress string Mac Address of client device
-     *  @param wifiParamsId int ID of WiFi access point
+     *  @param wifiAccessParamsId int ID of WiFi access point
      *  @param roomId int ID of the room client needs access to
      *  @param limit float Limit a customer can spend
      *  @param spent float Amount spent by customer
@@ -815,20 +813,25 @@ class AppLogic{
 
                                 // ADD CLIENT
                                 clientData = this.addClient(this.body.macAddress);
+                                console.log("Client Data\n" + clientData.clientId);
 
                                 // ADD WIFI
                                 if(this.body.wifiAccessParamsId !== null)
                                     wifiData = this.addTempWifi(this.body.wifiAccessParamsId);
+                                console.log("Wifi Data\n" + wifiData.wifiTempAccessId);
 
                                 // ADD TPA
                                 if(this.body.roomId !== null){
                                     tpaData = this.addTpa();
                                     tpaRoomData = this.addTpaRoom(tpaData.tpaId, this.body.roomId);
                                 }
+                                console.log("TPA Data\n" + tpaData.tpaId);
+                                console.log("TPAxROOM Data\n" + tpaRoomData.tpa_roomId);
 
                                 // ADD WALLET
                                 if(this.body.limit !== null && this.body.spent !== null)
                                     walletData = this.addWallet(this.body.limit, this.body.spent);
+                                console.log("Wallet Data\n" + walletData.walletId);
 
                                 me.sharedLogic.crudController.createVisitorPackage(wifiData.wifiTempAccessId, tpaData.tpaId, walletData.walletId, this.body.employeeId, clientData.clientId, this.body.startTime, this.body.endTime, function (ret) {
                                     success = ret.success;

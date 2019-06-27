@@ -180,21 +180,7 @@ class SharedLogic
 				});
 			});
 		});
-		*/
-		
-		
-		
-		var me = this;
-		me.crudController.getBuildingsByCompanyId(52, function(buildingRow)
-		{
-			console.log(buildingRow);
-		});
-		
-			
-		
-		
-		
-			
+		*/	
 			
 		if(this.from.body.apiKey === undefined)
 		{

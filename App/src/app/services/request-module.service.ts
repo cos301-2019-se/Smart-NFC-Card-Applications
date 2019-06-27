@@ -10,6 +10,7 @@
 *	Date		    Author		Version		Changes
 *	-----------------------------------------------------------------------------------------
 *	2019/05/19	Wian		  1.0		    Original
+*	2019/06/27	Wian		  1.1		    Added Functions for Creating Visitor Packages
 *
 *	Functional Description:   This class provides a request service to the application that
 *                           is used to make http requests to the back-end
@@ -25,14 +26,14 @@ import { HttpClient } from '@angular/common/http';
 * Purpose:	This class provides the injectable service
 *	Usage:		This class can be used to make http requests to the back-end by calling its public function
 *	@author:	Wian du Plooy
-*	@version:	1.0
+*	@version:	1.1
 */
 @Injectable({
   providedIn: 'root'
 })
 export class RequestModuleService {
 
-  demoMode: boolean = false;
+  demoMode: boolean = true;
   baseUrl: string = "https://smart-nfc-application.herokuapp.com";
   loginStub: JSON = JSON.parse(`{
     "success": true,
@@ -151,5 +152,42 @@ export class RequestModuleService {
       let json: JSON = JSON.parse(`{ "employeeId": ${employeeId}, "apiKey": "${apiKey}" }`);
       return this.post(`${this.baseUrl}/app/getBusinessCard`, json);
     }
+  }
+
+  /**
+   * Function to add a visitor package to the database
+   * @param employeeId number Employee's id
+   * @param startTime string DateTime of when the package becomes valid
+   * @param endTime string DateTime of when the package expires
+   * @param macAddress string Mac Address of the client
+   * @param wifiParamsId number WiFi's id visitor may connect to
+   * @param roomId number Room's id visitor is visiting (furthest into the building)
+   * @param limit number Max number of credits visitor can spend
+   * @param spent number Credits already spent on the virtual card (defaults to 0)
+   * @return
+   */
+  addVisitorPackage(employeeId: number, startTime: string, endTime: string, macAddress: string, wifiParamsId: number, roomId: number, limit: number, spent: number = 0) {
+    if (this.demoMode) {
+      return {}
+    }
+    else {
+      let json: JSON = JSON.parse(`{'employeeId': ${employeeId}, 'startTime': '${startTime}', 'endTime': '${endTime}', 'macAddress': '${macAddress}', 
+        'wifiParamsId': ${wifiParamsId}, 'roomId': ${roomId}, 'limit': ${limit}, 'spent': ${spent}}`);
+      return this.post(`${this.baseUrl}/app/addVisitorPackage`, json);
+    }
+  }
+
+  /**
+   * Function that converts a DateTime into a string as expected by the backend
+   * @param date Date to convert
+   * @return string formatted date
+   */
+  dateTimeToString(date: Date){
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    return `${year}/${month}/${day}:${hours}:${minutes}`;
   }
 }

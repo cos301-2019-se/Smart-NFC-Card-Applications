@@ -26,7 +26,7 @@ import { LocationModel } from './location.model';
 *	@version:	1.0
 */
 export class BusinessCard {
-    companyId: number;
+    businessCardId: string;
     companyName: string;
     employeeName: string;
     contactNumber: string;

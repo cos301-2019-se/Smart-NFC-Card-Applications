@@ -162,7 +162,7 @@ export class Tab3Page {
   setupToggles(){
     this.detailToggles = [];
     this.cards.forEach(card => {
-      this.detailToggles[card.companyId] = false;
+      this.detailToggles[card.businessCardId] = false;
     });
   }
 

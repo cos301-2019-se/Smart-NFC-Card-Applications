@@ -42,7 +42,7 @@ export class BusinessCardsService {
 
   /**
    * Function used to create a business card
-   * @param companyId number Company's id
+   * @param businessCardId string CompanyId_EmployeeId
    * @param companyName string Company's name
    * @param employeeName string Employee's name
    * @param contactNumber string Employee's contact number
@@ -51,9 +51,9 @@ export class BusinessCardsService {
    * @param location string Employee's branch location
    * @return BusinessCard created
    */
-  private createBusinessCard(companyId: number, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: LocationModel) {
+  private createBusinessCard(businessCardId: string, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: LocationModel) {
     let businessCard: BusinessCard = new BusinessCard();
-    businessCard.companyId = companyId;
+    businessCard.businessCardId = businessCardId;
     businessCard.companyName = companyName;
     businessCard.employeeName = employeeName;
     businessCard.contactNumber = contactNumber;
@@ -65,7 +65,7 @@ export class BusinessCardsService {
 
   /**
    * Function to set the stored business card
-   * @param companyId number Company's id
+   * @param businessCardId string CompanyId_EmployeeId
    * @param companyName string Company's name
    * @param employeeTitle string Employee's title
    * @param employeeName string Employee's name
@@ -78,10 +78,10 @@ export class BusinessCardsService {
    * @param longitude string Employee's branch longitude
    * @retun Promise returns promise from saving to storage
    */
-  setOwnBusinessCard({companyId, companyName, employeeTitle, employeeName, employeeSurname, employeeCellphone, employeeEmail, website, branchName, latitude, longitude}) {
+  setOwnBusinessCard({businessCardId, companyName, employeeTitle, employeeName, employeeSurname, employeeCellphone, employeeEmail, website, branchName, latitude, longitude}) {
     let employeeFullName = `${employeeTitle} ${employeeName} ${employeeSurname}`;
     let location = new LocationModel(latitude, longitude, branchName);
-    let businessCard: BusinessCard = this.createBusinessCard(companyId, companyName, employeeFullName, employeeCellphone, employeeEmail, website, location);
+    let businessCard: BusinessCard = this.createBusinessCard(businessCardId, companyName, employeeFullName, employeeCellphone, employeeEmail, website, location);
     return this.storage.Save(this.ownBusinessCardKey, businessCard);
   }
 
@@ -94,7 +94,7 @@ export class BusinessCardsService {
 
   /**
    * Function that adds a business card to the list of stored business cards
-   * @param companyId number Company's id
+   * @param businessCardId string CompanyId_EmployeeId
    * @param companyName string Company's name
    * @param employeeName string Employee's name
    * @param contactNumber string Employee's contact number
@@ -103,8 +103,8 @@ export class BusinessCardsService {
    * @param location string Employee's branch location
    * @retun Promise returns promise from saving to storage
    */
-  addBusinessCard(companyId: number, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: LocationModel) {
-    let businessCard: BusinessCard = this.createBusinessCard(companyId, companyName, employeeName, contactNumber, email, website, location);
+  addBusinessCard(businessCardId: string, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: LocationModel) {
+    let businessCard: BusinessCard = this.createBusinessCard(businessCardId, companyName, employeeName, contactNumber, email, website, location);
     return this.getBusinessCards().then((cards) => {
       cards.unshift(businessCard);
       this.setBusinessCards(cards);

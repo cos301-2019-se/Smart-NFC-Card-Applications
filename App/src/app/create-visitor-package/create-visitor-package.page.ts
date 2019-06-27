@@ -19,6 +19,17 @@
 
 import { Component, OnInit } from '@angular/core';
 import { NavParams, ModalController } from '@ionic/angular';
+import { RequestModuleService } from '../services/request-module.service'
+
+/**
+* Purpose:	This enum provides message types
+*	Usage:		This enum can be used to identify a type of message to display
+*	@author:	Wian du Plooy
+*	@version:	1.0
+*/
+enum messageType{
+    success, info, error
+}
 
 /**
 * Purpose:	This class provides visitor package creation component
@@ -35,10 +46,29 @@ export class CreateVisitorPackagePage implements OnInit {
 
   currentDate: Date = new Date();
   placeholderDate: string;
+  isBusy: boolean = false;  
+  successMessage: string;
+  infoMessage: string;
+  errorMessage: string;
 
+  employeeId: number = 1;
+  macAddress: string = '';
+  startDate: Date = new Date();
+  endDate: Date = new Date();
+  roomId: number = 1;
+  wifiParamsId: number = 1;
+  limit: number = 1;
+
+  /**
+   * Constructor that takes all injectables
+   * @param navParams NavParams injectable
+   * @param modalCtrl ModalController injectable
+   * @param requestService RequestModuleService injectable
+   */
   constructor(
     private navParams: NavParams,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private requestService: RequestModuleService
   ) { 
     this.placeholderDate = `${this.currentDate.getDate()}/${this.currentDate.getMonth()+1}/${this.currentDate.getFullYear()}`;
   }
@@ -46,8 +76,106 @@ export class CreateVisitorPackagePage implements OnInit {
   ngOnInit() {
   }
 
+  /**
+   * Function that closes the modal
+   */
   closeModal(){
     this.modalCtrl.dismiss();
   }
+
+  /**
+   * Function that gets called when submit is pressed
+   */
+  onSubmit(){
+    this.createVisitorPackage(this.employeeId, this.startDate, this.endDate, this.macAddress, this.wifiParamsId, this.roomId, this.limit);
+  }
+
+  /**
+   * Function that displays a message to the user
+   * @param message string message to display
+   * @param type number from enum, type of message to display
+   * @param timeout number after how long it should disappear (0 = don't dissappear)
+   */
+  private showMessage(message: string, type: number, timeout: number = 0) {
+    this.successMessage = null;
+    this.infoMessage = null;
+    this.errorMessage = null;
+    switch(type) {
+      case messageType.success: 
+        this.successMessage = message;
+        if (timeout != 0) { setTimeout(() => { this.successMessage = null;}, timeout); }
+        break;
+      case messageType.info:
+        this.infoMessage = message;
+        if (timeout != 0) { setTimeout(() => { this.infoMessage = null;}, timeout); }
+        break;
+      case messageType.error:
+        this.errorMessage = message;
+        if (timeout != 0) { setTimeout(() => { this.errorMessage = null;}, timeout); }
+        break;
+    }
+  }
+
+  /**
+   * Function that creates a VisitorPackage, adds it to the database, and shares it with the client
+   * @param employeeId number Employee's id
+   * @param startTime string DateTime of when the package becomes valid
+   * @param endTime string DateTime of when the package expires
+   * @param macAddress string Mac Address of the client
+   * @param wifiParamsId number WiFi's id visitor may connect to
+   * @param roomId number Room's id visitor is visiting (furthest into the building)
+   * @param limit number Max number of credits visitor can spend
+   */
+  private async createVisitorPackage(employeeId: number, startTime: Date, endTime: Date, macAddress: string, wifiParamsId: number, roomId: number, limit: number){
+    if (employeeId === null || startTime === null || endTime === null || macAddress === null) {
+      this.showMessage("Adding a visitor, start date, and end date are required.", messageType.error, 5000);
+      return;
+    }
+    if (endTime < startTime) {
+      this.showMessage("The start date should be before the end date.", messageType.error, 5000);
+      return;
+    }
+    if (wifiParamsId === null && roomId === null && limit === null) {
+      this.showMessage("Either WiFi, Physical Access, or a Virtual Wallet has to be set up.", messageType.error, 5000);
+      return;
+    }
+    this.isBusy = true;
+    await this.addVisitorPackageToDB(employeeId, startTime, endTime, macAddress, wifiParamsId, roomId, limit);
+    this.isBusy = false;
+    this.shareVisitorPackage();
+  }
+
+  /**
+   * Function that share the visitor package with the client
+   */
+  private shareVisitorPackage(){
+
+    this.showMessage("Package Shared", messageType.success, 0);
+    setTimeout(() => {
+      this.closeModal()
+    }, 1500);
+  }
+
+  /**
+   * Function that adds a visitor package to the database
+   * @param employeeId number Employee's id
+   * @param startTime string DateTime of when the package becomes valid
+   * @param endTime string DateTime of when the package expires
+   * @param macAddress string Mac Address of the client
+   * @param wifiParamsId number WiFi's id visitor may connect to
+   * @param roomId number Room's id visitor is visiting (furthest into the building)
+   * @param limit number Max number of credits visitor can spend
+   * @return
+   */
+  private async addVisitorPackageToDB(employeeId: number, startTime: Date, endTime: Date, macAddress: string, wifiParamsId: number, roomId: number, limit: number){
+    let startTimeString = this.requestService.dateTimeToString(startTime);
+    let endTimeString = this.requestService.dateTimeToString(endTime);
+    await this.delay(2000);
+    return this.requestService.addVisitorPackage(employeeId, startTimeString, endTimeString, macAddress, wifiParamsId, roomId, limit);
+  }
+
+  delay(ms: number) {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+}
 
 }

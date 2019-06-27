@@ -94,7 +94,7 @@ export class Tab2Page {
     // Displays info to the user
     this.info_message = `Hold the phone against the receiving phone.`;
     // Uses NFC Service to send business card
-    this.nfcService.SendData(this.card.companyId, JSON.stringify(this.card))
+    this.nfcService.SendData(this.card.businessCardId, JSON.stringify(this.card))
     .then(() => {
       // If it was successfull, display a success message to the user for 5s
       this.success_message = `Shared ${this.card.companyName} Business Card`;

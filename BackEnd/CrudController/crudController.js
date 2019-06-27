@@ -194,6 +194,72 @@ class CrudController {
 	
     //CR
 
+    /**
+    * Update the details of the company based on the input parameters
+    * @param companyId The ID of the company 
+    * @param name The name of the ompany
+    * @param website The website of the company
+    * @param passwordId The password ID of the company
+    */
+	updateCompany(companyId, name, website, passwordId, callback) {
+
+		if (!this.validateNumeric(companyId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid company ID provided", true));
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["companyName", "companyWebsite", "passwordId"], [name, website, passwordId], paramNames, paramValues);
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+		}
+
+		var query = this.constructUpdate("Company", paramNames, "companyId", companyId);
+		var ret = null;
+		this.client.query(query, paramValues, (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully updated company", true);
+				//ret.data.buildingId = res.rows[0].buildingid;
+				this.client.end();
+				callback(ret);
+			}
+		});
+
+	}
+
+	/**
+     * Deletes a company given a company ID
+     * @param companyId The ID of the company
+     */
+	deleteCompany(companyId, callback) {
+		if (!this.validateNumeric(companyId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid company ID provided", true));
+		}
+
+		var query = this.constructDelete("Company", "companyId");
+		var ret = null;
+		this.client.query(query, [companyId], (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully deleted company", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
+
     //UD
 	
 	
@@ -287,9 +353,162 @@ class CrudController {
 		});	
 	}
 	
+	/**
+	*	Retrieves a set of buildings using companyId
+	*	@param companyId 
+	*	@param function(return)
+	*	@return [ { buildingId, latitude, longitude, branchName, companyId, wifiParamsId } ]
+	*/
+	getBuildingsByCompanyId(companyId, callback)
+	{
+		var query = 'SELECT * FROM Building WHERE companyId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [companyId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Building with that matching companyId");
+				ret = this.returnDatabaseError("no rows in Building with that matching companyId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved buildings", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.buildingId = res.rows[i].buildingid;
+					obj.latitude = res.rows[i].latitude;
+					obj.longitude = res.rows[i].longitude;
+					obj.branchName = res.rows[i].branchname;
+					obj.companyId = res.rows[i].companyid;
+					obj.wifiParamsId = res.rows[i].wifiparamsid;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
+		/**
+	*	Retrieves a set of buildings using wifiParamsId
+	*	@param wifiParamsId 
+	*	@param function(return)
+	*	@return [ { buildingId, latitude, longitude, branchName, companyId, wifiParamsId } ]
+	*/
+	getBuildingsByWifiParamsId(wifiParamsId, callback)
+	{
+		var query = 'SELECT * FROM Building WHERE wifiParamsId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [wifiParamsId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Building with that matching wifiParamsId");
+				ret = this.returnDatabaseError("no rows in Building with that matching wifiParamsId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved buildings", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.buildingId = res.rows[i].buildingid;
+					obj.latitude = res.rows[i].latitude;
+					obj.longitude = res.rows[i].longitude;
+					obj.branchName = res.rows[i].branchname;
+					obj.companyId = res.rows[i].companyid;
+					obj.wifiParamsId = res.rows[i].wifiparamsid;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
 	
     //CR
-    
+     
+	updateBuilding(buildingId, latitude, longitude, branchName, companyId, wifiParamsId, callback) {
+
+		if (!this.validateNumeric(buildingId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid building ID provided", true));
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["latitude", "longitude", "branchName", "companyId", "wifiParamsId"], [latitude, longitude, branchName, companyId, wifiParamsId], paramNames, paramValues);
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+		}
+
+		var query = this.constructUpdate("Building", paramNames, "buildingId", buildingId);
+		var ret = null;
+		this.client.query(query, paramValues, (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully updated building", true);
+				//ret.data.buildingId = res.rows[0].buildingid;
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
+	deleteBuilding(buildingId, callback) {
+		if (!this.validateNumeric(buildingId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid building ID provided", true));
+		}
+
+		var query = this.constructDelete("Building", "buildingId");
+		var ret = null;
+		this.client.query(query, [buildingId], (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully deleted building", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
     //UD
 	
 	
@@ -471,6 +690,62 @@ class CrudController {
 	
     //CR
     
+	updatePassword(passwordId, username, hash, salt, apiKey, expirationDate, callback) {
+
+		if (!this.validateNumeric(passwordId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid password ID provided", true));
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["username", "hash", "salt", "apiKey", "expirationDate"], [username, hash, salt, apiKey, expirationDate], paramNames, paramValues);
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+		}
+
+		var query = this.constructUpdate("Password", paramNames, "passwordId", passwordId);
+		var ret = null;
+		this.client.query(query, paramValues, (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully updated password", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
+	/**
+     * Deletes the password associated with the given ID
+     * @param passwordId The ID of the password
+     */
+	deletePassword(passwordId, callback) {
+		if (!this.validateNumeric(passwordId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid password ID provided", true));
+		}
+
+		var query = this.constructDelete("Password", "passwordId");
+		var ret = null;
+		this.client.query(query, [passwordId], (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully deleted password", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
     //UD
 	
 	
@@ -558,8 +833,106 @@ class CrudController {
 		});	
 	}
 	
+	/**
+	*	Retrieves a set of rooms using buildingId
+	*	@param buildingId 
+	*	@param function(return)
+	*	@return [ { roomId, roomName, parentRoomList, buildingId } ]
+	*/
+	getRoomsByBuildingId(buildingId, callback)
+	{
+		var query = 'SELECT * FROM Room WHERE buildingId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [buildingId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Room with that matching buildingId");
+				ret = this.returnDatabaseError("no rows in Room with that matching buildingId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved rooms", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.roomId = res.rows[i].roomid;
+					obj.roomName = res.rows[i].roomname;
+					obj.parentRoomList = res.rows[i].parentroomlist;
+					obj.buildingId = res.rows[i].buildingid;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
     //CR
     
+	updateRoom(roomId, roomName, parentRoomList, buildingId, callback) {
+		if (!this.validateNumeric(roomId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid room ID provided", true));
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["roomName", "parentRoomList", "buildingId"], [roomName, parentRoomList, buildingId], paramNames, paramValues);
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+		}
+
+		var query = this.constructUpdate("Room", paramNames, "roomId", roomId);
+		var ret = null;
+		this.client.query(query, paramValues, (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully updated Room", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
+	deleteRoom(roomId, callback) {
+		if (!this.validateNumeric(roomId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid room ID provided", true));
+		}
+
+		var query = this.constructDelete("Room", "roomId");
+		var ret = null;
+		this.client.query(query, [roomId], (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully deleted room", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
     //UD
 	
 	
@@ -641,9 +1014,106 @@ class CrudController {
 		});	
 	}
 	
+	/**
+	*	Retrieves a set of nfcaccesspointss using roomId
+	*	@param roomId 
+	*	@param function(return)
+	*	@return [ { nfcReaderId, roomId } ]
+	*/
+	getNFCAccessPointssByRoomId(roomId, callback)
+	{
+		var query = 'SELECT * FROM NFCAccessPoints WHERE roomId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [roomId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in NFCAccessPoints with that matching roomId");
+				ret = this.returnDatabaseError("no rows in NFCAccessPoints with that matching roomId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved nfcaccesspointss", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.nfcReaderId = res.rows[i].nfcreaderid;
+					obj.roomId = res.rows[i].roomid;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
 	
     //CR
     
+	updateAccessPoints(nfcReaderId, roomId, callback) {
+		if (!this.validateNumeric(nfcReaderId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid NFC reader ID provided", true));
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["roomId"], [roomId], paramNames, paramValues);
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+		}
+
+		var query = this.constructUpdate("NFCAccessPoints", paramNames, "nfcReaderId", nfcReaderId);
+		var ret = null;
+		this.client.query(query, paramValues, (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully updated NFC access point", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
+	deleteAccessPoints(nfcReaderId, callback) {
+		if (!this.validateNumeric(nfcReaderId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid NFC Reader ID provided", true));
+		}
+
+		var query = this.constructDelete("NFCAccessPoints", "nfcReaderId");
+		var ret = null;
+		this.client.query(query, [nfcReaderId], (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully deleted Access Point", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
     //UD
 	
 	
@@ -791,9 +1261,182 @@ class CrudController {
 			}
 		});	
 	}
+	
+	/**
+	*	Retrieves a set of employees using companyId
+	*	@param companyId 
+	*	@param function(return)
+	*	@return [ { employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId } ]
+	*/
+	getEmployeesByCompanyId(companyId, callback)
+	{
+		var query = 'SELECT * FROM Employee WHERE companyId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [companyId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Employee with that matching companyId");
+				ret = this.returnDatabaseError("no rows in Employee with that matching companyId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved employees", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.employeeId = res.rows[i].employeeid;
+					obj.firstName = res.rows[i].firstname;
+					obj.surname = res.rows[i].surname;
+					obj.title = res.rows[i].title;
+					obj.cellphone = res.rows[i].cellphone;
+					obj.email = res.rows[i].email;
+					obj.companyId = res.rows[i].companyid;
+					obj.buildingId = res.rows[i].buildingid;
+					obj.passwordId = res.rows[i].passwordid;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+
+	/**
+	*	Retrieves a set of employees using buildingId
+	*	@param buildingId 
+	*	@param function(return)
+	*	@return [ { employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId } ]
+	*/
+	getEmployeesByBuildingId(buildingId, callback)
+	{
+		var query = 'SELECT * FROM Employee WHERE buildingId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [buildingId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in Employee with that matching buildingId");
+				ret = this.returnDatabaseError("no rows in Employee with that matching buildingId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved employees", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.employeeId = res.rows[i].employeeid;
+					obj.firstName = res.rows[i].firstname;
+					obj.surname = res.rows[i].surname;
+					obj.title = res.rows[i].title;
+					obj.cellphone = res.rows[i].cellphone;
+					obj.email = res.rows[i].email;
+					obj.companyId = res.rows[i].companyid;
+					obj.buildingId = res.rows[i].buildingid;
+					obj.passwordId = res.rows[i].passwordid;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
 
     //CR
     
+    //UD
+	/**
+		* Updates the details of an Employee in the database
+		* @param employeeId The ID of the employee
+		* @param firstName The first name of the employee
+		* @param surname The surname of the employee
+		* @param title The title of the employee e.g. Mrs
+		* @param cellphone The cellphone number of the employee as a string
+		* @param email The email of the employee
+		* @param companyId The company ID of the employee
+		* @param buildingId The building ID of the employee
+		* @param passwordId The password ID of the employee
+		*/
+
+	updateEmployee(employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId, callback) {
+		if (!this.validateNumeric(employeeId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid employee ID provided", true));
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["firstName", "surname", "title", "cellphone", "email", "companyId", "buildingId", "passwordId"], [firstName, surname, title, cellphone, email, companyId, buildingId, passwordId], paramNames, paramValues);
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+		}
+
+		var query = this.constructUpdate("Employee", paramNames, "employeeId", employeeId);
+		var ret = null;
+		this.client.query(query, paramValues, (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				console.log(res);
+				ret = this.buildDefaultResponseObject(true, "Successfully updated employee", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
+
+	deleteEmployee(employeeId, callback) {
+		if (!this.validateNumeric(employeeId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid employee ID provided", true));
+		}
+
+		var query = this.constructDelete("Employee", "employeeId");
+		var ret = null;
+		this.client.query(query, [employeeId], (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully deleted employee", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
     //UD
 	
 	
@@ -916,6 +1559,58 @@ class CrudController {
 	
     //CR
     
+
+	updateClient(clientId, macAddress, callback) {
+		if (!this.validateNumeric(clientId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid client ID provided", true));
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["macAddress"], [macAddress], paramNames, paramValues);
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+		}
+
+		var query = this.constructUpdate("Client", paramNames, "clientId", clientId);
+		var ret = null;
+		this.client.query(query, paramValues, (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully updated client", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
+	deleteClient(clientId, callback) {
+		if (!this.validateNumeric(clientId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid client ID provided", true));
+		}
+
+		var query = this.constructDelete("Client", "clientId");
+		var ret = null;
+		this.client.query(query, [clientId], (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully deleted client", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
     //UD
 	
 	
@@ -1004,6 +1699,57 @@ class CrudController {
 	
     //CR
     
+
+	updateWiFiParams(wifiParamsId, ssid, networkType, password, callback) {
+		if (!this.validateNumeric(wifiParamsId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid WiFi Params ID provided", true));
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["ssid", "networkType", "password"], [ssid, networkType, password], paramNames, paramValues);
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+		}
+
+		var query = this.constructUpdate("WiFiParams", paramNames, "wifiParamsId", wifiParamsId);
+		var ret = null;
+		this.client.query(query, paramValues, (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully updated WiFi params", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
+	deleteWiFiParams(wifiParamsId, callback) {
+		if (!this.validateNumeric(wifiParamsId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid WiFi Params ID provided", true));
+		}
+
+		var query = this.constructDelete("WiFiParams", "wifiParamsId");
+		var ret = null;
+		this.client.query(query, [wifiParamsId], (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully deleted WiFi Params", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
     //UD
 	
 	
@@ -1084,9 +1830,108 @@ class CrudController {
 		});	
 	}
 	
+	/**
+	*	Retrieves a set of tempwifiaccesss using wifiParamsId
+	*	@param wifiParamsId 
+	*	@param function(return)
+	*	@return [ { tempWifiAccessId, wifiParamsId } ]
+	*/
+	getTempWifiAccesssByWifiParamsId(wifiParamsId, callback)
+	{
+		var query = 'SELECT * FROM TempWifiAccess WHERE wifiParamsId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [wifiParamsId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in TempWifiAccess with that matching wifiParamsId");
+				ret = this.returnDatabaseError("no rows in TempWifiAccess with that matching wifiParamsId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tempwifiaccesss", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.tempWifiAccessId = res.rows[i].tempwifiaccessid;
+					obj.wifiParamsId = res.rows[i].wifiparamsid;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
 	
     //CR
     
+
+	updateTempWifiAccess(tempWifiAccessId, wifiParamsId, callback) {
+		if (!this.validateNumeric(tempWifiAccessId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid Temp Wifi Access ID provided", true));
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["wifiParamsId"], [wifiParamsId], paramNames, paramValues);
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+		}
+
+		var query = this.constructUpdate("TempWifiAccess", paramNames, "tempWifiAccessId", tempWifiAccessId);
+		var ret = null;
+		this.client.query(query, paramValues, (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully updated Temp WiFi Access params", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
+	deleteTempWifiAccess(tempWifiAccessId, callback) {
+		if (!this.validateNumeric(tempWifiAccessId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid Temp Wifi Access ID provided", true));
+		}
+
+		var query = this.constructDelete("TempWifiAccess", "tempWifiAccessId");
+		var ret = null;
+		this.client.query(query, [tempWifiAccessId], (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully deleted Temp Wifi Access", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
+
     //UD
 	
 	
@@ -1320,8 +2165,162 @@ class CrudController {
 		});	
 	}
 	
+	/**
+	*	Retrieves a set of visitorpackages using employeeId
+	*	@param employeeId 
+	*	@param function(return)
+	*	@return [ { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime } ]
+	*/
+	getVisitorPackagesByEmployeeId(employeeId, callback)
+	{
+		var query = 'SELECT * FROM VisitorPackage WHERE employeeId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [employeeId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in VisitorPackage with that matching employeeId");
+				ret = this.returnDatabaseError("no rows in VisitorPackage with that matching employeeId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved visitorpackages", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.visitorPackageId = res.rows[i].visitorpackageid;
+					obj.tempWifiAccessId = res.rows[i].tempwifiaccessid;
+					obj.tpaId = res.rows[i].tpaid;
+					obj.linkWalletId = res.rows[i].linkwalletid;
+					obj.employeeId = res.rows[i].employeeid;
+					obj.clientId = res.rows[i].clientid;
+					obj.startTime = res.rows[i].starttime;
+					obj.endTime = res.rows[i].endtime;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+
+	/**
+	*	Retrieves a set of visitorpackages using clientId
+	*	@param clientId 
+	*	@param function(return)
+	*	@return [ { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime } ]
+	*/
+	getVisitorPackagesByClientId(clientId, callback)
+	{
+		var query = 'SELECT * FROM VisitorPackage WHERE clientId = $1';
+		
+		var ret = null;
+		
+		this.client.query(query, [clientId], (err, res) => 
+		{
+			if (err) 
+			{
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				//this.client.end();
+				callback(ret);
+			} 
+			else if(res.rows.length == 0)
+			{
+				console.log("no rows in VisitorPackage with that matching clientId");
+				ret = this.returnDatabaseError("no rows in VisitorPackage with that matching clientId");
+				//this.client.end();
+				callback(ret);
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved visitorpackages", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.visitorPackageId = res.rows[i].visitorpackageid;
+					obj.tempWifiAccessId = res.rows[i].tempwifiaccessid;
+					obj.tpaId = res.rows[i].tpaid;
+					obj.linkWalletId = res.rows[i].linkwalletid;
+					obj.employeeId = res.rows[i].employeeid;
+					obj.clientId = res.rows[i].clientid;
+					obj.startTime = res.rows[i].starttime;
+					obj.endTime = res.rows[i].endtime;
+					
+					ret.data.push(obj);
+				}
+				//this.client.end();
+				callback(ret);
+			}
+		});	
+	}
+	
     //CR
     
+    updateVisitorPackage(visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime, callback) {
+		if (!this.validateNumeric(visitorPackageId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid Visitor Package ID provided", true));
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["tempWifiAccessId", "tpaId", "linkWalletId", "employeeId", "clientId", "startTime", "endTime"], [tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime], paramNames, paramValues);
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+		}
+
+		var query = this.constructUpdate("VisitorPackage", paramNames, "visitorPackageId", visitorPackageId);
+		var ret = null;
+		this.client.query(query, paramValues, (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully updated Visitor Package", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
+	deleteVisitorPackage(visitorPackageId, callback) {
+		if (!this.validateNumeric(visitorPackageId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid Visitor Package ID provided", true));
+		}
+
+		var query = this.constructDelete("VisitorPackage", "visitorPackageId");
+		var ret = null;
+		this.client.query(query, [visitorPackageId], (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully deleted Visitor Package", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
     //UD
 	
 	
@@ -1404,6 +2403,28 @@ class CrudController {
 	
     //CR
     
+    //NOTE: There is no UPDATE for TPA as you can't update a primary key
+
+	deleteTPA(tpaId, callback) {
+		if (!this.validateNumeric(tpaId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid TPA ID provided", true));
+		}
+
+		var query = this.constructDelete("TPA", "tpaId");
+		var ret = null;
+		this.client.query(query, [tpaId], (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully deleted TPA entry", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
     //UD
 	
 	
@@ -1450,13 +2471,13 @@ class CrudController {
 		
 	}
 	
-		/**
-	*	Retrieves a tpaxroom using tpaId
+	/**
+	*	Retrieves a set tpaxrooms using tpaId
 	*	@param tpaId 
 	*	@param function(return)
-	*	@return { tpaId, roomId }
+	*	@return [ { tpaId, roomId } ]
 	*/
-	getTPAxRoomByTpaId(tpaId, callback)
+	getTPAxRoomsByTpaId(tpaId, callback)
 	{
 		var query = 'SELECT * FROM TPAxRoom WHERE tpaId = $1';
 		
@@ -1480,22 +2501,29 @@ class CrudController {
 			}
 			else 
 			{
-				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tpaxroom", false, false);
-				ret.data.tpaId = res.rows[0].tpaid;
-				ret.data.roomId = res.rows[0].roomid;
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tpaxrooms", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.tpaId = res.rows[i].tpaid;
+					obj.roomId = res.rows[i].roomid;
+					
+					ret.data.push(obj);
+				}
 				//this.client.end();
 				callback(ret);
 			}
 		});	
 	}
-
+	
 	/**
-	*	Retrieves a tpaxroom using roomId
+	*	Retrieves a set tpaxrooms using roomId
 	*	@param roomId 
 	*	@param function(return)
-	*	@return { tpaId, roomId }
+	*	@return [ { tpaId, roomId } ]
 	*/
-	getTPAxRoomByRoomId(roomId, callback)
+	getTPAxRoomsByRoomId(roomId, callback)
 	{
 		var query = 'SELECT * FROM TPAxRoom WHERE roomId = $1';
 		
@@ -1519,17 +2547,87 @@ class CrudController {
 			}
 			else 
 			{
-				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tpaxroom", false, false);
-				ret.data.tpaId = res.rows[0].tpaid;
-				ret.data.roomId = res.rows[0].roomid;
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tpaxrooms", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.tpaId = res.rows[i].tpaid;
+					obj.roomId = res.rows[i].roomid;
+					
+					ret.data.push(obj);
+				}
 				//this.client.end();
 				callback(ret);
 			}
 		});	
 	}
+	
     
     //CR
     
+    //note this function is slightly different to others, see parameter list
+	updateTPAxRoom(currentTpaId, currentRoomId, potentiallyChangedTpaId, potentiallyChangedRoomId, callback) {
+		if (!this.validateNumeric(currentTpaId) || !this.validateNumeric(currentRoomId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid TPA ID or RoomID provided", true));
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["tpaId", "roomId"], [potentiallyChangedTpaId, potentiallyChangedRoomId], paramNames, paramValues); // either update tpaId OR roomId, OR both. for the given current tpaId and roomId combo
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+		}
+
+		var query = "UPDATE TPAxRoom SET ";
+		for (var i = 1; i < paramNames.length + 1; i++) {
+			if (i !== paramNames.length) {
+				query += paramNames[i - 1] + " = $" + i + ",";
+			} else {
+				query += paramNames[i - 1] + " = $" + i;
+			}
+		}
+
+		query += " WHERE tpaId = " + currentTpaId + " AND roomId = " + currentRoomId; //special case, can't use generic function for composite key
+
+		console.log(query);
+		var ret = null;
+		this.client.query(query, paramValues, (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully updated TPAxRoom", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+	//note slightly different to other deletes, see parameter list
+	deleteTPAxRoom(tpaId, roomId, callback) {
+		if (!this.validateNumeric(tpaId) || !this.validateNumeric(roomId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid TPA ID OR Room ID provided", true));
+		}
+
+		var query = "DELETE FROM TPAxRoom WHERE " + tpaId + " = $1 AND " + roomId + " = $2";;
+		var ret = null;
+		this.client.query(query, [tpaId, roomId], (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully deleted TPAxRoom entry", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
     //UD
 	
 	
@@ -1615,7 +2713,56 @@ class CrudController {
 	}
 	
     //CR
-    
+    updateWallet(linkwalletId, maxLimit, spent, callback) {
+		if (!this.validateNumeric(linkwalletId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid Wallet ID provided", true));
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["maxLimit", "spent"], [maxLimit, spent], paramNames, paramValues);
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+		}
+
+		var query = this.constructUpdate("Wallet", paramNames, "linkwalletId", linkwalletId);
+		var ret = null;
+		this.client.query(query, paramValues, (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully updated Wallet", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
+
+	deleteWallet(linkwalletId, callback) {
+		if (!this.validateNumeric(linkwalletId)) {
+			callback(this.buildDefaultResponseObject(false, "Invalid Wallet ID provided", true));
+		}
+
+		var query = this.constructDelete("Wallet", "linkwalletId");
+		var ret = null;
+		this.client.query(query, [linkwalletId], (err, res) => {
+			if (err) {
+				console.log(err.stack);
+				ret = this.returnDatabaseError(err);
+				this.client.end();
+				callback(ret);
+			} else {
+				ret = this.buildDefaultResponseObject(true, "Successfully deleted Wallet", true);
+				this.client.end();
+				callback(ret);
+			}
+		});
+	}
     //UD
 	
 	
@@ -1658,6 +2805,37 @@ class CrudController {
     //Savva Helpers
 	
 	
+	setValidParams(potentialParamNames, potentialParamValues, actualParamNames, actualParamValues) {
+		if (potentialParamNames.length !== potentialParamValues.length) {
+			return;
+		}
+		for (var i = 0; i < potentialParamValues.length; i++) {
+			if (potentialParamValues[i] !== undefined) {
+				actualParamNames.push(potentialParamNames[i]); //since js is pass by reference for arrays, this will update the array in the caller
+				actualParamValues.push(potentialParamValues[i]);
+			}
+		}
+	}
+
+	constructUpdate(tableName, paramList, idName, idValue) {
+		var query = "UPDATE " + tableName + " SET ";
+
+		for (var i = 1; i < paramList.length + 1; i++) {
+			if (i !== paramList.length) {
+				query += paramList[i - 1] + " = $" + i + ",";
+			} else {
+				query += paramList[i - 1] + " = $" + i;
+			}
+		}
+
+		query += " WHERE " + idName + " = " + idValue;
+		console.log(query);
+		return query;
+	}
+
+	constructDelete(tableName, idName) {
+		return "DELETE FROM " + tableName + " WHERE " + idName + " = $1";
+	}
 	
 	
 	

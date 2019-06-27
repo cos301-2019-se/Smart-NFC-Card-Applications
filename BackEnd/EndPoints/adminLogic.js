@@ -75,7 +75,7 @@ class AdminLogic
                 this.editCompany(); //TEST
                 break;
             case "deleteCompany":
-                this.deleteCompany();// DONT DO
+                this.deleteCompany();//DONT DO
                 break;
             case "getCompanyByCompanyId":
                 this.getCompanyByCompanyId();//TEST
@@ -421,7 +421,7 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(me.body.companyId === undefined){
+        if(this.body.companyId === undefined){
             presentParams = true;
             presentReturn += "companyId, ";
         }
@@ -429,31 +429,24 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!me.sharedLogic.validateNonEmpty(me.body.companyId) || !me.sharedLogic.validateNumeric(me.body.companyId)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
                 invalidParams = true;
                 invalidReturn += "companyId, ";
             }
 
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(me.demoMode){
+                if(this.demoMode){
                     //return mock data
-                    data.companyId = me.body.companyId;
+                    data.companyId = this.body.companyId;
                     message = "Company Deleted! - Mock";
                     success = true;
-                    me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    me.sharedLogic.crudController.deleteCompany(me.body.companyId, function(companyObj){
-                        if(companyObj.success){
-                            data.companyId = me.body.companyId;
-                            me.sharedLogic.endServe(companyObj.success, companyObj.message, data);
-                        }
-                        else{
-                            me.sharedLogic.endServe(companyObj.success, companyObj.message, null);
-                        }
-                    });
+                    success = false;
+                    message = "Delete Company not implemented";
+                    data = null;
                 }
             }
             else{
@@ -461,7 +454,6 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
-                me.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -469,9 +461,8 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
-            me.sharedLogic.endServe(success, message, data);
         }
-
+        this.sharedLogic.endServe(success, message, data);
     }
 
     /**

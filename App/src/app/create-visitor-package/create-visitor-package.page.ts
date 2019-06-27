@@ -19,7 +19,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { NavParams, ModalController } from '@ionic/angular';
-import { RequestModuleService } from '../services/request-module.service'
+import { RequestModuleService } from '../services/request-module.service';
 
 /**
 * Purpose:	This enum provides message types
@@ -52,12 +52,12 @@ export class CreateVisitorPackagePage implements OnInit {
   errorMessage: string;
 
   employeeId: number = 1;
-  macAddress: string = '';
-  startDate: Date = new Date();
-  endDate: Date = new Date();
-  roomId: number = 1;
-  wifiParamsId: number = 1;
-  limit: number = 1;
+  macAddress: string = 'null';
+  startDate: Date = null;
+  endDate: Date = null;
+  roomIdString: string = '';
+  giveWiFi: boolean = null;
+  limit: number = null;
 
   /**
    * Constructor that takes all injectables
@@ -87,7 +87,9 @@ export class CreateVisitorPackagePage implements OnInit {
    * Function that gets called when submit is pressed
    */
   onSubmit(){
-    this.createVisitorPackage(this.employeeId, this.startDate, this.endDate, this.macAddress, this.wifiParamsId, this.roomId, this.limit);
+    let wifiParamsId = this.giveWiFi == true? 0: null;
+    let roomId: number = this.roomIdString == '' ? null: (+this.roomIdString);
+    this.createVisitorPackage(this.employeeId, this.startDate, this.endDate, this.macAddress, wifiParamsId, roomId, this.limit);
   }
 
   /**
@@ -127,16 +129,24 @@ export class CreateVisitorPackagePage implements OnInit {
    * @param limit number Max number of credits visitor can spend
    */
   private async createVisitorPackage(employeeId: number, startTime: Date, endTime: Date, macAddress: string, wifiParamsId: number, roomId: number, limit: number){
-    if (employeeId === null || startTime === null || endTime === null || macAddress === null) {
-      this.showMessage("Adding a visitor, start date, and end date are required.", messageType.error, 5000);
+    if (employeeId === null) {
+      this.showMessage("Ensure that you are logged in.", messageType.error, 5000);
+      return;
+    }
+    if (macAddress === null) {
+      this.showMessage("Adding a visitor is required.", messageType.error, 5000);
+      return;
+    }
+    if (startTime === null || endTime === null) {
+      this.showMessage("Start date and end date are required.", messageType.error, 5000);
       return;
     }
     if (endTime < startTime) {
       this.showMessage("The start date should be before the end date.", messageType.error, 5000);
       return;
     }
-    if (wifiParamsId === null && roomId === null && limit === null) {
-      this.showMessage("Either WiFi, Physical Access, or a Virtual Wallet has to be set up.", messageType.error, 5000);
+    if (roomId === null) {
+      this.showMessage("Physical Access required (eg. Lobby).", messageType.error, 5000);
       return;
     }
     this.isBusy = true;

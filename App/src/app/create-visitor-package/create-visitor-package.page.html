@@ -29,30 +29,30 @@
     <ion-label>Visitor <ion-text color="danger">*</ion-text></ion-label>
     <ion-button>Assign Visitor</ion-button>
   </ion-item>
-  <ion-item>
+  <ion-item> 
     <ion-label>Start Date <ion-text color="danger">*</ion-text></ion-label>
-    <ion-datetime display-format="DD/MM/YYYY" picker-format="DD MMMM YYYY" placeholder='{{placeholderDate}}'></ion-datetime>
+    <ion-datetime [(ngModel)]="startDate" display-format="DD/MM/YYYY" picker-format="DD MMMM YYYY" placeholder='{{placeholderDate}}'></ion-datetime>
   </ion-item>
   <ion-item>
     <ion-label>End Date <ion-text color="danger">*</ion-text></ion-label>
-    <ion-datetime display-format="DD/MM/YYYY" picker-format="DD MMMM YYYY" placeholder='{{placeholderDate}}'></ion-datetime>
+    <ion-datetime [(ngModel)]="endDate" display-format="DD/MM/YYYY" picker-format="DD MMMM YYYY" placeholder='{{placeholderDate}}'></ion-datetime>
   </ion-item>
   <ion-item>
-    <ion-label>Physical Access</ion-label>
-    <ion-select>
+    <ion-label>Physical Access <ion-text color="danger">*</ion-text></ion-label>
+    <ion-select [(ngModel)]="roomIdString">
       <ion-select-option value="" selected>None</ion-select-option>
-      <ion-select-option value="Lobby">Lobby</ion-select-option>
-      <ion-select-option value="Offices">Offices</ion-select-option>
-      <ion-select-option value="Labs">Labs</ion-select-option>
+      <ion-select-option value="0">Lobby</ion-select-option>
+      <ion-select-option value="1">Offices</ion-select-option>
+      <ion-select-option value="2">Labs</ion-select-option>
     </ion-select>
   </ion-item>
   <ion-item>
     <ion-label>Give WiFi Access</ion-label>
-    <ion-checkbox></ion-checkbox>
+    <ion-checkbox [(ngModel)]="giveWiFi"></ion-checkbox>
   </ion-item>
   <ion-item>
     <ion-label>Spending Limit</ion-label>
-    <ion-input type="number" inputmode='numeric' placeholder='100.00'></ion-input>
+    <ion-input [(ngModel)]="limit" type="number" inputmode='numeric' placeholder='100.00'></ion-input>
   </ion-item>
   <br>
   <ion-button expand="block" fill="outline" (click)='onSubmit()'>Create Package</ion-button>

@@ -287,10 +287,10 @@ class AdminLogic
     /**
      *  Function that is called to edit a companies details
      *
-     *  @param companyId
-     *  @param companyName
-     *  @param companyWebsite
-     *  @param companyUsername
+     *  @param companyId int The ID belonging to the company
+     *  @param companyName string the Name of the company
+     *  @param companyWebsite string the website belonging to the company
+     *  @param companyUsername string the username of the company
      *
      *  @return JSON {
      *                  companyId : int The company ID that has just be edited
@@ -1173,7 +1173,7 @@ class AdminLogic
      * @param buildingId int the building
      *
      * @return JSON {
-     *                  roomId
+     *                  roomId int The ID of the newly created room
      *              }
      */
     addRoom(){
@@ -2267,11 +2267,9 @@ class AdminLogic
     /**
      * This Function will be used to change the password
      *
-     * @params apiKey
-     * @params oldPassword
-     * @params newPassword
-     *
-     * @return {}
+     * @params apiKey string The Api key of the user
+     * @params oldPassword The old password of the user
+     * @params newPassword string the New password of the user
      */
     editPassword(){
         var message;

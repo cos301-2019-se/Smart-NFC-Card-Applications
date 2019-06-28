@@ -711,11 +711,11 @@ class CrudController {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
-				this.client.end();
+				// this.client.end();
 				callback(ret);
 			} else {
 				ret = this.buildDefaultResponseObject(true, "Successfully updated password", true);
-				this.client.end();
+				// this.client.end();
 				callback(ret);
 			}
 		});

@@ -20,6 +20,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavParams, ModalController } from '@ionic/angular';
 import { RequestModuleService } from '../services/request-module.service';
+import { NfcControllerService } from '../services/nfc-controller.service';
 
 /**
 * Purpose:	This enum provides message types
@@ -52,7 +53,7 @@ export class CreateVisitorPackagePage implements OnInit {
   errorMessage: string;
 
   employeeId: number = 1;
-  macAddress: string = 'null';
+  macAddress: string = null;
   startDate: Date = null;
   endDate: Date = null;
   roomIdString: string = '';
@@ -64,11 +65,13 @@ export class CreateVisitorPackagePage implements OnInit {
    * @param navParams NavParams injectable
    * @param modalCtrl ModalController injectable
    * @param requestService RequestModuleService injectable
+   * @param nfcService NfcControllerService injectable
    */
   constructor(
     private navParams: NavParams,
     private modalCtrl: ModalController,
-    private requestService: RequestModuleService
+    private requestService: RequestModuleService,
+    private nfcService: NfcControllerService
   ) { 
     this.placeholderDate = `${this.currentDate.getDate()}/${this.currentDate.getMonth()+1}/${this.currentDate.getFullYear()}`;
   }
@@ -81,6 +84,7 @@ export class CreateVisitorPackagePage implements OnInit {
    */
   closeModal(){
     this.modalCtrl.dismiss();
+    this.nfcService.Finish()
   }
 
   /**
@@ -159,11 +163,24 @@ export class CreateVisitorPackagePage implements OnInit {
    * Function that share the visitor package with the client
    */
   private shareVisitorPackage(){
-
-    this.showMessage("Package Shared", messageType.success, 0);
-    setTimeout(() => {
-      this.closeModal()
-    }, 1500);
+    /*this.errorMessage = null;
+    this.successMessage = null;
+    this.infoMessage = null;
+    this.showMessage(`Hold the phone against the receiving phone.`, messageType.info, 0);
+    this.nfcService.SendData(this.device.uuid, this.device.uuid)
+    .then(() => {
+      this.showMessage("Package Shared", messageType.success, 0);
+      setTimeout(() => {
+        this.closeModal()
+      }, 1500);
+    })
+    .catch((err) => {
+      this.showMessage(`Error: ${err} - Try turning on 'Android Beam'`, messageType.error, 0);
+    })
+    .finally(() => {
+      this.infoMessage = null;
+      this.nfcService.Finish();
+    });*/
   }
 
   /**
@@ -182,6 +199,30 @@ export class CreateVisitorPackagePage implements OnInit {
     let endTimeString = this.requestService.dateTimeToString(endTime);
     await this.delay(2000);
     return this.requestService.addVisitorPackage(employeeId, startTimeString, endTimeString, macAddress, wifiParamsId, roomId, limit);
+  }
+
+  /**
+   * Function used to get the visitor DeviceID
+   */
+  assignVisitor(){
+    this.errorMessage = null;
+    this.successMessage = null;
+    this.infoMessage = null;
+    this.nfcService.IsEnabled()
+    .then(() => {
+      this.showMessage(`Hold the phone against the sharing device.`, messageType.info, 0);
+      this.nfcService.ReceiveData().subscribe(data => {
+        let payload = this.nfcService.BytesToString(data.tag.ndefMessage[0].payload)     
+        this.nfcService.Finish();
+        let uuid = payload.slice(3);
+        this.showMessage(`Visitor Device Selected.`, messageType.success, 2000);
+        this.macAddress = uuid;
+        console.log(this.macAddress);
+      });
+    })
+    .catch(() => {
+      this.showMessage(`NFC seems to be off. Please try turing it on.`, messageType.error, 0);
+    })
   }
 
   delay(ms: number) {

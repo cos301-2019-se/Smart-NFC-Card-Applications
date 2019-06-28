@@ -14,12 +14,13 @@ import { Platform } from '@ionic/angular';
 import { HttpClientModule } from '@angular/common/http';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
+import { Device } from '@ionic-native/device/ngx';
 
 import { IonicStorageModule } from '@ionic/storage';
 import { LocalStorageService } from './services/local-storage.service';
 import { BusinessCardsService } from './services/business-cards.service';
 import { NfcControllerService } from './services/nfc-controller.service';
-import { LocationService } from './services/location.service'
+import { LocationService } from './services/location.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -40,8 +41,11 @@ import { LocationService } from './services/location.service'
     LocationService,
     Geolocation, 
     LaunchNavigator,
-    NFC, Ndef, NfcControllerService,
+    NFC, 
+    Ndef, 
+    NfcControllerService,
     ModalController,
+    Device,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

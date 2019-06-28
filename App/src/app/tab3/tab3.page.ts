@@ -11,6 +11,7 @@
 *	-----------------------------------------------------------------------------------------
 *	2019/05/19	Wian		  1.0		    Original
 *	2019/06/25	Wian		  1.1		    Added changes to allow navigation on tap of location
+*	2019/06/28	Wian		  1.2		    Added functionality to add visitor packages
 *
 *	Functional Description:   This file provides the component that allows viewing shared cards
 *	Error Messages:   “Error”
@@ -24,12 +25,23 @@ import { BusinessCard } from '../models/business-card.model';
 import { NfcControllerService } from '../services/nfc-controller.service';
 import { LocationService } from '../services/location.service';
 import { LocationModel } from '../models/location.model';
+import { Device } from '@ionic-native/device/ngx';
+
+/**
+* Purpose:	This enum provides message types
+*	Usage:		This enum can be used to identify a type of message to display
+*	@author:	Wian du Plooy
+*	@version:	1.0
+*/
+enum messageType{
+    success, info, error
+}
 
 /**
 * Purpose:	This class provides the component that allows viewing of shared cards as well as adding new ones
 *	Usage:		This component can be used to view and add business cards to a locally stored list
 *	@author:	Wian du Plooy
-*	@version:	1.1
+*	@version:	1.2
 */
 @Component({
   selector: 'app-tab3',
@@ -39,20 +51,23 @@ import { LocationModel } from '../models/location.model';
 export class Tab3Page {
   cards: BusinessCard[] = [];
   detailToggles = [];
-  error_message: string;
-  success_message: string;
-  info_message: string;
+  errorMessage: string = null;
+  successMessage: string = null;
+  infoMessage: string = null;
   check;
 
   /**
    * Constructor that takes all injectables
    * @param cardService BusinessCardsService injectable
    * @param nfcService NfcControllerService injectable
+   * @param locationService LocationService injectable
+   * @param device Device injectable
    */
   constructor(
     private cardService: BusinessCardsService,
     private nfcService: NfcControllerService,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private device: Device
   ) { }
 
   /**
@@ -60,9 +75,9 @@ export class Tab3Page {
    */
   ionViewDidEnter() {
     //Initialize message values 
-    this.error_message = null;
-    this.success_message = null;
-    this.info_message = null;
+    this.errorMessage = null;
+    this.successMessage = null;
+    this.infoMessage = null;
     // Gets the business cards
     this.loadCards(); 
   }
@@ -114,15 +129,15 @@ export class Tab3Page {
    */
   addCard(){
     //Reset message values 
-    this.error_message = null;
-    this.success_message = null;
-    this.info_message = null;
+    this.errorMessage = null;
+    this.successMessage = null;
+    this.infoMessage = null;
 
     // Check if nfc is enabled
     this.nfcService.IsEnabled()
     .then(() => {
       // Continue if it is enabled
-      this.info_message = `Hold the phone against the sharing device.`;
+      this.showMessage(`Hold the phone against the sharing device.`, messageType.info, 0);
       this.nfcService.ReceiveData().subscribe(data => {
         // read data from the payload
         let payload = this.nfcService.BytesToString(data.tag.ndefMessage[0].payload);
@@ -130,9 +145,7 @@ export class Tab3Page {
         this.nfcService.Finish();
         // through away the language modifier and parse it to json
         let json = JSON.parse(payload.slice(3));
-        this.success_message = `Received ${json.companyName} Business Card`;
-        setTimeout(() => {this.success_message = null;}, 5000);
-        this.info_message = null;
+        this.showMessage(`Received ${json.companyName} Business Card.`, messageType.success, 5000);
         // Add the card to the local storage
         this.cardService.addBusinessCard(json.companyId, json.companyName, json.employeeName, json.contactNumber, json.email, json.website, json.location)
         .then(() => {
@@ -142,7 +155,7 @@ export class Tab3Page {
     })
     .catch(() => {
       // If it is disabled, display error to user.
-      this.error_message = `NFC seems to be off. Please try turing it on.`;
+      this.showMessage(`NFC seems to be off. Please try turing it on.`, messageType.error, 0);
     })
   }
 
@@ -194,22 +207,63 @@ export class Tab3Page {
    * @param destination where to go to
    */
   navigate(destination){
-    this.error_message = null;
-    this.success_message = null;
-    this.info_message = "Please wait while navigator is launched";
+    this.errorMessage = null;
+    this.successMessage = null;
     let dest = new LocationModel(destination.latitude, destination.longitude, destination.label);    
-    setTimeout(() => {this.info_message = null;}, 5000);
+    this.showMessage(`Please wait while navigator is launched.`, messageType.info, 5000);
     this.locationService.navigate(dest, () => {
-      this.info_message = null;
-      this.error_message = null;
-      this.success_message = "Navigator launching";
-      setTimeout(() => {this.success_message = null;}, 5000);
+      this.showMessage(`Navigator launching.`, messageType.success, 5000);
     }, (err) => {
-      this.info_message = null;
-      this.success_message = null;
-      this.error_message = `Could not open launcher: ${err}`;
-      setTimeout(() => {this.error_message = null;}, 5000);
+      this.showMessage(`Could not open launcher: ${err}`, messageType.error, 5000);
     });
+  }
+
+  /**
+   * Function that shares the device ID using NFC
+   */
+  shareId(){
+    this.errorMessage = null;
+    this.successMessage = null;
+    this.infoMessage = null;
+    this.showMessage(`Hold the phone against the receiving phone.`, messageType.info, 0);
+    console.log(this.device.uuid);
+    this.nfcService.SendData(this.device.uuid, this.device.uuid)
+    .then(() => {
+      this.showMessage(`Shared Device ID.`, messageType.success, 5000);
+    })
+    .catch((err) => {
+      this.showMessage(`Error: ${err} - Try turning on 'Android Beam'`, messageType.error, 0);
+    })
+    .finally(() => {
+      this.infoMessage = null;
+      this.nfcService.Finish();
+    });
+  }
+
+  /**
+   * Function that displays a message to the user
+   * @param message string message to display
+   * @param type number from enum, type of message to display
+   * @param timeout number after how long it should disappear (0 = don't dissappear)
+   */
+  private showMessage(message: string, type: number, timeout: number = 0) {
+    this.successMessage = null;
+    this.infoMessage = null;
+    this.errorMessage = null;
+    switch(type) {
+      case messageType.success: 
+        this.successMessage = message;
+        if (timeout != 0) { setTimeout(() => { this.successMessage = null;}, timeout); }
+        break;
+      case messageType.info:
+        this.infoMessage = message;
+        if (timeout != 0) { setTimeout(() => { this.infoMessage = null;}, timeout); }
+        break;
+      case messageType.error:
+        this.errorMessage = message;
+        if (timeout != 0) { setTimeout(() => { this.errorMessage = null;}, timeout); }
+        break;
+    }
   }
 
 }

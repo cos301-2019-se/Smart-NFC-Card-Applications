@@ -9,14 +9,16 @@
 <ion-content>
     <br>
     <ion-button expand="block" fill="outline" (click)='addCard()'>Add Business Card</ion-button>
-    <ion-item color='secondary' *ngIf='info_message !== null'>
-      <ion-icon name="information-circle"></ion-icon> {{ info_message }}
+    <ion-button expand="block" fill="outline" (click)='shareId()'>Share Device ID</ion-button>
+    <ion-button expand="block" fill="outline" (click)='addPackage()'>Receive Package</ion-button>
+    <ion-item color='secondary' *ngIf='infoMessage !== null'>
+      <ion-icon name="information-circle"></ion-icon> {{ infoMessage }}
     </ion-item>
-    <ion-item color='success' *ngIf='success_message !== null'>
-      <ion-icon name="checkmark-circle"></ion-icon> {{ success_message }}
+    <ion-item color='success' *ngIf='successMessage !== null'>
+      <ion-icon name="checkmark-circle"></ion-icon> {{ successMessage }}
     </ion-item>
-    <ion-item color='danger' *ngIf='error_message !== null'>
-      <ion-icon name="close-circle"></ion-icon> {{ error_message }}
+    <ion-item color='danger' *ngIf='errorMessage !== null'>
+      <ion-icon name="close-circle"></ion-icon> {{ errorMessage }}
       <br>
       <ion-button color="light" (click)='retry()'>Settings</ion-button> 
     </ion-item>

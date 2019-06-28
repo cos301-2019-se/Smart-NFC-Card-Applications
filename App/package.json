@@ -23,6 +23,7 @@
     "@angular/router": "^7.2.2",
     "@ionic-native/android-permissions": "^5.5.0",
     "@ionic-native/core": "^5.0.0",
+    "@ionic-native/device": "^5.8.0",
     "@ionic-native/geolocation": "^5.8.0",
     "@ionic-native/launch-navigator": "^5.8.0",
     "@ionic-native/nfc": "^5.5.0",
@@ -35,6 +36,7 @@
     "cordova-plugin-android-permissions": "1.0.0",
     "cordova-plugin-dialogs": "2.0.1",
     "cordova-plugin-geolocation": "4.0.1",
+    "cordova-plugin-ip-mac-address": "^1.0.1",
     "core-js": "^2.5.4",
     "phonegap-nfc": "1.0.3",
     "rxjs": "~6.5.1",
@@ -91,7 +93,8 @@
       "uk.co.workingedge.phonegap.plugin.launchnavigator": {
         "GOOGLE_API_KEY_FOR_ANDROID": "{AIzaSyDmZFFcur87lDAqhUrDTEo5b84qh2Sjmfk}",
         "OKHTTP_VERSION": "3.12.0"
-      }
+      },
+      "cordova-plugin-ip-mac-address": {}
     },
     "platforms": [
       "android"

@@ -13,6 +13,7 @@ import { LocalStorageService } from '../services/local-storage.service';
 import { LocationService } from '../services/location.service';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
+import { Device } from '@ionic-native/device/ngx';
 
 describe('Tab3Page', () => {
   let component: Tab3Page;
@@ -33,7 +34,8 @@ describe('Tab3Page', () => {
         NFC, Ndef,
         LocationService,
         Geolocation,
-        LaunchNavigator
+        LaunchNavigator,
+        Device
       ]
     }).compileComponents();
   }));

@@ -26,6 +26,8 @@ import { NfcControllerService } from '../services/nfc-controller.service';
 import { LocationService } from '../services/location.service';
 import { LocationModel } from '../models/location.model';
 import { Device } from '@ionic-native/device/ngx';
+import { VisitorPackage } from '../models/visitor-package.model';
+import { VisitorPackagesService } from '../services/visitor-packages.service';
 
 /**
 * Purpose:	This enum provides message types
@@ -50,6 +52,7 @@ enum messageType{
 })
 export class Tab3Page {
   cards: BusinessCard[] = [];
+  packages: VisitorPackage[] = [];
   detailToggles = [];
   errorMessage: string = null;
   successMessage: string = null;
@@ -62,12 +65,14 @@ export class Tab3Page {
    * @param nfcService NfcControllerService injectable
    * @param locationService LocationService injectable
    * @param device Device injectable
+   * @param packageService VisitorPackagesService injectable
    */
   constructor(
     private cardService: BusinessCardsService,
     private nfcService: NfcControllerService,
     private locationService: LocationService,
-    private device: Device
+    private device: Device,
+    private packageService: VisitorPackagesService
   ) { }
 
   /**
@@ -105,6 +110,23 @@ export class Tab3Page {
       }
       // Setup the toggle booleans
       this.setupToggles();
+    });
+  }
+
+  /**
+   * Function that loads the visitor packages from the service or sets it to empty if it doesn't exist
+   */
+  loadPackages(){
+    // Get cards
+    this.packageService.getVisitorPackages().then((val) => {      
+      this.packages = val;
+      // If it is null, set it as an empty array
+      if (this.packages == null) {
+        this.packages = []
+        this.packageService.setVisitorPackages([]);
+      }
+      // Setup the toggle booleans
+      //this.setupToggles();
     });
   }
 
@@ -264,6 +286,34 @@ export class Tab3Page {
         if (timeout != 0) { setTimeout(() => { this.errorMessage = null;}, timeout); }
         break;
     }
+  }
+
+  /**
+   * Function listens for an NFC Tag with the Visitor Package
+   */
+  addVisitorPackage(){
+    this.errorMessage = null;
+    this.successMessage = null;
+    this.infoMessage = null;
+    this.nfcService.IsEnabled()
+    .then(() => {
+      this.showMessage(`Hold the phone against the sharing device.`, messageType.info, 0);
+      this.nfcService.ReceiveData().subscribe(data => {
+        let payload = this.nfcService.BytesToString(data.tag.ndefMessage[0].payload);    
+        this.nfcService.Finish();
+        let json = JSON.parse(payload.slice(3));
+        this.showMessage(`Received ${json.companyName} Visitor Package.`, messageType.success, 5000);
+        let newPackage: VisitorPackage = this.packageService.createVisitorPackage(json.packageId, json.companyName, json.startDate, json.endDate, json.access,
+          json.location, json.wifiSSID, json.wifiPassword, json.wifiType, json.spendingLimit, json.amountSpent);
+        this.packageService.addVisitorPackage(newPackage)
+        .then(() => {
+          this.loadPackages();
+        });
+      });
+    })
+    .catch(() => {
+      this.showMessage(`NFC seems to be off. Please try turing it on.`, messageType.error, 0);
+    })
   }
 
 }

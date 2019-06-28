@@ -5,6 +5,9 @@ import { CreateVisitorPackagePage } from './create-visitor-package.page';
 import { NavParams, ModalController, AngularDelegate } from '@ionic/angular';
 import { HttpClient, HttpHandler } from '@angular/common/http';
 import { RequestModuleService } from '../services/request-module.service';
+import { NFC, Ndef } from '@ionic-native/nfc/ngx';
+import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
+import { IonicStorageModule } from '@ionic/storage';
 
 export class NavParamsMock {
   static returnParam = null;
@@ -27,10 +30,15 @@ describe('CreateVisitorPackagePage', () => {
     TestBed.configureTestingModule({
       declarations: [ CreateVisitorPackagePage ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      imports: [
+        IonicStorageModule.forRoot()
+      ],
       providers: [
         ModalController, AngularDelegate,
         RequestModuleService,
         HttpClient, HttpHandler,
+        NFC, Ndef,
+        AndroidPermissions,
         {provide: NavParams, useClass: NavParamsMock},
       ]
     })

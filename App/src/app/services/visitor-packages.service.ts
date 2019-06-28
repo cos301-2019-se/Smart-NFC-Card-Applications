@@ -54,7 +54,7 @@ export class VisitorPackagesService {
    * @param amountSpent number amount already spent
    * @return VisitorPackage created
    */
-  private createVisitorPackage(packageId: number, companyName: string, startDate: Date, endDate: Date, access: string, location: LocationModel, wifiSSID: string, wifiPassword: string, wifiType: string, spendingLimit: number, amountSpent: number) {
+  createVisitorPackage(packageId: number, companyName: string, startDate: Date, endDate: Date, access: string, location: LocationModel, wifiSSID: string, wifiPassword: string, wifiType: string, spendingLimit: number, amountSpent: number) {
     let visitorPackage: VisitorPackage = new VisitorPackage();
     visitorPackage.packageId = packageId;
     visitorPackage.companyName = companyName;

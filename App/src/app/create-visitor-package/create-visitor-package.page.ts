@@ -21,6 +21,9 @@ import { Component, OnInit } from '@angular/core';
 import { NavParams, ModalController } from '@ionic/angular';
 import { RequestModuleService } from '../services/request-module.service';
 import { NfcControllerService } from '../services/nfc-controller.service';
+import { VisitorPackagesService } from '../services/visitor-packages.service';
+import { VisitorPackage } from '../models/visitor-package.model';
+import { LocationModel } from '../models/location.model';
 
 /**
 * Purpose:	This enum provides message types
@@ -66,12 +69,14 @@ export class CreateVisitorPackagePage implements OnInit {
    * @param modalCtrl ModalController injectable
    * @param requestService RequestModuleService injectable
    * @param nfcService NfcControllerService injectable
+   * @param packageService VisitorPackagesService injectable
    */
   constructor(
     private navParams: NavParams,
     private modalCtrl: ModalController,
     private requestService: RequestModuleService,
-    private nfcService: NfcControllerService
+    private nfcService: NfcControllerService,
+    private packageService: VisitorPackagesService
   ) { 
     this.placeholderDate = `${this.currentDate.getDate()}/${this.currentDate.getMonth()+1}/${this.currentDate.getFullYear()}`;
   }
@@ -154,20 +159,25 @@ export class CreateVisitorPackagePage implements OnInit {
       return;
     }
     this.isBusy = true;
-    await this.addVisitorPackageToDB(employeeId, startTime, endTime, macAddress, wifiParamsId, roomId, limit);
-    this.isBusy = false;
-    this.shareVisitorPackage();
+    this.addVisitorPackageToDB(employeeId, startTime, endTime, macAddress, wifiParamsId, roomId, limit).subscribe(res => {
+      this.isBusy = false;
+      let id: number = res['data']['visitorPackageId'];
+      let visitorPackage: VisitorPackage = this.packageService.createVisitorPackage(id, 'Temp Comp Name', startTime, endTime, 'Temp Room', 
+        new LocationModel(0,0,'Fake Loc'), 'SSID', 'Password', 'WPA', limit, 0);
+      this.shareVisitorPackage(visitorPackage);
+    });
   }
 
   /**
    * Function that share the visitor package with the client
+   * @param visitorPackage VisitorPackage object to share
    */
-  private shareVisitorPackage(){
-    /*this.errorMessage = null;
+  private shareVisitorPackage(visitorPackage: VisitorPackage){
+    this.errorMessage = null;
     this.successMessage = null;
     this.infoMessage = null;
     this.showMessage(`Hold the phone against the receiving phone.`, messageType.info, 0);
-    this.nfcService.SendData(this.device.uuid, this.device.uuid)
+    this.nfcService.SendData(visitorPackage.packageId, JSON.stringify(visitorPackage))
     .then(() => {
       this.showMessage("Package Shared", messageType.success, 0);
       setTimeout(() => {
@@ -180,7 +190,7 @@ export class CreateVisitorPackagePage implements OnInit {
     .finally(() => {
       this.infoMessage = null;
       this.nfcService.Finish();
-    });*/
+    });
   }
 
   /**
@@ -194,10 +204,9 @@ export class CreateVisitorPackagePage implements OnInit {
    * @param limit number Max number of credits visitor can spend
    * @return
    */
-  private async addVisitorPackageToDB(employeeId: number, startTime: Date, endTime: Date, macAddress: string, wifiParamsId: number, roomId: number, limit: number){
+  private addVisitorPackageToDB(employeeId: number, startTime: Date, endTime: Date, macAddress: string, wifiParamsId: number, roomId: number, limit: number){
     let startTimeString = this.requestService.dateTimeToString(startTime);
     let endTimeString = this.requestService.dateTimeToString(endTime);
-    await this.delay(2000);
     return this.requestService.addVisitorPackage(employeeId, startTimeString, endTimeString, macAddress, wifiParamsId, roomId, limit);
   }
 
@@ -224,9 +233,4 @@ export class CreateVisitorPackagePage implements OnInit {
       this.showMessage(`NFC seems to be off. Please try turing it on.`, messageType.error, 0);
     })
   }
-
-  delay(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
-}
-
 }

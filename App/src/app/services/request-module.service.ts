@@ -180,11 +180,14 @@ export class RequestModuleService {
    * @param roomId number Room's id visitor is visiting (furthest into the building)
    * @param limit number Max number of credits visitor can spend
    * @param spent number Credits already spent on the virtual card (defaults to 0)
-   * @return
+   * @return Observable<Object> response containing json from back-end server
    */
   addVisitorPackage(employeeId: number, startTime: string, endTime: string, macAddress: string, wifiParamsId: number, roomId: number, limit: number, spent: number = 0) {
     if (this.demoMode) {
-      return {}
+      return new Observable<Object>(observer => {
+        observer.next("InsertStubHere");
+        observer.complete();
+      });
     }
     else {
       let json: JSON = JSON.parse(`{'employeeId': ${employeeId}, 'startTime': '${startTime}', 'endTime': '${endTime}', 'macAddress': '${macAddress}', 

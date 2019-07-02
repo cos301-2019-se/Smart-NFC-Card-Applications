@@ -83,6 +83,15 @@ describe('RequestModuleService', () => {
     });
   });
 
+  it('addVisitorPackage should return stub data while in demo mode', (done) => {
+    const service: RequestModuleService = TestBed.get(RequestModuleService);
+    service.demoMode = true;
+    service.addVisitorPackage(0, '2019/07/01', '2019/07/01', 'ae87af78ef', 0, 0, 100).subscribe(data => {
+      expect(data).toBe(service.visitorPackageStub);
+      done();
+    });
+  });
+
   /*it('login should return data from back-end', () => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = false;

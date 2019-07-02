@@ -44,7 +44,7 @@
                 <ion-label><ion-icon name="globe"></ion-icon>&nbsp;<a href="{{card.website}}">{{ card.website }}</a></ion-label>
               </ion-item>
               <ion-item>
-                <ion-label><ion-icon name="pin"></ion-icon>&nbsp;<a (click)="navigate(card.location)">{{ card.location.label }}</a></ion-label>
+                <ion-label><ion-icon name="pin"></ion-icon>&nbsp;<a (click)="navigate(card.location)">{{ card.location.getLabel() }}</a></ion-label>
               </ion-item>
             </ion-card-content>
         </ion-card>
@@ -64,7 +64,7 @@
               <ion-label><ion-icon name="home"></ion-icon> {{ package.access }}</ion-label>
             </ion-item>
             <ion-item>
-              <ion-label><ion-icon name="pin"></ion-icon>&nbsp;<a (click)="navigate(package.location)">{{ package.location.label }}</a></ion-label>
+              <ion-label><ion-icon name="pin"></ion-icon>&nbsp;<a (click)="navigate(package.location)">{{ package.location.getLabel() }}</a></ion-label>
             </ion-item>
             <ion-item>
               <ion-label><ion-icon name="card"></ion-icon> Virtual Wallet: {{ package.amountSpent }} / {{ package.spendingLimit }}</ion-label>

@@ -173,6 +173,7 @@ export class CreateVisitorPackagePage implements OnInit {
    * @param visitorPackage VisitorPackage object to share
    */
   private shareVisitorPackage(visitorPackage: VisitorPackage){
+    console.log(visitorPackage);
     this.errorMessage = null;
     this.successMessage = null;
     this.infoMessage = null;
@@ -226,7 +227,6 @@ export class CreateVisitorPackagePage implements OnInit {
         let uuid = payload.slice(3);
         this.showMessage(`Visitor Device Selected.`, messageType.success, 2000);
         this.macAddress = uuid;
-        console.log(this.macAddress);
       });
     })
     .catch(() => {

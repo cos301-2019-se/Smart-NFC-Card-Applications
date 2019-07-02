@@ -38,6 +38,19 @@ export class VisitorPackagesService {
   ) { }
 
   packageListKey: string = "visitor-packages";
+  stub = {
+    packageId: 0,
+    companyName: 'Company Name',
+    startDate: new Date(),
+    endDate: new Date(),
+    access: 'Lobby',
+    location: new LocationModel(0,0,'Location'),
+    wifiSSID: 'wifiSSID',
+    wifiPassword: 'wifiPassword',
+    wifiType: 'wifiType',
+    spendingLimit: 100,
+    amountSpent: 0
+  }
 
   /**
    * Function used to create a visitor package
@@ -86,7 +99,12 @@ export class VisitorPackagesService {
    * @retun Promise<any> returns promise from loading from storage
    */
   getVisitorPackages() {
-    return this.storage.Load(this.packageListKey);
+    return this.storage.Load(this.packageListKey).then((packages) => {      
+      packages.forEach(element => {
+        element.location = new LocationModel(element.location.latitude, element.location.longitude, element.location.label)
+      });
+      return packages;
+    });
   }
 
   /**
@@ -103,7 +121,7 @@ export class VisitorPackagesService {
    * @param packageId number id of package to remove
    * @retun Promise returns promise from removing visitor package
    */
-  removeBusinessCard(packageId: number) {
+  removeVisitorPackage(packageId: number) {
     return this.getVisitorPackages().then((packages) => {
       packages = packages.filter(elem => {
         return elem.packageId !== packageId;

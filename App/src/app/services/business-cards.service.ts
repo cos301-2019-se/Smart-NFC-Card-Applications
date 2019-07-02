@@ -39,6 +39,15 @@ export class BusinessCardsService {
 
   ownBusinessCardKey: string = "own-business-card";
   cardListKey: string = "business-cards";
+  stub = {
+    businessCardId: '0_0',
+    companyName: 'Company Name',
+    employeeName: 'Employee Name',
+    contactNumber: '000 000 0000',
+    email: 'email@gmail.com',
+    website: 'http://website.co.za',
+    location: new LocationModel(0,0,'Location')
+  }
 
   /**
    * Function used to create a business card
@@ -51,7 +60,7 @@ export class BusinessCardsService {
    * @param location string Employee's branch location
    * @return BusinessCard created
    */
-  private createBusinessCard(businessCardId: string, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: LocationModel) {
+  createBusinessCard(businessCardId: string, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: LocationModel) {
     let businessCard: BusinessCard = new BusinessCard();
     businessCard.businessCardId = businessCardId;
     businessCard.companyName = companyName;
@@ -113,10 +122,15 @@ export class BusinessCardsService {
 
   /**
    * Function that returns the list of saved business cards
-   * @retun Promise returns promise from loading from storage
+   * @retun Promise returns cards loaded from storage
    */
   getBusinessCards() {
-    return this.storage.Load(this.cardListKey);
+    return this.storage.Load(this.cardListKey).then((cards) => {      
+      cards.forEach(element => {
+        element.location = new LocationModel(element.location.latitude, element.location.longitude, element.location.label)
+      });
+      return cards;
+    });
   }
 
   /**
@@ -130,13 +144,13 @@ export class BusinessCardsService {
 
   /**
    * Function that removes a business card by id
-   * @param companyId number id of card to remove
+   * @param cardId string id of card to remove
    * @retun Promise returns promise from removing business card
    */
-  removeBusinessCard(companyId: number) {
+  removeBusinessCard(cardId: string) {
     return this.getBusinessCards().then((cards) => {
       cards = cards.filter(elem => {
-        return elem.companyId !== companyId;
+        return elem.businessCardId !== cardId;
       })
       this.setBusinessCards(cards);
     });

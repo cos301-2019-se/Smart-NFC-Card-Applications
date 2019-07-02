@@ -85,6 +85,7 @@ export class Tab3Page {
     this.infoMessage = null;
     // Gets the business cards
     this.loadCards(); 
+    this.loadPackages();
   }
 
   /**
@@ -186,7 +187,7 @@ export class Tab3Page {
    * @param companyId number Id of business card to remove
    */
   removeCard(companyId: number){
-    this.cardService.removeBusinessCard(companyId).then(() => {
+    this.cardService.removeBusinessCard(companyId.toString()).then(() => {
       this.loadCards();
     });
   }

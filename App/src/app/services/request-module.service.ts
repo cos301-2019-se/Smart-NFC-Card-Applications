@@ -62,6 +62,13 @@ export class RequestModuleService {
         "website": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications"
     }
   }`);
+  visitorPackageStub: JSON = JSON.parse(`{
+    "success": true,
+    "message": "Business card information loaded successfully",
+    "data": {
+        "visitorPackageId": 0
+    }
+  }`);
 
   /**
    * Constructor that takes all injectables
@@ -185,7 +192,7 @@ export class RequestModuleService {
   addVisitorPackage(employeeId: number, startTime: string, endTime: string, macAddress: string, wifiParamsId: number, roomId: number, limit: number, spent: number = 0) {
     if (this.demoMode) {
       return new Observable<Object>(observer => {
-        observer.next("InsertStubHere");
+        observer.next(this.visitorPackageStub);
         observer.complete();
       });
     }

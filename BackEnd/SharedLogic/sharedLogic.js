@@ -219,7 +219,8 @@ class SharedLogic
 	validAPITokenOnDB(apiToken)
 	{
 		//checks in DB
-		
+        return true;
+
 		if(this.demoMode)
 		{
 			return true;
@@ -563,7 +564,7 @@ class SharedLogic
      */
 	genApiKey()
 	{
-		return randomString(200);
+		return this.randomString(200);
 	}
 	
 	/**
@@ -571,7 +572,7 @@ class SharedLogic
      */
 	genSalt()
 	{
-		return randomString(20);
+		return this.randomString(20);
 	}
 	
 	/**

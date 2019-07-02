@@ -25,8 +25,6 @@
 var SharedLogic = require('./../SharedLogic/sharedLogic.js');
 var me = null;
 
-// var demoMode = true;
-
 /**
  * 	Purpose:	This class is to allow the admin application of Link to complete its needed operations
  *	Usage:		The class will be used by having /admin/functionName at the end of the http request where
@@ -49,7 +47,7 @@ class AdminLogic
         this.sharedLogic = new SharedLogic(this);
         this.body = "{}";
         this.endpoint = "";
-		me = this;
+        me = this;
     }
 
     /**
@@ -71,16 +69,19 @@ class AdminLogic
         {
             //Companies
             case "addCompany":
-                this.addCompany();  //INTEGRATE
+                this.addCompany();
                 break;
             case "editCompany":
-                this.editCompany(); //INTEGRATE
+                this.editCompany();
                 break;
             case "deleteCompany":
-                this.deleteCompany();//INTEGRATE - DONT DO
+                this.deleteCompany();//DONT DO
                 break;
-            case "getCompany":
-                this.getCompany();//INTEGRATE
+            case "getCompanyByCompanyId":
+                this.getCompanyByCompanyId();
+                break;
+            case "getCompanyByPasswordId":
+                this.getCompanyByPasswordId();
                 break;
             case "getCompanies":
                 this.getCompanies();//INTEGRATE
@@ -88,61 +89,69 @@ class AdminLogic
 
             //Buildings
             case "addBuilding":
-                this.addBuilding();//INTEGRATE
+                this.addBuilding();
                 break;
             case "editBuilding":
-                this.editBuilding();//INTEGRATE
+                this.editBuilding();
                 break;
             case "deleteBuilding":
-                this.deleteBuilding();//INTEGRATE - DONT DO
+                this.deleteBuilding();//DONT DO
                 break;
-            case "getBuilding":
-                this.getBuilding();//INTEGRATE
+            case "getBuildingByBuildingId":
+                this.getBuildingByBuildingId();
                 break;
-            case "getBuildings":
-                this.getBuildings();//INTEGRATE
+            case "getBuildingsByCompanyId":
+                this.getBuildingsByCompanyId();
                 break;
 
             //Rooms
             case "addRoom":
-                this.addRoom();//INTEGRATE
+                this.addRoom();
                 break;
             case "editRoom":
-                this.editRoom();//INTEGRATE
+                this.editRoom();
                 break;
             case "deleteRoom":
-                this.deleteRoom();//INTEGRATE - DONT DO
+                this.deleteRoom();//DONT DO
                 break;
-            case "getRoom":
-                this.getRoom();//INTEGRATE
+            case "getRoomByRoomId":
+                this.getRoomByRoomId();
                 break;
-            case "getRooms":
-                this.getRooms();//INTEGRATE
+            case "getRoomsByBuildingId":
+                this.getRoomsByBuildingId();
                 break;
 
             //Employees
             case "addEmployee":
-                this.addEmployee();//INTEGRATE
+                this.addEmployee();
                 break;
             case "addEmployees":
                 this.addEmployees();//TODO
                 break;
             case "editEmployee":
-                this.editEmployee();//INTEGRATE
+                this.editEmployee();
                 break;
             case "deleteEmployee":
-                this.deleteEmployee();//INTEGRATE - DONT DO
+                this.deleteEmployee();//DONT DO
                 break;
-            case "getEmployee":
-                this.getEmployee();//INTEGRATE
+            case "getEmployeeByEmployeeId":
+                this.getEmployeeByEmployeeId();
                 break;
-            case "getEmployees":
-                this.getEmployees();//INTEGRATE
+            case "getEmployeesByCompanyId":
+                this.getEmployeesByCompanyId();
+                break;
+            case "getEmployeesByBuildingId":
+                this.getEmployeesByBuildingId();
                 break;
 
             //password
             case "editPassword":
-                this.editPassword();//INTEGRATE
+                this.editPassword();
+                break;
+
+            //wifiParams
+            case "editWifiParam":
+                this.editWifiParam();
                 break;
 
             default:
@@ -164,7 +173,7 @@ class AdminLogic
      *               }
      */
     addCompany(){
-		
+
         var message;
         var data = new Object();
         var success;
@@ -173,19 +182,19 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.companyName === undefined){
+        if(me.body.companyName === undefined){
             presentParams = true;
             presentReturn += "companyName, ";
         }
-        if(this.body.companyWebsite === undefined){
+        if(me.body.companyWebsite === undefined){
             presentParams = true;
             presentReturn += "companyWebsite, ";
         }
-        if(this.body.companyUsername === undefined){
+        if(me.body.companyUsername === undefined){
             presentParams = true;
             presentReturn += "companyUsername, ";
         }
-        if(this.body.companyPassword === undefined){
+        if(me.body.companyPassword === undefined){
             presentParams = true;
             presentReturn += "companyPassword, ";
         }
@@ -194,106 +203,90 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.companyName)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.companyName)){
                 invalidParams = true;
                 invalidReturn += "companyName, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.companyWebsite)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.companyWebsite)){
                 invalidParams = true;
                 invalidReturn += "companyWebsite, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.companyUsername)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.companyUsername)){
                 invalidParams = true;
                 invalidReturn += "companyUsername, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.companyPassword)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.companyPassword)){
                 invalidParams = true;
                 invalidReturn += "companyPassword, ";
             }
+
             //if parameters are valid then execute function
-            if(!invalidParams)
-			{
-                if(this.demoMode){
+            if(!invalidParams){
+                if(me.demoMode){
                     //return mock data
                     data.companyId = 0;
-                    message = this.body.companyName + " Added! - Mock";
+                    message = me.body.companyName + " Added! - Mock";
                     success = true;
+                    me.sharedLogic.endServe(success, message, data);
                 }
-                else
-				{
+                else{
                     //return data from crudController
-					var hash = "hash"; 
-					var salt = "salt";
-					var apiKey = "apikey11";
-					var expirationDate = "2016-06-22 19:10:25.123";
-					
-					
-                    me.sharedLogic.crudController.createPassword(me.body.companyUsername, hash, salt, apiKey, expirationDate, function(passwordId) 
-					{
-						console.log(passwordId);
-						if(passwordId.success)
-						{
+                    var salt = me.sharedLogic.genSalt();
+                    var hash = me.sharedLogic.passwordHash(me.body.companyPassword,salt);
+                    var expDate = me.sharedLogic.getDate(0);
+                    var apiKey = me.sharedLogic.genApiKey(); //need to check for duplicates
+                    me.sharedLogic.crudController.createPassword(me.body.companyUsername, hash, salt, apiKey, expDate, function (passwordObj) {
 
-							me.sharedLogic.crudController.createCompany(me.body.companyName, me.body.companyWebsite, passwordId.data.passwordId, function(companyId)
-							{
-								console.log(companyId);
-								if(companyId.success){
-									data.companyId = companyId.data.companyId;
-									message = me.body.companyName + " Added!";
-									success = true;
-									me.sharedLogic.endServe(success, message, data);
-								}
-								else
-								{
-									data = null;
-									message = companyId.message;
-									success = false;
-									me.sharedLogic.endServe(success, message, data);
-								}
-							});
-						}
-						else
-						{
-							
-							data = null;
-							message = passwordId.message;
-							success = false;
-							console.log("here");
-							//console.log(me);
-							me.sharedLogic.endServe(success, message, data);
-						}
-					});
+                        if(passwordObj.success){
+
+                            me.sharedLogic.crudController.createCompany(me.body.companyName, me.body.companyWebsite, passwordObj.data.passwordId, function (companyObj) {
+
+                                if (companyObj.success) {
+                                    message = me.body.companyName + " Added!";
+                                    me.sharedLogic.endServe(companyObj.success, message, companyObj.data);
+                                } else {
+
+                                    me.sharedLogic.crudController.deletePassword(passwordObj.data.passwordId, function(deletePasswordObj){
+                                        me.sharedLogic.endServe(companyObj.success, companyObj.message, null);
+                                    });
+                                }
+                            });
+                        }
+                        else{
+                            if(passwordObj.message.includes("password_apikey_key"))
+                                message = "Please try again - Api Key Duplicate";
+                            else
+                                message = passwordObj.message;
+                            me.sharedLogic.endServe(passwordObj.success, message, null);
+                        }
+                    });
                 }
             }
-            else
-			{
+            else{
                 success = false;
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
-				this.sharedLogic.endServe(success, message, data);
+                me.sharedLogic.endServe(success, message, data);
             }
         }
-        else
-		{
+        else{
             success = false;
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
-			this.sharedLogic.endServe(success, message, data);
+            me.sharedLogic.endServe(success, message, data);
         }
-		
-		
-		
     }
 
     /**
      *  Function that is called to edit a companies details
      *
-     *  @param companyId
-     *  @param companyName
-     *  @param companyWebsite
-     *  @param companyUsername
+     *  @param companyId int The ID belonging to the company
+     *  @param companyName string the Name of the company
+     *  @param companyWebsite string the website belonging to the company
+     *  @param companyUsername string the username of the company
+     *  @param passwordId int The password ID belonging to the company
      *
      *  @return JSON {
      *                  companyId : int The company ID that has just be edited
@@ -308,55 +301,86 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.companyId === undefined){
+        if(me.body.companyId === undefined){
             presentParams = true;
             presentReturn += "companyId, ";
         }
-        if(this.body.companyName === undefined){
+        if(me.body.companyName === undefined){
             presentParams = true;
             presentReturn += "companyName, ";
         }
-        if(this.body.companyWebsite === undefined){
+        if(me.body.companyWebsite === undefined){
             presentParams = true;
             presentReturn += "companyWebsite, ";
         }
-        if(this.body.companyUsername === undefined){
+        if(me.body.companyUsername === undefined){
             presentParams = true;
-            presentReturn += "companyWebsite, ";
+            presentReturn += "companyUsername, ";
         }
+        if(me.body.passwordId === undefined){
+            presentParams = true;
+            presentReturn += "passwordId, ";
+        }
+
         //check if the parameters are valid if parameters are present
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.companyId) || !me.sharedLogic.validateNumeric(me.body.companyId)){
                 invalidParams = true;
                 invalidReturn += "companyId, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.companyName)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.companyName)){
                 invalidParams = true;
                 invalidReturn += "companyName, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.companyWebsite)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.companyWebsite)){
                 invalidParams = true;
                 invalidReturn += "companyWebsite, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.companyUsername)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.companyUsername)){
                 invalidParams = true;
                 invalidReturn += "companyUsername, ";
             }
+            if(!me.sharedLogic.validateNonEmpty(me.body.passwordId)){
+                invalidParams = true;
+                invalidReturn += "passwordId, ";
+            }
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(this.demoMode){
+                if(me.demoMode){
                     //return mock data
-                    data.companyId = this.body.companyId;
-                    message = this.body.companyName + " edited! - Mock";
+                    data.companyId = me.body.companyId;
+                    message = me.body.companyName + " edited! - Mock";
                     success = true;
+                    me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Edit Company not integrated yet";
-                    data = null;
+
+                    me.sharedLogic.crudController.updatePassword(me.body.passwordId, me.body.companyUsername, undefined, undefined, undefined, undefined, function(updatePasswordObj){
+
+                        if(updatePasswordObj.success){
+                            me.sharedLogic.crudController.updateCompany(me.body.companyId, me.body.companyName, me.body.companyWebsite, undefined, function(companyObj){
+
+                                if(companyObj.success){
+                                    success = companyObj.success;
+                                    message = me.body.companyName + " edited!";
+                                    data.companyId = me.body.companyId;
+                                    me.sharedLogic.endServe(success, message, data);
+                                }
+                                else{
+                                    success = companyObj.success;
+                                    message = companyObj.message;
+                                    data = null;
+                                    me.sharedLogic.endServe(success, message, data);
+                                }
+                            });
+                        }
+                        else{
+                            me.sharedLogic.endServe(updatePasswordObj.success, updatePasswordObj.message, null);
+                        }
+                    });
                 }
             }
             else{
@@ -364,6 +388,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
+                me.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -371,9 +396,8 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
-
     }
 
     /**
@@ -443,10 +467,14 @@ class AdminLogic
      * @param companyId int The ID used to retrieve the company object
      *
      * @return JSON {
-     *                  //TODO
+     *                  companyName string The name of the company retrieved
+     *                  companyWebsite string The website of the company
+     *                  companyId int the ID of the retrieved company
+     *                  passwordId int The ID of the password record belonging to that company
+     *                  username string The username of the company
      *              }
      */
-    getCompany(){
+    getCompanyByCompanyId(){
         var message;
         var data = new Object();
         var success;
@@ -454,7 +482,7 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.companyId === undefined){
+        if(me.body.companyId === undefined){
             presentParams = true;
             presentReturn += "companyId, ";
         }
@@ -462,27 +490,47 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.companyId) || !me.sharedLogic.validateNumeric(me.body.companyId)){
                 invalidParams = true;
                 invalidReturn += "companyId, ";
             }
 
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(this.demoMode){
+                if(me.demoMode){
                     //return mock data
                     data.companyName = "Vast Expanse";
-                    data.website = "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications";
-                    data.companyId = this.body.companyId;
+                    data.companyWebsite = "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications";
+                    data.companyId = me.body.companyId;
+                    data.username =  "piet.pompies@gmail.com";
                     data.passwordId = 0;
                     message = "Retrieved "+data.companyName+"! - Mock";
                     success = true;
+                    me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Get Company not integrated";
-                    data = null;
+                    me.sharedLogic.crudController.getCompanyByCompanyId(me.body.companyId, function(companyObj){
+                        if(companyObj.success){
+                            me.sharedLogic.crudController.getPasswordByPasswordId(companyObj.data.passwordId, function(passwordObj){
+                                if(passwordObj.success){
+                                    success = passwordObj.success;
+                                    message = "Retrieved "+ companyObj.data.companyName+"!";
+                                    data = companyObj.data;
+                                    data.username = passwordObj.data.username;
+                                    me.sharedLogic.endServe(success, message, data);
+                                }
+                                else{
+                                    me.sharedLogic.endServe(passwordObj.success, passwordObj.message, null);
+                                }
+                            });
+                        }else{
+                            success = companyObj.success;
+                            message = companyObj.message;
+                            data = null;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                    });
                 }
             }
             else{
@@ -490,6 +538,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
+                me.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -497,8 +546,97 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     * Function used to get an individual company Object using the Password ID
+     *
+     * @param passwordId int The ID used to retrieve the company object
+     *
+     * @return JSON {
+     *                  companyName string The name of the company retrieved
+     *                  companyWebsite string The website of the company
+     *                  companyId int the ID of the retrieved company
+     *                  username string the username of the company retrieved
+     *                  passwordId int The ID of the password record belonging to that company
+     *              }
+     */
+    getCompanyByPasswordId(){
+        var message;
+        var data = new Object();
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(me.body.passwordId === undefined){
+            presentParams = true;
+            presentReturn += "passwordId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!me.sharedLogic.validateNonEmpty(me.body.passwordId) || !me.sharedLogic.validateNumeric(me.body.passwordId)){
+                invalidParams = true;
+                invalidReturn += "passwordId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(me.demoMode){
+                    //return mock data
+                    data.companyName = "Vast Expanse";
+                    data.companyWebsite = "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications";
+                    data.companyId = 0;
+                    data.username =  "piet.pompies@gmail.com";
+                    data.passwordId = me.body.passwordId;
+                    message = "Retrieved "+data.companyName+"! - Mock";
+                    success = true;
+                    me.sharedLogic.endServe(success, message, data);
+                }
+                else{
+                    //return data from crudController
+                    me.sharedLogic.crudController.getCompanyByPasswordId(me.body.passwordId, function(companyObj){
+                        if(companyObj.success){
+                            me.sharedLogic.crudController.getPasswordByPasswordId(companyObj.data.passwordId, function(passwordObj){
+                                if(passwordObj.success){
+                                    success = passwordObj.success;
+                                    message = "Retrieved "+ companyObj.data.companyName+"!";
+                                    data = companyObj.data;
+                                    data.username = passwordObj.data.username;
+                                    me.sharedLogic.endServe(success, message, data);
+                                }
+                                else{
+                                    me.sharedLogic.endServe(passwordObj.success, passwordObj.message, null);
+                                }
+                            });
+                        }else{
+                            success = companyObj.success;
+                            message = companyObj.message;
+                            data = null;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                    });
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                me.sharedLogic.endServe(success, message, data);
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+            me.sharedLogic.endServe(success, message, data);
+        }
     }
 
     /**
@@ -550,31 +688,31 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.buildingBranchName === undefined){
+        if(me.body.buildingBranchName === undefined){
             presentParams = true;
             presentReturn += "buildingBranchName, ";
         }
-        if(this.body.buildingLatitude === undefined){
+        if(me.body.buildingLatitude === undefined){
             presentParams = true;
             presentReturn += "buildingLatitude, ";
         }
-        if(this.body.buildingLongitude === undefined){
+        if(me.body.buildingLongitude === undefined){
             presentParams = true;
             presentReturn += "buildingLongitude, ";
         }
-        if(this.body.companyId === undefined){
+        if(me.body.companyId === undefined){
             presentParams = true;
             presentReturn += "companyId, ";
         }
-        if(this.body.networkSsid === undefined){
+        if(me.body.networkSsid === undefined){
             presentParams = true;
             presentReturn += "networkSsid, ";
         }
-        if(this.body.networkType === undefined){
+        if(me.body.networkType === undefined){
             presentParams = true;
             presentReturn += "networkType, ";
         }
-        if(this.body.networkPassword === undefined){
+        if(me.body.networkPassword === undefined){
             presentParams = true;
             presentReturn += "networkPassword, ";
         }
@@ -582,47 +720,68 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.buildingBranchName)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.buildingBranchName)){
                 invalidParams = true;
                 invalidReturn += "buildingBranchName, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.buildingLatitude)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.buildingLatitude)){
                 invalidParams = true;
                 invalidReturn += "buildingLatitude, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.buildingLongitude)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.buildingLongitude)){
                 invalidParams = true;
                 invalidReturn += "buildingLongitude, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.companyId) || !me.sharedLogic.validateNumeric(me.body.companyId)){
                 invalidParams = true;
                 invalidReturn += "companyId, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.networkSsid)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.networkSsid)){
                 invalidParams = true;
                 invalidReturn += "networkSsid, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.networkType)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.networkType)){
                 invalidParams = true;
                 invalidReturn += "networkType, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.networkPassword)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.networkPassword)){
                 invalidParams = true;
                 invalidReturn += "networkPassword, ";
             }
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(this.demoMode){
+                if(me.demoMode){
                     //return mock data
                     data.buildingId = 0;
                     message = "Building added! - Mock";
                     success = true;
+                    me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Add Building not integrated";
-                    data = null;
+                    me.sharedLogic.crudController.createWiFiParams(me.body.networkSsid, me.body.networkType, me.body.networkPassword, function(wifiObj) {
+                        if(wifiObj.success){
+                            me.sharedLogic.crudController.createBuilding(me.body.buildingLatitude, me.body.buildingLongitude, me.body.buildingBranchName, me.body.companyId, wifiObj.data.wifiParamsId, function(buildingObj){
+                                if(buildingObj.success){
+                                    success = buildingObj.success;
+                                    message =  me.body.buildingBranchName+" created!";
+                                    data = buildingObj.data;
+                                    me.sharedLogic.endServe(success, message, data);
+                                }
+                                else{
+                                    me.sharedLogic.crudController.deleteWiFiParams(wifiObj.data.wifiParamsId, function(deleteWifiObj){
+                                        me.sharedLogic.endServe(buildingObj.success, buildingObj.message, null);
+                                    });
+                                }
+                            });
+                        }
+                        else{
+                          success = wifiObj.success;
+                          message = wifiObj.message;
+                          data = null;
+                          me.sharedLogic.endServe(success, message, data);
+                        }
+                    });
                 }
             }
             else{
@@ -630,6 +789,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
+                me.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -637,8 +797,8 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
@@ -648,10 +808,6 @@ class AdminLogic
      * @param buildingBranchName string The new name of the branch
      * @param buildingLatitude string The new Latitude of the branch
      * @param buildingLongitude string the new Longitude of the branch
-     * @param wifiParamId int The wifi param ID corresponding to the wifi table belonging to that building
-     * @param networkSsid string The new network SSID of the building
-     * @param networkType string The new Type of the network of the building
-     * @param networkPassword string The new Password of the network
      *
      * @return JSON {
      *                  buildingId int The ID of the building being updated
@@ -665,87 +821,70 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.buildingId === undefined){
+        if(me.body.buildingId === undefined){
             presentParams = true;
             presentReturn += "buildingId, ";
         }
-        if(this.body.buildingBranchName === undefined){
+        if(me.body.buildingBranchName === undefined){
             presentParams = true;
             presentReturn += "buildingBranchName, ";
         }
-        if(this.body.buildingLatitude === undefined){
+        if(me.body.buildingLatitude === undefined){
             presentParams = true;
             presentReturn += "buildingLatitude, ";
         }
-        if(this.body.buildingLongitude === undefined){
+        if(me.body.buildingLongitude === undefined){
             presentParams = true;
             presentReturn += "buildingLongitude, ";
         }
-        if(this.body.wifiParamId === undefined){
-            presentParams = true;
-            presentReturn += "wifiParamId, ";
-        }
-        if(this.body.networkSsid === undefined){
-            presentParams = true;
-            presentReturn += "networkSsid, ";
-        }
-        if(this.body.networkType === undefined){
-            presentParams = true;
-            presentReturn += "networkType, ";
-        }
-        if(this.body.networkPassword === undefined){
-            presentParams = true;
-            presentReturn += "networkPassword, ";
-        }
+
         //check if the parameters are valid if parameters are present
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.buildingId) || !this.sharedLogic.validateNumeric(this.body.buildingId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.buildingId) || !me.sharedLogic.validateNumeric(me.body.buildingId)){
                 invalidParams = true;
                 invalidReturn += "buildingId, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.buildingBranchName)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.buildingBranchName)){
                 invalidParams = true;
                 invalidReturn += "buildingBranchName, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.buildingLatitude)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.buildingLatitude)){
                 invalidParams = true;
                 invalidReturn += "buildingLatitude, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.buildingLongitude)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.buildingLongitude)){
                 invalidParams = true;
                 invalidReturn += "buildingLongitude, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.wifiParamId) || !this.sharedLogic.validateNumeric(this.body.wifiParamId)){
-                invalidParams = true;
-                invalidReturn += "wifiParamId, ";
-            }
-            if(!this.sharedLogic.validateNonEmpty(this.body.networkSsid)){
-                invalidParams = true;
-                invalidReturn += "networkSsid, ";
-            }
-            if(!this.sharedLogic.validateNonEmpty(this.body.networkType)){
-                invalidParams = true;
-                invalidReturn += "networkType, ";
-            }
-            if(!this.sharedLogic.validateNonEmpty(this.body.networkPassword)){
-                invalidParams = true;
-                invalidReturn += "networkPassword, ";
-            }
+
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(this.demoMode){
+                if(me.demoMode){
                     //return mock data
-                    data.buildingId = this.body.buildingId;
+                    data.buildingId = me.body.buildingId;
                     message = "Building edited! - Mock";
                     success = true;
+                    me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Edit Building not integrated";
-                    data = null;
+
+                    me.sharedLogic.crudController.updateBuilding(me.body.buildingId, me.body.buildingLatitude, me.body.buildingLongitude, me.body.buildingBranchName,  undefined, undefined, function(buildingObj){
+                        if(buildingObj.success){
+                            success = buildingObj.success;
+                            message = "Building Edited!";
+                            data.buildingId = me.body.buildingId;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                        else{
+                            success = buildingObj.success;
+                            message = buildingObj.message;
+                            data = null;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                    });
                 }
             }
             else{
@@ -753,6 +892,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
+                me.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -760,8 +900,8 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
@@ -831,10 +971,18 @@ class AdminLogic
      * @param buildingId int The building ID used to get the building object
      *
      * @return JSON {
-     *                  //TODO
+     *                  buildingId int The ID belonging to the Building
+     *                  latitude string The latitude of the building
+     *                  longitude string the longitude of the building
+     *                  branchName string the name of the building
+     *                  companyId int the ID of the company that the building belongs to
+     *                  wifiParamsId int the ID of the wifi params that belong to the building
+     *                  networkSsid string The name of the wifi for guests to connect for
+     *                  networkType string The type of the wifi network for guests to connect to
+     *                  networkPassword string The password for the wifi network for access to the wifi for guests
      *              }
      */
-    getBuilding(){
+    getBuildingByBuildingId(){
         var message;
         var data = new Object();
         var success;
@@ -842,7 +990,7 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.buildingId === undefined){
+        if(me.body.buildingId === undefined){
             presentParams = true;
             presentReturn += "buildingId, ";
         }
@@ -850,24 +998,61 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.buildingId) || !this.sharedLogic.validateNumeric(this.body.buildingId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.buildingId) || !me.sharedLogic.validateNumeric(me.body.buildingId)){
                 invalidParams = true;
                 invalidReturn += "buildingId, ";
             }
 
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(this.demoMode){
+                if(me.demoMode){
                     //return mock data
-                    success = false;
-                    message = "Get Building body not known";
-                    data = null;
+                    success = true;
+                    message = "Retrieved Building! - mock";
+                    data.buildingId = me.body.buildingId ;
+                    data.latitude = "20,120,10";
+                    data.longitude = "20,120,10";
+                    data.branchName = "Vast Expanse JHB";
+                    data.companyId = 0 ;
+                    data.wifiParamsId = 0;
+                    data.networkSsid = "SSID";
+                    data.networkType = "TYPE";
+                    data.networkPassword = "PASS123";
+
+                    me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Get Building not integrated";
-                    data = null;
+                    me.sharedLogic.crudController.getBuildingByBuildingId(me.body.buildingId, function(buildingObj){
+
+                       if(buildingObj.success){
+                           me.sharedLogic.crudController.getWiFiParamsByWifiParamsId(buildingObj.data.wifiParamsId, function(wifiObj){
+                               if(wifiObj.success) {
+                                   success = buildingObj.success;
+                                   message = "Building Retrieved!";
+                                   data = buildingObj.data;
+                                   data.networkSsid = wifiObj.data.ssid;
+                                   data.networkType = wifiObj.data.networkType;
+                                   data.networkPassword = wifiObj.data.password;
+
+                                   me.sharedLogic.endServe(success, message, data);
+                               }
+                               else{
+                                   success = wifiObj.success;
+                                   message = "Error when retrieving wifi details!";
+                                   data = null;
+                                   me.sharedLogic.endServe(success, message, data);
+                               }
+                           });
+
+                       }
+                       else{
+                           success = buildingObj.success;
+                           message = buildingObj.message;
+                           data = null;
+                           me.sharedLogic.endServe(success, message, data);
+                       }
+                    });
                 }
             }
             else{
@@ -875,6 +1060,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
+                me.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -882,34 +1068,106 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
      * This function will be used to retrieve all the buildings belonging to a certain company
      *
+     * @param companyId int the company that the building objects belong to
+     *
      * @return an Array of JSON {
-     *                              //TODO
+     *                  buildingId int The ID belonging to the Building
+     *                  latitude string The latitude of the building
+     *                  longitude string the longitude of the building
+     *                  branchName string the name of the building
+     *                  companyId int the ID of the company that the building belongs to
+     *                  wifiParamsId int the ID of the wifi params that belong to the building
      *                          }
      */
-    getBuildings(){
+    getBuildingsByCompanyId(){
         var message;
-        var success;
         var data = new Object();
-        if(this.demoMode){
-            //return mock data
-            success = false;
-            message = "Get Buildings body not known";
-            data = null;
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(me.body.companyId === undefined){
+            presentParams = true;
+            presentReturn += "companyId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!me.sharedLogic.validateNonEmpty(me.body.companyId) || !me.sharedLogic.validateNumeric(me.body.companyId)){
+                invalidParams = true;
+                invalidReturn += "companyId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(me.demoMode){
+                    //return mock data
+                    success = true;
+                    message = "Retrieved Building! - mock";
+                    data = [];
+                    data.push({
+                        buildingId : 0,
+                        buildingLatitude : "20,120,10",
+                        buildingLongitude : "20,120,10",
+                        buildingBranchName : "Vast Expanse JHB",
+                        companyId : me.body.companyId,
+                        wifiParamsId : 0
+                    });
+
+                    data.push({
+                        buildingId : 1,
+                        buildingLatitude : "20,120,10",
+                        buildingLongitude : "20,120,10",
+                        buildingBranchName : "Vast Expanse PTA",
+                        companyId : me.body.companyId,
+                        wifiParamsId : 1
+                    });
+
+                    me.sharedLogic.endServe(success, message, data);
+                }
+                else{
+                    //return data from crudController
+                    me.sharedLogic.crudController.getBuildingsByCompanyId(me.body.companyId, function(buildingObj){
+
+                        if(buildingObj.success){
+                            success = buildingObj.success;
+                            message = "Buildings Retrieved!";
+                            data = buildingObj.data;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                        else{
+                            success = buildingObj.success;
+                            message = buildingObj.message;
+                            data = null;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                    });
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                me.sharedLogic.endServe(success, message, data);
+            }
         }
         else{
-            //return data from crudController
             success = false;
-            message = "Get Buildings not integrated";
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
@@ -920,7 +1178,7 @@ class AdminLogic
      * @param buildingId int the building
      *
      * @return JSON {
-     *                  roomId
+     *                  roomId int The ID of the newly created room
      *              }
      */
     addRoom(){
@@ -931,15 +1189,15 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.roomName === undefined){
+        if(me.body.roomName === undefined){
             presentParams = true;
             presentReturn += "roomName, ";
         }
-        if(this.body.parentRoomList === undefined){
+        if(me.body.parentRoomList === undefined){
             presentParams = true;
             presentReturn += "parentRoomList, ";
         }
-        if(this.body.buildingId === undefined){
+        if(me.body.buildingId === undefined){
             presentParams = true;
             presentReturn += "buildingId, ";
         }
@@ -948,32 +1206,56 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.roomName)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.roomName)){
                 invalidParams = true;
                 invalidReturn += "roomName, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.parentRoomList)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.parentRoomList)){
                 invalidParams = true;
                 invalidReturn += "parentRoomList, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.buildingId) || !this.sharedLogic.validateNumeric(this.body.buildingId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.buildingId) || !me.sharedLogic.validateNumeric(me.body.buildingId)){
                 invalidParams = true;
                 invalidReturn += "buildingId, ";
             }
 
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(this.demoMode){
+                if(me.demoMode){
                     //return mock data
                     data.roomId = 0;
                     message = "Room added! - Mock";
                     success = true;
+                    me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Add Room not integrated";
-                    data = null;
+                    me.sharedLogic.crudController.createRoom(me.body.roomName, me.body.parentRoomList, me.body.buildingId, function(roomObj){
+                        if(roomObj.success){
+                            me.sharedLogic.crudController.createNFCAccessPoints(roomObj.data.roomId, function(nfcObj){
+                                if(nfcObj.success){
+                                    success = roomObj.success;
+                                    message = me.body.roomName + " added!";
+                                    data = roomObj.data;
+                                    me.sharedLogic.endServe(success, message, data);
+                                }
+                                else{
+                                    me.sharedLogic.crudController.deleteRoom(roomObj.data.roomId, function(deleteRoomObj){
+                                        success = nfcObj.success;
+                                        message = "Room creation failed in NFC creation, please try again";
+                                        data = null;
+                                        me.sharedLogic.endServe(success, message, data);
+                                    });
+                                }
+                            });
+                        }
+                        else{
+                            success = roomObj.success;
+                            message = roomObj.message;
+                            data = null;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                    });
                 }
             }
             else{
@@ -981,6 +1263,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
+                me.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -988,8 +1271,8 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
@@ -1011,15 +1294,15 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.roomId === undefined){
+        if(me.body.roomId === undefined){
             presentParams = true;
             presentReturn += "roomId, ";
         }
-        if(this.body.roomName === undefined){
+        if(me.body.roomName === undefined){
             presentParams = true;
             presentReturn += "roomName, ";
         }
-        if(this.body.parentRoomList === undefined){
+        if(me.body.parentRoomList === undefined){
             presentParams = true;
             presentReturn += "parentRoomList, ";
         }
@@ -1028,32 +1311,44 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.roomId) || !this.sharedLogic.validateNumeric(this.body.roomId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.roomId) || !me.sharedLogic.validateNumeric(me.body.roomId)){
                 invalidParams = true;
                 invalidReturn += "roomId, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.roomName)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.roomName)){
                 invalidParams = true;
                 invalidReturn += "roomName, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.parentRoomList)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.parentRoomList)){
                 invalidParams = true;
                 invalidReturn += "parentRoomList, ";
             }
 
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(this.demoMode){
+                if(me.demoMode){
                     //return mock data
-                    data.roomId = this.body.roomId;
+                    data.roomId = me.body.roomId;
                     message = "Room edited! - Mock";
                     success = true;
+                    me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Edit Room not integrated";
-                    data = null;
+                    me.sharedLogic.crudController.updateRoom(me.body.roomId, me.body.roomName, me.body.parentRoomList, undefined, function(roomObj){
+                        if(roomObj.success){
+                            success = roomObj.success;
+                            message = "Room updated!";
+                            data.roomId = me.body.roomId;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                        else{
+                            success = roomObj.success;
+                            message = roomObj.message;
+                            data = null;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                    });
                 }
             }
             else{
@@ -1061,6 +1356,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
+                me.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -1068,8 +1364,8 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
@@ -1139,10 +1435,13 @@ class AdminLogic
      * @param roomId int The Room ID used to get the Room object
      *
      * @return JSON {
-     *                  //TODO
+     *                  roomId int The ID of the retrieved Room
+     *                  roomName string The name of the Room being retrieved
+     *                  parentRoomList string The comma seperated list of the parent rooms
+     *                  buildingId int the Id of the building that the rooms belong to
      *              }
      */
-    getRoom(){
+    getRoomByRoomId(){
         var message;
         var data = new Object();
         var success;
@@ -1150,7 +1449,7 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.roomId === undefined){
+        if(me.body.roomId === undefined){
             presentParams = true;
             presentReturn += "roomId, ";
         }
@@ -1158,24 +1457,39 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.roomId) || !this.sharedLogic.validateNumeric(this.body.roomId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.roomId) || !me.sharedLogic.validateNumeric(me.body.roomId)){
                 invalidParams = true;
                 invalidReturn += "roomId, ";
             }
 
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(this.demoMode){
+                if(me.demoMode){
                     //return mock data
-                    success = false;
-                    message = "Get Room body not known";
-                    data = null;
+                    success = true;
+                    message = "Room Retrieved!- Mock";
+                    data.roomId = 2;
+                    data.roomName = "Houston";
+                    data.parentRoomList = "0,1";
+                    data.buildingId = 0;
+                    me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Get Room not integrated";
-                    data = null;
+                    me.sharedLogic.crudController.getRoomByRoomId(me.body.roomId, function(roomObj){
+                        if(roomObj.success){
+                            success = roomObj.success;
+                            message = "Room Retrieved!";
+                            data = roomObj.data;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                        else{
+                            success = roomObj.success;
+                            message = roomObj.message;
+                            data = null;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                    });
                 }
             }
             else{
@@ -1183,6 +1497,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
+                me.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -1190,34 +1505,97 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
      * This function will be used to retrieve all the buildings belonging to a certain company
      *
+     * @param buildingId int the Building ID that the rooms belong to
+     *
      * @return an Array of JSON {
-     *                              //TODO
+     *                              roomId int The ID of the retrieved Room
+     *                              roomName string The name of the Room being retrieved
+     *                              parentRoomList string The comma seperated list of the parent rooms
+     *                              buildingId int the Id of the building that the rooms belong to
      *                          }
      */
-    getRooms(){
+    getRoomsByBuildingId(){
         var message;
-        var success;
         var data = new Object();
-        if(this.demoMode){
-            //return mock data
-            success = false;
-            message = "Get Rooms body not known";
-            data = null;
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(me.body.buildingId === undefined){
+            presentParams = true;
+            presentReturn += "buildingId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!me.sharedLogic.validateNonEmpty(me.body.buildingId) || !me.sharedLogic.validateNumeric(me.body.buildingId)){
+                invalidParams = true;
+                invalidReturn += "buildingId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(me.demoMode){
+                    //return mock data
+                    success = true;
+                    message = "Rooms Retrieved!- Mock";
+                    data = [];
+                    data.push({
+                        roomId : 2,
+                        roomName : "Houston",
+                        parentRoomList : "0,1",
+                        buildingId : 0,
+                    });
+                    data.push({
+                        roomId : 3,
+                        roomName : "Houston",
+                        parentRoomList : "0,1,2",
+                        buildingId : 0,
+                    });
+                        me.sharedLogic.endServe(success, message, data);
+                }
+                else{
+                    //return data from crudController
+                    me.sharedLogic.crudController.getRoomsByBuildingId(me.body.buildingId, function(roomObj){
+                        if(roomObj.success){
+                            success = roomObj.success;
+                            message = "Rooms Retrieved!";
+                            data = roomObj.data;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                        else{
+                            success = roomObj.success;
+                            message = roomObj.message;
+                            data = null;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                    });
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                me.sharedLogic.endServe(success, message, data);
+            }
         }
         else{
-            //return data from crudController
             success = false;
-            message = "Get Rooms not integrated";
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
@@ -1247,35 +1625,35 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.employeeName === undefined){
+        if(me.body.employeeName === undefined){
             presentParams = true;
             presentReturn += "employeeName, ";
         }
-        if(this.body.employeeSurname === undefined){
+        if(me.body.employeeSurname === undefined){
             presentParams = true;
             presentReturn += "employeeSurname, ";
         }
-        if(this.body.employeeTitle === undefined){
+        if(me.body.employeeTitle === undefined){
             presentParams = true;
             presentReturn += "employeeTitle, ";
         }
-        if(this.body.employeeCellphone === undefined){
+        if(me.body.employeeCellphone === undefined){
             presentParams = true;
             presentReturn += "employeeCellphone, ";
         }
-        if(this.body.employeeEmail === undefined){
+        if(me.body.employeeEmail === undefined){
             presentParams = true;
             presentReturn += "employeeEmail, ";
         }
-        if(this.body.companyId === undefined){
+        if(me.body.companyId === undefined){
             presentParams = true;
             presentReturn += "companyId, ";
         }
-        if(this.body.buildingId === undefined){
+        if(me.body.buildingId === undefined){
             presentParams = true;
             presentReturn += "buildingId, ";
         }
-        if(this.body.employeePassword === undefined){
+        if(me.body.employeePassword === undefined){
             presentParams = true;
             presentReturn += "employeePassword, ";
         }
@@ -1283,74 +1661,84 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.employeeName) || !this.sharedLogic.validateAlpha(this.body.employeeName)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.employeeName) || !me.sharedLogic.validateAlpha(me.body.employeeName)){
                 invalidParams = true;
                 invalidReturn += "employeeName, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.employeeSurname) || !this.sharedLogic.validateAlpha(this.body.employeeSurname)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.employeeSurname) || !me.sharedLogic.validateAlpha(me.body.employeeSurname)){
                 invalidParams = true;
                 invalidReturn += "employeeSurname, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.employeeTitle)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.employeeTitle)){
                 invalidParams = true;
                 invalidReturn += "employeeTitle, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.employeeCellphone) || !this.sharedLogic.validateCellphone(this.body.employeeCellphone)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.employeeCellphone) || !me.sharedLogic.validateCellphone(me.body.employeeCellphone)){
                 invalidParams = true;
                 invalidReturn += "employeeCellphone, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.employeeEmail) || !this.sharedLogic.validateEmail(this.body.employeeEmail)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.employeeEmail) || !me.sharedLogic.validateEmail(me.body.employeeEmail)){
                 invalidParams = true;
                 invalidReturn += "employeeEmail, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.companyId) || !me.sharedLogic.validateNumeric(me.body.companyId)){
                 invalidParams = true;
                 invalidReturn += "companyId, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.buildingId) || !this.sharedLogic.validateNumeric(this.body.buildingId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.buildingId) || !me.sharedLogic.validateNumeric(me.body.buildingId)){
                 invalidParams = true;
                 invalidReturn += "buildingId, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.employeePassword)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.employeePassword)){
                 invalidParams = true;
                 invalidReturn += "employeePassword, ";
             }
             //if valid parameters then execute function
             if(!invalidParams){
-                if(this.demoMode){
+                if(me.demoMode){
                     //return mock data
                     data.employeeId = 0;
                     message = "Employee Added! - Mock";
                     success = true;
+                    me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
 
-                    var passwordId = this.sharedLogic.crudController.createPassword(this.body.employeeEmail, this.body.employeePassword);
+                    var salt = me.sharedLogic.genSalt();
+                    var hash = me.sharedLogic.passwordHash(me.body.employeePassword,salt);
+                    var expDate = me.sharedLogic.getDate(0);
+                    var apiKey = me.sharedLogic.genApiKey(); //need to check for duplicates
 
-                    if(passwordId.success){
 
-                        var employeeId = this.sharedLogic.crudController.createEmployee(this.body.employeeName, this.body.employeeSurname,
-                            this.body.employeeTitle, this.body.employeeCellphone,
-                            this.body.employeeEmail, this.body.companyId,
-                            passwordId.data.passwordId);
+                    me.sharedLogic.crudController.createPassword(me.body.employeeEmail, hash, salt, apiKey, expDate, function(passwordObj){
 
-                        if(employeeId.success){
-                            data.employeeId = employeeId.data.employeeId;
-                            message = "Employee Added!";
-                            success = true;
+                        if(passwordObj.success){
+
+                            me.sharedLogic.crudController.createEmployee(me.body.employeeName, me.body.employeeSurname,
+                                                                        me.body.employeeTitle, me.body.employeeCellphone,
+                                                                        me.body.employeeEmail, me.body.companyId,
+                                                                        me.body.buildingId,passwordObj.data.passwordId, function(employeeObj){
+                                    if(employeeObj.success){
+                                        success = employeeObj.success;
+                                        message = "Employee Added!";
+                                        data = employeeObj.data;
+                                        me.sharedLogic.endServe(success, message, data);
+                                    }
+                                    else{
+                                        me.sharedLogic.crudController.deletePassword(passwordObj.data.passwordId, function(deletePasswordObj){
+                                            me.sharedLogic.endServe(employeeObj.success, employeeObj.message, null);
+                                        });
+                                    }
+                                });
                         }
                         else{
+                            success = passwordObj.success;
+                            message = passwordObj.message;
                             data = null;
-                            message = employeeId.message;
-                            success = false;
+                            me.sharedLogic.endServe(success, message, data);
                         }
-                    }
-                    else{
-                        data = null;
-                        message = passwordId.message;
-                        success = false;
-                    }
+                    });
                 }
             }
             else{
@@ -1358,6 +1746,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
+                me.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -1365,8 +1754,8 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
@@ -1393,6 +1782,7 @@ class AdminLogic
      * @param employeeTitle string The Title of the employee e.g Mr/Mrs
      * @param employeeCellphone string The Cellphone number of the employee
      * @param employeeEmail string The email address of the employee - used for login purposes
+     * @param passwordId int the ID of the password record used to update the username
      * @param buildingId int The building that the employee works at
      *
      * @return JSON {
@@ -1407,31 +1797,35 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.employeeId === undefined){
+        if(me.body.employeeId === undefined){
             presentParams = true;
             presentReturn += "employeeId, ";
         }
-        if(this.body.employeeName === undefined){
+        if(me.body.employeeName === undefined){
             presentParams = true;
             presentReturn += "employeeName, ";
         }
-        if(this.body.employeeSurname === undefined){
+        if(me.body.employeeSurname === undefined){
             presentParams = true;
             presentReturn += "employeeSurname, ";
         }
-        if(this.body.employeeTitle === undefined){
+        if(me.body.employeeTitle === undefined){
             presentParams = true;
             presentReturn += "employeeTitle, ";
         }
-        if(this.body.employeeCellphone === undefined){
+        if(me.body.employeeCellphone === undefined){
             presentParams = true;
             presentReturn += "employeeCellphone, ";
         }
-        if(this.body.employeeEmail === undefined){
+        if(me.body.employeeEmail === undefined){
             presentParams = true;
             presentReturn += "employeeEmail, ";
         }
-        if(this.body.buildingId === undefined){
+        if(me.body.passwordId === undefined){
+            presentParams = true;
+            presentReturn += "passwordId, ";
+        }
+        if(me.body.buildingId === undefined){
             presentParams = true;
             presentReturn += "buildingId, ";
         }
@@ -1440,47 +1834,75 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.employeeId) || !this.sharedLogic.validateNumeric(this.body.employeeId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.employeeId) || !me.sharedLogic.validateNumeric(me.body.employeeId)){
                 invalidParams = true;
                 invalidReturn += "employeeId, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.employeeName) || !this.sharedLogic.validateAlpha(this.body.employeeName)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.employeeName) || !me.sharedLogic.validateAlpha(me.body.employeeName)){
                 invalidParams = true;
                 invalidReturn += "employeeName, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.employeeSurname) || !this.sharedLogic.validateAlpha(this.body.employeeSurname)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.employeeSurname) || !me.sharedLogic.validateAlpha(me.body.employeeSurname)){
                 invalidParams = true;
                 invalidReturn += "employeeSurname, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.employeeTitle)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.employeeTitle)){
                 invalidParams = true;
                 invalidReturn += "employeeTitle, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.employeeCellphone) || !this.sharedLogic.validateCellphone(this.body.employeeCellphone)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.employeeCellphone) || !me.sharedLogic.validateCellphone(me.body.employeeCellphone)){
                 invalidParams = true;
                 invalidReturn += "employeeCellphone, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.employeeEmail) || !this.sharedLogic.validateEmail(this.body.employeeEmail)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.employeeEmail) || !me.sharedLogic.validateEmail(me.body.employeeEmail)){
                 invalidParams = true;
                 invalidReturn += "employeeEmail, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.buildingId) || !this.sharedLogic.validateNumeric(this.body.buildingId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.passwordId) || !me.sharedLogic.validateNumeric(me.body.passwordId)){
+                invalidParams = true;
+                invalidReturn += "passwordId, ";
+            }
+            if(!me.sharedLogic.validateNonEmpty(me.body.buildingId) || !me.sharedLogic.validateNumeric(me.body.buildingId)){
                 invalidParams = true;
                 invalidReturn += "buildingId, ";
             }
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(this.demoMode){
+                if(me.demoMode){
                     //return mock data
-                    data.employeeId = this.body.employeeId;
+                    data.employeeId = me.body.employeeId;
                     message = "Employee edited! - Mock";
                     success = true;
+                    me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Edit Employee not integrated";
-                    data = null;
+
+                    me.sharedLogic.crudController.updatePassword(me.body.passwordId, me.body.employeeEmail,undefined, undefined, undefined, undefined, function(updatePasswordObj){
+                        if(updatePasswordObj.success){
+
+                            me.sharedLogic.crudController.updateEmployee(me.body.employeeId, me.body.employeeName, me.body.employeeSurname, me.body.employeeTitle,
+                                                                        me.body.employeeCellphone, me.body.employeeEmail, undefined, me.body.buildingId,
+                                                            undefined, function(employeeObj){
+                                if(employeeObj.success){
+                                    success = employeeObj.success;
+                                    message = "Employee Edited!";
+                                    data.employeeId = me.body.employeeId;
+                                    me.sharedLogic.endServe(success, message, data);
+                                }
+                                else{
+                                    success = employeeObj.success;
+                                    message = employeeObj.message;
+                                    data = null;
+                                    me.sharedLogic.endServe(success, message, data);
+                                }
+                            });
+                        }
+                        else{
+                            me.sharedLogic.endServe(passwordObj.success, passwordObj.message, null);
+                        }
+                    });
+
                 }
             }
             else{
@@ -1488,6 +1910,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
+                me.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -1495,8 +1918,8 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
@@ -1566,10 +1989,18 @@ class AdminLogic
      * @param employeeId int The Employee ID used to get the Employee object
      *
      * @return JSON {
-     *                  //TODO
+     *                 employeeId int The ID belonging to that employee
+     *                 firstName string The name of the employee
+     *                 surname string The surname of the employee
+     *                 title string The title of the employee
+     *                 cellphone string the cell number of the employee
+     *                 email string the email address of the employee
+     *                 companyId int the Company ID that the employee belongs to
+     *                 buildingId int the Building ID where the employee works for
+     *                 passwordId int The Password ID belonging to the Employee
      *              }
      */
-    getEmployee(){
+    getEmployeeByEmployeeId(){
         var message;
         var data = new Object();
         var success;
@@ -1577,7 +2008,7 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.employeeId === undefined){
+        if(me.body.employeeId === undefined){
             presentParams = true;
             presentReturn += "employeeId, ";
         }
@@ -1585,24 +2016,44 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.employeeId) || !this.sharedLogic.validateNumeric(this.body.employeeId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.employeeId) || !me.sharedLogic.validateNumeric(me.body.employeeId)){
                 invalidParams = true;
                 invalidReturn += "employeeId, ";
             }
 
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(this.demoMode){
+                if(me.demoMode){
                     //return mock data
-                    success = false;
-                    message = "Get Employee body not known";
-                    data = null;
+                    success = true;
+                    message = "Employee Retrieved! - Mock";
+                    data.employeeId = 0;
+                    data.firstName = "Piet";
+                    data.surname = "Pompies";
+                    data.title = "Mr";
+                    data.cellphone = "0791637273";
+                    data.email = "piet.pompies@gmail.com";
+                    data.companyId = 0;
+                    data.buildingId = 0;
+                    data.passwordId = 0;
+                    me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Get Employee not integrated";
-                    data = null;
+                    me.sharedLogic.crudController.getEmployeeByEmployeeId(me.body.employeeId, function(employeeObj){
+                        if(employeeObj.success){
+                            success = employeeObj.success;
+                            message = "Employee Retrieved!";
+                            data = employeeObj.data;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                        else{
+                            success = employeeObj.success;
+                            message = employeeObj.message;
+                            data = null;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                    });
                 }
             }
             else{
@@ -1610,6 +2061,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
+                me.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -1617,44 +2069,224 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
     }
 
     /**
-     * This function will be used to retrieve all the buildings belonging to a certain company
+     * This function will be used to return a single Employee object
+     *
+     * @param companyId int The company ID used to get the Employee object
      *
      * @return an Array of JSON {
-     *                              //TODO
-     *                          }
+     *                 employeeId int The ID belonging to that employee
+     *                 firstName string The name of the employee
+     *                 surname string The surname of the employee
+     *                 title string The title of the employee
+     *                 cellphone string the cell number of the employee
+     *                 email string the email address of the employee
+     *                 companyId int the Company ID that the employee belongs to
+     *                 buildingId int the Building ID where the employee works for
+     *                 passwordId int The Password ID belonging to the Employee
+     *              }
      */
-    getEmployees(){
+    getEmployeesByCompanyId(){
         var message;
-        var success;
         var data = new Object();
-        if(this.demoMode){
-            //return mock data
-            success = false;
-            message = "Get Employees body not known";
-            data = null;
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(me.body.companyId === undefined){
+            presentParams = true;
+            presentReturn += "companyId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!me.sharedLogic.validateNonEmpty(me.body.companyId) || !me.sharedLogic.validateNumeric(me.body.companyId)){
+                invalidParams = true;
+                invalidReturn += "companyId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(me.demoMode){
+                    //return mock data
+                    success = true;
+                    message = "Employees Retrieved!- Mock";
+                    data = [];
+                    data.push({
+                        employeeId:0,
+                        firstName:"Duncan",
+                        surname:"Vodden",
+                        title:"Mr",
+                        cellphone:"0724904115",
+                        email:"duncan@gmail.com",
+                        companyId:me.body.companyId,
+                        buildingId:0,
+                        passwordId:0
+                    });
+                    data.push({
+                        employeeId : 1,
+                        firstName : "Piet",
+                        surname : "Pompies",
+                        title : "Mr",
+                        cellphone : "0791637273",
+                        email : "piet.pompies@gmail.com",
+                        companyId : me.body.companyId,
+                        buildingId : 0,
+                        passwordId : 0
+                    });
+                    me.sharedLogic.endServe(success, message, data);
+                }
+                else{
+                    //return data from crudController
+                    me.sharedLogic.crudController.getEmployeesByCompanyId(me.body.companyId, function(employeeObj){
+                        if(employeeObj.success){
+                            success = employeeObj.success;
+                            message = "Employees Retrieved!";
+                            data = employeeObj.data;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                        else{
+                            success = employeeObj.success;
+                            message = employeeObj.message;
+                            data = null;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                    });
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                me.sharedLogic.endServe(success, message, data);
+            }
         }
         else{
-            //return data from crudController
             success = false;
-            message = "Get Employees not integrated";
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
+    }
+
+    /**
+     * This function will be used to return a single Employee object
+     *
+     * @param buildingId int The building ID used to get the Employee object
+     *
+     * @return an Array of JSON {
+     *                 employeeId int The ID belonging to that employee
+     *                 firstName string The name of the employee
+     *                 surname string The surname of the employee
+     *                 title string The title of the employee
+     *                 cellphone string the cell number of the employee
+     *                 email string the email address of the employee
+     *                 companyId int the Company ID that the employee belongs to
+     *                 buildingId int the Building ID where the employee works for
+     *                 passwordId int The Password ID belonging to the Employee
+     *              }
+     */
+    getEmployeesByBuildingId(){
+        var message;
+        var data = new Object();
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(me.body.buildingId === undefined){
+            presentParams = true;
+            presentReturn += "buildingId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!me.sharedLogic.validateNonEmpty(me.body.buildingId) || !me.sharedLogic.validateNumeric(me.body.buildingId)){
+                invalidParams = true;
+                invalidReturn += "buildingId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(me.demoMode){
+                    //return mock data
+                    success = true;
+                    message = "Employees Retrieved!- Mock";
+                    data = [];
+                    data.push({
+                            employeeId : 0,
+                            firstName : "Duncan",
+                            surname : "Vodden",
+                            title : "Mr",
+                            cellphone : "0724904115",
+                            email: "duncan@gmail.com",
+                            companyId: 0,
+                            buildingId: me.body.buildingId,
+                            passwordId: 0
+                    });
+                    data.push({
+                        employeeId : 1,
+                        firstName : "Piet",
+                        surname : "Pompies",
+                        title : "Mr",
+                        cellphone : "0791637273",
+                        email : "piet.pompies@gmail.com",
+                        companyId : 0,
+                        buildingId : me.body.buildingId,
+                        passwordId : 1
+                    });
+                    me.sharedLogic.endServe(success, message, data);
+                }
+                else{
+                    //return data from crudController
+                    me.sharedLogic.crudController.getEmployeesByBuildingId(me.body.buildingId, function(employeeObj){
+                        if(employeeObj.success){
+                            success = employeeObj.success;
+                            message = "Employees Retrieved!";
+                            data = employeeObj.data;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                        else{
+                            success = employeeObj.success;
+                            message = employeeObj.message;
+                            data = null;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                    });
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                me.sharedLogic.endServe(success, message, data);
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+            me.sharedLogic.endServe(success, message, data);
+        }
     }
 
     /**
      * This Function will be used to change the password
      *
-     * @params apiKey
-     * @params oldPassword
-     * @params newPassword
-     *
-     * @return {}
+     * @params apiKey string The Api key of the user
+     * @params oldPassword The old password of the user
+     * @params newPassword string the New password of the user
      */
     editPassword(){
         var message;
@@ -1664,15 +2296,15 @@ class AdminLogic
         var presentParams = false;
         var presentReturn = "";
 
-        if(this.body.apiKey === undefined){
+        if(me.body.apiKey === undefined){
             presentParams = true;
             presentReturn += "apiKey, ";
         }
-        if(this.body.oldPassword === undefined){
+        if(me.body.oldPassword === undefined){
             presentParams = true;
             presentReturn += "oldPassword, ";
         }
-        if(this.body.newPassword === undefined){
+        if(me.body.newPassword === undefined){
             presentParams = true;
             presentReturn += "newPassword, ";
         }
@@ -1680,31 +2312,60 @@ class AdminLogic
         if(!presentParams){
             var invalidParams = false;
             var invalidReturn = "";
-            if(!this.sharedLogic.validateNonEmpty(this.body.apiKey)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.apiKey)){
                 invalidParams = true;
                 invalidReturn += "apiKey, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.oldPassword)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.oldPassword)){
                 invalidParams = true;
                 invalidReturn += "oldPassword, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.newPassword)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.newPassword)){
                 invalidParams = true;
                 invalidReturn += "newPassword, ";
             }
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(this.demoMode){
+                if(me.demoMode){
                     //return mock data
-                    success = false;
-                    message = "Edit Password body not known";
-                    data = null;
+                    success = true;
+                    message = "Password Successfully changed!";
+                    me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Edit Password not integrated";
-                    data = null;
+                    me.sharedLogic.crudController.getPasswordByApiKey(me.body.apiKey, function(apiKeyObj){
+                        if(apiKeyObj.success){
+                            if(apiKeyObj.data.hash === me.sharedLogic.passwordHash(me.body.oldPassword,apiKeyObj.data.salt)){
+                                var newSalt = me.sharedLogic.genSalt();
+                                me.sharedLogic.crudController.updatePassword(apiKeyObj.data.passwordId, undefined, me.sharedLogic.passwordHash(me.body.newPassword,newSalt), newSalt, undefined, undefined, function(passwordObj){
+                                   if(passwordObj.success) {
+                                        success = passwordObj.success;
+                                        message = "Password Successfully changed!";
+                                        data = {};
+                                        me.sharedLogic.endServe(success, message, data);
+                                   }
+                                   else{
+                                       success = passwordObj.success;
+                                       message = passwordObj.message;
+                                       data = null;
+                                       me.sharedLogic.endServe(success, message, data);
+                                   }
+                                });
+                            }else{
+                                success = false;
+                                message = "Old Passwords do not match";
+                                data = null;
+                                me.sharedLogic.endServe(success, message, data);
+                            }
+
+                        }else{
+                            success = apiKeyObj.success;
+                            message = apiKeyObj.message;
+                            data = null;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                    });
                 }
             }
             else{
@@ -1712,6 +2373,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
+                me.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -1719,10 +2381,111 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
     }
 
+    /**
+     * This function will be used to edit wifi details of a building
+     *
+     * @param wifiParamsId int The wifi param ID corresponding to the wifi table belonging to that building
+     * @param networkSsid string The new network SSID of the building
+     * @param networkType string The new Type of the network of the building
+     * @param networkPassword string The new Password of the network
+     *
+     * @return JSON {
+     *                  wifiParamsId int The ID belonging to the wifi params for a building
+     *              }
+     */
+    editWifiParam(){
+        var message;
+        var data = new Object();
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(me.body.wifiParamsId === undefined){
+            presentParams = true;
+            presentReturn += "wifiParamsId, ";
+        }
+        if(me.body.networkSsid === undefined){
+            presentParams = true;
+            presentReturn += "networkSsid, ";
+        }
+        if(me.body.networkType === undefined){
+            presentParams = true;
+            presentReturn += "networkType, ";
+        }
+        if(me.body.networkPassword === undefined){
+            presentParams = true;
+            presentReturn += "networkPassword, ";
+        }
+
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+
+            if(!me.sharedLogic.validateNonEmpty(me.body.wifiParamsId) || !me.sharedLogic.validateNumeric(me.body.wifiParamsId)){
+                invalidParams = true;
+                invalidReturn += "wifiParamsId, ";
+            }
+            if(!me.sharedLogic.validateNonEmpty(me.body.networkSsid)){
+                invalidParams = true;
+                invalidReturn += "networkSsid, ";
+            }
+            if(!me.sharedLogic.validateNonEmpty(me.body.networkType)){
+                invalidParams = true;
+                invalidReturn += "networkType, ";
+            }
+            if(!me.sharedLogic.validateNonEmpty(me.body.networkPassword)){
+                invalidParams = true;
+                invalidReturn += "networkPassword, ";
+            }
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(me.demoMode){
+                    //return mock data
+                    data.wifiParamsId = me.body.wifiParamsId;
+                    message = "WiFi edited! - Mock";
+                    success = true;
+                    me.sharedLogic.endServe(success, message, data);
+                }
+                else{
+                    //return data from crudController
+                    me.sharedLogic.crudController.updateWiFiParams(me.body.wifiParamsId, me.body.networkSsid, me.body.networkType, me.body.networkPassword, function(wifiObj){
+                        if(wifiObj.success){
+                            success = wifiObj.success;
+                            message = "WiFi Edited!";
+                            data.wifiParamsId = me.body.wifiParamsId;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                        else{
+                            success = wifiObj.success;
+                            message = wifiObj.message;
+                            data = null;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                    });
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                me.sharedLogic.endServe(success, message, data);
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+            me.sharedLogic.endServe(success, message, data);
+        }
+    }
 }
 
 module.exports = AdminLogic;

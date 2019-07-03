@@ -150,7 +150,7 @@ export class BusinessCardsService {
   removeBusinessCard(cardId: string) {
     return this.getBusinessCards().then((cards) => {
       cards = cards.filter(elem => {
-        return elem.businessCardId !== cardId;
+        return elem.businessCardId !== undefined && elem.businessCardId !== cardId;
       })
       this.setBusinessCards(cards);
     });

@@ -31,8 +31,8 @@ declare var WifiWizard2: any;
 })
 export class WifiService {
 
-  private hotspot = WifiWizard2;
-  constructor() { }
+  private hotspot = (typeof WifiWizard2 === 'undefined') ?  null : WifiWizard2;
+  constructor() {}
 
   /**
    * Function that connects device to a WiFi network
@@ -42,6 +42,11 @@ export class WifiService {
    * @return Promise<void> whether or not connected
    */
   async connectToWifi(ssid: string, password: string, algorithm: string){
+    if (this.hotspot == null || this.hotspot == undefined) {
+      return new Promise(() => {
+        console.log('WiFi Service Down');
+      });
+    }
     algorithm = algorithm == "WPA2"? "WPA" : algorithm;
     return await this.hotspot.connect(ssid, null, password, algorithm, false)
   }
@@ -51,6 +56,11 @@ export class WifiService {
    * @return boolean whether or not it is on
    */
   isOn(){
+    if (this.hotspot == null || this.hotspot == undefined) {
+      return new Promise(() => {
+        console.log('WiFi Service Down');
+      });
+    }
     return this.hotspot.isWifiEnabled();
   }
 
@@ -59,6 +69,10 @@ export class WifiService {
    * @param enabled boolean whether or not you want the wifi on or off
    */
   setWifiStatus(enabled: boolean){
+    if (this.hotspot == null || this.hotspot == undefined) {
+      console.log('WiFi Service Down');
+      return;
+    }
     this.hotspot.setWifiEnabled(enabled);
   }
 }

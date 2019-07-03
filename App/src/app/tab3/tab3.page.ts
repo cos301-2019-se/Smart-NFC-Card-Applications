@@ -187,10 +187,10 @@ export class Tab3Page {
 
   /**
    * Function removes a business card from the list
-   * @param companyId number Id of business card to remove
+   * @param cardId string Id of business card to remove
    */
-  removeCard(companyId: number){
-    this.cardService.removeBusinessCard(companyId.toString()).then(() => {
+  removeCard(cardId: string){
+    this.cardService.removeBusinessCard(cardId).then(() => {
       this.loadCards();
     });
   }
@@ -308,7 +308,7 @@ export class Tab3Page {
         let json = JSON.parse(payload.slice(3));
         this.showMessage(`Received ${json.companyName} Visitor Package.`, messageType.success, 5000);
         let newPackage: VisitorPackage = this.packageService.createVisitorPackage(json.packageId, json.companyName, json.startDate, json.endDate, json.access,
-          json.location, json.wifiSSID, json.wifiPassword, json.wifiType, json.spendingLimit, json.amountSpent);
+          json.location, json.wifiSsid, json.wifiPassword, json.wifiType, json.spendingLimit, json.amountSpent);
         this.packageService.addVisitorPackage(newPackage)
         .then(() => {
           this.loadPackages();
@@ -320,4 +320,49 @@ export class Tab3Page {
     })
   }
 
+  /**
+   * Function removes a visitor package from the list
+   * @param packageId number Id of visitor package to remove
+   */
+  removeVisitorPackage(packageId: number){
+    this.packageService.removeVisitorPackage(packageId).then(() => {
+      this.loadPackages();
+    });
+  }
+
+  /**
+   * Function attempts to connect to WiFi
+   * @param ssid string network name
+   * @param password string network password
+   * @param type string algorithm type
+   */
+  connectToWiFi(ssid: string, password: string, type: string){
+    this.wifiService.connectToWifi(ssid, password, type)
+    .then(() => {
+      this.showMessage('Connected to WiFi', messageType.success, 2000);
+    })
+    .catch(err => {
+      this.showMessage(`Could not connect to WiFi: ${err}`, messageType.error, 5000);
+    });
+  }  
+
+  /**
+   * Function that formats the date for display
+   * @param date any string or date object
+   */
+  displayDate(date){
+    date = new Date(date);
+    let day = date.getDate();
+    if (day < 10) {
+      day = '0' + day.toString();
+    }
+    let month = date.getMonth() + 1;
+    if (month < 10) {
+      month = '0' + month.toString();
+    }
+    let year = date.getFullYear();
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    return `${year}/${month}/${day} ${hours}:${minutes}`;
+  }
 }

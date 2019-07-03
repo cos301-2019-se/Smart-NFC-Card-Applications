@@ -210,11 +210,17 @@ export class RequestModuleService {
    */
   dateTimeToString(date: Date){
     date = new Date(date);
-    let day = date.getDate();
-    let month = date.getMonth() + 1;
+    let day = date.getDate().toString();
+    if (day <= '9') {
+      day = '0' + day;
+    }
+    let month = (date.getMonth() + 1).toString();
+    if (month <= '9') {
+      month = '0' + month;
+    }
     let year = date.getFullYear();
     let hours = date.getHours();
     let minutes = date.getMinutes();
-    return `${year}/${month}/${day}:${hours}:${minutes}`;
+    return `${year}/${month}/${day} ${hours}:${minutes}`;
   }
 }

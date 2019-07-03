@@ -20,7 +20,7 @@ describe('VisitorPackagesService', () => {
 
   it('createVisitorPackage should create and return a VisitorPackage when valid data given', () => {    
     const service: VisitorPackagesService = TestBed.get(VisitorPackagesService);
-    let visitorPackage: VisitorPackage = service.createVisitorPackage(0, 'Company Name', new Date(), new Date(), 'Lobby', new LocationModel(0,0,'Location'), 'wifiSSID', 'wifiPassword', 'wifiType', 100, 0);
+    let visitorPackage: VisitorPackage = service.createVisitorPackage(0, 'Company Name', new Date(), new Date(), 'Lobby', new LocationModel(0,0,'Location'), 'wifiSsid', 'wifiPassword', 'wifiType', 100, 0);
     expect(visitorPackage).toEqual(jasmine.objectContaining(service.stub));
   });
 
@@ -38,7 +38,7 @@ describe('VisitorPackagesService', () => {
   it('addVisitorPackage add a visitor package to the list when valid data given', (done) => {
     const service: VisitorPackagesService = TestBed.get(VisitorPackagesService);
     let date = new Date();
-    let visitorPackage: VisitorPackage = service.createVisitorPackage(0, 'Company Name', date , date, 'Lobby', new LocationModel(0,0,'Location'), 'wifiSSID', 'wifiPassword', 'wifiType', 100, 0);
+    let visitorPackage: VisitorPackage = service.createVisitorPackage(0, 'Company Name', date , date, 'Lobby', new LocationModel(0,0,'Location'), 'wifiSsid', 'wifiPassword', 'wifiType', 100, 0);
     service.addVisitorPackage(visitorPackage).then(() => {
       return service.getVisitorPackages()
     })
@@ -51,7 +51,7 @@ describe('VisitorPackagesService', () => {
   it('removeVisitorPackage should not delete anything if the visitor package does not exist', (done) => {
     const service: VisitorPackagesService = TestBed.get(VisitorPackagesService);
     let date = new Date();
-    let visitorPackage: VisitorPackage = service.createVisitorPackage(0, 'Company Name', date , date, 'Lobby', new LocationModel(0,0,'Location'), 'wifiSSID', 'wifiPassword', 'wifiType', 100, 0);
+    let visitorPackage: VisitorPackage = service.createVisitorPackage(0, 'Company Name', date , date, 'Lobby', new LocationModel(0,0,'Location'), 'wifiSsid', 'wifiPassword', 'wifiType', 100, 0);
     service.addVisitorPackage(visitorPackage).then(() => {
       return service.removeVisitorPackage(-1)
     })
@@ -67,7 +67,7 @@ describe('VisitorPackagesService', () => {
   it('removeVisitorPackage should delete the visitor package if it is there to remove', (done) => {
     const service: VisitorPackagesService = TestBed.get(VisitorPackagesService);
     let date = new Date();
-    let visitorPackage: VisitorPackage = service.createVisitorPackage(0, 'Company Name', date , date, 'Lobby', new LocationModel(0,0,'Location'), 'wifiSSID', 'wifiPassword', 'wifiType', 100, 0);
+    let visitorPackage: VisitorPackage = service.createVisitorPackage(0, 'Company Name', date , date, 'Lobby', new LocationModel(0,0,'Location'), 'wifiSsid', 'wifiPassword', 'wifiType', 100, 0);
     service.addVisitorPackage(visitorPackage).then(() => {
       return service.removeVisitorPackage(0)
     })

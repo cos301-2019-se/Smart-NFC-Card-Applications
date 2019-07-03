@@ -32,7 +32,7 @@ export class VisitorPackage {
     endDate: Date;
     access: string;
     location: LocationModel;
-    wifiSSID: string;
+    wifiSsid: string;
     wifiPassword: string;
     wifiType: string;
     spendingLimit: number;

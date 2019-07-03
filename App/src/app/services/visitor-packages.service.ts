@@ -45,7 +45,7 @@ export class VisitorPackagesService {
     endDate: new Date(),
     access: 'Lobby',
     location: new LocationModel(0,0,'Location'),
-    wifiSSID: 'wifiSSID',
+    wifiSsid: 'wifiSsid',
     wifiPassword: 'wifiPassword',
     wifiType: 'wifiType',
     spendingLimit: 100,
@@ -60,14 +60,14 @@ export class VisitorPackagesService {
    * @param endDate Date when package expires
    * @param access string Name of rooms given access toe
    * @param location LocationModel GPS location of the place
-   * @param wifiSSID string Name of WiFi network
+   * @param wifiSsid string Name of WiFi network
    * @param wifiPassword string Password of WiFi network
    * @param wifiType string Algorithm type of WiFi network
    * @param spendingLimit number max amount to spend
    * @param amountSpent number amount already spent
    * @return VisitorPackage created
    */
-  createVisitorPackage(packageId: number, companyName: string, startDate: Date, endDate: Date, access: string, location: LocationModel, wifiSSID: string, wifiPassword: string, wifiType: string, spendingLimit: number, amountSpent: number) {
+  createVisitorPackage(packageId: number, companyName: string, startDate: Date, endDate: Date, access: string, location: LocationModel, wifiSsid: string, wifiPassword: string, wifiType: string, spendingLimit: number, amountSpent: number) {
     let visitorPackage: VisitorPackage = new VisitorPackage();
     visitorPackage.packageId = packageId;
     visitorPackage.companyName = companyName;
@@ -75,7 +75,7 @@ export class VisitorPackagesService {
     visitorPackage.endDate = endDate;
     visitorPackage.access = access;
     visitorPackage.location = location;
-    visitorPackage.wifiSSID = wifiSSID;
+    visitorPackage.wifiSsid = wifiSsid;
     visitorPackage.wifiPassword = wifiPassword;
     visitorPackage.wifiType = wifiType;
     visitorPackage.spendingLimit = spendingLimit;

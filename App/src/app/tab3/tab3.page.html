@@ -27,10 +27,10 @@
         <ion-card *ngFor="let card of cards">
             <ion-card-header>
               <ion-reorder class="reorder"></ion-reorder>
-              <ion-icon class="trash" name="trash" (click)='removeCard(card.companyId)'></ion-icon>
-              <ion-title (click)='toggleDetails(card.companyId)'>{{ card.companyName }}</ion-title>
+              <ion-icon class="trash" name="trash" (click)='removeCard(card.businessCardId)'></ion-icon>
+              <ion-title (click)='toggleDetails(card.businessCardId)'>{{ card.companyName }}</ion-title>
             </ion-card-header>     
-            <ion-card-content *ngIf='detailToggles != [] && detailToggles[card.companyId]'>
+            <ion-card-content *ngIf='detailToggles != [] && detailToggles[card.businessCardId]'>
               <ion-item>
                 <ion-label><ion-icon name="contact"></ion-icon> {{ card.employeeName }}</ion-label>
               </ion-item>
@@ -53,12 +53,15 @@
     <ion-list>
       <ion-card *ngFor="let package of packages">
           <ion-card-header>
-            <ion-icon class="trash" name="trash"></ion-icon>
+            <ion-icon class="trash" name="trash" (click)='removeVisitorPackage(package.packageId)'></ion-icon>
             <ion-title>{{ package.companyName }}</ion-title>
           </ion-card-header>     
           <ion-card-content>
             <ion-item>
-              <ion-label><ion-icon name="time"></ion-icon> {{ package.startDate }} - {{ package.endDate }}</ion-label>
+              <ion-label><ion-icon name="time"></ion-icon> From: {{ displayDate(package.startDate) }}</ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label><ion-icon name="time"></ion-icon> To: {{ displayDate(package.endDate) }}</ion-label>
             </ion-item>
             <ion-item>
               <ion-label><ion-icon name="home"></ion-icon> {{ package.access }}</ion-label>
@@ -70,7 +73,7 @@
               <ion-label><ion-icon name="card"></ion-icon> Virtual Wallet: {{ package.amountSpent }} / {{ package.spendingLimit }}</ion-label>
             </ion-item>
             <ion-item>
-              <ion-button expand="block" fill="outline">Connect To WiFi</ion-button>
+              <ion-button expand="block" fill="outline" (click)='connectToWiFi(package.wifiSsid, package.wifiPassword, package.wifiType)'>Connect To WiFi</ion-button>
             </ion-item>
           </ion-card-content>
       </ion-card>

@@ -41,9 +41,7 @@
     <ion-label>Physical Access <ion-text color="danger">*</ion-text></ion-label>
     <ion-select [(ngModel)]="roomIdString">
       <ion-select-option value="" selected>None</ion-select-option>
-      <ion-select-option value="0">Lobby</ion-select-option>
-      <ion-select-option value="1">Offices</ion-select-option>
-      <ion-select-option value="2">Labs</ion-select-option>
+      <ion-select-option *ngFor="let room of rooms" [value]='room.id'>{{ room.name }}</ion-select-option>
     </ion-select>
   </ion-item>
   <ion-item>

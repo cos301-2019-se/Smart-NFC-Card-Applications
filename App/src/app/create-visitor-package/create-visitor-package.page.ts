@@ -63,6 +63,9 @@ export class CreateVisitorPackagePage implements OnInit {
   giveWiFi: boolean = null;
   limit: number = null;
 
+  buildingLocation: LocationModel;
+  rooms: Object[];
+
   /**
    * Constructor that takes all injectables
    * @param navParams NavParams injectable
@@ -78,7 +81,23 @@ export class CreateVisitorPackagePage implements OnInit {
     private nfcService: NfcControllerService,
     private packageService: VisitorPackagesService
   ) { 
-    this.placeholderDate = `${this.currentDate.getDate()}/${this.currentDate.getMonth()+1}/${this.currentDate.getFullYear()}`;
+    let day = this.currentDate.getDate().toString();
+    if (day <= '9') {
+      day = '0' + day;
+    }
+    let month = (this.currentDate.getMonth() + 1).toString();
+    if (month <= '9') {
+      month = '0' + month;
+    }
+    let year = this.currentDate.getFullYear();
+    this.placeholderDate = `${day}/${month}/${year}`;
+
+    this.buildingLocation = new LocationModel(-25.780297, 28.277432, 'EPI-USE');
+    this.rooms = [
+      { id: 0, name: "Lobby" },
+      { id: 1, name: "Offices" },
+      { id: 2, name: "Labs" },
+    ];
   }
 
   ngOnInit() {
@@ -162,8 +181,8 @@ export class CreateVisitorPackagePage implements OnInit {
     this.addVisitorPackageToDB(employeeId, startTime, endTime, macAddress, wifiParamsId, roomId, limit).subscribe(res => {
       this.isBusy = false;
       let id: number = res['data']['visitorPackageId'];
-      let visitorPackage: VisitorPackage = this.packageService.createVisitorPackage(id, 'Temp Comp Name', startTime, endTime, 'Temp Room', 
-        new LocationModel(0,0,'Fake Loc'), 'SSID', 'Password', 'WPA', limit, 0);
+      let visitorPackage: VisitorPackage = this.packageService.createVisitorPackage(id, 'Temp Comp Name', startTime, endTime, this.rooms[roomId]['name'], 
+        this.buildingLocation, 'DemoSSID', 'Demo1234', 'WPA2', limit, 0);
       this.shareVisitorPackage(visitorPackage);
     });
   }
@@ -173,7 +192,6 @@ export class CreateVisitorPackagePage implements OnInit {
    * @param visitorPackage VisitorPackage object to share
    */
   private shareVisitorPackage(visitorPackage: VisitorPackage){
-    console.log(visitorPackage);
     this.errorMessage = null;
     this.successMessage = null;
     this.infoMessage = null;

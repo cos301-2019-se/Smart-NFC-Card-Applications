@@ -181,8 +181,16 @@ export class CreateVisitorPackagePage implements OnInit {
     this.addVisitorPackageToDB(employeeId, startTime, endTime, macAddress, wifiParamsId, roomId, limit).subscribe(res => {
       this.isBusy = false;
       let id: number = res['data']['visitorPackageId'];
+      let ssid = null;
+      let password = null;
+      let type = null;
+      if (this.giveWiFi) {
+        ssid = 'DemoSSID';
+        password = 'Demo1234';
+        type = 'WPA2';
+      }
       let visitorPackage: VisitorPackage = this.packageService.createVisitorPackage(id, 'Temp Comp Name', startTime, endTime, this.rooms[roomId]['name'], 
-        this.buildingLocation, 'DemoSSID', 'Demo1234', 'WPA2', limit, 0);
+        this.buildingLocation, ssid, password, type, limit, 0);
       this.shareVisitorPackage(visitorPackage);
     });
   }

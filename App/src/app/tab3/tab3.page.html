@@ -69,10 +69,10 @@
             <ion-item>
               <ion-label><ion-icon name="pin"></ion-icon>&nbsp;<a (click)="navigate(package.location)">{{ package.location.getLabel() }}</a></ion-label>
             </ion-item>
-            <ion-item>
+            <ion-item *ngIf='package.spendingLimit !== null'>
               <ion-label><ion-icon name="card"></ion-icon> Virtual Wallet: {{ package.amountSpent }} / {{ package.spendingLimit }}</ion-label>
             </ion-item>
-            <ion-item>
+            <ion-item *ngIf='package.wifiSsid !== null'>
               <ion-button expand="block" fill="outline" (click)='connectToWiFi(package.wifiSsid, package.wifiPassword, package.wifiType)'>Connect To WiFi</ion-button>
             </ion-item>
           </ion-card-content>

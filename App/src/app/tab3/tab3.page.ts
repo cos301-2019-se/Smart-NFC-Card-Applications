@@ -24,6 +24,7 @@ import { BusinessCardsService } from '../services/business-cards.service';
 import { BusinessCard } from '../models/business-card.model';
 import { NfcControllerService } from '../services/nfc-controller.service';
 import { LocationService } from '../services/location.service';
+import { WifiService } from '../services/wifi.service';
 import { LocationModel } from '../models/location.model';
 import { Device } from '@ionic-native/device/ngx';
 import { VisitorPackage } from '../models/visitor-package.model';
@@ -66,13 +67,15 @@ export class Tab3Page {
    * @param locationService LocationService injectable
    * @param device Device injectable
    * @param packageService VisitorPackagesService injectable
+   * @param wifiService WifiService injectable
    */
   constructor(
     private cardService: BusinessCardsService,
     private nfcService: NfcControllerService,
     private locationService: LocationService,
     private device: Device,
-    private packageService: VisitorPackagesService
+    private packageService: VisitorPackagesService,
+    private wifiService: WifiService
   ) { }
 
   /**

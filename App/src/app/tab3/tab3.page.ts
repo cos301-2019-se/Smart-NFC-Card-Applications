@@ -24,11 +24,7 @@ import { BusinessCardsService } from '../services/business-cards.service';
 import { BusinessCard } from '../models/business-card.model';
 import { NfcControllerService } from '../services/nfc-controller.service';
 import { LocationService } from '../services/location.service';
-import { WifiService } from '../services/wifi.service';
 import { LocationModel } from '../models/location.model';
-import { Device } from '@ionic-native/device/ngx';
-import { VisitorPackage } from '../models/visitor-package.model';
-import { VisitorPackagesService } from '../services/visitor-packages.service';
 
 /**
 * Purpose:	This enum provides message types
@@ -53,7 +49,6 @@ enum messageType{
 })
 export class Tab3Page {
   cards: BusinessCard[] = [];
-  packages: VisitorPackage[] = [];
   detailToggles = [];
   errorMessage: string = null;
   successMessage: string = null;
@@ -65,17 +60,11 @@ export class Tab3Page {
    * @param cardService BusinessCardsService injectable
    * @param nfcService NfcControllerService injectable
    * @param locationService LocationService injectable
-   * @param device Device injectable
-   * @param packageService VisitorPackagesService injectable
-   * @param wifiService WifiService injectable
    */
   constructor(
     private cardService: BusinessCardsService,
     private nfcService: NfcControllerService,
-    private locationService: LocationService,
-    private device: Device,
-    private packageService: VisitorPackagesService,
-    private wifiService: WifiService
+    private locationService: LocationService
   ) { }
 
   /**
@@ -88,7 +77,6 @@ export class Tab3Page {
     this.infoMessage = null;
     // Gets the business cards
     this.loadCards(); 
-    this.loadPackages();
   }
 
   /**
@@ -114,23 +102,6 @@ export class Tab3Page {
       }
       // Setup the toggle booleans
       this.setupToggles();
-    });
-  }
-
-  /**
-   * Function that loads the visitor packages from the service or sets it to empty if it doesn't exist
-   */
-  loadPackages(){
-    // Get cards
-    this.packageService.getVisitorPackages().then((val) => {      
-      this.packages = val;
-      // If it is null, set it as an empty array
-      if (this.packages == null) {
-        this.packages = []
-        this.packageService.setVisitorPackages([]);
-      }
-      // Setup the toggle booleans
-      //this.setupToggles();
     });
   }
 
@@ -245,28 +216,6 @@ export class Tab3Page {
   }
 
   /**
-   * Function that shares the device ID using NFC
-   */
-  shareId(){
-    this.errorMessage = null;
-    this.successMessage = null;
-    this.infoMessage = null;
-    this.showMessage(`Hold the phone against the receiving phone.`, messageType.info, 0);
-    console.log(this.device.uuid);
-    this.nfcService.SendData(this.device.uuid, this.device.uuid)
-    .then(() => {
-      this.showMessage(`Shared Device ID.`, messageType.success, 5000);
-    })
-    .catch((err) => {
-      this.showMessage(`Error: ${err} - Try turning on 'Android Beam'`, messageType.error, 0);
-    })
-    .finally(() => {
-      this.infoMessage = null;
-      this.nfcService.Finish();
-    });
-  }
-
-  /**
    * Function that displays a message to the user
    * @param message string message to display
    * @param type number from enum, type of message to display
@@ -290,79 +239,5 @@ export class Tab3Page {
         if (timeout != 0) { setTimeout(() => { this.errorMessage = null;}, timeout); }
         break;
     }
-  }
-
-  /**
-   * Function listens for an NFC Tag with the Visitor Package
-   */
-  addVisitorPackage(){
-    this.errorMessage = null;
-    this.successMessage = null;
-    this.infoMessage = null;
-    this.nfcService.IsEnabled()
-    .then(() => {
-      this.showMessage(`Hold the phone against the sharing device.`, messageType.info, 0);
-      this.nfcService.ReceiveData().subscribe(data => {
-        let payload = this.nfcService.BytesToString(data.tag.ndefMessage[0].payload);    
-        this.nfcService.Finish();
-        let json = JSON.parse(payload.slice(3));
-        this.showMessage(`Received ${json.companyName} Visitor Package.`, messageType.success, 5000);
-        let newPackage: VisitorPackage = this.packageService.createVisitorPackage(json.packageId, json.companyName, json.startDate, json.endDate, json.access,
-          json.location, json.wifiSsid, json.wifiPassword, json.wifiType, json.spendingLimit, json.amountSpent);
-        this.packageService.addVisitorPackage(newPackage)
-        .then(() => {
-          this.loadPackages();
-        });
-      });
-    })
-    .catch(() => {
-      this.showMessage(`NFC seems to be off. Please try turing it on.`, messageType.error, 0);
-    })
-  }
-
-  /**
-   * Function removes a visitor package from the list
-   * @param packageId number Id of visitor package to remove
-   */
-  removeVisitorPackage(packageId: number){
-    this.packageService.removeVisitorPackage(packageId).then(() => {
-      this.loadPackages();
-    });
-  }
-
-  /**
-   * Function attempts to connect to WiFi
-   * @param ssid string network name
-   * @param password string network password
-   * @param type string algorithm type
-   */
-  connectToWiFi(ssid: string, password: string, type: string){
-    this.wifiService.connectToWifi(ssid, password, type)
-    .then(() => {
-      this.showMessage('Connected to WiFi', messageType.success, 2000);
-    })
-    .catch(err => {
-      this.showMessage(`Could not connect to WiFi: ${err}`, messageType.error, 5000);
-    });
-  }  
-
-  /**
-   * Function that formats the date for display
-   * @param date any string or date object
-   */
-  displayDate(date){
-    date = new Date(date);
-    let day = date.getDate();
-    if (day < 10) {
-      day = '0' + day.toString();
-    }
-    let month = date.getMonth() + 1;
-    if (month < 10) {
-      month = '0' + month.toString();
-    }
-    let year = date.getFullYear();
-    let hours = date.getHours();
-    let minutes = date.getMinutes();
-    return `${year}/${month}/${day} ${hours}:${minutes}`;
   }
 }

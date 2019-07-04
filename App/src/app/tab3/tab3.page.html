@@ -1,8 +1,6 @@
 <ion-content padding>
     <br>
     <ion-button expand="block" fill="outline" (click)='addCard()'>Add Business Card</ion-button>
-    <ion-button expand="block" fill="outline" (click)='shareId()'>Share Device ID</ion-button>
-    <ion-button expand="block" fill="outline" (click)='addVisitorPackage()'>Receive Package</ion-button>
     <ion-item color='secondary' *ngIf='infoMessage !== null'>
       <ion-icon name="information-circle"></ion-icon> {{ infoMessage }}
     </ion-item>
@@ -14,6 +12,9 @@
       <br>
       <ion-button color="light" (click)='retry()'>Settings</ion-button> 
     </ion-item>
+    
+    <p *ngIf='cards.length == 0'>No business cards has been shared with you yet.</p>
+
     <ion-list>
       <ion-reorder-group (ionItemReorder)="reorderItems($event)" disabled="false">
         <ion-card *ngFor="let card of cards">
@@ -41,33 +42,5 @@
             </ion-card-content>
         </ion-card>
       </ion-reorder-group>
-    </ion-list>
-    <ion-list>
-      <ion-card *ngFor="let package of packages">
-          <ion-card-header>
-            <ion-icon class="trash" name="trash" (click)='removeVisitorPackage(package.packageId)'></ion-icon>
-            <ion-title>{{ package.companyName }}</ion-title>
-          </ion-card-header>     
-          <ion-card-content>
-            <ion-item>
-              <ion-label><ion-icon name="time"></ion-icon> From: {{ displayDate(package.startDate) }}</ion-label>
-            </ion-item>
-            <ion-item>
-              <ion-label><ion-icon name="time"></ion-icon> To: {{ displayDate(package.endDate) }}</ion-label>
-            </ion-item>
-            <ion-item>
-              <ion-label><ion-icon name="home"></ion-icon> {{ package.access }}</ion-label>
-            </ion-item>
-            <ion-item>
-              <ion-label><ion-icon name="pin"></ion-icon>&nbsp;<a (click)="navigate(package.location)">{{ package.location.getLabel() }}</a></ion-label>
-            </ion-item>
-            <ion-item *ngIf='package.spendingLimit !== null'>
-              <ion-label><ion-icon name="card"></ion-icon> Virtual Wallet: {{ package.amountSpent }} / {{ package.spendingLimit }}</ion-label>
-            </ion-item>
-            <ion-item *ngIf='package.wifiSsid !== null'>
-              <ion-button expand="block" fill="outline" (click)='connectToWiFi(package.wifiSsid, package.wifiPassword, package.wifiType)'>Connect To WiFi</ion-button>
-            </ion-item>
-          </ion-card-content>
-      </ion-card>
     </ion-list>
 </ion-content>

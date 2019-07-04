@@ -11,6 +11,8 @@ import { CreateVisitorPackagePageModule } from './create-visitor-package/create-
 import { NFC, Ndef } from '@ionic-native/nfc/ngx';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { Platform } from '@ionic/angular';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
+
 import { HttpClientModule } from '@angular/common/http';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
@@ -35,6 +37,7 @@ import { LocationService } from './services/location.service';
   ],
   providers: [
     SplashScreen,
+    StatusBar,
     AndroidPermissions,
     LocalStorageService,
     BusinessCardsService,

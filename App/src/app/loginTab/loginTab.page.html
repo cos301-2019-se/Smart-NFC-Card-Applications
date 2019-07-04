@@ -1,12 +1,4 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>
-      {{ title }}
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content *ngIf='!loggedIn'>
+<ion-content *ngIf='!loggedIn' padding>
   <ion-progress-bar *ngIf='isBusy' type="indeterminate"></ion-progress-bar>  
   <ion-item *ngIf='success' color='success'>
     <ion-label>
@@ -31,7 +23,7 @@
   <ion-button expand="block" fill="outline" (click)='openCreateVisitorPackageModal()'>Create Visitor Package</ion-button>
 </ion-content>
 
-<ion-content *ngIf='loggedIn'>  
+<ion-content *ngIf='loggedIn' padding>  
   <ion-item *ngIf='success' color='success'>
     <ion-label>
       {{ success }}

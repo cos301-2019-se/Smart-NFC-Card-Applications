@@ -34,7 +34,7 @@ import { Observable } from 'rxjs';
 })
 export class RequestModuleService {
 
-  demoMode: boolean = true;
+  demoMode: boolean = false;
   baseUrl: string = "https://smart-nfc-application.herokuapp.com";
   loginStub: JSON = JSON.parse(`{
     "success": true,

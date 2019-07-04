@@ -1,13 +1,13 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-title>Setup Package</ion-title>
-    <ion-buttons slot='end'>
-      <ion-button (click)="closeModal()">Cancel</ion-button>
+  <ion-toolbar slot="top">
+    <ion-buttons slot='secondary'>
+        <ion-button (click)="closeModal()">Cancel</ion-button>
     </ion-buttons>
+    <ion-title> Setup Package </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content padding>
   <ion-progress-bar *ngIf='isBusy' type="indeterminate"></ion-progress-bar>  
   <ion-item *ngIf='successMessage' color='success'>
     <ion-label>

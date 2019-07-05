@@ -1,4 +1,9 @@
 <ion-content padding>
+    
+    <ion-item color='secondary' *ngIf='!card'>
+      <ion-label text-wrap> Your business card hasn't been loaded yet. Log in to load business card. </ion-label>
+    </ion-item>
+
     <ion-card *ngIf='card'>
       <ion-card-header>
         <ion-title>{{ card.companyName }}</ion-title>

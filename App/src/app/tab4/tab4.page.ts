@@ -19,7 +19,7 @@
 *	Constraints: 	None
 */
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NfcControllerService } from '../services/nfc-controller.service';
 import { LocationService } from '../services/location.service';
 import { WifiService } from '../services/wifi.service';
@@ -27,6 +27,7 @@ import { LocationModel } from '../models/location.model';
 import { Device } from '@ionic-native/device/ngx';
 import { VisitorPackage } from '../models/visitor-package.model';
 import { VisitorPackagesService } from '../services/visitor-packages.service';
+import { EventEmitterService } from '../services/event-emitter.service';   
 
 /**
 * Purpose:	This enum provides message types
@@ -49,7 +50,7 @@ enum messageType{
   templateUrl: 'tab4.page.html',
   styleUrls: ['tab4.page.scss']
 })
-export class Tab4Page {
+export class Tab4Page implements OnInit{
   packages: VisitorPackage[] = [];
   errorMessage: string = null;
   successMessage: string = null;
@@ -69,8 +70,17 @@ export class Tab4Page {
     private locationService: LocationService,
     private device: Device,
     private packageService: VisitorPackagesService,
-    private wifiService: WifiService
+    private wifiService: WifiService,
+    private eventEmitterService: EventEmitterService   
   ) { }
+
+  ngOnInit() {    
+    this.eventEmitterService.subscriptions.push(
+      this.eventEmitterService.invokeMenuButtonEvent.subscribe(functionName => {    
+          this.menuEvent(functionName);
+        })
+    );  
+  }
 
   /**
    * Function triggers when the tab is navigated to
@@ -91,6 +101,15 @@ export class Tab4Page {
     // Stops the NFC if the action wasn't completed
     this.nfcService.Finish();
     clearInterval(this.check);
+  }
+
+  menuEvent(functionName: string) {
+    switch(functionName) {
+      case 'Share Device ID': this.shareId()
+        break;
+      case 'Receive Package': this.addVisitorPackage()
+        break;
+    }
   }
 
   /**
@@ -144,7 +163,7 @@ export class Tab4Page {
   /**
    * Function that shares the device ID using NFC
    */
-  shareId(){
+  public shareId(){
     this.errorMessage = null;
     this.successMessage = null;
     this.infoMessage = null;
@@ -192,7 +211,7 @@ export class Tab4Page {
   /**
    * Function listens for an NFC Tag with the Visitor Package
    */
-  addVisitorPackage(){
+  public addVisitorPackage(){
     this.errorMessage = null;
     this.successMessage = null;
     this.infoMessage = null;

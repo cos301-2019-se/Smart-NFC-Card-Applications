@@ -24,6 +24,7 @@ import { BusinessCard } from '../models/business-card.model';
 import { NfcControllerService } from '../services/nfc-controller.service';
 import { LocationService } from '../services/location.service';
 import { LocationModel } from '../models/location.model';
+import { EventEmitterService } from '../services/event-emitter.service';   
 
 /**
 * Purpose:	This class provides the component that allows sharing of cards
@@ -36,7 +37,7 @@ import { LocationModel } from '../models/location.model';
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss']
 })
-export class Tab2Page {
+export class Tab2Page implements OnInit{
 
   card: BusinessCard;
   error_message: string;
@@ -54,8 +55,17 @@ export class Tab2Page {
   constructor(
     private cardService: BusinessCardsService,
     private nfcService: NfcControllerService,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private eventEmitterService: EventEmitterService   
   ) { }
+
+  ngOnInit() {    
+    this.eventEmitterService.subscriptions.push(
+      this.eventEmitterService.invokeMenuButtonEvent.subscribe(functionName => {    
+          this.menuEvent(functionName);
+        })
+    );  
+  }
 
   /**
    * Function that triggers when the tab is navigated to
@@ -78,6 +88,13 @@ export class Tab2Page {
     // Stops the NFC if the action wasn't completed
     this.nfcService.Finish();
     clearInterval(this.check);
+  }
+
+  menuEvent(functionName: string) {
+    switch(functionName) {
+      case 'Share': this.shareCard()
+        break;
+    }
   }
 
   /**

@@ -19,12 +19,13 @@
 *	Constraints: 	None
 */
 
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BusinessCardsService } from '../services/business-cards.service';
 import { BusinessCard } from '../models/business-card.model';
 import { NfcControllerService } from '../services/nfc-controller.service';
 import { LocationService } from '../services/location.service';
 import { LocationModel } from '../models/location.model';
+import { EventEmitterService } from '../services/event-emitter.service';   
 
 /**
 * Purpose:	This enum provides message types
@@ -47,7 +48,7 @@ enum messageType{
   templateUrl: 'tab3.page.html',
   styleUrls: ['tab3.page.scss']
 })
-export class Tab3Page {
+export class Tab3Page implements OnInit{
   cards: BusinessCard[] = [];
   detailToggles = [];
   errorMessage: string = null;
@@ -64,8 +65,17 @@ export class Tab3Page {
   constructor(
     private cardService: BusinessCardsService,
     private nfcService: NfcControllerService,
-    private locationService: LocationService
+    private locationService: LocationService,
+    private eventEmitterService: EventEmitterService   
   ) { }
+
+  ngOnInit() {    
+    this.eventEmitterService.subscriptions.push(
+      this.eventEmitterService.invokeMenuButtonEvent.subscribe(functionName => {    
+          this.menuEvent(functionName);
+        })
+    );  
+  }
 
   /**
    * Function triggers when the tab is navigated to
@@ -86,6 +96,13 @@ export class Tab3Page {
     // Stops the NFC if the action wasn't completed
     this.nfcService.Finish();
     clearInterval(this.check);
+  }
+
+  menuEvent(functionName: string) {
+    switch(functionName) {
+      case 'Add Business Card': this.addCard()
+        break;
+    }
   }
 
   /**

@@ -26,6 +26,7 @@ import { RequestModuleService } from '../services/request-module.service';
 import { Observable } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 import { CreateVisitorPackagePage } from '../create-visitor-package/create-visitor-package.page';
+import { EventEmitterService } from '../services/event-emitter.service';   
 
 /**
 * Purpose:	This class provides the login tab component
@@ -62,7 +63,8 @@ export class LoginTabPage implements OnInit {
     private cardService: BusinessCardsService,
     private req: RequestModuleService,
     private storage: LocalStorageService,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private eventEmitterService: EventEmitterService   
   ) { }
 
   /**
@@ -75,7 +77,12 @@ export class LoginTabPage implements OnInit {
       this.apiKey = key;
       this.checkLoggedIn();
     })
-    .catch();
+    .catch();       
+    this.eventEmitterService.subscriptions.push(
+      this.eventEmitterService.invokeMenuButtonEvent.subscribe(functionName => {    
+          this.menuEvent(functionName);
+        })
+    );    
   }
 
   /**
@@ -83,6 +90,15 @@ export class LoginTabPage implements OnInit {
    */
   ionViewDidEnter() {
     this.resetMessages();
+  }
+
+  menuEvent(functionName: string) {
+    switch(functionName) {
+      case 'Login': this.login()
+        break;
+      case 'Create Visitor Package': this.openCreateVisitorPackageModal()
+        break;
+    }
   }
 
   /**

@@ -3,13 +3,18 @@
   <ion-toolbar slot="top">
     <ion-title> Project Link </ion-title>
     <ion-buttons slot='primary'>
+        <ion-button (click)='openMenu($event)'>
+          <ion-icon slot="icon-only" name="menu"></ion-icon>
+        </ion-button>
+    </ion-buttons>
+    <ion-buttons slot='secondary'>
         <ion-button>
           <ion-icon slot="icon-only" name="search"></ion-icon>
         </ion-button>
     </ion-buttons>
   </ion-toolbar>
 
-  <ion-tab-bar slot="top">
+  <ion-tab-bar slot="bottom">
       <ion-tab-button tab="loginTab" [class.active-tab]="(activeTab=='loginTab')" (click)="setActive('loginTab')">
         <ion-label>Menu</ion-label>
       </ion-tab-button>

@@ -50,7 +50,6 @@ describe('LoginTabPage', () => {
 
   it('login should show after successful logout', () => {
     component.logout();
-    expect(component.title).toBe("Login");
     expect(component.loggedIn).toBe(false);
   });
 });

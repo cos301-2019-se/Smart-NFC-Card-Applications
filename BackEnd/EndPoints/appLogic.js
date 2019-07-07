@@ -222,13 +222,14 @@ class AppLogic{
         let data = {};
         if(this.demoMode){
             data.clientId = 0;
+            return data;
         }
         else{
             me.sharedLogic.crudController.createClient(macAddress, function (ret) {
-               data.clientId = ret.data.clientId;
+                data = ret.data;
+                console.log(data);
             });
         }
-        return data;
     }
 
     /**
@@ -777,26 +778,6 @@ class AppLogic{
                 invalidReturn += "macAddress, ";
             }
 
-            if(!this.sharedLogic.validateNonEmpty(this.body.wifiAccessParamsId)){
-                invalidParams = true;
-                invalidReturn += "wifiAccessParamsId, ";
-            }
-
-            if(!this.sharedLogic.validateNonEmpty(this.body.roomId)){
-                invalidParams = true;
-                invalidReturn += "roomId, ";
-            }
-
-            if(!this.sharedLogic.validateNonEmpty(this.body.limit)){
-                invalidParams = true;
-                invalidReturn += "limit, ";
-            }
-
-            if(!this.sharedLogic.validateNonEmpty(this.body.spent)){
-                invalidParams = true;
-                invalidReturn += "spent, ";
-            }
-
             if(!invalidParams) {
                 if(this.body.macAddress !== null){
                     if(this.body.startTime !== null){
@@ -805,40 +786,74 @@ class AppLogic{
                                 me.sharedLogic.endServe(false, "Invalid Parameters: at least one package options need to be selected", null);
                             }
                             else{
-                                let clientData;
-                                let wifiData;
-                                let tpaData;
-                                let tpaRoomData;
-                                let walletData;
-
-                                // ADD CLIENT
-                                clientData = this.addClient(this.body.macAddress);
-                                console.log("Client Data\n" + clientData.clientId);
-
-                                // ADD WIFI
-                                if(this.body.wifiAccessParamsId !== null)
-                                    wifiData = this.addTempWifi(this.body.wifiAccessParamsId);
-                                console.log("Wifi Data\n" + wifiData.wifiTempAccessId);
-
-                                // ADD TPA
-                                if(this.body.roomId !== null){
-                                    tpaData = this.addTpa();
-                                    tpaRoomData = this.addTpaRoom(tpaData.tpaId, this.body.roomId);
+                                if(this.demoMode){
+                                    data.visitorPackageId = 0;
+                                    me.sharedLogic.endServe(true, "Visitor Package created", data);
                                 }
-                                console.log("TPA Data\n" + tpaData.tpaId);
-                                console.log("TPAxROOM Data\n" + tpaRoomData.tpa_roomId);
+                                else{
+                                    let clientData = {};
+                                    let wifiData = {};
+                                    let walletData = {};
+                                    let tpaData = {};
+                                    let tpaRoomData = {};
 
-                                // ADD WALLET
-                                if(this.body.limit !== null && this.body.spent !== null)
-                                    walletData = this.addWallet(this.body.limit, this.body.spent);
-                                console.log("Wallet Data\n" + walletData.walletId);
+                                    me.sharedLogic.crudController.createClient(me.body.macAddress, function (client) {
+                                        clientData.clientId = client.data.clientId;
 
-                                me.sharedLogic.crudController.createVisitorPackage(wifiData.wifiTempAccessId, tpaData.tpaId, walletData.walletId, this.body.employeeId, clientData.clientId, this.body.startTime, this.body.endTime, function (ret) {
-                                    success = ret.success;
-                                    message = ret.message;
-                                    data.visitorPackageId = ret.data.visitorPackageId;
-                                    me.sharedLogic.endServe(success, message, data);
-                                })
+                                        if(client.success){
+                                            me.sharedLogic.crudController.createTempWifiAccess(me.body.wifiAccessParamsId, function (wifi) {
+                                                console.log(wifi);
+                                                wifiData.wifiTempAccessId = wifi.data.tempWifiAccessId;
+
+                                                if(wifi.success){
+                                                    me.sharedLogic.crudController.createWallet(me.body.limit, me.body.spent, function (wallet) {
+                                                        walletData.walletId = wallet.data.linkWalletId;
+
+                                                        if(wallet.success){
+                                                            me.sharedLogic.crudController.createTPA(function (tpa) {
+                                                                tpaData.tpaId = tpa.data.tpaId;
+
+                                                                if(tpa.success){
+                                                                    me.sharedLogic.crudController.createTPAxRoom(tpa.data.tpaId, me.body.roomId, function (tpaRoom) {
+                                                                        tpaRoomData.tpa_roomId = tpaRoom.data.tpa_roomId;
+
+                                                                        if(tpaRoom.success){
+                                                                            me.sharedLogic.crudController.createVisitorPackage(wifiData.wifiTempAccessId,
+                                                                                                                                tpaData.tpaId,
+                                                                                                                                walletData.walletId,
+                                                                                                                                me.body.employeeId,
+                                                                                                                                clientData.clientId,
+                                                                                                                                me.body.startTime,
+                                                                                                                                me.body.endTime,
+                                                                                                                                function (visitor) {
+                                                                                me.sharedLogic.endServe(visitor.success, visitor.message, visitor.data);
+                                                                            })
+                                                                        }
+                                                                        else{
+                                                                            me.sharedLogic.endServe(tpaRoom.success, tpaRoom.message, tpaRoom.data);
+                                                                        }
+                                                                    });
+                                                                }
+                                                                else{
+                                                                    me.sharedLogic.endServe(tpa.success, tpa.message, tpa.data);
+                                                                }
+                                                            });
+                                                        }
+                                                        else{
+                                                            me.sharedLogic.endServe(wallet.success, wallet.message, wallet.data);
+                                                        }
+                                                    });
+                                                }
+                                                else{
+                                                    me.sharedLogic.endServe(wifi.success, wifi.message, wifi.data);
+                                                }
+                                            });
+                                        }
+                                        else{
+                                            me.sharedLogic.endServe(client.success, client.message, client.data);
+                                        }
+                                    });
+                                }
                             }
                         }
                         else{

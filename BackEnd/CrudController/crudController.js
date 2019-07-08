@@ -246,6 +246,55 @@ class CrudController {
 	}
 	
 
+	/**
+	*	Retrieves all companies
+	*	@return [ { companyId, companyName, companyWebsite, passwordId } ]
+	*/
+	async getAllCompanies()
+	{
+		var query = 'SELECT * FROM Company';
+		
+		var ret = null;
+		var arr = [];
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, arr);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Company");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved all companies", false, true);
+				
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.companyId = res.rows[i].companyid;
+					obj.companyName = res.rows[i].companyname;
+					obj.companyWebsite = res.rows[i].companywebsite;
+					obj.passwordId = res.rows[i].passwordid;
+					
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+	}
+
 	
 	
     //CR

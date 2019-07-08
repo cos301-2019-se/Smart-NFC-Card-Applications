@@ -84,7 +84,7 @@ class AdminLogic
                 this.getCompanyByPasswordId();
                 break;
             case "getCompanies":
-                this.getCompanies();//INTEGRATE
+                this.getCompanies();
                 break;
 
             //Buildings
@@ -631,7 +631,10 @@ class AdminLogic
      * This function will be used by Link admins to get a list of all the registered companies
      *
      * @return Array of JSON {
-     *                          //TODO
+     *                          companyId: int The ID of the company,
+     *                          companyName: string The name of the company,
+     *                          companyWebsite: string the website of the company,
+     *                          passwordId: int The Password ID of the company
      *                      }
      */
     async getCompanies(){
@@ -640,17 +643,34 @@ class AdminLogic
         let data = new Object();
         if(this.demoMode){
             //return mock data
-            success = false;
-            message = "Get Companies body not known";
-            data = null;
+            success = true;
+            message = "Successfully Retrieved - Mock!";
+            data = [];
+            data.push({
+                companyId:0,
+                companyName:"Comp1",
+                companyWebsite:"www.Comp1.com",
+                passwordId:0
+            });
+
+            data.push({
+                companyId:1,
+                companyName:"Comp2",
+                companyWebsite:"www.Comp2.com",
+                passwordId:1
+            });
+            me.sharedLogic.endServe(success, message, data);
         }
         else{
             //return data from crudController
-            success = false;
-            message = "Get Companies not integrated";
-            data = null;
+            let companyObj = await me.sharedLogic.crudController.getAllCompanies();
+            if(companyObj.success){
+                me.sharedLogic.endServe(companyObj.success, companyObj.message, companyObj.data)
+            }
+            else{
+                me.sharedLogic.endServe(false, companyObj.message, null);
+            }
         }
-        this.sharedLogic.endServe(success, message, data);
     }
 
     /**

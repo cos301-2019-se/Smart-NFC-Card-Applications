@@ -113,6 +113,36 @@ class CrudController {
 		
 		var ret = null;
 		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [companyId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Company with that matching companyId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved company", false, false);
+				ret.data.companyId = res.rows[0].companyid;
+				ret.data.companyName = res.rows[0].companyname;
+				ret.data.companyWebsite = res.rows[0].companywebsite;
+				ret.data.passwordId = res.rows[0].passwordid;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		
+		/*
 		this.client.query(query, [companyId], (err, res) => 
 		{
 			if (err) 
@@ -139,7 +169,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 
 	/**
@@ -153,7 +183,37 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [passwordId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [passwordId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Company with that matching passwordId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved company", false, false);
+				ret.data.companyId = res.rows[0].companyid;
+				ret.data.companyName = res.rows[0].companyname;
+				ret.data.companyWebsite = res.rows[0].companywebsite;
+				ret.data.passwordId = res.rows[0].passwordid;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		
+		
+		/*this.client.query(query, [passwordId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -179,7 +239,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
 
@@ -330,7 +390,37 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [buildingId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [buildingId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Building with that matching buildingId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved building", false, false);
+				ret.data.buildingId = res.rows[0].buildingid;
+				ret.data.latitude = res.rows[0].latitude;
+				ret.data.longitude = res.rows[0].longitude;
+				ret.data.branchName = res.rows[0].branchname;
+				ret.data.companyId = res.rows[0].companyid;
+				ret.data.wifiParamsId = res.rows[0].wifiparamsid;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [buildingId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -358,7 +448,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
 	/**
@@ -373,7 +463,44 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [companyId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [companyId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Building with that matching companyId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved buildings", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.buildingId = res.rows[i].buildingid;
+					obj.latitude = res.rows[i].latitude;
+					obj.longitude = res.rows[i].longitude;
+					obj.branchName = res.rows[i].branchname;
+					obj.companyId = res.rows[i].companyid;
+					obj.wifiParamsId = res.rows[i].wifiparamsid;
+					
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [companyId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -408,7 +535,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
 		/**
@@ -423,7 +550,44 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [wifiParamsId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [wifiParamsId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Building with that matching wifiParamsId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved buildings", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.buildingId = res.rows[i].buildingid;
+					obj.latitude = res.rows[i].latitude;
+					obj.longitude = res.rows[i].longitude;
+					obj.branchName = res.rows[i].branchname;
+					obj.companyId = res.rows[i].companyid;
+					obj.wifiParamsId = res.rows[i].wifiparamsid;
+					
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [wifiParamsId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -458,7 +622,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
 	
@@ -595,6 +759,37 @@ class CrudController {
 		
 		var ret = null;
 		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [passwordId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Password with that matching passwordId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved password", false, false);
+				ret.data.passwordId = res.rows[0].passwordid;
+				ret.data.username = res.rows[0].username;
+				ret.data.hash = res.rows[0].hash;
+				ret.data.salt = res.rows[0].salt;
+				ret.data.apiKey = res.rows[0].apikey;
+				ret.data.expirationDate = res.rows[0].expirationdate;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*
 		this.client.query(query, [passwordId], (err, res) => 
 		{
 			if (err) 
@@ -623,7 +818,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 
 	/**
@@ -638,7 +833,37 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [username], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [username]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Password with that matching username");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved password", false, false);
+				ret.data.passwordId = res.rows[0].passwordid;
+				ret.data.username = res.rows[0].username;
+				ret.data.hash = res.rows[0].hash;
+				ret.data.salt = res.rows[0].salt;
+				ret.data.apiKey = res.rows[0].apikey;
+				ret.data.expirationDate = res.rows[0].expirationdate;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [username], (err, res) => 
 		{
 			if (err) 
 			{
@@ -666,7 +891,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 
 	/**
@@ -681,7 +906,37 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [apiKey], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [apiKey]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Password with that matching apiKey");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved password", false, false);
+				ret.data.passwordId = res.rows[0].passwordid;
+				ret.data.username = res.rows[0].username;
+				ret.data.hash = res.rows[0].hash;
+				ret.data.salt = res.rows[0].salt;
+				ret.data.apiKey = res.rows[0].apikey;
+				ret.data.expirationDate = res.rows[0].expirationdate;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [apiKey], (err, res) => 
 		{
 			if (err) 
 			{
@@ -709,7 +964,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
     //CR
@@ -844,7 +1099,35 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [roomId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [roomId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Room with that matching roomId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved room", false, false);
+				ret.data.roomId = res.rows[0].roomid;
+				ret.data.roomName = res.rows[0].roomname;
+				ret.data.parentRoomList = res.rows[0].parentroomlist;
+				ret.data.buildingId = res.rows[0].buildingid;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [roomId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -870,7 +1153,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
 	/**
@@ -885,7 +1168,42 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [buildingId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [buildingId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Room with that matching buildingId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved rooms", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.roomId = res.rows[i].roomid;
+					obj.roomName = res.rows[i].roomname;
+					obj.parentRoomList = res.rows[i].parentroomlist;
+					obj.buildingId = res.rows[i].buildingid;
+					
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [buildingId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -918,7 +1236,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
     //CR
@@ -1043,7 +1361,33 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [nfcReaderId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [nfcReaderId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in NFCAccessPoints with that matching nfcReaderId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved nfcaccesspoints", false, false);
+				ret.data.nfcReaderId = res.rows[0].nfcreaderid;
+				ret.data.roomId = res.rows[0].roomid;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [nfcReaderId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -1067,7 +1411,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
 	/**
@@ -1082,7 +1426,40 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [roomId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [roomId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in NFCAccessPoints with that matching roomId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved nfcaccesspointss", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.nfcReaderId = res.rows[i].nfcreaderid;
+					obj.roomId = res.rows[i].roomid;
+					
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [roomId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -1113,7 +1490,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
 	
@@ -1254,7 +1631,40 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [employeeId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [employeeId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Employee with that matching employeeId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved employee", false, false);
+				ret.data.employeeId = res.rows[0].employeeid;
+				ret.data.firstName = res.rows[0].firstname;
+				ret.data.surname = res.rows[0].surname;
+				ret.data.title = res.rows[0].title;
+				ret.data.cellphone = res.rows[0].cellphone;
+				ret.data.email = res.rows[0].email;
+				ret.data.companyId = res.rows[0].companyid;
+				ret.data.buildingId = res.rows[0].buildingid;
+				ret.data.passwordId = res.rows[0].passwordid;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [employeeId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -1285,7 +1695,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 
 	/**
@@ -1300,7 +1710,40 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [passwordId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [passwordId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Employee with that matching passwordId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved employee", false, false);
+				ret.data.employeeId = res.rows[0].employeeid;
+				ret.data.firstName = res.rows[0].firstname;
+				ret.data.surname = res.rows[0].surname;
+				ret.data.title = res.rows[0].title;
+				ret.data.cellphone = res.rows[0].cellphone;
+				ret.data.email = res.rows[0].email;
+				ret.data.companyId = res.rows[0].companyid;
+				ret.data.buildingId = res.rows[0].buildingid;
+				ret.data.passwordId = res.rows[0].passwordid;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [passwordId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -1331,7 +1774,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
 	/**
@@ -1346,7 +1789,47 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [companyId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [companyId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Employee with that matching companyId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved employees", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.employeeId = res.rows[i].employeeid;
+					obj.firstName = res.rows[i].firstname;
+					obj.surname = res.rows[i].surname;
+					obj.title = res.rows[i].title;
+					obj.cellphone = res.rows[i].cellphone;
+					obj.email = res.rows[i].email;
+					obj.companyId = res.rows[i].companyid;
+					obj.buildingId = res.rows[i].buildingid;
+					obj.passwordId = res.rows[i].passwordid;
+					
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [companyId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -1384,7 +1867,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 
 	/**
@@ -1399,7 +1882,47 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [buildingId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [buildingId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Employee with that matching buildingId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved employees", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.employeeId = res.rows[i].employeeid;
+					obj.firstName = res.rows[i].firstname;
+					obj.surname = res.rows[i].surname;
+					obj.title = res.rows[i].title;
+					obj.cellphone = res.rows[i].cellphone;
+					obj.email = res.rows[i].email;
+					obj.companyId = res.rows[i].companyid;
+					obj.buildingId = res.rows[i].buildingid;
+					obj.passwordId = res.rows[i].passwordid;
+					
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [buildingId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -1437,7 +1960,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 
     //CR
@@ -1579,7 +2102,33 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [clientId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [clientId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Client with that matching clientId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved client", false, false);
+				ret.data.clientId = res.rows[0].clientid;
+				ret.data.macAddress = res.rows[0].macaddress;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [clientId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -1603,7 +2152,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 
 	/**
@@ -1618,7 +2167,33 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [macAddress], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [macAddress]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Client with that matching macAddress");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved client", false, false);
+				ret.data.clientId = res.rows[0].clientid;
+				ret.data.macAddress = res.rows[0].macaddress;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [macAddress], (err, res) => 
 		{
 			if (err) 
 			{
@@ -1642,7 +2217,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
     //CR
@@ -1772,7 +2347,35 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [wifiParamsId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [wifiParamsId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in WiFiParams with that matching wifiParamsId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved wifiparams", false, false);
+				ret.data.wifiParamsId = res.rows[0].wifiparamsid;
+				ret.data.ssid = res.rows[0].ssid;
+				ret.data.networkType = res.rows[0].networktype;
+				ret.data.password = res.rows[0].password;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [wifiParamsId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -1798,7 +2401,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
     //CR
@@ -1923,7 +2526,33 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [tempWifiAccessId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [tempWifiAccessId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in TempWifiAccess with that matching tempWifiAccessId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tempwifiaccess", false, false);
+				ret.data.tempWifiAccessId = res.rows[0].tempwifiaccessid;
+				ret.data.wifiParamsId = res.rows[0].wifiparamsid;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [tempWifiAccessId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -1947,7 +2576,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
 	/**
@@ -1962,7 +2591,40 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [wifiParamsId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [wifiParamsId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in TempWifiAccess with that matching wifiParamsId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tempwifiaccesss", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.tempWifiAccessId = res.rows[i].tempwifiaccessid;
+					obj.wifiParamsId = res.rows[i].wifiparamsid;
+					
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [wifiParamsId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -1993,7 +2655,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
 	
@@ -2133,7 +2795,39 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [visitorPackageId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [visitorPackageId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in VisitorPackage with that matching visitorPackageId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved visitorpackage", false, false);
+				ret.data.visitorPackageId = res.rows[0].visitorpackageid;
+				ret.data.tempWifiAccessId = res.rows[0].tempwifiaccessid;
+				ret.data.tpaId = res.rows[0].tpaid;
+				ret.data.linkWalletId = res.rows[0].linkwalletid;
+				ret.data.employeeId = res.rows[0].employeeid;
+				ret.data.clientId = res.rows[0].clientid;
+				ret.data.startTime = res.rows[0].starttime;
+				ret.data.endTime = res.rows[0].endtime;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [visitorPackageId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -2163,7 +2857,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 
 	/**
@@ -2178,7 +2872,39 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [tempWifiAccessId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [tempWifiAccessId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in VisitorPackage with that matching tempWifiAccessId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved visitorpackage", false, false);
+				ret.data.visitorPackageId = res.rows[0].visitorpackageid;
+				ret.data.tempWifiAccessId = res.rows[0].tempwifiaccessid;
+				ret.data.tpaId = res.rows[0].tpaid;
+				ret.data.linkWalletId = res.rows[0].linkwalletid;
+				ret.data.employeeId = res.rows[0].employeeid;
+				ret.data.clientId = res.rows[0].clientid;
+				ret.data.startTime = res.rows[0].starttime;
+				ret.data.endTime = res.rows[0].endtime;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [tempWifiAccessId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -2208,7 +2934,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 
 	/**
@@ -2223,7 +2949,39 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [tpaId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [tpaId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in VisitorPackage with that matching tpaId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved visitorpackage", false, false);
+				ret.data.visitorPackageId = res.rows[0].visitorpackageid;
+				ret.data.tempWifiAccessId = res.rows[0].tempwifiaccessid;
+				ret.data.tpaId = res.rows[0].tpaid;
+				ret.data.linkWalletId = res.rows[0].linkwalletid;
+				ret.data.employeeId = res.rows[0].employeeid;
+				ret.data.clientId = res.rows[0].clientid;
+				ret.data.startTime = res.rows[0].starttime;
+				ret.data.endTime = res.rows[0].endtime;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [tpaId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -2253,7 +3011,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 
 	/**
@@ -2268,7 +3026,39 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [linkWalletId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [linkWalletId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in VisitorPackage with that matching linkWalletId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved visitorpackage", false, false);
+				ret.data.visitorPackageId = res.rows[0].visitorpackageid;
+				ret.data.tempWifiAccessId = res.rows[0].tempwifiaccessid;
+				ret.data.tpaId = res.rows[0].tpaid;
+				ret.data.linkWalletId = res.rows[0].linkwalletid;
+				ret.data.employeeId = res.rows[0].employeeid;
+				ret.data.clientId = res.rows[0].clientid;
+				ret.data.startTime = res.rows[0].starttime;
+				ret.data.endTime = res.rows[0].endtime;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [linkWalletId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -2298,7 +3088,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
 	/**
@@ -2313,7 +3103,46 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [employeeId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [employeeId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in VisitorPackage with that matching employeeId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved visitorpackages", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.visitorPackageId = res.rows[i].visitorpackageid;
+					obj.tempWifiAccessId = res.rows[i].tempwifiaccessid;
+					obj.tpaId = res.rows[i].tpaid;
+					obj.linkWalletId = res.rows[i].linkwalletid;
+					obj.employeeId = res.rows[i].employeeid;
+					obj.clientId = res.rows[i].clientid;
+					obj.startTime = res.rows[i].starttime;
+					obj.endTime = res.rows[i].endtime;
+					
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [employeeId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -2350,7 +3179,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 
 	/**
@@ -2365,7 +3194,46 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [clientId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [clientId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in VisitorPackage with that matching clientId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved visitorpackages", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.visitorPackageId = res.rows[i].visitorpackageid;
+					obj.tempWifiAccessId = res.rows[i].tempwifiaccessid;
+					obj.tpaId = res.rows[i].tpaid;
+					obj.linkWalletId = res.rows[i].linkwalletid;
+					obj.employeeId = res.rows[i].employeeid;
+					obj.clientId = res.rows[i].clientid;
+					obj.startTime = res.rows[i].starttime;
+					obj.endTime = res.rows[i].endtime;
+					
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [clientId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -2402,7 +3270,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
     //CR
@@ -2526,7 +3394,32 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [tpaId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [tpaId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in TPA with that matching tpaId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tpa", false, false);
+				ret.data.tpaId = res.rows[0].tpaid;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [tpaId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -2549,7 +3442,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
 	
@@ -2651,7 +3544,40 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [tpaId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [tpaId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in TPAxRoom with that matching tpaId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tpaxrooms", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.tpaId = res.rows[i].tpaid;
+					obj.roomId = res.rows[i].roomid;
+					
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [tpaId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -2682,7 +3608,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
 	/**
@@ -2697,7 +3623,40 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [roomId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [roomId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in TPAxRoom with that matching roomId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved tpaxrooms", false, true);
+				for(var i = 0; i < res.rows.length; i++)
+				{
+					var obj = {};
+					
+					obj.tpaId = res.rows[i].tpaid;
+					obj.roomId = res.rows[i].roomid;
+					
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [roomId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -2728,7 +3687,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
     
@@ -2868,7 +3827,34 @@ class CrudController {
 		
 		var ret = null;
 		
-		this.client.query(query, [linkWalletId], (err, res) => 
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [linkWalletId]);
+			if(res.rows.length == 0)
+			{
+				ret = this.returnDatabaseError("no rows in Wallet with that matching linkWalletId");
+				return ret;
+			}
+			else 
+			{
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved wallet", false, false);
+				ret.data.linkWalletId = res.rows[0].linkwalletid;
+				ret.data.maxLimit = res.rows[0].maxlimit;
+				ret.data.spent = res.rows[0].spent;
+				return ret;
+			}
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		/*this.client.query(query, [linkWalletId], (err, res) => 
 		{
 			if (err) 
 			{
@@ -2893,7 +3879,7 @@ class CrudController {
 				//this.client.end();
 				callback(ret);
 			}
-		});	
+		});	*/
 	}
 	
     //CR

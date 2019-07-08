@@ -281,7 +281,7 @@ class CrudController {
 		this.bigAppend(Object.keys({wifiParamsId})[0], wifiParamsId, c, v);
 					
 		var ret = null;
-		
+		/*
 		this.client.query(this.constructInsert("Building", "buildingId", c, v),
 		v, (err, res) => 
 		{
@@ -295,11 +295,26 @@ class CrudController {
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added building", false, false);
-				ret.data.buildingId = res.rows[0].buildingid;
+			ret.data.buildingId = res.rows[0].buildingid;
 				//this.client.end();
 				callback(ret);
 			}
-		});		
+		});		*/
+		
+		let res;
+		try
+		{
+			res = await this.client.query(this.constructInsert("Building", "buildingId", c, v),v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added building", false, false);
+			ret.data.buildingId = res.rows[0].buildingid;
+			return ret;
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}	
 		
 	}
 	
@@ -531,6 +546,7 @@ class CrudController {
 					
 		var ret = null;
 		
+		/*
 		this.client.query(this.constructInsert("Password", "passwordId", c, v),
 		v, (err, res) => 
 		{
@@ -544,11 +560,26 @@ class CrudController {
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added password", false, false);
-				ret.data.passwordId = res.rows[0].passwordid;
+			ret.data.passwordId = res.rows[0].passwordid;
 				//this.client.end();
 				callback(ret);
 			}
-		});		
+		});		*/
+		
+		let res;
+		try
+		{
+			res = await this.client.query(this.constructInsert("Password", "passwordId", c, v),v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added password", false, false);
+			ret.data.passwordId = res.rows[0].passwordid;
+			return ret;
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}	
 		
 	}
 	
@@ -764,6 +795,7 @@ class CrudController {
 					
 		var ret = null;
 		
+		/*
 		this.client.query(this.constructInsert("Room", "roomId", c, v),
 		v, (err, res) => 
 		{
@@ -777,11 +809,26 @@ class CrudController {
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added room", false, false);
-				ret.data.roomId = res.rows[0].roomid;
+			ret.data.roomId = res.rows[0].roomid;
 				//this.client.end();
 				callback(ret);
 			}
-		});		
+		});	*/
+		
+		let res;
+		try
+		{
+			res = await this.client.query(this.constructInsert("Room", "roomId", c, v),v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added room", false, false);
+			ret.data.roomId = res.rows[0].roomid;
+			return ret;
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}			
 		
 	}
 	
@@ -947,6 +994,7 @@ class CrudController {
 					
 		var ret = null;
 		
+		/*
 		this.client.query(this.constructInsert("NFCAccessPoints", "nfcReaderId", c, v),
 		v, (err, res) => 
 		{
@@ -960,11 +1008,26 @@ class CrudController {
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added nfcaccesspoints", false, false);
-				ret.data.nfcReaderId = res.rows[0].nfcreaderid;
+			ret.data.nfcReaderId = res.rows[0].nfcreaderid;
 				//this.client.end();
 				callback(ret);
 			}
-		});		
+		});		*/
+		
+		let res;
+		try
+		{
+			res = await this.client.query(this.constructInsert("NFCAccessPoints", "nfcReaderId", c, v),v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added nfcaccesspoints", false, false);
+			ret.data.nfcReaderId = res.rows[0].nfcreaderid;
+			return ret;
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}	
 		
 	}
 	
@@ -1142,6 +1205,7 @@ class CrudController {
 					
 		var ret = null;
 		
+		/*
 		this.client.query(this.constructInsert("Employee", "employeeId", c, v),
 		v, (err, res) => 
 		{
@@ -1155,11 +1219,26 @@ class CrudController {
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added employee", false, false);
-				ret.data.employeeId = res.rows[0].employeeid;
+			ret.data.employeeId = res.rows[0].employeeid;
 				//this.client.end();
 				callback(ret);
 			}
-		});		
+		});		*/
+		
+		let res;
+		try
+		{
+			res = await this.client.query(this.constructInsert("Employee", "employeeId", c, v),v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added employee", false, false);
+			ret.data.employeeId = res.rows[0].employeeid;
+			return ret;
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}	
 		
 	}
 	
@@ -1451,6 +1530,7 @@ class CrudController {
 					
 		var ret = null;
 		
+		/*
 		this.client.query(this.constructInsert("Client", "clientId", c, v),
 		v, (err, res) => 
 		{
@@ -1464,11 +1544,26 @@ class CrudController {
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added client", false, false);
-				ret.data.clientId = res.rows[0].clientid;
+			ret.data.clientId = res.rows[0].clientid;
 				//this.client.end();
 				callback(ret);
 			}
-		});		
+		});		*/
+		
+		let res;
+		try
+		{
+			res = await this.client.query(this.constructInsert("Client", "clientId", c, v),v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added client", false, false);
+			ret.data.clientId = res.rows[0].clientid;
+			return ret;
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}	
 		
 	}
 	
@@ -1628,6 +1723,7 @@ class CrudController {
 					
 		var ret = null;
 		
+		/*
 		this.client.query(this.constructInsert("WiFiParams", "wifiParamsId", c, v),
 		v, (err, res) => 
 		{
@@ -1641,11 +1737,26 @@ class CrudController {
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added wifiparams", false, false);
-				ret.data.wifiParamsId = res.rows[0].wifiparamsid;
+			ret.data.wifiParamsId = res.rows[0].wifiparamsid;
 				//this.client.end();
 				callback(ret);
 			}
-		});		
+		});		*/
+		
+		let res;
+		try
+		{
+			res = await this.client.query(this.constructInsert("WiFiParams", "wifiParamsId", c, v),v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added wifiparams", false, false);
+			ret.data.wifiParamsId = res.rows[0].wifiparamsid;
+			return ret;
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}	
 		
 	}
 	
@@ -1763,6 +1874,7 @@ class CrudController {
 					
 		var ret = null;
 		
+		/*
 		this.client.query(this.constructInsert("TempWifiAccess", "tempWifiAccessId", c, v),
 		v, (err, res) => 
 		{
@@ -1776,11 +1888,26 @@ class CrudController {
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added tempwifiaccess", false, false);
-				ret.data.tempWifiAccessId = res.rows[0].tempwifiaccessid;
+			ret.data.tempWifiAccessId = res.rows[0].tempwifiaccessid;
 				//this.client.end();
 				callback(ret);
 			}
-		});		
+		});		*/
+		
+		let res;
+		try
+		{
+			res = await this.client.query(this.constructInsert("TempWifiAccess", "tempWifiAccessId", c, v),v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added tempwifiaccess", false, false);
+			ret.data.tempWifiAccessId = res.rows[0].tempwifiaccessid;
+			return ret;
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}	
 		
 	}
 	
@@ -1957,6 +2084,7 @@ class CrudController {
 					
 		var ret = null;
 		
+		/*
 		this.client.query(this.constructInsert("VisitorPackage", "visitorPackageId", c, v),
 		v, (err, res) => 
 		{
@@ -1970,11 +2098,26 @@ class CrudController {
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added visitorpackage", false, false);
-				ret.data.visitorPackageId = res.rows[0].visitorpackageid;
+			ret.data.visitorPackageId = res.rows[0].visitorpackageid;
 				//this.client.end();
 				callback(ret);
 			}
-		});		
+		});		*/
+		
+		let res;
+		try
+		{
+			res = await this.client.query(this.constructInsert("VisitorPackage", "visitorPackageId", c, v),v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added visitorpackage", false, false);
+			ret.data.visitorPackageId = res.rows[0].visitorpackageid;
+			return ret;
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}	
 		
 	}
 	
@@ -2334,6 +2477,7 @@ class CrudController {
 		
 		var query = "INSERT INTO TPA DEFAULT VALUES RETURNING tpaid";
 		
+		/*
 		this.client.query(query,
 		v, (err, res) => 
 		{
@@ -2347,11 +2491,26 @@ class CrudController {
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added tpa", false, false);
-				ret.data.tpaId = res.rows[0].tpaid;
+			ret.data.tpaId = res.rows[0].tpaid;
 				//this.client.end();
 				callback(ret);
 			}
-		});		
+		});		*/
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query,v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added tpa", false, false);
+			ret.data.tpaId = res.rows[0].tpaid;
+			return ret;
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}	
 		
 	}
 	
@@ -2443,6 +2602,7 @@ class CrudController {
 		
 		var query = "INSERT INTO TPAxRoom(tpaId,roomId) VALUES ($1,$2) RETURNING CONCAT(tpaId, '_', roomId) AS tpaxroomid;";
 		
+		/*
 		this.client.query(query,
 		v, (err, res) => 
 		{
@@ -2456,11 +2616,26 @@ class CrudController {
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added tpaxroom", false, false);
-				ret.data.tpaxroomId = res.rows[0].tpaxroomid;
+			ret.data.tpaxroomId = res.rows[0].tpaxroomid;
 				//this.client.end();
 				callback(ret);
 			}
-		});		
+		});		*/
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query,v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added tpaxroom", false, false);
+			ret.data.tpaxroomId = res.rows[0].tpaxroomid;
+			return ret;
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}	
 		
 	}
 	
@@ -2644,6 +2819,7 @@ class CrudController {
 					
 		var ret = null;
 		
+		/*
 		this.client.query(this.constructInsert("Wallet", "linkWalletId", c, v),
 		v, (err, res) => 
 		{
@@ -2657,11 +2833,26 @@ class CrudController {
 			else 
 			{
 				ret = this.buildDefaultResponseObject(true, "Successfully added wallet", false, false);
-				ret.data.linkWalletId = res.rows[0].linkwalletid;
+			ret.data.linkWalletId = res.rows[0].linkwalletid;
 				//this.client.end();
 				callback(ret);
 			}
-		});		
+		});		*/
+		
+		let res;
+		try
+		{
+			res = await this.client.query(this.constructInsert("Wallet", "linkWalletId", c, v),v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added wallet", false, false);
+			ret.data.linkWalletId = res.rows[0].linkwalletid;
+			return ret;
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}	
 		
 	}
 	

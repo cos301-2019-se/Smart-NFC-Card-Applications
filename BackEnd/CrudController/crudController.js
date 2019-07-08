@@ -254,7 +254,7 @@ class CrudController {
     * @param website The website of the company
     * @param passwordId The password ID of the company
     */
-	updateCompany(companyId, name, website, passwordId) {
+	async updateCompany(companyId, name, website, passwordId) {
 
 		if (!this.validateNumeric(companyId)) {
 			return this.buildDefaultResponseObject(false, "Invalid company ID provided", true);
@@ -320,7 +320,7 @@ class CrudController {
      */
 	deleteCompany(companyId) {
 		if (!this.validateNumeric(companyId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid company ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid company ID provided", true);
 		}
 
 		var query = this.constructDelete("Company", "companyId");
@@ -655,10 +655,10 @@ class CrudController {
 	
     //CR
      
-	updateBuilding(buildingId, latitude, longitude, branchName, companyId, wifiParamsId) {
+	async updateBuilding(buildingId, latitude, longitude, branchName, companyId, wifiParamsId) {
 
 		if (!this.validateNumeric(buildingId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid building ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid building ID provided", true);
 		}
 
 		var paramNames = [];
@@ -667,12 +667,14 @@ class CrudController {
 		this.setValidParams(["latitude", "longitude", "branchName", "companyId", "wifiParamsId"], [latitude, longitude, branchName, companyId, wifiParamsId], paramNames, paramValues);
 
 		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
-			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
 		}
 
 		var query = this.constructUpdate("Building", paramNames, "buildingId", buildingId);
 		var ret = null;
-		this.client.query(query, paramValues, (err, res) => {
+		
+		
+		/*this.client.query(query, paramValues, (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -684,12 +686,32 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, paramValues);
+			ret = this.buildDefaultResponseObject(true, "Successfully updated building", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		
 	}
 
 	deleteBuilding(buildingId) {
 		if (!this.validateNumeric(buildingId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid building ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid building ID provided", true);
 		}
 
 		var query = this.constructDelete("Building", "buildingId");
@@ -996,10 +1018,10 @@ class CrudController {
 	
     //CR
     
-	updatePassword(passwordId, username, hash, salt, apiKey, expirationDate) {
+	async updatePassword(passwordId, username, hash, salt, apiKey, expirationDate) {
 
 		if (!this.validateNumeric(passwordId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid password ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid password ID provided", true);
 		}
 
 		var paramNames = [];
@@ -1008,12 +1030,14 @@ class CrudController {
 		this.setValidParams(["username", "hash", "salt", "apiKey", "expirationDate"], [username, hash, salt, apiKey, expirationDate], paramNames, paramValues);
 
 		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
-			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
 		}
 
 		var query = this.constructUpdate("Password", paramNames, "passwordId", passwordId);
 		var ret = null;
-		this.client.query(query, paramValues, (err, res) => {
+		
+		
+		/*this.client.query(query, paramValues, (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -1024,7 +1048,25 @@ class CrudController {
 				// this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, paramValues);
+			ret = this.buildDefaultResponseObject(true, "Successfully updated password", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
 	/**
@@ -1033,7 +1075,7 @@ class CrudController {
      */
 	deletePassword(passwordId) {
 		if (!this.validateNumeric(passwordId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid password ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid password ID provided", true);
 		}
 
 		var query = this.constructDelete("Password", "passwordId");
@@ -1268,9 +1310,9 @@ class CrudController {
 	
     //CR
     
-	updateRoom(roomId, roomName, parentRoomList, buildingId) {
+	async updateRoom(roomId, roomName, parentRoomList, buildingId) {
 		if (!this.validateNumeric(roomId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid room ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid room ID provided", true);
 		}
 
 		var paramNames = [];
@@ -1279,12 +1321,14 @@ class CrudController {
 		this.setValidParams(["roomName", "parentRoomList", "buildingId"], [roomName, parentRoomList, buildingId], paramNames, paramValues);
 
 		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
-			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
 		}
 
 		var query = this.constructUpdate("Room", paramNames, "roomId", roomId);
 		var ret = null;
-		this.client.query(query, paramValues, (err, res) => {
+		
+		
+		/*this.client.query(query, paramValues, (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -1295,12 +1339,30 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, paramValues);
+			ret = this.buildDefaultResponseObject(true, "Successfully updated Room", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
 	deleteRoom(roomId) {
 		if (!this.validateNumeric(roomId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid room ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid room ID provided", true);
 		}
 
 		var query = this.constructDelete("Room", "roomId");
@@ -1523,9 +1585,9 @@ class CrudController {
 	
     //CR
     
-	updateAccessPoints(nfcReaderId, roomId) {
+	async updateAccessPoints(nfcReaderId, roomId) {
 		if (!this.validateNumeric(nfcReaderId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid NFC reader ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid NFC reader ID provided", true);
 		}
 
 		var paramNames = [];
@@ -1534,12 +1596,14 @@ class CrudController {
 		this.setValidParams(["roomId"], [roomId], paramNames, paramValues);
 
 		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
-			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
 		}
 
 		var query = this.constructUpdate("NFCAccessPoints", paramNames, "nfcReaderId", nfcReaderId);
 		var ret = null;
-		this.client.query(query, paramValues, (err, res) => {
+		
+		
+		/*this.client.query(query, paramValues, (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -1550,12 +1614,30 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, paramValues);
+			ret = this.buildDefaultResponseObject(true, "Successfully updated NFC access point", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
 	deleteAccessPoints(nfcReaderId) {
 		if (!this.validateNumeric(nfcReaderId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid NFC Reader ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid NFC Reader ID provided", true);
 		}
 
 		var query = this.constructDelete("NFCAccessPoints", "nfcReaderId");
@@ -2006,9 +2088,9 @@ class CrudController {
 		* @param passwordId The password ID of the employee
 		*/
 
-	updateEmployee(employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId) {
+	async updateEmployee(employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId) {
 		if (!this.validateNumeric(employeeId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid employee ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid employee ID provided", true);
 		}
 
 		var paramNames = [];
@@ -2017,12 +2099,14 @@ class CrudController {
 		this.setValidParams(["firstName", "surname", "title", "cellphone", "email", "companyId", "buildingId", "passwordId"], [firstName, surname, title, cellphone, email, companyId, buildingId, passwordId], paramNames, paramValues);
 
 		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
-			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
 		}
 
 		var query = this.constructUpdate("Employee", paramNames, "employeeId", employeeId);
 		var ret = null;
-		this.client.query(query, paramValues, (err, res) => {
+		
+		
+		/*this.client.query(query, paramValues, (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -2034,13 +2118,31 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, paramValues);
+				ret = this.buildDefaultResponseObject(true, "Successfully updated employee", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
 
 	deleteEmployee(employeeId) {
 		if (!this.validateNumeric(employeeId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid employee ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid employee ID provided", true);
 		}
 
 		var query = this.constructDelete("Employee", "employeeId");
@@ -2250,9 +2352,9 @@ class CrudController {
     //CR
     
 
-	updateClient(clientId, macAddress) {
+	async updateClient(clientId, macAddress) {
 		if (!this.validateNumeric(clientId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid client ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid client ID provided", true);
 		}
 
 		var paramNames = [];
@@ -2261,12 +2363,14 @@ class CrudController {
 		this.setValidParams(["macAddress"], [macAddress], paramNames, paramValues);
 
 		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
-			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
 		}
 
 		var query = this.constructUpdate("Client", paramNames, "clientId", clientId);
 		var ret = null;
-		this.client.query(query, paramValues, (err, res) => {
+		
+		
+		/*this.client.query(query, paramValues, (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -2277,12 +2381,30 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, paramValues);
+			ret = this.buildDefaultResponseObject(true, "Successfully updated client", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
 	deleteClient(clientId) {
 		if (!this.validateNumeric(clientId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid client ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid client ID provided", true);
 		}
 
 		var query = this.constructDelete("Client", "clientId");
@@ -2434,9 +2556,9 @@ class CrudController {
     //CR
     
 
-	updateWiFiParams(wifiParamsId, ssid, networkType, password) {
+	async updateWiFiParams(wifiParamsId, ssid, networkType, password) {
 		if (!this.validateNumeric(wifiParamsId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid WiFi Params ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid WiFi Params ID provided", true);
 		}
 
 		var paramNames = [];
@@ -2445,12 +2567,14 @@ class CrudController {
 		this.setValidParams(["ssid", "networkType", "password"], [ssid, networkType, password], paramNames, paramValues);
 
 		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
-			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
 		}
 
 		var query = this.constructUpdate("WiFiParams", paramNames, "wifiParamsId", wifiParamsId);
 		var ret = null;
-		this.client.query(query, paramValues, (err, res) => {
+		
+		
+		/*this.client.query(query, paramValues, (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -2461,12 +2585,30 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, paramValues);
+			ret = this.buildDefaultResponseObject(true, "Successfully updated WiFi params", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
 	deleteWiFiParams(wifiParamsId) {
 		if (!this.validateNumeric(wifiParamsId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid WiFi Params ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid WiFi Params ID provided", true);
 		}
 
 		var query = this.constructDelete("WiFiParams", "wifiParamsId");
@@ -2689,9 +2831,9 @@ class CrudController {
     //CR
     
 
-	updateTempWifiAccess(tempWifiAccessId, wifiParamsId) {
+	async updateTempWifiAccess(tempWifiAccessId, wifiParamsId) {
 		if (!this.validateNumeric(tempWifiAccessId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid Temp Wifi Access ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid Temp Wifi Access ID provided", true);
 		}
 
 		var paramNames = [];
@@ -2700,12 +2842,14 @@ class CrudController {
 		this.setValidParams(["wifiParamsId"], [wifiParamsId], paramNames, paramValues);
 
 		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
-			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
 		}
 
 		var query = this.constructUpdate("TempWifiAccess", paramNames, "tempWifiAccessId", tempWifiAccessId);
 		var ret = null;
-		this.client.query(query, paramValues, (err, res) => {
+		
+		
+		/*this.client.query(query, paramValues, (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -2716,12 +2860,30 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, paramValues);
+			ret = this.buildDefaultResponseObject(true, "Successfully updated Temp WiFi Access params", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
 	deleteTempWifiAccess(tempWifiAccessId) {
 		if (!this.validateNumeric(tempWifiAccessId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid Temp Wifi Access ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid Temp Wifi Access ID provided", true);
 		}
 
 		var query = this.constructDelete("TempWifiAccess", "tempWifiAccessId");
@@ -3302,9 +3464,9 @@ class CrudController {
 	
     //CR
     
-    updateVisitorPackage(visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime) {
+    async updateVisitorPackage(visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime) {
 		if (!this.validateNumeric(visitorPackageId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid Visitor Package ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid Visitor Package ID provided", true);
 		}
 
 		var paramNames = [];
@@ -3313,12 +3475,14 @@ class CrudController {
 		this.setValidParams(["tempWifiAccessId", "tpaId", "linkWalletId", "employeeId", "clientId", "startTime", "endTime"], [tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime], paramNames, paramValues);
 
 		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
-			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
 		}
 
 		var query = this.constructUpdate("VisitorPackage", paramNames, "visitorPackageId", visitorPackageId);
 		var ret = null;
-		this.client.query(query, paramValues, (err, res) => {
+		
+		
+		/*this.client.query(query, paramValues, (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -3329,12 +3493,30 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, paramValues);
+			ret = this.buildDefaultResponseObject(true, "Successfully updated Visitor Package", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
 	deleteVisitorPackage(visitorPackageId) {
 		if (!this.validateNumeric(visitorPackageId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid Visitor Package ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid Visitor Package ID provided", true);
 		}
 
 		var query = this.constructDelete("VisitorPackage", "visitorPackageId");
@@ -3479,11 +3661,13 @@ class CrudController {
 
 	deleteTPA(tpaId) {
 		if (!this.validateNumeric(tpaId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid TPA ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid TPA ID provided", true);
 		}
 
 		var query = this.constructDelete("TPA", "tpaId");
 		var ret = null;
+		
+		
 		this.client.query(query, [tpaId], (err, res) => {
 			if (err) {
 				console.log(err.stack);
@@ -3721,9 +3905,9 @@ class CrudController {
     //CR
     
     //note this function is slightly different to others, see parameter list
-	updateTPAxRoom(currentTpaId, currentRoomId, potentiallyChangedTpaId, potentiallyChangedRoomId) {
+	async updateTPAxRoom(currentTpaId, currentRoomId, potentiallyChangedTpaId, potentiallyChangedRoomId) {
 		if (!this.validateNumeric(currentTpaId) || !this.validateNumeric(currentRoomId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid TPA ID or RoomID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid TPA ID or RoomID provided", true);
 		}
 
 		var paramNames = [];
@@ -3732,7 +3916,7 @@ class CrudController {
 		this.setValidParams(["tpaId", "roomId"], [potentiallyChangedTpaId, potentiallyChangedRoomId], paramNames, paramValues); // either update tpaId OR roomId, OR both. for the given current tpaId and roomId combo
 
 		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
-			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
 		}
 
 		var query = "UPDATE TPAxRoom SET ";
@@ -3748,7 +3932,9 @@ class CrudController {
 
 		console.log(query);
 		var ret = null;
-		this.client.query(query, paramValues, (err, res) => {
+		
+		
+		/*this.client.query(query, paramValues, (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -3759,12 +3945,32 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, paramValues);
+			ret = this.buildDefaultResponseObject(true, "Successfully updated TPAxRoom", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
+	
+	
 	//note slightly different to other deletes, see parameter list
 	deleteTPAxRoom(tpaId, roomId) {
 		if (!this.validateNumeric(tpaId) || !this.validateNumeric(roomId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid TPA ID OR Room ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid TPA ID OR Room ID provided", true);
 		}
 
 		var query = "DELETE FROM TPAxRoom WHERE " + tpaId + " = $1 AND " + roomId + " = $2";;
@@ -3910,9 +4116,9 @@ class CrudController {
 	}
 	
     //CR
-    updateWallet(linkwalletId, maxLimit, spent) {
+    async updateWallet(linkwalletId, maxLimit, spent) {
 		if (!this.validateNumeric(linkwalletId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid Wallet ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid Wallet ID provided", true);
 		}
 
 		var paramNames = [];
@@ -3921,12 +4127,14 @@ class CrudController {
 		this.setValidParams(["maxLimit", "spent"], [maxLimit, spent], paramNames, paramValues);
 
 		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
-			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
 		}
 
 		var query = this.constructUpdate("Wallet", paramNames, "linkwalletId", linkwalletId);
 		var ret = null;
-		this.client.query(query, paramValues, (err, res) => {
+		
+		
+		/*this.client.query(query, paramValues, (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -3937,12 +4145,30 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, paramValues);
+			ret = this.buildDefaultResponseObject(true, "Successfully updated Wallet", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
 	deleteWallet(linkwalletId) {
 		if (!this.validateNumeric(linkwalletId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid Wallet ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid Wallet ID provided", true);
 		}
 
 		var query = this.constructDelete("Wallet", "linkwalletId");

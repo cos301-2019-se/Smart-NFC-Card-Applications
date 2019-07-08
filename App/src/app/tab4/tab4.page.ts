@@ -28,6 +28,7 @@ import { Device } from '@ionic-native/device/ngx';
 import { VisitorPackage } from '../models/visitor-package.model';
 import { VisitorPackagesService } from '../services/visitor-packages.service';
 import { EventEmitterService } from '../services/event-emitter.service';   
+import { FilterService } from '../services/filter.service';   
 
 /**
 * Purpose:	This enum provides message types
@@ -71,7 +72,8 @@ export class Tab4Page implements OnInit{
     private device: Device,
     private packageService: VisitorPackagesService,
     private wifiService: WifiService,
-    private eventEmitterService: EventEmitterService   
+    private eventEmitterService: EventEmitterService,
+    private filterService: FilterService
   ) { }
 
   ngOnInit() {    

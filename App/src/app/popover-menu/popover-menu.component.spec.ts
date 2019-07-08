@@ -2,6 +2,16 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PopoverMenuComponent } from './popover-menu.component';
+import { PopoverController, AngularDelegate, NavParams } from '@ionic/angular';
+
+export class NavParamsMocks{
+  data = {
+  };
+
+  get(param){
+    return this.data[param];
+  }
+}
 
 describe('PopoverMenuComponent', () => {
   let component: PopoverMenuComponent;
@@ -9,7 +19,14 @@ describe('PopoverMenuComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PopoverMenuComponent ],
+      declarations: [ 
+        PopoverMenuComponent
+      ],
+      providers: [
+        PopoverController,
+        AngularDelegate,
+        {provide: NavParams, useClass: NavParamsMocks},
+      ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     })
     .compileComponents();

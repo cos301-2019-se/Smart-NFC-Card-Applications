@@ -19,7 +19,7 @@
 
     <ion-list>
       <ion-reorder-group (ionItemReorder)="reorderItems($event)" disabled="false">
-        <ion-card *ngFor="let card of cards">
+        <ion-card *ngFor="let card of cards | filter: 'companyName': filterService.getFilter()">
             <ion-card-header>
               <ion-reorder class="reorder"></ion-reorder>
               <ion-icon class="trash" name="trash" (click)='removeCard(card.businessCardId)'></ion-icon>

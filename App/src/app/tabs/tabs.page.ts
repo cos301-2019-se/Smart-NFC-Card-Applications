@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
-import { PopoverController } from '@ionic/angular';
+import { Component, ViewChild } from '@angular/core';
+import { PopoverController, IonSearchbar } from '@ionic/angular';
 import { PopoverMenuComponent } from '../popover-menu/popover-menu.component';
 import { EventEmitterService } from '../services/event-emitter.service';   
+import { FilterService } from '../services/filter.service';
 
 @Component({
   selector: 'app-tabs',
@@ -9,6 +10,11 @@ import { EventEmitterService } from '../services/event-emitter.service';
   styleUrls: ['tabs.page.scss']
 })
 export class TabsPage {
+
+  @ViewChild('search') searchbar : IonSearchbar;
+
+  showSearchBar: Boolean = false;
+  searchFilter: string = '';
 
   tabButtons: Object = {
     'loginTab': [
@@ -30,7 +36,8 @@ export class TabsPage {
 
   constructor(
     private popoverController: PopoverController,    
-    private eventEmitterService: EventEmitterService  
+    private eventEmitterService: EventEmitterService,
+    private filter: FilterService
   ){}
 
   setActive(activeTab: string) {
@@ -52,5 +59,20 @@ export class TabsPage {
         this.eventEmitterService.menuButtonEvent(res.data.name);   
       }
     });
+  }
+
+  toggleSearchBar() {
+    this.showSearchBar = !this.showSearchBar;
+    this.filter.setFilter('');
+  }
+
+  updateSearch() {
+    this.filter.setFilter(this.searchFilter);
+  }
+
+  focusButton() {
+    setTimeout(() => {
+      this.searchbar.setFocus();
+    }, 500);
   }
 }

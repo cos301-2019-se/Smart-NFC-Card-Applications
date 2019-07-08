@@ -29,6 +29,7 @@
 
   <ion-item lines="full">
     <ion-label>Visitor <ion-text color="danger">*</ion-text></ion-label>
+    <ion-icon *ngIf='macAddress' color='success' name="checkmark-circle"></ion-icon>
     <ion-button expand="block" fill="outline" (click)="assignVisitor()">Assign Visitor</ion-button>
   </ion-item>
   <ion-item lines="full"> 

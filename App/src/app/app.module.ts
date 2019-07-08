@@ -24,7 +24,8 @@ import { LocalStorageService } from './services/local-storage.service';
 import { BusinessCardsService } from './services/business-cards.service';
 import { NfcControllerService } from './services/nfc-controller.service';
 import { LocationService } from './services/location.service';
-import { EventEmitterService } from './services/event-emitter.service'
+import { EventEmitterService } from './services/event-emitter.service';
+import { FilterService } from './services/filter.service';
 
 @NgModule({
   declarations: [
@@ -57,6 +58,7 @@ import { EventEmitterService } from './services/event-emitter.service'
     NfcControllerService,
     ModalController,
     Device,
+    FilterService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

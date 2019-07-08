@@ -14,6 +14,7 @@ import { LocationService } from '../services/location.service';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
 import { Device } from '@ionic-native/device/ngx';
+import { SharedModule } from '../shared.module';
 
 describe('Tab3Page', () => {
   let component: Tab3Page;
@@ -24,7 +25,8 @@ describe('Tab3Page', () => {
       declarations: [Tab3Page],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [
-        IonicStorageModule.forRoot()
+        IonicStorageModule.forRoot(),
+        SharedModule        
       ],
       providers: [
         AndroidPermissions,

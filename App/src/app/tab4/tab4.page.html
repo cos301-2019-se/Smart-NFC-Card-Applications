@@ -19,7 +19,7 @@
     </ion-item>
 
     <ion-list>
-      <ion-card *ngFor="let package of packages">
+      <ion-card *ngFor="let package of packages | filter: 'companyName': filterService.getFilter()">
           <ion-card-header>
             <ion-icon class="trash" name="trash" (click)='removeVisitorPackage(package.packageId)'></ion-icon>
             <ion-title>{{ package.companyName }}</ion-title>

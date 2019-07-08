@@ -1,14 +1,15 @@
 <ion-tabs>
 
   <ion-toolbar slot="top">
-    <ion-title> Project Link </ion-title>
+    <ion-title *ngIf='!showSearchBar'> Project Link </ion-title>
+    <ion-searchbar #search *ngIf='showSearchBar' [(ngModel)]="searchFilter" (ionChange)="updateSearch()" (ionCancel)="toggleSearchBar()" showCancelButton="always"></ion-searchbar>
     <ion-buttons slot='primary'>
         <ion-button (click)='openMenu($event)'>
           <ion-icon slot="icon-only" name="menu"></ion-icon>
         </ion-button>
     </ion-buttons>
-    <ion-buttons slot='secondary'>
-        <ion-button>
+    <ion-buttons *ngIf='!showSearchBar' slot='secondary'>
+        <ion-button (click)='toggleSearchBar(); focusButton()'>
           <ion-icon slot="icon-only" name="search"></ion-icon>
         </ion-button>
     </ion-buttons>
@@ -16,7 +17,7 @@
 
   <ion-tab-bar slot="bottom">
       <ion-tab-button tab="loginTab" [class.active-tab]="(activeTab=='loginTab')" (click)="setActive('loginTab')">
-        <ion-label>Menu</ion-label>
+        <ion-label>Manage</ion-label>
       </ion-tab-button>
       
     <ion-tab-button tab="tab2" [class.active-tab]="(activeTab=='tab2')" (click)="setActive('tab2')">

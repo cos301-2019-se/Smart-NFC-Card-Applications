@@ -26,6 +26,7 @@ import { NfcControllerService } from '../services/nfc-controller.service';
 import { LocationService } from '../services/location.service';
 import { LocationModel } from '../models/location.model';
 import { EventEmitterService } from '../services/event-emitter.service';   
+import { FilterService } from '../services/filter.service';   
 
 /**
 * Purpose:	This enum provides message types
@@ -66,7 +67,8 @@ export class Tab3Page implements OnInit{
     private cardService: BusinessCardsService,
     private nfcService: NfcControllerService,
     private locationService: LocationService,
-    private eventEmitterService: EventEmitterService   
+    private eventEmitterService: EventEmitterService,
+    private filterService: FilterService
   ) { }
 
   ngOnInit() {    

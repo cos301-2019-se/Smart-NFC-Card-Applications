@@ -254,10 +254,10 @@ class CrudController {
     * @param website The website of the company
     * @param passwordId The password ID of the company
     */
-	updateCompany(companyId, name, website, passwordId, callback) {
+	updateCompany(companyId, name, website, passwordId) {
 
 		if (!this.validateNumeric(companyId)) {
-			callback(this.buildDefaultResponseObject(false, "Invalid company ID provided", true));
+			return this.buildDefaultResponseObject(false, "Invalid company ID provided", true);
 		}
 
 		var paramNames = [];
@@ -266,11 +266,18 @@ class CrudController {
 		this.setValidParams(["companyName", "companyWebsite", "passwordId"], [name, website, passwordId], paramNames, paramValues);
 
 		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
-			callback(this.buildDefaultResponseObject(false, "No valid parameters provided for update", true));
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
 		}
+
+
+
 
 		var query = this.constructUpdate("Company", paramNames, "companyId", companyId);
 		var ret = null;
+		
+		
+		
+		/*
 		this.client.query(query, paramValues, (err, res) => {
 			if (err) {
 				console.log(err.stack);
@@ -283,7 +290,27 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, paramValues);
+			ret = this.buildDefaultResponseObject(true, "Successfully updated company", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+		
+		
 
 	}
 
@@ -291,7 +318,7 @@ class CrudController {
      * Deletes a company given a company ID
      * @param companyId The ID of the company
      */
-	deleteCompany(companyId, callback) {
+	deleteCompany(companyId) {
 		if (!this.validateNumeric(companyId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid company ID provided", true));
 		}
@@ -628,7 +655,7 @@ class CrudController {
 	
     //CR
      
-	updateBuilding(buildingId, latitude, longitude, branchName, companyId, wifiParamsId, callback) {
+	updateBuilding(buildingId, latitude, longitude, branchName, companyId, wifiParamsId) {
 
 		if (!this.validateNumeric(buildingId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid building ID provided", true));
@@ -660,7 +687,7 @@ class CrudController {
 		});
 	}
 
-	deleteBuilding(buildingId, callback) {
+	deleteBuilding(buildingId) {
 		if (!this.validateNumeric(buildingId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid building ID provided", true));
 		}
@@ -969,7 +996,7 @@ class CrudController {
 	
     //CR
     
-	updatePassword(passwordId, username, hash, salt, apiKey, expirationDate, callback) {
+	updatePassword(passwordId, username, hash, salt, apiKey, expirationDate) {
 
 		if (!this.validateNumeric(passwordId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid password ID provided", true));
@@ -1004,7 +1031,7 @@ class CrudController {
      * Deletes the password associated with the given ID
      * @param passwordId The ID of the password
      */
-	deletePassword(passwordId, callback) {
+	deletePassword(passwordId) {
 		if (!this.validateNumeric(passwordId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid password ID provided", true));
 		}
@@ -1241,7 +1268,7 @@ class CrudController {
 	
     //CR
     
-	updateRoom(roomId, roomName, parentRoomList, buildingId, callback) {
+	updateRoom(roomId, roomName, parentRoomList, buildingId) {
 		if (!this.validateNumeric(roomId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid room ID provided", true));
 		}
@@ -1271,7 +1298,7 @@ class CrudController {
 		});
 	}
 
-	deleteRoom(roomId, callback) {
+	deleteRoom(roomId) {
 		if (!this.validateNumeric(roomId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid room ID provided", true));
 		}
@@ -1496,7 +1523,7 @@ class CrudController {
 	
     //CR
     
-	updateAccessPoints(nfcReaderId, roomId, callback) {
+	updateAccessPoints(nfcReaderId, roomId) {
 		if (!this.validateNumeric(nfcReaderId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid NFC reader ID provided", true));
 		}
@@ -1526,7 +1553,7 @@ class CrudController {
 		});
 	}
 
-	deleteAccessPoints(nfcReaderId, callback) {
+	deleteAccessPoints(nfcReaderId) {
 		if (!this.validateNumeric(nfcReaderId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid NFC Reader ID provided", true));
 		}
@@ -1979,7 +2006,7 @@ class CrudController {
 		* @param passwordId The password ID of the employee
 		*/
 
-	updateEmployee(employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId, callback) {
+	updateEmployee(employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId) {
 		if (!this.validateNumeric(employeeId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid employee ID provided", true));
 		}
@@ -2011,7 +2038,7 @@ class CrudController {
 	}
 
 
-	deleteEmployee(employeeId, callback) {
+	deleteEmployee(employeeId) {
 		if (!this.validateNumeric(employeeId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid employee ID provided", true));
 		}
@@ -2223,7 +2250,7 @@ class CrudController {
     //CR
     
 
-	updateClient(clientId, macAddress, callback) {
+	updateClient(clientId, macAddress) {
 		if (!this.validateNumeric(clientId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid client ID provided", true));
 		}
@@ -2253,7 +2280,7 @@ class CrudController {
 		});
 	}
 
-	deleteClient(clientId, callback) {
+	deleteClient(clientId) {
 		if (!this.validateNumeric(clientId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid client ID provided", true));
 		}
@@ -2407,7 +2434,7 @@ class CrudController {
     //CR
     
 
-	updateWiFiParams(wifiParamsId, ssid, networkType, password, callback) {
+	updateWiFiParams(wifiParamsId, ssid, networkType, password) {
 		if (!this.validateNumeric(wifiParamsId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid WiFi Params ID provided", true));
 		}
@@ -2437,7 +2464,7 @@ class CrudController {
 		});
 	}
 
-	deleteWiFiParams(wifiParamsId, callback) {
+	deleteWiFiParams(wifiParamsId) {
 		if (!this.validateNumeric(wifiParamsId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid WiFi Params ID provided", true));
 		}
@@ -2662,7 +2689,7 @@ class CrudController {
     //CR
     
 
-	updateTempWifiAccess(tempWifiAccessId, wifiParamsId, callback) {
+	updateTempWifiAccess(tempWifiAccessId, wifiParamsId) {
 		if (!this.validateNumeric(tempWifiAccessId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid Temp Wifi Access ID provided", true));
 		}
@@ -2692,7 +2719,7 @@ class CrudController {
 		});
 	}
 
-	deleteTempWifiAccess(tempWifiAccessId, callback) {
+	deleteTempWifiAccess(tempWifiAccessId) {
 		if (!this.validateNumeric(tempWifiAccessId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid Temp Wifi Access ID provided", true));
 		}
@@ -3275,7 +3302,7 @@ class CrudController {
 	
     //CR
     
-    updateVisitorPackage(visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime, callback) {
+    updateVisitorPackage(visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime) {
 		if (!this.validateNumeric(visitorPackageId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid Visitor Package ID provided", true));
 		}
@@ -3305,7 +3332,7 @@ class CrudController {
 		});
 	}
 
-	deleteVisitorPackage(visitorPackageId, callback) {
+	deleteVisitorPackage(visitorPackageId) {
 		if (!this.validateNumeric(visitorPackageId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid Visitor Package ID provided", true));
 		}
@@ -3450,7 +3477,7 @@ class CrudController {
     
     //NOTE: There is no UPDATE for TPA as you can't update a primary key
 
-	deleteTPA(tpaId, callback) {
+	deleteTPA(tpaId) {
 		if (!this.validateNumeric(tpaId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid TPA ID provided", true));
 		}
@@ -3694,7 +3721,7 @@ class CrudController {
     //CR
     
     //note this function is slightly different to others, see parameter list
-	updateTPAxRoom(currentTpaId, currentRoomId, potentiallyChangedTpaId, potentiallyChangedRoomId, callback) {
+	updateTPAxRoom(currentTpaId, currentRoomId, potentiallyChangedTpaId, potentiallyChangedRoomId) {
 		if (!this.validateNumeric(currentTpaId) || !this.validateNumeric(currentRoomId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid TPA ID or RoomID provided", true));
 		}
@@ -3735,7 +3762,7 @@ class CrudController {
 		});
 	}
 	//note slightly different to other deletes, see parameter list
-	deleteTPAxRoom(tpaId, roomId, callback) {
+	deleteTPAxRoom(tpaId, roomId) {
 		if (!this.validateNumeric(tpaId) || !this.validateNumeric(roomId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid TPA ID OR Room ID provided", true));
 		}
@@ -3883,7 +3910,7 @@ class CrudController {
 	}
 	
     //CR
-    updateWallet(linkwalletId, maxLimit, spent, callback) {
+    updateWallet(linkwalletId, maxLimit, spent) {
 		if (!this.validateNumeric(linkwalletId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid Wallet ID provided", true));
 		}
@@ -3913,7 +3940,7 @@ class CrudController {
 		});
 	}
 
-	deleteWallet(linkwalletId, callback) {
+	deleteWallet(linkwalletId) {
 		if (!this.validateNumeric(linkwalletId)) {
 			callback(this.buildDefaultResponseObject(false, "Invalid Wallet ID provided", true));
 		}

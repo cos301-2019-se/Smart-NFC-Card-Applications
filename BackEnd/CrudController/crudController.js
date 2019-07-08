@@ -10,6 +10,9 @@
  *	Date		Author		Version		Changes
  *	-----------------------------------------------------------------------------------------
  *	2019/05/23	Savvas		1.0		    Original
+ *	2019/06/25	Jared		1.1			Added all creates and reads
+ *	2019/06/25	Savvas		1.2			Added all updates and deletes
+ *	2019/07/08	Jared		2.0			Make async into sync for all
  *
  *	Functional Description:		 This class is the interface used by the Logic Components of the Link System to 
  *                               interact with the database. This class facilitates communication with the database.
@@ -318,14 +321,16 @@ class CrudController {
      * Deletes a company given a company ID
      * @param companyId The ID of the company
      */
-	deleteCompany(companyId) {
+	async deleteCompany(companyId) {
 		if (!this.validateNumeric(companyId)) {
 			return this.buildDefaultResponseObject(false, "Invalid company ID provided", true);
 		}
 
 		var query = this.constructDelete("Company", "companyId");
 		var ret = null;
-		this.client.query(query, [companyId], (err, res) => {
+		
+		
+		/*this.client.query(query, [companyId], (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -336,7 +341,24 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [companyId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted company", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
 
@@ -709,14 +731,16 @@ class CrudController {
 		
 	}
 
-	deleteBuilding(buildingId) {
+	async deleteBuilding(buildingId) {
 		if (!this.validateNumeric(buildingId)) {
 			return this.buildDefaultResponseObject(false, "Invalid building ID provided", true);
 		}
 
 		var query = this.constructDelete("Building", "buildingId");
 		var ret = null;
-		this.client.query(query, [buildingId], (err, res) => {
+		
+		
+		/*this.client.query(query, [buildingId], (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -727,7 +751,24 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [buildingId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted building", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
     //UD
@@ -1073,14 +1114,16 @@ class CrudController {
      * Deletes the password associated with the given ID
      * @param passwordId The ID of the password
      */
-	deletePassword(passwordId) {
+	async deletePassword(passwordId) {
 		if (!this.validateNumeric(passwordId)) {
 			return this.buildDefaultResponseObject(false, "Invalid password ID provided", true);
 		}
 
 		var query = this.constructDelete("Password", "passwordId");
 		var ret = null;
-		this.client.query(query, [passwordId], (err, res) => {
+		
+		
+		/*this.client.query(query, [passwordId], (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -1091,7 +1134,24 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [passwordId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted password", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
     //UD
@@ -1360,14 +1420,16 @@ class CrudController {
 		}
 	}
 
-	deleteRoom(roomId) {
+	async deleteRoom(roomId) {
 		if (!this.validateNumeric(roomId)) {
 			return this.buildDefaultResponseObject(false, "Invalid room ID provided", true);
 		}
 
 		var query = this.constructDelete("Room", "roomId");
 		var ret = null;
-		this.client.query(query, [roomId], (err, res) => {
+		
+		
+		/*this.client.query(query, [roomId], (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -1378,7 +1440,24 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [roomId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted room", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
     //UD
 	
@@ -1635,14 +1714,16 @@ class CrudController {
 		}
 	}
 
-	deleteAccessPoints(nfcReaderId) {
+	async deleteAccessPoints(nfcReaderId) {
 		if (!this.validateNumeric(nfcReaderId)) {
 			return this.buildDefaultResponseObject(false, "Invalid NFC Reader ID provided", true);
 		}
 
 		var query = this.constructDelete("NFCAccessPoints", "nfcReaderId");
 		var ret = null;
-		this.client.query(query, [nfcReaderId], (err, res) => {
+		
+		
+		/*this.client.query(query, [nfcReaderId], (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -1653,7 +1734,24 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [nfcReaderId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted Access Point", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
     //UD
@@ -2140,14 +2238,16 @@ class CrudController {
 	}
 
 
-	deleteEmployee(employeeId) {
+	async deleteEmployee(employeeId) {
 		if (!this.validateNumeric(employeeId)) {
 			return this.buildDefaultResponseObject(false, "Invalid employee ID provided", true);
 		}
 
 		var query = this.constructDelete("Employee", "employeeId");
 		var ret = null;
-		this.client.query(query, [employeeId], (err, res) => {
+		
+		
+		/*this.client.query(query, [employeeId], (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -2158,7 +2258,24 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [employeeId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted employee", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
     //UD
@@ -2402,14 +2519,16 @@ class CrudController {
 		}
 	}
 
-	deleteClient(clientId) {
+	async deleteClient(clientId) {
 		if (!this.validateNumeric(clientId)) {
 			return this.buildDefaultResponseObject(false, "Invalid client ID provided", true);
 		}
 
 		var query = this.constructDelete("Client", "clientId");
 		var ret = null;
-		this.client.query(query, [clientId], (err, res) => {
+		
+		
+		/*this.client.query(query, [clientId], (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -2420,7 +2539,24 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [clientId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted client", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
     //UD
@@ -2606,14 +2742,16 @@ class CrudController {
 		}
 	}
 
-	deleteWiFiParams(wifiParamsId) {
+	async deleteWiFiParams(wifiParamsId) {
 		if (!this.validateNumeric(wifiParamsId)) {
 			return this.buildDefaultResponseObject(false, "Invalid WiFi Params ID provided", true);
 		}
 
 		var query = this.constructDelete("WiFiParams", "wifiParamsId");
 		var ret = null;
-		this.client.query(query, [wifiParamsId], (err, res) => {
+		
+		
+		/*this.client.query(query, [wifiParamsId], (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -2624,7 +2762,24 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [wifiParamsId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted WiFi Params", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
     //UD
 	
@@ -2881,14 +3036,16 @@ class CrudController {
 		}
 	}
 
-	deleteTempWifiAccess(tempWifiAccessId) {
+	async deleteTempWifiAccess(tempWifiAccessId) {
 		if (!this.validateNumeric(tempWifiAccessId)) {
 			return this.buildDefaultResponseObject(false, "Invalid Temp Wifi Access ID provided", true);
 		}
 
 		var query = this.constructDelete("TempWifiAccess", "tempWifiAccessId");
 		var ret = null;
-		this.client.query(query, [tempWifiAccessId], (err, res) => {
+		
+		
+		/*this.client.query(query, [tempWifiAccessId], (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -2899,7 +3056,24 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [tempWifiAccessId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted Temp Wifi Access", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
 
 
@@ -3514,14 +3688,16 @@ class CrudController {
 		}
 	}
 
-	deleteVisitorPackage(visitorPackageId) {
+	async deleteVisitorPackage(visitorPackageId) {
 		if (!this.validateNumeric(visitorPackageId)) {
 			return this.buildDefaultResponseObject(false, "Invalid Visitor Package ID provided", true);
 		}
 
 		var query = this.constructDelete("VisitorPackage", "visitorPackageId");
 		var ret = null;
-		this.client.query(query, [visitorPackageId], (err, res) => {
+		
+		
+		/*this.client.query(query, [visitorPackageId], (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -3532,7 +3708,24 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [visitorPackageId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted Visitor Package", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
     //UD
 	
@@ -3659,7 +3852,7 @@ class CrudController {
     
     //NOTE: There is no UPDATE for TPA as you can't update a primary key
 
-	deleteTPA(tpaId) {
+	async deleteTPA(tpaId) {
 		if (!this.validateNumeric(tpaId)) {
 			return this.buildDefaultResponseObject(false, "Invalid TPA ID provided", true);
 		}
@@ -3668,7 +3861,7 @@ class CrudController {
 		var ret = null;
 		
 		
-		this.client.query(query, [tpaId], (err, res) => {
+		/*this.client.query(query, [tpaId], (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -3679,7 +3872,24 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [tpaId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted TPA entry", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
     //UD
 	
@@ -3968,14 +4178,16 @@ class CrudController {
 	
 	
 	//note slightly different to other deletes, see parameter list
-	deleteTPAxRoom(tpaId, roomId) {
+	async deleteTPAxRoom(tpaId, roomId) {
 		if (!this.validateNumeric(tpaId) || !this.validateNumeric(roomId)) {
 			return this.buildDefaultResponseObject(false, "Invalid TPA ID OR Room ID provided", true);
 		}
 
 		var query = "DELETE FROM TPAxRoom WHERE " + tpaId + " = $1 AND " + roomId + " = $2";;
 		var ret = null;
-		this.client.query(query, [tpaId, roomId], (err, res) => {
+		
+		
+		/*this.client.query(query, [tpaId, roomId], (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -3986,7 +4198,24 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [tpaId, roomId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted TPAxRoom entry", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
     //UD
 	
@@ -4166,14 +4395,16 @@ class CrudController {
 		}
 	}
 
-	deleteWallet(linkwalletId) {
+	async deleteWallet(linkwalletId) {
 		if (!this.validateNumeric(linkwalletId)) {
 			return this.buildDefaultResponseObject(false, "Invalid Wallet ID provided", true);
 		}
 
 		var query = this.constructDelete("Wallet", "linkwalletId");
 		var ret = null;
-		this.client.query(query, [linkwalletId], (err, res) => {
+		
+		
+		/*this.client.query(query, [linkwalletId], (err, res) => {
 			if (err) {
 				console.log(err.stack);
 				ret = this.returnDatabaseError(err);
@@ -4184,7 +4415,24 @@ class CrudController {
 				this.client.end();
 				callback(ret);
 			}
-		});
+		});*/
+		
+		
+		
+		let res;
+		try
+		{
+			res = await this.client.query(query, [linkwalletId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted Wallet", true);
+			return ret;
+			
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
 	}
     //UD
 	
@@ -4252,7 +4500,7 @@ class CrudController {
 		}
 
 		query += " WHERE " + idName + " = " + idValue;
-		console.log(query);
+		//console.log(query);
 		return query;
 	}
 

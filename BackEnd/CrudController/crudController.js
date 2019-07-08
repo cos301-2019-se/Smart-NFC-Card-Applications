@@ -72,10 +72,9 @@ class CrudController {
 	*	@param companyName 
 	*	@param companyWebsite 
 	*	@param passwordId 
-	*	@param function(return)
 	*	@return { companyId }
 	*/
-	createCompany(companyName,companyWebsite,passwordId,callback)
+	async createCompany(companyName,companyWebsite,passwordId)
 	{
 		var c = [];
 		var v = [];
@@ -86,34 +85,29 @@ class CrudController {
 					
 		var ret = null;
 		
-		this.client.query(this.constructInsert("Company", "companyId", c, v),
-		v, (err, res) => 
+		let res;
+		try
 		{
-			if (err) 
-			{
-				console.log(err.stack);
-				ret = this.returnDatabaseError(err);
-				//this.client.end();
-				callback(ret);
-			} 
-			else 
-			{
-				ret = this.buildDefaultResponseObject(true, "Successfully added company", false, false);
-				ret.data.companyId = res.rows[0].companyid;
-				//this.client.end();
-				callback(ret);
-			}
-		});		
+			res = await this.client.query(this.constructInsert("Company", "companyId", c, v),v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added company", false, false);
+			ret.data.companyId = res.rows[0].companyid;
+			return ret;
+		}
+		catch(err)
+		{
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}		
 		
 	}
 	
 	/**
 	*	Retrieves a company using companyId
 	*	@param companyId 
-	*	@param function(return)
 	*	@return { companyId, companyName, companyWebsite, passwordId }
 	*/
-	getCompanyByCompanyId(companyId, callback)
+	async getCompanyByCompanyId(companyId)
 	{
 		var query = 'SELECT * FROM Company WHERE companyId = $1';
 		
@@ -151,10 +145,9 @@ class CrudController {
 	/**
 	*	Retrieves a company using passwordId
 	*	@param passwordId 
-	*	@param function(return)
 	*	@return { companyId, companyName, companyWebsite, passwordId }
 	*/
-	getCompanyByPasswordId(passwordId, callback)
+	async getCompanyByPasswordId(passwordId)
 	{
 		var query = 'SELECT * FROM Company WHERE passwordId = $1';
 		
@@ -273,10 +266,10 @@ class CrudController {
 	*	@param branchName 
 	*	@param companyId 
 	*	@param wifiParamsId 
-	*	@param function(return)
+	*
 	*	@return { buildingId }
 	*/
-	createBuilding(latitude,longitude,branchName,companyId,wifiParamsId,callback)
+	async createBuilding(latitude,longitude,branchName,companyId,wifiParamsId)
 	{
 		var c = [];
 		var v = [];
@@ -313,10 +306,10 @@ class CrudController {
 	/**
 	*	Retrieves a building using buildingId
 	*	@param buildingId 
-	*	@param function(return)
+	*
 	*	@return { buildingId, latitude, longitude, branchName, companyId, wifiParamsId }
 	*/
-	getBuildingByBuildingId(buildingId, callback)
+	async getBuildingByBuildingId(buildingId)
 	{
 		var query = 'SELECT * FROM Building WHERE buildingId = $1';
 		
@@ -356,10 +349,10 @@ class CrudController {
 	/**
 	*	Retrieves a set of buildings using companyId
 	*	@param companyId 
-	*	@param function(return)
+	*
 	*	@return [ { buildingId, latitude, longitude, branchName, companyId, wifiParamsId } ]
 	*/
-	getBuildingsByCompanyId(companyId, callback)
+	async getBuildingsByCompanyId(companyId)
 	{
 		var query = 'SELECT * FROM Building WHERE companyId = $1';
 		
@@ -406,10 +399,10 @@ class CrudController {
 		/**
 	*	Retrieves a set of buildings using wifiParamsId
 	*	@param wifiParamsId 
-	*	@param function(return)
+	*
 	*	@return [ { buildingId, latitude, longitude, branchName, companyId, wifiParamsId } ]
 	*/
-	getBuildingsByWifiParamsId(wifiParamsId, callback)
+	async getBuildingsByWifiParamsId(wifiParamsId)
 	{
 		var query = 'SELECT * FROM Building WHERE wifiParamsId = $1';
 		
@@ -522,10 +515,10 @@ class CrudController {
 	*	@param salt 
 	*	@param apiKey 
 	*	@param expirationDate 
-	*	@param function(return)
+	*
 	*	@return { passwordId }
 	*/
-	createPassword(username,hash,salt,apiKey,expirationDate,callback)
+	async createPassword(username,hash,salt,apiKey,expirationDate)
 	{
 		var c = [];
 		var v = [];
@@ -562,10 +555,10 @@ class CrudController {
 	/**
 	*	Retrieves a password using passwordId
 	*	@param passwordId 
-	*	@param function(return)
+	*
 	*	@return { passwordId, username, hash, salt, apiKey, expirationDate }
 	*/
-	getPasswordByPasswordId(passwordId, callback)
+	async getPasswordByPasswordId(passwordId)
 	{
 		var query = 'SELECT * FROM Password WHERE passwordId = $1';
 		
@@ -605,10 +598,10 @@ class CrudController {
 	/**
 	*	Retrieves a password using username
 	*	@param username 
-	*	@param function(return)
+	*
 	*	@return { passwordId, username, hash, salt, apiKey, expirationDate }
 	*/
-	getPasswordByUsername(username, callback)
+	async getPasswordByUsername(username)
 	{
 		var query = 'SELECT * FROM Password WHERE username = $1';
 		
@@ -648,10 +641,10 @@ class CrudController {
 	/**
 	*	Retrieves a password using apiKey
 	*	@param apiKey 
-	*	@param function(return)
+	*
 	*	@return { passwordId, username, hash, salt, apiKey, expirationDate }
 	*/
-	getPasswordByApiKey(apiKey, callback)
+	async getPasswordByApiKey(apiKey)
 	{
 		var query = 'SELECT * FROM Password WHERE apiKey = $1';
 		
@@ -757,10 +750,10 @@ class CrudController {
 	*	@param roomName 
 	*	@param parentRoomList 
 	*	@param buildingId 
-	*	@param function(return)
+	*
 	*	@return { roomId }
 	*/
-	createRoom(roomName,parentRoomList,buildingId,callback)
+	async createRoom(roomName,parentRoomList,buildingId)
 	{
 		var c = [];
 		var v = [];
@@ -795,10 +788,10 @@ class CrudController {
 	/**
 	*	Retrieves a room using roomId
 	*	@param roomId 
-	*	@param function(return)
+	*
 	*	@return { roomId, roomName, parentRoomList, buildingId }
 	*/
-	getRoomByRoomId(roomId, callback)
+	async getRoomByRoomId(roomId)
 	{
 		var query = 'SELECT * FROM Room WHERE roomId = $1';
 		
@@ -836,10 +829,10 @@ class CrudController {
 	/**
 	*	Retrieves a set of rooms using buildingId
 	*	@param buildingId 
-	*	@param function(return)
+	*
 	*	@return [ { roomId, roomName, parentRoomList, buildingId } ]
 	*/
-	getRoomsByBuildingId(buildingId, callback)
+	async getRoomsByBuildingId(buildingId)
 	{
 		var query = 'SELECT * FROM Room WHERE buildingId = $1';
 		
@@ -942,10 +935,10 @@ class CrudController {
 	/**
 	*	Creates a new nfcaccesspoints
 	*	@param roomId 
-	*	@param function(return)
+	*
 	*	@return { nfcReaderId }
 	*/
-	createNFCAccessPoints(roomId,callback)
+	async createNFCAccessPoints(roomId)
 	{
 		var c = [];
 		var v = [];
@@ -978,10 +971,10 @@ class CrudController {
 	/**
 	*	Retrieves a nfcaccesspoints using nfcReaderId
 	*	@param nfcReaderId 
-	*	@param function(return)
+	*
 	*	@return { nfcReaderId, roomId }
 	*/
-	getNFCAccessPointsByNfcReaderId(nfcReaderId, callback)
+	async getNFCAccessPointsByNfcReaderId(nfcReaderId)
 	{
 		var query = 'SELECT * FROM NFCAccessPoints WHERE nfcReaderId = $1';
 		
@@ -1017,10 +1010,10 @@ class CrudController {
 	/**
 	*	Retrieves a set of nfcaccesspointss using roomId
 	*	@param roomId 
-	*	@param function(return)
+	*
 	*	@return [ { nfcReaderId, roomId } ]
 	*/
-	getNFCAccessPointssByRoomId(roomId, callback)
+	async getNFCAccessPointssByRoomId(roomId)
 	{
 		var query = 'SELECT * FROM NFCAccessPoints WHERE roomId = $1';
 		
@@ -1130,10 +1123,10 @@ class CrudController {
 	*	@param companyId 
 	*	@param buildingId 
 	*	@param passwordId 
-	*	@param function(return)
+	*
 	*	@return { employeeId }
 	*/
-	createEmployee(firstName,surname,title,cellphone,email,companyId,buildingId,passwordId,callback)
+	async createEmployee(firstName,surname,title,cellphone,email,companyId,buildingId,passwordId)
 	{
 		var c = [];
 		var v = [];
@@ -1173,10 +1166,10 @@ class CrudController {
 	/**
 	*	Retrieves a employee using employeeId
 	*	@param employeeId 
-	*	@param function(return)
+	*
 	*	@return { employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId }
 	*/
-	getEmployeeByEmployeeId(employeeId, callback)
+	async getEmployeeByEmployeeId(employeeId)
 	{
 		var query = 'SELECT * FROM Employee WHERE employeeId = $1';
 		
@@ -1219,10 +1212,10 @@ class CrudController {
 	/**
 	*	Retrieves a employee using passwordId
 	*	@param passwordId 
-	*	@param function(return)
+	*
 	*	@return { employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId }
 	*/
-	getEmployeeByPasswordId(passwordId, callback)
+	async getEmployeeByPasswordId(passwordId)
 	{
 		var query = 'SELECT * FROM Employee WHERE passwordId = $1';
 		
@@ -1265,10 +1258,10 @@ class CrudController {
 	/**
 	*	Retrieves a set of employees using companyId
 	*	@param companyId 
-	*	@param function(return)
+	*
 	*	@return [ { employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId } ]
 	*/
-	getEmployeesByCompanyId(companyId, callback)
+	async getEmployeesByCompanyId(companyId)
 	{
 		var query = 'SELECT * FROM Employee WHERE companyId = $1';
 		
@@ -1318,10 +1311,10 @@ class CrudController {
 	/**
 	*	Retrieves a set of employees using buildingId
 	*	@param buildingId 
-	*	@param function(return)
+	*
 	*	@return [ { employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId } ]
 	*/
-	getEmployeesByBuildingId(buildingId, callback)
+	async getEmployeesByBuildingId(buildingId)
 	{
 		var query = 'SELECT * FROM Employee WHERE buildingId = $1';
 		
@@ -1446,10 +1439,10 @@ class CrudController {
 	/**
 	*	Creates a new client
 	*	@param macAddress 
-	*	@param function(return)
+	*
 	*	@return { clientId }
 	*/
-	createClient(macAddress,callback)
+	async createClient(macAddress)
 	{
 		var c = [];
 		var v = [];
@@ -1482,10 +1475,10 @@ class CrudController {
 	/**
 	*	Retrieves a client using clientId
 	*	@param clientId 
-	*	@param function(return)
+	*
 	*	@return { clientId, macAddress }
 	*/
-	getClientByClientId(clientId, callback)
+	async getClientByClientId(clientId)
 	{
 		var query = 'SELECT * FROM Client WHERE clientId = $1';
 		
@@ -1521,10 +1514,10 @@ class CrudController {
 	/**
 	*	Retrieves a client using macAddress
 	*	@param macAddress 
-	*	@param function(return)
+	*
 	*	@return { clientId, macAddress }
 	*/
-	getClientByMacAddress(macAddress, callback)
+	async getClientByMacAddress(macAddress)
 	{
 		var query = 'SELECT * FROM Client WHERE macAddress = $1';
 		
@@ -1621,10 +1614,10 @@ class CrudController {
 	*	@param ssid 
 	*	@param networkType 
 	*	@param password 
-	*	@param function(return)
+	*
 	*	@return { wifiParamsId }
 	*/
-	createWiFiParams(ssid,networkType,password,callback)
+	async createWiFiParams(ssid,networkType,password)
 	{
 		var c = [];
 		var v = [];
@@ -1659,10 +1652,10 @@ class CrudController {
 	/**
 	*	Retrieves a wifiparams using wifiParamsId
 	*	@param wifiParamsId 
-	*	@param function(return)
+	*
 	*	@return { wifiParamsId, ssid, networkType, password }
 	*/
-	getWiFiParamsByWifiParamsId(wifiParamsId, callback)
+	async getWiFiParamsByWifiParamsId(wifiParamsId)
 	{
 		var query = 'SELECT * FROM WiFiParams WHERE wifiParamsId = $1';
 		
@@ -1758,10 +1751,10 @@ class CrudController {
 	/**
 	*	Creates a new tempwifiaccess
 	*	@param wifiParamsId 
-	*	@param function(return)
+	*
 	*	@return { tempWifiAccessId }
 	*/
-	createTempWifiAccess(wifiParamsId,callback)
+	async createTempWifiAccess(wifiParamsId)
 	{
 		var c = [];
 		var v = [];
@@ -1794,10 +1787,10 @@ class CrudController {
 	/**
 	*	Retrieves a tempwifiaccess using tempWifiAccessId
 	*	@param tempWifiAccessId 
-	*	@param function(return)
+	*
 	*	@return { tempWifiAccessId, wifiParamsId }
 	*/
-	getTempWifiAccessByTempWifiAccessId(tempWifiAccessId, callback)
+	async getTempWifiAccessByTempWifiAccessId(tempWifiAccessId)
 	{
 		var query = 'SELECT * FROM TempWifiAccess WHERE tempWifiAccessId = $1';
 		
@@ -1833,10 +1826,10 @@ class CrudController {
 	/**
 	*	Retrieves a set of tempwifiaccesss using wifiParamsId
 	*	@param wifiParamsId 
-	*	@param function(return)
+	*
 	*	@return [ { tempWifiAccessId, wifiParamsId } ]
 	*/
-	getTempWifiAccesssByWifiParamsId(wifiParamsId, callback)
+	async getTempWifiAccesssByWifiParamsId(wifiParamsId)
 	{
 		var query = 'SELECT * FROM TempWifiAccess WHERE wifiParamsId = $1';
 		
@@ -1946,10 +1939,10 @@ class CrudController {
 	*	@param clientId 
 	*	@param startTime 
 	*	@param endTime 
-	*	@param function(return)
+	*
 	*	@return { visitorPackageId }
 	*/
-	createVisitorPackage(tempWifiAccessId,tpaId,linkWalletId,employeeId,clientId,startTime,endTime,callback)
+	async createVisitorPackage(tempWifiAccessId,tpaId,linkWalletId,employeeId,clientId,startTime,endTime)
 	{
 		var c = [];
 		var v = [];
@@ -1988,10 +1981,10 @@ class CrudController {
 	/**
 	*	Retrieves a visitorpackage using visitorPackageId
 	*	@param visitorPackageId 
-	*	@param function(return)
+	*
 	*	@return { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime }
 	*/
-	getVisitorPackageByVisitorPackageId(visitorPackageId, callback)
+	async getVisitorPackageByVisitorPackageId(visitorPackageId)
 	{
 		var query = 'SELECT * FROM VisitorPackage WHERE visitorPackageId = $1';
 		
@@ -2033,10 +2026,10 @@ class CrudController {
 	/**
 	*	Retrieves a visitorpackage using tempWifiAccessId
 	*	@param tempWifiAccessId 
-	*	@param function(return)
+	*
 	*	@return { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime }
 	*/
-	getVisitorPackageByTempWifiAccessId(tempWifiAccessId, callback)
+	async getVisitorPackageByTempWifiAccessId(tempWifiAccessId)
 	{
 		var query = 'SELECT * FROM VisitorPackage WHERE tempWifiAccessId = $1';
 		
@@ -2078,10 +2071,10 @@ class CrudController {
 	/**
 	*	Retrieves a visitorpackage using tpaId
 	*	@param tpaId 
-	*	@param function(return)
+	*
 	*	@return { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime }
 	*/
-	getVisitorPackageByTpaId(tpaId, callback)
+	async getVisitorPackageByTpaId(tpaId)
 	{
 		var query = 'SELECT * FROM VisitorPackage WHERE tpaId = $1';
 		
@@ -2123,10 +2116,10 @@ class CrudController {
 	/**
 	*	Retrieves a visitorpackage using linkWalletId
 	*	@param linkWalletId 
-	*	@param function(return)
+	*
 	*	@return { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime }
 	*/
-	getVisitorPackageByLinkWalletId(linkWalletId, callback)
+	async getVisitorPackageByLinkWalletId(linkWalletId)
 	{
 		var query = 'SELECT * FROM VisitorPackage WHERE linkWalletId = $1';
 		
@@ -2168,10 +2161,10 @@ class CrudController {
 	/**
 	*	Retrieves a set of visitorpackages using employeeId
 	*	@param employeeId 
-	*	@param function(return)
+	*
 	*	@return [ { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime } ]
 	*/
-	getVisitorPackagesByEmployeeId(employeeId, callback)
+	async getVisitorPackagesByEmployeeId(employeeId)
 	{
 		var query = 'SELECT * FROM VisitorPackage WHERE employeeId = $1';
 		
@@ -2220,10 +2213,10 @@ class CrudController {
 	/**
 	*	Retrieves a set of visitorpackages using clientId
 	*	@param clientId 
-	*	@param function(return)
+	*
 	*	@return [ { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime } ]
 	*/
-	getVisitorPackagesByClientId(clientId, callback)
+	async getVisitorPackagesByClientId(clientId)
 	{
 		var query = 'SELECT * FROM VisitorPackage WHERE clientId = $1';
 		
@@ -2328,10 +2321,10 @@ class CrudController {
 	
 	/**
 	*	Creates a new tpa
-	*	@param function(return)
+	*
 	*	@return { tpaId }
 	*/
-	createTPA(callback)
+	async createTPA()
 	{
 		var c = [];
 		var v = [];
@@ -2365,10 +2358,10 @@ class CrudController {
 	/**
 	*	Retrieves a tpa using tpaId
 	*	@param tpaId 
-	*	@param function(return)
+	*
 	*	@return { tpaId }
 	*/
-	getTPAByTpaId(tpaId, callback)
+	async getTPAByTpaId(tpaId)
 	{
 		var query = 'SELECT * FROM TPA WHERE tpaId = $1';
 		
@@ -2435,10 +2428,10 @@ class CrudController {
 	*	Creates a new tpaxroom
 	*	@param tpaId 
 	*	@param roomId 
-	*	@param function(return)
+	*
 	*	@return { tpaId }
 	*/
-	createTPAxRoom(tpaId,roomId,callback)
+	async createTPAxRoom(tpaId,roomId)
 	{
 		var c = [];
 		var v = [];
@@ -2474,10 +2467,10 @@ class CrudController {
 	/**
 	*	Retrieves a set tpaxrooms using tpaId
 	*	@param tpaId 
-	*	@param function(return)
+	*
 	*	@return [ { tpaId, roomId } ]
 	*/
-	getTPAxRoomsByTpaId(tpaId, callback)
+	async getTPAxRoomsByTpaId(tpaId)
 	{
 		var query = 'SELECT * FROM TPAxRoom WHERE tpaId = $1';
 		
@@ -2520,10 +2513,10 @@ class CrudController {
 	/**
 	*	Retrieves a set tpaxrooms using roomId
 	*	@param roomId 
-	*	@param function(return)
+	*
 	*	@return [ { tpaId, roomId } ]
 	*/
-	getTPAxRoomsByRoomId(roomId, callback)
+	async getTPAxRoomsByRoomId(roomId)
 	{
 		var query = 'SELECT * FROM TPAxRoom WHERE roomId = $1';
 		
@@ -2638,10 +2631,10 @@ class CrudController {
 	*	Creates a new wallet
 	*	@param maxLimit 
 	*	@param spent 
-	*	@param function(return)
+	*
 	*	@return { linkWalletId }
 	*/
-	createWallet(maxLimit,spent,callback)
+	async createWallet(maxLimit,spent)
 	{
 		var c = [];
 		var v = [];
@@ -2675,10 +2668,10 @@ class CrudController {
 	/**
 	*	Retrieves a wallet using linkWalletId
 	*	@param linkWalletId 
-	*	@param function(return)
+	*
 	*	@return { linkWalletId, maxLimit, spent }
 	*/
-	getWalletByLinkWalletId(linkWalletId, callback)
+	async getWalletByLinkWalletId(linkWalletId)
 	{
 		var query = 'SELECT * FROM Wallet WHERE linkWalletId = $1';
 		

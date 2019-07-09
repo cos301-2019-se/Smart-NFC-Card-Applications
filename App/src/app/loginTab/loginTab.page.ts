@@ -46,7 +46,6 @@ export class LoginTabPage implements OnInit {
   username: string = '';
   password: string = '';
   apiKeyName: string = 'apiKey';
-  apiKey: string = null;
   title: string = 'Login';
   loggedIn: boolean = false;
   isBusy: boolean = false;
@@ -72,12 +71,7 @@ export class LoginTabPage implements OnInit {
    */
   ngOnInit() {
     this.resetMessages();
-    this.storage.Load(this.apiKeyName)
-    .then((key) => {
-      this.apiKey = key;
-      this.checkLoggedIn();
-    })
-    .catch();       
+    this.checkLoggedIn();    
     this.eventEmitterService.subscriptions.push(
       this.eventEmitterService.invokeMenuButtonEvent.subscribe(functionName => {    
           this.menuEvent(functionName);
@@ -118,7 +112,7 @@ export class LoginTabPage implements OnInit {
         this.loggedIn = true;
         let apiKey = res['data']['apiKey'];
         this.storage.Save(this.apiKeyName, apiKey);
-        this.req.getBusinessCard(res['data']['id'], apiKey).subscribe(response => {
+        this.req.getBusinessCard(res['data']['id']).subscribe(response => {
           let cardDetails = response['data'];
           this.cardService.setOwnBusinessCard(cardDetails);
           this.updateTitle();
@@ -137,11 +131,10 @@ export class LoginTabPage implements OnInit {
    */
   logout(){
     this.resetMessages();
-    let res = this.req.logout(this.apiKey);
+    let res = this.req.logout();
     if (res['success'] === true) {
       this.showSuccess(res['message'], this.messageTimeout);
       this.loggedIn = false;
-      this.storage.Save(this.apiKeyName, '');
       this.updateTitle();
     }
     else {

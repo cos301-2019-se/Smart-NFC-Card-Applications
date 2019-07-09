@@ -21,11 +21,17 @@ import { TestBed } from '@angular/core/testing';
 import { RequestModuleService } from './request-module.service';
 import { HttpClientModule } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { LocalStorageService } from './local-storage.service';
+import { IonicStorageModule } from '@ionic/storage';
 
 describe('RequestModuleService', () => {
   beforeEach(() => TestBed.configureTestingModule({
     imports: [
-      HttpClientModule
+      HttpClientModule,
+      IonicStorageModule.forRoot()
+    ],
+    providers: [
+      LocalStorageService
     ]
   }));
 
@@ -46,11 +52,10 @@ describe('RequestModuleService', () => {
   it('checkLoggedIn should return true if apiKey was the same as the loginStub', (done) => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = true;
-    service.login("", "").subscribe(res => {
-      service.checkLoggedIn(res['data']['apiKey']).subscribe(data => {
-        expect(data).toBe(service.loginStub);
-        done();
-      });
+    service.apiKey = service.loginStub['data']['apiKey'];
+    service.checkLoggedIn().subscribe(data => {
+      expect(data).toBe(service.loginStub);
+      done();
     });
   });
 
@@ -58,9 +63,11 @@ describe('RequestModuleService', () => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = true;
     service.login("", "").subscribe(res => {
-      service.checkLoggedIn("wrong").subscribe(data => {
-        expect(data).toBe(service.logoutStub);
-        done();
+      service.logout().subscribe(data => {
+        service.checkLoggedIn().subscribe(data => {
+          expect(data).toBe(service.logoutStub);
+          done();
+        });
       });
     });
   });
@@ -68,7 +75,7 @@ describe('RequestModuleService', () => {
   it('logout should return stub data while in demo mode', (done) => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = true;
-    service.logout("").subscribe(data => {
+    service.logout().subscribe(data => {
       expect(data).toBe(service.logoutStub);
       done();
     });
@@ -77,7 +84,7 @@ describe('RequestModuleService', () => {
   it('getBusinessCard should return stub data while in demo mode', (done) => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = true;
-    service.getBusinessCard(0, service.loginStub["data"]["apiKey"]).subscribe(data => {
+    service.getBusinessCard(0).subscribe(data => {
       expect(data).toBe(service.businessCardStub);
       done();
     });

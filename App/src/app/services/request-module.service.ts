@@ -11,6 +11,7 @@
 *	-----------------------------------------------------------------------------------------
 *	2019/05/19	Wian		  1.0		    Original
 *	2019/06/27	Wian		  1.1		    Added Functions for Creating Visitor Packages
+*	2019/07/09	Wian		  1.2		    Service now automatcially adds api key to the json body using appendApiKey()
 *
 *	Functional Description:   This class provides a request service to the application that
 *                           is used to make http requests to the back-end
@@ -22,12 +23,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { LocalStorageService } from './local-storage.service';
 
 /**
 * Purpose:	This class provides the injectable service
 *	Usage:		This class can be used to make http requests to the back-end by calling its public function
 *	@author:	Wian du Plooy
-*	@version:	1.1
+*	@version:	1.2
 */
 @Injectable({
   providedIn: 'root'
@@ -35,6 +37,9 @@ import { Observable } from 'rxjs';
 export class RequestModuleService {
 
   demoMode: boolean = true;
+  apiKeyName: string = 'apiKey';
+  apiKey: string = '';
+
   baseUrl: string = "https://smart-nfc-application.herokuapp.com";
   loginStub: JSON = JSON.parse(`{
     "success": true,
@@ -73,10 +78,18 @@ export class RequestModuleService {
   /**
    * Constructor that takes all injectables
    * @param http HttpClient injectable
+   * @param storage LocalStorageService injectable
    */
   constructor(
+    private storage: LocalStorageService,
     private http: HttpClient
-  ) { }
+  ) { 
+    this.storage.Load(this.apiKeyName)
+    .then((key) => {
+      this.apiKey = key;
+    })
+    .catch();   
+  }
 
   /**
    * Makes a get request using http
@@ -93,8 +106,27 @@ export class RequestModuleService {
    * @param body JSON data to send
    * @return Observable response from post request
    */
-  private post(url: string, body: JSON) {
+  private post(url: string, body?: JSON) {
+    body = this.appendApiKey(body);
     return this.http.post(url, body);
+  }
+
+  /**
+   * Function appends the api key to a json object
+   * @param json JSON to append the api key to 
+   */
+  private appendApiKey(json?: JSON){
+    if (json == undefined || json == null) {
+      json = JSON.parse('{}');
+    }
+    if (this.apiKey == null || this.apiKey == '') {
+      this.storage.Load(this.apiKeyName)
+      .then((key) => {
+        this.apiKey = key;
+      })
+    }
+    json[this.apiKeyName] = this.apiKey;
+    return json;
   }
 
   /**
@@ -105,6 +137,7 @@ export class RequestModuleService {
    */
   login(username: string, password: string) {
     if(this.demoMode) {
+      this.apiKey = this.loginStub['data']['apiKey'];
       return new Observable<Object>(observer => {
         observer.next(this.loginStub);
         observer.complete();
@@ -118,10 +151,11 @@ export class RequestModuleService {
 
   /**
    * Function to logout a user
-   * @param api string stored api of the user
    * @return Observable<Object> response containing json from back-end server
    */
-  logout(api: string) {
+  logout() {
+    this.storage.Save(this.apiKeyName, '');
+    this.apiKey = '';
     if(this.demoMode) {
       return new Observable<Object>(observer => {
         observer.next(this.logoutStub);
@@ -129,18 +163,17 @@ export class RequestModuleService {
       });
     }
     else {
-      return this.post(`${this.baseUrl}/app/logout`, JSON.parse(`{apiKey: ${api}}`));
+      return this.post(`${this.baseUrl}/app/logout`);
     }
   }
 
   /**
    * Function to check if user is logged in
-   * @param api string stored api of the user
    * @return Observable<Object> response containing json from back-end server
    */
-  checkLoggedIn(api: string) {
+  checkLoggedIn() {
     if(this.demoMode) {
-      if(this.loginStub['data']['apiKey'] == api){
+      if(this.loginStub['data']['apiKey'] == this.apiKey){
         return new Observable<Object>(observer => {
           observer.next(this.loginStub);
           observer.complete();
@@ -154,17 +187,16 @@ export class RequestModuleService {
       }
     }
     else {
-      return this.post(`${this.baseUrl}/app/checkLoggedIn`, JSON.parse(`{apiKey: ${api}}`));
+      return this.post(`${this.baseUrl}/app/checkLoggedIn`);
     }
   }
 
   /**
    * Function to get business card data
    * @param employeeId number Employee's id to get his business card
-   * @param apiKey string API Key to authenticate request
    * @return Observable<Object> response containing json from back-end server
    */
-  getBusinessCard(employeeId: number, apiKey: string) {
+  getBusinessCard(employeeId: number) {
     if(this.demoMode) {
       return new Observable<Object>(observer => {
         observer.next(this.businessCardStub);
@@ -172,7 +204,7 @@ export class RequestModuleService {
       });
     }
     else {
-      let json: JSON = JSON.parse(`{ "employeeId": ${employeeId}, "apiKey": "${apiKey}" }`);
+      let json: JSON = JSON.parse(`{ "employeeId": ${employeeId} }`);
       return this.post(`${this.baseUrl}/app/getBusinessCard`, json);
     }
   }

@@ -25,6 +25,8 @@
  */
 
 const http = require('http');
+const path = require('path');
+const fs = require("fs");
 const port=process.env.PORT || 3000;
 
 /**
@@ -62,12 +64,57 @@ function run(callback) {
 				adminLogic.handle();
 				break;
 
+			case "/":
+				res.statusCode = 200;
+				res.setHeader('Content-Type', 'text/html');
+				fs.readFile("./../AdminInterface/index.html", (err,fileContent) =>
+				{
+					res.end(fileContent);
+				});
+				break;
+
+			case "Css":
+				console.log(req.url);
+				res.statusCode = 200;
+				res.setHeader('Content-Type', 'text/css');
+				fs.readFile("./../AdminInterface"+req.url, (err,fileContent) =>
+				{
+					res.end(fileContent);
+				});
+				break;
+
+			case "Js":
+				console.log(req.url);
+				res.statusCode = 200;
+				res.setHeader('Content-Type', 'text/javascript');
+				fs.readFile("./../AdminInterface"+req.url, (err,fileContent) =>
+				{
+					res.end(fileContent);
+				});
+				break;
+
+			case "Image":
+				console.log(req.url);
+				res.statusCode = 200;
+				if(req.url.match("jpe") || req.url.match("jpeg") || req.url.match("jpg")){
+					res.setHeader('Content-Type', 'image/jpeg');
+				}
+				else if(req.url.match("png")){
+					res.setHeader('Content-Type', 'image/png');
+				}
+				fs.readFile("./../AdminInterface"+req.url, (err,fileContent) =>
+				{
+					res.end(fileContent);
+				});
+				break;
+
+
 			default:
 
 				var responseObject = new Object();
 				var json = null;
 				responseObject.success = false;
-				responseObject.message = "Invalid Endpoint";
+				responseObject.message = "Invalid Endpoint "+ req.url;
 				responseObject.data = {};
 				json = JSON.stringify(responseObject);
 

@@ -26,6 +26,7 @@ import { NfcControllerService } from './services/nfc-controller.service';
 import { LocationService } from './services/location.service';
 import { EventEmitterService } from './services/event-emitter.service';
 import { FilterService } from './services/filter.service';
+import { LoggedInService } from './services/logged-in.service';
 
 @NgModule({
   declarations: [
@@ -59,6 +60,7 @@ import { FilterService } from './services/filter.service';
     ModalController,
     Device,
     FilterService,
+    LoggedInService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

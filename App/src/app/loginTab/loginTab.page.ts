@@ -27,6 +27,7 @@ import { Observable } from 'rxjs';
 import { ModalController } from '@ionic/angular';
 import { CreateVisitorPackagePage } from '../create-visitor-package/create-visitor-package.page';
 import { EventEmitterService } from '../services/event-emitter.service';   
+import { LoggedInService } from '../services/logged-in.service';
 
 /**
 * Purpose:	This class provides the login tab component
@@ -63,7 +64,8 @@ export class LoginTabPage implements OnInit {
     private req: RequestModuleService,
     private storage: LocalStorageService,
     private modalController: ModalController,
-    private eventEmitterService: EventEmitterService   
+    private eventEmitterService: EventEmitterService,
+    private loginService: LoggedInService
   ) { }
 
   /**
@@ -88,9 +90,11 @@ export class LoginTabPage implements OnInit {
 
   menuEvent(functionName: string) {
     switch(functionName) {
-      case 'Login': this.login()
+      case 'Login': this.login();
         break;
-      case 'Create Visitor Package': this.openCreateVisitorPackageModal()
+      case 'Create Visitor Package': this.openCreateVisitorPackageModal();
+        break;
+      case 'Logout': this.logout();
         break;
     }
   }
@@ -109,6 +113,7 @@ export class LoginTabPage implements OnInit {
       if (res['success'] === true) {
         this.username = "";
         this.password = "";
+        this.loginService.SetLoggedIn(true);
         this.loggedIn = true;
         let apiKey = res['data']['apiKey'];
         this.storage.Save(this.apiKeyName, apiKey);
@@ -134,6 +139,7 @@ export class LoginTabPage implements OnInit {
     let res = this.req.logout();
     if (res['success'] === true) {
       this.showSuccess(res['message'], this.messageTimeout);
+      this.loginService.SetLoggedIn(false);
       this.loggedIn = false;
       this.updateTitle();
     }
@@ -146,6 +152,7 @@ export class LoginTabPage implements OnInit {
    * Function that checks if the user is already logged in when the app starts
    */
   private checkLoggedIn() {
+    this.loginService.SetLoggedIn(false);
     this.loggedIn = false;
     /*if(this.apiKey === null || this.apiKey == '') {
       this.loggedIn = false;
@@ -166,7 +173,7 @@ export class LoginTabPage implements OnInit {
    * Function that checks what the title of the component should be
    */
   private updateTitle() {
-    if(this.loggedIn === true) {
+    if(this.loginService.IsLoggedIn() === true) {
       this.title = 'Menu';
     }
     else {

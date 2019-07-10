@@ -41,8 +41,8 @@ export class BusinessCardsService {
   cardListKey: string = "business-cards";
   stub = {
     businessCardId: '0_0',
-    companyName: 'EPI-USE',
-    employeeName: 'Mvuyisi Scheepers',
+    companyName: 'Company Name',
+    employeeName: 'Employee Name',
     contactNumber: '000 000 0000',
     email: 'email@gmail.com',
     website: 'http://website.co.za',

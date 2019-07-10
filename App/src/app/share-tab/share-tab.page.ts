@@ -1,9 +1,9 @@
 /**
-*	File Name:	    tab2.page.ts
+*	File Name:	    share-tab.page.ts
 *	Project:		    Smart-NFC-Application
 *	Orginization:	  VastExpanse
 *	Copyright:	    © Copyright 2019 University of Pretoria
-*	Classes:	      Tab2Page
+*	Classes:	      ShareTabPage
 *	Related documents:	None
 *
 *	Update History:
@@ -33,11 +33,11 @@ import { EventEmitterService } from '../services/event-emitter.service';
 *	@version:	1.0
 */
 @Component({
-  selector: 'app-tab2',
-  templateUrl: 'tab2.page.html',
-  styleUrls: ['tab2.page.scss']
+  selector: 'app-share-tab',
+  templateUrl: 'share-tab.page.html',
+  styleUrls: ['share-tab.page.scss']
 })
-export class Tab2Page implements OnInit{
+export class ShareTabPage implements OnInit{
 
   card: BusinessCard;
   error_message: string;

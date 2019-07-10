@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LoginTabPage } from './loginTab.page';
+import { ManageTabPage } from './manage-tab.page';
 
 import { IonicStorageModule } from '@ionic/storage';
 import { HttpClientModule } from '@angular/common/http';
@@ -11,13 +11,13 @@ import { LocalStorageService } from '../services/local-storage.service';
 import { RequestModuleService } from '../services/request-module.service';
 import { ModalController, AngularDelegate } from '@ionic/angular';
 
-describe('LoginTabPage', () => {
-  let component: LoginTabPage;
-  let fixture: ComponentFixture<LoginTabPage>;
+describe('ManageTabPage', () => {
+  let component: ManageTabPage;
+  let fixture: ComponentFixture<ManageTabPage>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [LoginTabPage],
+      declarations: [ManageTabPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [
         HttpClientModule,
@@ -33,7 +33,7 @@ describe('LoginTabPage', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LoginTabPage);
+    fixture = TestBed.createComponent(ManageTabPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

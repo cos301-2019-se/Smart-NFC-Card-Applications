@@ -191,6 +191,7 @@ export class CreateVisitorPackagePage implements OnInit {
       }
       let visitorPackage: VisitorPackage = this.packageService.createVisitorPackage(id, 'Temp Comp Name', startTime, endTime, this.rooms[roomId]['name'], 
         this.buildingLocation, ssid, password, type, limit, 0);
+      this.packageService.addSharedVisitorPackage(visitorPackage);
       this.shareVisitorPackage(visitorPackage);
     });
   }

@@ -1,9 +1,9 @@
 /**
-*	File Name:	    loginTab.page.ts
+*	File Name:	    manage-tab.page.ts
 *	Project:		    Smart-NFC-Application
 *	Orginization:	  VastExpanse
 *	Copyright:	    © Copyright 2019 University of Pretoria
-*	Classes:	      LoginTabPage
+*	Classes:	      ManageTabPage
 *	Related documents:	None
 *
 *	Update History:
@@ -28,6 +28,9 @@ import { ModalController } from '@ionic/angular';
 import { CreateVisitorPackagePage } from '../create-visitor-package/create-visitor-package.page';
 import { EventEmitterService } from '../services/event-emitter.service';   
 import { LoggedInService } from '../services/logged-in.service';
+import { VisitorPackage } from '../models/visitor-package.model';
+import { FilterService } from '../services/filter.service';
+import { VisitorPackagesService } from '../services/visitor-packages.service';
 
 /**
 * Purpose:	This class provides the login tab component
@@ -36,11 +39,11 @@ import { LoggedInService } from '../services/logged-in.service';
 *	@version:	1.0
 */
 @Component({
-  selector: 'app-loginTab',
-  templateUrl: 'loginTab.page.html',
-  styleUrls: ['loginTab.page.scss'],
+  selector: 'app-manage-tab',
+  templateUrl: 'manage-tab.page.html',
+  styleUrls: ['manage-tab.page.scss'],
 })
-export class LoginTabPage implements OnInit {
+export class ManageTabPage implements OnInit {
 
   success: string;
   error: string;
@@ -51,6 +54,7 @@ export class LoginTabPage implements OnInit {
   loggedIn: boolean = false;
   isBusy: boolean = false;
   messageTimeout: number = 4000;
+  packages: VisitorPackage[] = [];
 
   /**
    * Constructor that takes all injectables
@@ -58,6 +62,10 @@ export class LoginTabPage implements OnInit {
    * @param req RequestModuleService injectable
    * @param storage LocalStorageService injectable
    * @param modalController ModalController injectable
+   * @param eventEmitterService EventEmitterService injectable
+   * @param loginService LoggedInService injectable
+   * @param filterService FilterService injectable
+   * @param packageService: VisitorPackagesService injectable
    */
   constructor(
     private cardService: BusinessCardsService,
@@ -65,7 +73,9 @@ export class LoginTabPage implements OnInit {
     private storage: LocalStorageService,
     private modalController: ModalController,
     private eventEmitterService: EventEmitterService,
-    private loginService: LoggedInService
+    private loginService: LoggedInService,
+    private filterService: FilterService,
+    private packageService: VisitorPackagesService
   ) { }
 
   /**
@@ -79,6 +89,7 @@ export class LoginTabPage implements OnInit {
           this.menuEvent(functionName);
         })
     );    
+    this.loadPackages();
   }
 
   /**
@@ -228,5 +239,42 @@ export class LoginTabPage implements OnInit {
       animated: true
     });  
     return await modal.present();  
+  }
+
+  /**
+   * Function that loads the visitor packages from the service or sets it to empty if it doesn't exist
+   */
+  loadPackages(){
+    // Get cards
+    this.packageService.getSharedVisitorPackages().then((val) => {      
+      this.packages = val;
+      // If it is null, set it as an empty array
+      if (this.packages == null) {
+        this.packages = []
+        this.packageService.setSharedVisitorPackages([]);
+      }
+      // Setup the toggle booleans
+      //this.setupToggles();
+    });
+  }
+
+  /**
+   * Function that formats the date for display
+   * @param date any string or date object
+   */
+  displayDate(date){
+    date = new Date(date);
+    let day = date.getDate();
+    if (day < 10) {
+      day = '0' + day.toString();
+    }
+    let month = date.getMonth() + 1;
+    if (month < 10) {
+      month = '0' + month.toString();
+    }
+    let year = date.getFullYear();
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    return `${year}/${month}/${day} ${hours}:${minutes}`;
   }
 }

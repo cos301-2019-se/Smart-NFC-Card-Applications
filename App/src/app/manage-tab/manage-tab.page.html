@@ -1,0 +1,69 @@
+<ion-content *ngIf='!loggedIn' padding>
+  <ion-progress-bar *ngIf='isBusy' type="indeterminate"></ion-progress-bar>  
+  <ion-item *ngIf='success' color='success'>
+    <ion-label text-wrap>
+      {{ success }}
+    </ion-label>
+  </ion-item>
+  <ion-item *ngIf='error' color='danger'>
+    <ion-label text-wrap>
+      {{ error }}
+    </ion-label>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Username/Email</ion-label>
+    <ion-input [(ngModel)]='username'></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">Password</ion-label>
+    <ion-input type='password' [(ngModel)]='password'></ion-input>
+  </ion-item>
+  <br>
+  <ion-button expand="block" fill="outline" (click)='login()'>Login</ion-button>
+</ion-content>
+
+<ion-content *ngIf='loggedIn' padding>  
+  <ion-item *ngIf='success' color='success'>
+    <ion-label>
+      {{ success }}
+    </ion-label>
+  </ion-item>
+  <ion-item *ngIf='error' color='danger'>
+    <ion-label>
+      {{ error }}
+    </ion-label>
+  </ion-item>
+    
+  <ion-item color='secondary' *ngIf='packages.length == 0'>
+    <ion-label text-wrap> You have not shared visitor packages with anyone yet. </ion-label>
+  </ion-item>
+
+  <ion-list>
+    <ion-card *ngFor="let package of packages | filter: 'companyName': filterService.getFilter()">
+        <ion-card-header>
+          <ion-icon class="trash" name="trash" (click)='removeVisitorPackage(package.packageId)'></ion-icon>
+          <ion-title>{{ package.companyName }}</ion-title>
+        </ion-card-header>     
+        <ion-card-content>
+          <ion-item>
+            <ion-label><ion-icon name="time"></ion-icon> From: {{ displayDate(package.startDate) }}</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label><ion-icon name="time"></ion-icon> To: {{ displayDate(package.endDate) }}</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label><ion-icon name="home"></ion-icon> {{ package.access }}</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label><ion-icon name="pin"></ion-icon>&nbsp;<a (click)="navigate(package.location)">{{ package.location.getLabel() }}</a></ion-label>
+          </ion-item>
+          <ion-item *ngIf='package.spendingLimit !== null'>
+            <ion-label><ion-icon name="card"></ion-icon> Virtual Wallet: {{ package.amountSpent }} / {{ package.spendingLimit }}</ion-label>
+          </ion-item>
+          <ion-item *ngIf='package.wifiSsid !== null'>
+            <ion-button expand="block" fill="outline" (click)='connectToWiFi(package.wifiSsid, package.wifiPassword, package.wifiType)'>Connect To WiFi</ion-button>
+          </ion-item>
+        </ion-card-content>
+    </ion-card>
+  </ion-list>
+</ion-content>

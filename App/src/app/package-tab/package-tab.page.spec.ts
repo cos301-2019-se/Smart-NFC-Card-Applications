@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Tab2Page } from './tab2.page';
+import { PackageTabPage } from './package-tab.page';
 
 import { NFC, Ndef } from '@ionic-native/nfc/ngx';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
@@ -10,19 +10,23 @@ import { NfcControllerService } from '../services/nfc-controller.service';
 import { IonicStorageModule } from '@ionic/storage';
 import { BusinessCardsService } from '../services/business-cards.service';
 import { LocalStorageService } from '../services/local-storage.service';
+import { LocationService } from '../services/location.service';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
+import { Device } from '@ionic-native/device/ngx';
+import { SharedModule } from '../shared.module';
 
-describe('Tab2Page', () => {
-  let component: Tab2Page;
-  let fixture: ComponentFixture<Tab2Page>;
+describe('PackageTabPage', () => {
+  let component: PackageTabPage;
+  let fixture: ComponentFixture<PackageTabPage>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [Tab2Page],
+      declarations: [PackageTabPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [
-        IonicStorageModule.forRoot()
+        IonicStorageModule.forRoot(),
+        SharedModule       
       ],
       providers: [
         AndroidPermissions,
@@ -30,14 +34,16 @@ describe('Tab2Page', () => {
         BusinessCardsService,
         NfcControllerService,
         NFC, Ndef,
+        LocationService,
         Geolocation,
-        LaunchNavigator
+        LaunchNavigator,
+        Device
       ]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(Tab2Page);
+    fixture = TestBed.createComponent(PackageTabPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

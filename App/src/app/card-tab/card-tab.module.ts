@@ -3,7 +3,7 @@ import { RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Tab3Page } from './tab3.page';
+import { CardTabPage } from './card-tab.page';
 import { SharedModule } from '../shared.module';
 
 @NgModule({
@@ -11,11 +11,11 @@ import { SharedModule } from '../shared.module';
     IonicModule,
     CommonModule,
     FormsModule,
-    RouterModule.forChild([{ path: '', component: Tab3Page }]),
+    RouterModule.forChild([{ path: '', component: CardTabPage }]),
     SharedModule
   ],
   declarations: [
-    Tab3Page
+    CardTabPage
   ]
 })
-export class Tab3PageModule {}
+export class CardTabPageModule {}

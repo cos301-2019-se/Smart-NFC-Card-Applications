@@ -38,6 +38,8 @@ export class VisitorPackagesService {
   ) { }
 
   packageListKey: string = "visitor-packages";
+  sharedListKey: string = "shared-visitor-packages";
+
   stub = {
     packageId: 0,
     companyName: 'Company Name',
@@ -84,6 +86,60 @@ export class VisitorPackagesService {
   }
 
   /**
+   * Function that adds a visitor package to the list of shared packages
+   * @param visitorPackage VisitorPackage to be added
+   */
+  addSharedVisitorPackage(visitorPackage: VisitorPackage) {
+    return this.getSharedVisitorPackages().then((packages) => {
+      let index = packages.findIndex(item => item.packageId == visitorPackage.packageId);
+      if (index > -1) {
+        packages[index] = visitorPackage
+      }
+      else {
+        packages.unshift(visitorPackage);
+      }
+      this.setSharedVisitorPackages(packages);
+    });
+  }
+
+  /**
+   * Function that returns the list of shared visitor packages
+   * @retun Promise<any> returns promise from loading from storage
+   */
+  getSharedVisitorPackages() {
+    return this.storage.Load(this.sharedListKey).then((packages) => {  
+      if (!packages) return [];    
+      packages.forEach(element => {
+        element.location = new LocationModel(element.location.latitude, element.location.longitude, element.location.label)
+      });
+      return packages;
+    });
+  }
+
+  /**
+   * Function that sets all the shared visitor packages at once - used for reordering
+   * @param packages VisitorPackage[] cards to save to storage
+   * @retun Promise<any> returns promise from saving to storage
+   */
+  setSharedVisitorPackages(packages: VisitorPackage[]) {
+    return this.storage.Save(this.sharedListKey, packages);
+  }
+
+  /**
+   * Function that removes a shared visitor package by id
+   * @param packageId number id of package to remove
+   * @retun Promise returns promise from removing visitor package
+   */
+  removeSharedVisitorPackage(packageId: number) {
+    return this.getSharedVisitorPackages().then((packages) => {
+      packages = packages.filter(elem => {
+        return elem.packageId !== packageId;
+      })
+      this.setSharedVisitorPackages(packages);
+    });
+  }
+  
+  /**
    * Function that adds a visitor package to the list of saved packages
    * @param visitorPackage VisitorPackage to be added
    */
@@ -105,7 +161,8 @@ export class VisitorPackagesService {
    * @retun Promise<any> returns promise from loading from storage
    */
   getVisitorPackages() {
-    return this.storage.Load(this.packageListKey).then((packages) => {      
+    return this.storage.Load(this.packageListKey).then((packages) => {    
+      if (!packages) return [];      
       packages.forEach(element => {
         element.location = new LocationModel(element.location.latitude, element.location.longitude, element.location.label)
       });

@@ -1,9 +1,9 @@
 /**
-*	File Name:	    tab3.page.ts
+*	File Name:	    card-tab.page.ts
 *	Project:		    Smart-NFC-Application
 *	Orginization:	  VastExpanse
 *	Copyright:	    © Copyright 2019 University of Pretoria
-*	Classes:	      Tab3Page
+*	Classes:	      CardTabPage
 *	Related documents:	None
 *
 *	Update History:
@@ -45,11 +45,11 @@ enum messageType{
 *	@version:	1.2
 */
 @Component({
-  selector: 'app-tab3',
-  templateUrl: 'tab3.page.html',
-  styleUrls: ['tab3.page.scss']
+  selector: 'app-card-tab',
+  templateUrl: 'card-tab.page.html',
+  styleUrls: ['card-tab.page.scss']
 })
-export class Tab3Page implements OnInit{
+export class CardTabPage implements OnInit{
   cards: BusinessCard[] = [];
   detailToggles = [];
   errorMessage: string = null;

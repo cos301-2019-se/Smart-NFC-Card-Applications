@@ -8,51 +8,51 @@ const routes: Routes = [
     component: TabsPage,
     children: [
       {
-        path: 'loginTab',
+        path: 'manage-tab',
         children: [
           {
             path: '',
-            loadChildren: '../loginTab/loginTab.module#LoginTabPageModule'
+            loadChildren: '../manage-tab/manage-tab.module#ManageTabPageModule'
           }
         ]
       },
       {
-        path: 'tab2',
+        path: 'share-tab',
         children: [
           {
             path: '',
-            loadChildren: '../tab2/tab2.module#Tab2PageModule'
+            loadChildren: '../share-tab/share-tab.module#ShareTabPageModule'
           }
         ]
       },
       {
-        path: 'tab3',
+        path: 'card-tab',
         children: [
           {
             path: '',
-            loadChildren: '../tab3/tab3.module#Tab3PageModule'
+            loadChildren: '../card-tab/card-tab.module#CardTabPageModule'
           }
         ]
       },
       {
-        path: 'tab4',
+        path: 'package-tab',
         children: [
           {
             path: '',
-            loadChildren: '../tab4/tab4.module#Tab4PageModule'
+            loadChildren: '../package-tab/package-tab.module#PackageTabPageModule'
           }
         ]
       },
       {
         path: '',
-        redirectTo: '/tabs/loginTab',
+        redirectTo: '/tabs/manage-tab',
         pathMatch: 'full'
       }
     ]
   },
   {
     path: '',
-    redirectTo: '/tabs/loginTab',
+    redirectTo: '/tabs/manage-tab',
     pathMatch: 'full'
   }
 ];

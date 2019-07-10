@@ -43,23 +43,23 @@ export class TabsPage {
   searchFilter: string = '';
 
   tabButtons: Object = {
-    'loginTab': [
+    'manage-tab': [
       {name: 'Login', requiresLogin: false},
       {name: 'Create Visitor Package', requiresLogin: true},
       {name: 'Logout', requiresLogin: true}
     ],
-    'tab2': [
+    'share-tab': [
       {name: 'Share'}
     ],
-    'tab3': [
+    'card-tab': [
       {name: 'Add Business Card'}
     ],
-    'tab4': [
+    'package-tab': [
       {name: 'Share Device ID'},
       {name: 'Receive Package'}
     ]
   };
-  activeTab: string = 'loginTab'; 
+  activeTab: string = 'manage-tab'; 
 
   /**
    * Constructor that takes all the injectables

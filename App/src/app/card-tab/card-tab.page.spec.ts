@@ -1,7 +1,7 @@
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Tab4Page } from './tab4.page';
+import { CardTabPage } from './card-tab.page';
 
 import { NFC, Ndef } from '@ionic-native/nfc/ngx';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
@@ -16,17 +16,17 @@ import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
 import { Device } from '@ionic-native/device/ngx';
 import { SharedModule } from '../shared.module';
 
-describe('Tab4Page', () => {
-  let component: Tab4Page;
-  let fixture: ComponentFixture<Tab4Page>;
+describe('CardTabPage', () => {
+  let component: CardTabPage;
+  let fixture: ComponentFixture<CardTabPage>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [Tab4Page],
+      declarations: [CardTabPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [
         IonicStorageModule.forRoot(),
-        SharedModule       
+        SharedModule        
       ],
       providers: [
         AndroidPermissions,
@@ -43,7 +43,7 @@ describe('Tab4Page', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(Tab4Page);
+    fixture = TestBed.createComponent(CardTabPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

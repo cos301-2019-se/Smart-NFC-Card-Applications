@@ -1,9 +1,9 @@
 /**
-*	File Name:	    tab4.page.ts
+*	File Name:	    package-tab.page.ts
 *	Project:		    Smart-NFC-Application
 *	Orginization:	  VastExpanse
 *	Copyright:	    © Copyright 2019 University of Pretoria
-*	Classes:	      Tab4Page
+*	Classes:	      PackageTabPage
 *	Related documents:	None
 *
 *	Update History:
@@ -47,11 +47,11 @@ enum messageType{
 *	@version:	1.2
 */
 @Component({
-  selector: 'app-tab4',
-  templateUrl: 'tab4.page.html',
-  styleUrls: ['tab4.page.scss']
+  selector: 'app-package-tab',
+  templateUrl: 'package-tab.page.html',
+  styleUrls: ['package-tab.page.scss']
 })
-export class Tab4Page implements OnInit{
+export class PackageTabPage implements OnInit{
   packages: VisitorPackage[] = [];
   errorMessage: string = null;
   successMessage: string = null;

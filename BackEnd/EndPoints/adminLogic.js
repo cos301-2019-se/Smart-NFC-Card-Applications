@@ -1449,7 +1449,7 @@ class AdminLogic
                     //return mock data
                     success = true;
                     message = "Room Retrieved!- Mock";
-                    data.roomId = 2;
+                    data.roomId = me.body.roomId;
                     data.roomName = "Houston";
                     data.parentRoomList = "0,1";
                     data.buildingId = 0;

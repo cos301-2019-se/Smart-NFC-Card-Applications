@@ -1,7 +1,4 @@
 <ion-content padding >
-    <br>
-    <!--<ion-button expand="block" fill="outline" (click)='shareId()'>Share Device ID</ion-button>
-    <ion-button expand="block" fill="outline" (click)='addVisitorPackage()'>Receive Package</ion-button>-->
     <ion-item color='secondary' *ngIf='infoMessage !== null'>
       <ion-icon name="information-circle"></ion-icon> {{ infoMessage }}
     </ion-item>
@@ -22,9 +19,10 @@
       <ion-card *ngFor="let package of packages | filter: 'companyName': filterService.getFilter()">
           <ion-card-header>
             <ion-icon class="trash" name="trash" (click)='removeVisitorPackage(package.packageId)'></ion-icon>
-            <ion-title>{{ package.companyName }}</ion-title>
+            <ion-card-title (click)='toggleDetails(package.packageId)'><ion-icon *ngIf='checkInEffect(package.startDate, package.endDate)' color='success' name="calendar"></ion-icon> {{ package.companyName }}</ion-card-title>
+            <ion-card-subtitle *ngIf='detailToggles == [] || !detailToggles[package.packageId]'>{{ displayDate(package.startDate) }} to {{ displayDate(package.endDate) }}</ion-card-subtitle>
           </ion-card-header>     
-          <ion-card-content>
+          <ion-card-content *ngIf='detailToggles != [] && detailToggles[package.packageId]'>
             <ion-item>
               <ion-label><ion-icon name="time"></ion-icon> From: {{ displayDate(package.startDate) }}</ion-label>
             </ion-item>

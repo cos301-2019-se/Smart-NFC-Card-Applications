@@ -1,6 +1,4 @@
 <ion-content padding>
-    <br>
-    <!--<ion-button expand="block" fill="outline" (click)='addCard()'>Add Business Card</ion-button>-->
     <ion-item color='secondary' *ngIf='infoMessage !== null'>
       <ion-icon name="information-circle"></ion-icon> {{ infoMessage }}
     </ion-item>
@@ -23,7 +21,8 @@
             <ion-card-header>
               <ion-reorder class="reorder"></ion-reorder>
               <ion-icon class="trash" name="trash" (click)='removeCard(card.businessCardId)'></ion-icon>
-              <ion-title (click)='toggleDetails(card.businessCardId)'>{{ card.companyName }}</ion-title>
+              <ion-card-title (click)='toggleDetails(card.businessCardId)'>{{ card.companyName }}</ion-card-title>
+              <ion-card-subtitle *ngIf='detailToggles == [] || !detailToggles[card.businessCardId]'>{{ card.employeeName }}</ion-card-subtitle>
             </ion-card-header>     
             <ion-card-content *ngIf='detailToggles != [] && detailToggles[card.businessCardId]'>
               <ion-item>

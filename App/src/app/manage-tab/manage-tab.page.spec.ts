@@ -10,6 +10,10 @@ import { BusinessCardsService } from '../services/business-cards.service';
 import { LocalStorageService } from '../services/local-storage.service';
 import { RequestModuleService } from '../services/request-module.service';
 import { ModalController, AngularDelegate } from '@ionic/angular';
+import { SharedModule } from '../shared.module';
+import { NfcControllerService } from '../services/nfc-controller.service';
+import { Ndef, NFC } from '@ionic-native/nfc/ngx';
+import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 
 describe('ManageTabPage', () => {
   let component: ManageTabPage;
@@ -21,13 +25,17 @@ describe('ManageTabPage', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [
         HttpClientModule,
-        IonicStorageModule.forRoot()
+        IonicStorageModule.forRoot(),
+        SharedModule
       ],
       providers: [
         LocalStorageService,
         BusinessCardsService,
         RequestModuleService,
-        ModalController, AngularDelegate
+        ModalController, AngularDelegate,
+        NfcControllerService,
+        NFC, Ndef,
+        AndroidPermissions
       ]
     }).compileComponents();
   }));
@@ -44,7 +52,7 @@ describe('ManageTabPage', () => {
 
   it('login should display an error if username and password is missing', () => {
     component.login();
-    expect(component.error).toBe("Please enter a username and password.");
+    expect(component.errorMessage).toBe("Please enter a username and password.");
     expect(component.loggedIn).toBe(false);
   });
 

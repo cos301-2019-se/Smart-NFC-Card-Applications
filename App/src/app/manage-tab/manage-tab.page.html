@@ -1,13 +1,18 @@
 <ion-content *ngIf='!loggedIn' padding>
   <ion-progress-bar *ngIf='isBusy' type="indeterminate"></ion-progress-bar>  
-  <ion-item *ngIf='success' color='success'>
+  <ion-item *ngIf='successMessage' color='success'>
     <ion-label text-wrap>
-      {{ success }}
+      {{ successMessage }}
     </ion-label>
   </ion-item>
-  <ion-item *ngIf='error' color='danger'>
+  <ion-item *ngIf='infoMessage' color='secondary'>
     <ion-label text-wrap>
-      {{ error }}
+      {{ infoMessage }}
+    </ion-label>
+  </ion-item>
+  <ion-item *ngIf='errorMessage' color='danger'>
+    <ion-label text-wrap>
+      {{ errorMessage }}
     </ion-label>
   </ion-item>
   <ion-item>
@@ -23,14 +28,19 @@
 </ion-content>
 
 <ion-content *ngIf='loggedIn' padding>  
-  <ion-item *ngIf='success' color='success'>
-    <ion-label>
-      {{ success }}
+  <ion-item *ngIf='successMessage' color='success'>
+    <ion-label text-wrap>
+      {{ successMessage }}
     </ion-label>
   </ion-item>
-  <ion-item *ngIf='error' color='danger'>
-    <ion-label>
-      {{ error }}
+  <ion-item *ngIf='infoMessage' color='secondary'>
+    <ion-label text-wrap>
+      {{ infoMessage }}
+    </ion-label>
+  </ion-item>
+  <ion-item *ngIf='errorMessage' color='danger'>
+    <ion-label text-wrap>
+      {{ errorMessage }}
     </ion-label>
   </ion-item>
     
@@ -39,29 +49,31 @@
   </ion-item>
 
   <ion-list>
-    <ion-card *ngFor="let package of packages | filter: 'companyName': filterService.getFilter()">
+    <ion-card *ngFor="let package of packages | filter: 'access': filterService.getFilter()">
         <ion-card-header>
           <ion-icon class="trash" name="trash" (click)='removeVisitorPackage(package.packageId)'></ion-icon>
-          <ion-title>{{ package.companyName }}</ion-title>
+          <ion-card-title (click)='toggleDetails(package.packageId)'><ion-icon *ngIf='checkInEffect(package.startDate, package.endDate)' color='success' name="calendar"></ion-icon> {{ package.access }}</ion-card-title>
+          <ion-card-subtitle>{{ displayDate(package.startDate) }} to {{ displayDate(package.endDate) }}</ion-card-subtitle>
         </ion-card-header>     
-        <ion-card-content>
-          <ion-item>
-            <ion-label><ion-icon name="time"></ion-icon> From: {{ displayDate(package.startDate) }}</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label><ion-icon name="time"></ion-icon> To: {{ displayDate(package.endDate) }}</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label><ion-icon name="home"></ion-icon> {{ package.access }}</ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label><ion-icon name="pin"></ion-icon>&nbsp;<a (click)="navigate(package.location)">{{ package.location.getLabel() }}</a></ion-label>
-          </ion-item>
-          <ion-item *ngIf='package.spendingLimit !== null'>
-            <ion-label><ion-icon name="card"></ion-icon> Virtual Wallet: {{ package.amountSpent }} / {{ package.spendingLimit }}</ion-label>
-          </ion-item>
+        <ion-card-content *ngIf='detailToggles != [] && detailToggles[package.packageId]'>
           <ion-item *ngIf='package.wifiSsid !== null'>
             <ion-button expand="block" fill="outline" (click)='connectToWiFi(package.wifiSsid, package.wifiPassword, package.wifiType)'>Connect To WiFi</ion-button>
+          </ion-item>
+          <ion-item>
+            <ion-label *ngIf='package.wifiSsid !== null' ><ion-icon name="wifi"></ion-icon> Has WiFi access</ion-label>
+            <ion-label *ngIf='package.wifiSsid === null' ><ion-icon name="wifi"></ion-icon> Doesn't have WiFi access</ion-label>
+          </ion-item>
+          <ion-item *ngIf='package.spendingLimit !== null'>
+            <ion-label><ion-icon name="card"></ion-icon> Wallet Limit: {{ package.spendingLimit }}</ion-label>
+          </ion-item>
+          <ion-item *ngIf='package.spendingLimit == null'>
+            <ion-label><ion-icon name="card"></ion-icon> Wallet not set up</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-button expand="block" fill="outline">Edit Package</ion-button>
+          </ion-item>
+          <ion-item>
+            <ion-button expand="block" fill="outline" (click)='reshare(package.packageId)'>Reshare Package</ion-button>
           </ion-item>
         </ion-card-content>
     </ion-card>

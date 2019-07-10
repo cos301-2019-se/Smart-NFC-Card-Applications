@@ -94,9 +94,9 @@ export class CreateVisitorPackagePage implements OnInit {
 
     this.buildingLocation = new LocationModel(-25.780297, 28.277432, 'EPI-USE');
     this.rooms = [
-      { id: 0, name: "Lobby" },
-      { id: 1, name: "Offices" },
-      { id: 2, name: "Labs" },
+      { id: 1, name: "Lobby" },
+      { id: 2, name: "Offices" },
+      { id: 3, name: "Labs" },
     ];
   }
 

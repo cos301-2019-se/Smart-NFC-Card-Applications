@@ -46,6 +46,7 @@ export class TabsPage {
     'manage-tab': [
       {name: 'Login', requiresLogin: false},
       {name: 'Create Visitor Package', requiresLogin: true},
+      {name: 'Delete Expired Packages', requiresLogin: true},
       {name: 'Logout', requiresLogin: true}
     ],
     'share-tab': [
@@ -119,6 +120,7 @@ export class TabsPage {
    */
   toggleSearchBar() {
     this.showSearchBar = !this.showSearchBar;
+    this.searchFilter = '';
     this.filter.setFilter('');
   }
 

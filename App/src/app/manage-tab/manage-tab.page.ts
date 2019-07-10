@@ -31,6 +31,17 @@ import { LoggedInService } from '../services/logged-in.service';
 import { VisitorPackage } from '../models/visitor-package.model';
 import { FilterService } from '../services/filter.service';
 import { VisitorPackagesService } from '../services/visitor-packages.service';
+import { NfcControllerService } from '../services/nfc-controller.service';
+
+/**
+* Purpose:	This enum provides message types
+*	Usage:		This enum can be used to identify a type of message to display
+*	@author:	Wian du Plooy
+*	@version:	1.0
+*/
+enum messageType{
+    success, info, error
+}
 
 /**
 * Purpose:	This class provides the login tab component
@@ -45,8 +56,10 @@ import { VisitorPackagesService } from '../services/visitor-packages.service';
 })
 export class ManageTabPage implements OnInit {
 
-  success: string;
-  error: string;
+  successMessage: string;
+  errorMessage: string;
+  infoMessage: string;
+
   username: string = '';
   password: string = '';
   apiKeyName: string = 'apiKey';
@@ -55,6 +68,7 @@ export class ManageTabPage implements OnInit {
   isBusy: boolean = false;
   messageTimeout: number = 4000;
   packages: VisitorPackage[] = [];
+  detailToggles = [];
 
   /**
    * Constructor that takes all injectables
@@ -66,6 +80,7 @@ export class ManageTabPage implements OnInit {
    * @param loginService LoggedInService injectable
    * @param filterService FilterService injectable
    * @param packageService: VisitorPackagesService injectable
+   * @param nfcService: NfcControllerService injectable
    */
   constructor(
     private cardService: BusinessCardsService,
@@ -75,7 +90,8 @@ export class ManageTabPage implements OnInit {
     private eventEmitterService: EventEmitterService,
     private loginService: LoggedInService,
     private filterService: FilterService,
-    private packageService: VisitorPackagesService
+    private packageService: VisitorPackagesService,
+    private nfcService: NfcControllerService
   ) { }
 
   /**
@@ -105,6 +121,8 @@ export class ManageTabPage implements OnInit {
         break;
       case 'Create Visitor Package': this.openCreateVisitorPackageModal();
         break;
+      case 'Delete Expired Packages': this.deleteExpired();
+        break;
       case 'Logout': this.logout();
         break;
     }
@@ -116,7 +134,7 @@ export class ManageTabPage implements OnInit {
   login(){
     this.resetMessages();
     if(this.username.trim() == "" || this.password.trim() == "") {
-      this.showError("Please enter a username and password.", this.messageTimeout);
+      this.showMessage("Please enter a username and password.", messageType.error, this.messageTimeout);
       return;
     }
     this.isBusy = true;
@@ -133,10 +151,10 @@ export class ManageTabPage implements OnInit {
           this.cardService.setOwnBusinessCard(cardDetails);
           this.updateTitle();
         })
-        this.showSuccess(res['message'], this.messageTimeout);
+        this.showMessage(res['message'], messageType.success, this.messageTimeout);
       }
       else {
-        this.showError(res['message'], this.messageTimeout);
+        this.showMessage(res['message'], messageType.error, this.messageTimeout);
       }
       this.isBusy = false;
     });
@@ -149,13 +167,13 @@ export class ManageTabPage implements OnInit {
     this.resetMessages();
     let res = this.req.logout();
     if (res['success'] === true) {
-      this.showSuccess(res['message'], this.messageTimeout);
+      this.showMessage(res['message'], messageType.success, this.messageTimeout);
       this.loginService.SetLoggedIn(false);
       this.loggedIn = false;
       this.updateTitle();
     }
     else {
-      this.showError(res['message'], this.messageTimeout);
+      this.showMessage(res['message'], messageType.error, this.messageTimeout);
     }
   }
 
@@ -196,37 +214,40 @@ export class ManageTabPage implements OnInit {
    * Function that resets the error and success messages
    */
   private resetMessages() {
-    this.success = null;
-    this.error = null;
+    this.successMessage = null;
+    this.errorMessage = null;
+    this.infoMessage = null;
+  }
+
+  /**
+   * Function that displays a message to the user
+   * @param message string message to display
+   * @param type number from enum, type of message to display
+   * @param timeout number after how long it should disappear (0 = don't dissappear)
+   */
+  private showMessage(message: string, type: number, timeout: number = 0) {
+    this.successMessage = null;
+    this.infoMessage = null;
+    this.errorMessage = null;
+    switch(type) {
+      case messageType.success: 
+        this.successMessage = message;
+        if (timeout != 0) { setTimeout(() => { this.successMessage = null;}, timeout); }
+        break;
+      case messageType.info:
+        this.infoMessage = message;
+        if (timeout != 0) { setTimeout(() => { this.infoMessage = null;}, timeout); }
+        break;
+      case messageType.error:
+        this.errorMessage = message;
+        if (timeout != 0) { setTimeout(() => { this.errorMessage = null;}, timeout); }
+        break;
+    }
   }
 
   private setCard() {
     //this.cardService.SetOwnBusinessCard(this.cname, this.ename, this.cell, this.email, this.loc);
     //this.success = `${this.cname} business card set.`;    
-  }
-
-  /**
-   * Function that displays a success message to the user
-   * @param message string success message to display
-   * @param timeout number after how long it should disappear
-   */
-  private showSuccess(message: string, timeout: number) {
-    this.success = message;
-    setTimeout(() => {
-      this.success = null;
-    }, timeout);
-  }
-
-  /**
-   * Function that displays a error message to the user
-   * @param message string error message to display
-   * @param timeout number after how long it should disappear
-   */
-  private showError(message: string, timeout: number) {
-    this.error = message;
-    setTimeout(() => {
-      this.error = null;
-    }, timeout);
   }
 
   /**
@@ -238,6 +259,9 @@ export class ManageTabPage implements OnInit {
       showBackdrop: true,
       animated: true
     });  
+    modal.onDidDismiss().then(() => {
+      this.loadPackages();
+    });
     return await modal.present();  
   }
 
@@ -253,8 +277,7 @@ export class ManageTabPage implements OnInit {
         this.packages = []
         this.packageService.setSharedVisitorPackages([]);
       }
-      // Setup the toggle booleans
-      //this.setupToggles();
+      this.setupToggles();
     });
   }
 
@@ -274,7 +297,100 @@ export class ManageTabPage implements OnInit {
     }
     let year = date.getFullYear();
     let hours = date.getHours();
+    if (hours < 10) {
+      hours = '0' + hours.toString();
+    }
     let minutes = date.getMinutes();
+    if (minutes < 10) {
+      minutes = '0' + minutes.toString();
+    }
     return `${year}/${month}/${day} ${hours}:${minutes}`;
   }
+
+  /**
+   * Function that is used to check if a package is currently in effect
+   * @param startDate Date when package takes effect
+   * @param endDate Date when package expires
+   * @return boolean whether or not the package is currently active
+   */
+  checkInEffect(startDate: Date, endDate: Date) {
+    let currDate = new Date();
+    startDate = new Date(startDate);
+    endDate = new Date(endDate);
+    return (startDate <= currDate && endDate >= currDate);
+  }
+
+  /**
+   * Function deletes all packages that has already expired (locally only)
+   */
+  deleteExpired(){
+    let currDate = new Date();
+    this.packages.forEach(visitorPackage => {
+      if (visitorPackage.endDate < currDate) {
+        this.packageService.removeSharedVisitorPackage(visitorPackage.packageId);
+      }
+    });
+    this.loadPackages();
+  }
+
+  /**
+   * Sets the array to check which packages where toggled
+   */
+  setupToggles(){
+    this.detailToggles = [];
+    this.packages.forEach(card => {
+      this.detailToggles[card.packageId] = false;
+    });
+  }
+
+  /**
+   * Function toggles the package detail
+   * @param packageId number Id of visitor package to toggle
+   */
+  toggleDetails(packageId: number){
+    this.detailToggles[packageId] = !this.detailToggles[packageId];
+  }
+
+  /**
+   * Function that reshares the visitor package - used after editing for example
+   * @param packageId number visitor package id
+   */
+  reshare(packageId: number) {
+    let reshareObj: VisitorPackage = this.packages.find(item => item.packageId == packageId);
+    this.shareVisitorPackage(reshareObj);
+  }
+
+  /**
+   * Function removes a visitor package from the list
+   * @param packageId number Id of visitor package to remove
+   */
+  removeVisitorPackage(packageId: number){
+    //TODO: Delete from DB
+    this.packageService.removeSharedVisitorPackage(packageId).then(() => {
+      this.loadPackages();
+    });
+  }
+
+  /**
+   * Function that share the visitor package with the client
+   * @param visitorPackage VisitorPackage object to share
+   */
+  private shareVisitorPackage(visitorPackage: VisitorPackage){
+    this.errorMessage = null;
+    this.successMessage = null;
+    this.infoMessage = null;
+    this.showMessage(`Hold the phone against the receiving phone.`, messageType.info, 0);
+    this.nfcService.SendData(visitorPackage.packageId, JSON.stringify(visitorPackage))
+    .then(() => {
+      this.showMessage("Package Reshared", messageType.success, 2000);
+    })
+    .catch((err) => {
+      this.showMessage(`Error: ${err} - Try turning on 'Android Beam'`, messageType.error, 5000);
+    })
+    .finally(() => {
+      this.infoMessage = null;
+      this.nfcService.Finish();
+    });
+  }
 }
+

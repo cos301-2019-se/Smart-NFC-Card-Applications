@@ -1,4 +1,14 @@
-.welcome-card ion-img {
-  max-height: 35vh;
-  overflow: hidden;
+.reorder{
+  float: right;
+}
+
+.trash{
+  float: right;
+  margin-right: 1em;
+  cursor: pointer;
+  font-size: 2em;
+}
+
+a {
+  text-decoration: none;
 }

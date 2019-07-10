@@ -53,6 +53,7 @@ enum messageType{
 })
 export class PackageTabPage implements OnInit{
   packages: VisitorPackage[] = [];
+  detailToggles = [];
   errorMessage: string = null;
   successMessage: string = null;
   infoMessage: string = null;
@@ -126,9 +127,26 @@ export class PackageTabPage implements OnInit{
         this.packages = []
         this.packageService.setVisitorPackages([]);
       }
-      // Setup the toggle booleans
-      //this.setupToggles();
+      this.setupToggles();
     });
+  }
+
+  /**
+   * Sets the array to check which packages where toggled
+   */
+  setupToggles(){
+    this.detailToggles = [];
+    this.packages.forEach(card => {
+      this.detailToggles[card.packageId] = false;
+    });
+  }
+
+  /**
+   * Function toggles the package detail
+   * @param packageId number Id of visitor package to toggle
+   */
+  toggleDetails(packageId: number){
+    this.detailToggles[packageId] = !this.detailToggles[packageId];
   }
 
   /**
@@ -280,7 +298,26 @@ export class PackageTabPage implements OnInit{
     }
     let year = date.getFullYear();
     let hours = date.getHours();
+    if (hours < 10) {
+      hours = '0' + hours.toString();
+    }
     let minutes = date.getMinutes();
+    if (minutes < 10) {
+      minutes = '0' + minutes.toString();
+    }
     return `${year}/${month}/${day} ${hours}:${minutes}`;
+  }
+
+  /**
+   * Function that is used to check if a package is currently in effect
+   * @param startDate Date when package takes effect
+   * @param endDate Date when package expires
+   * @return boolean whether or not the package is currently active
+   */
+  checkInEffect(startDate: Date, endDate: Date) {
+    let currDate = new Date();
+    startDate = new Date(startDate);
+    endDate = new Date(endDate);
+    return (startDate <= currDate && endDate >= currDate);
   }
 }

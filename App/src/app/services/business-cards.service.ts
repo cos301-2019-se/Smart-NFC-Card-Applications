@@ -41,8 +41,8 @@ export class BusinessCardsService {
   cardListKey: string = "business-cards";
   stub = {
     businessCardId: '0_0',
-    companyName: 'Company Name',
-    employeeName: 'Employee Name',
+    companyName: 'EPI-USE',
+    employeeName: 'Mvuyisi Scheepers',
     contactNumber: '000 000 0000',
     email: 'email@gmail.com',
     website: 'http://website.co.za',
@@ -113,9 +113,15 @@ export class BusinessCardsService {
    * @retun Promise returns promise from saving to storage
    */
   addBusinessCard(businessCardId: string, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: LocationModel) {
-    let businessCard: BusinessCard = this.createBusinessCard(businessCardId, companyName, employeeName, contactNumber, email, website, location);
     return this.getBusinessCards().then((cards) => {
-      cards.unshift(businessCard);
+      let businessCard: BusinessCard = this.createBusinessCard(businessCardId, companyName, employeeName, contactNumber, email, website, location);
+      let index = cards.findIndex(card => card.businessCardId == businessCardId);
+      if (index > -1) {
+        cards[index] = businessCard
+      }
+      else {
+        cards.unshift(businessCard);
+      }
       this.setBusinessCards(cards);
     });
   }

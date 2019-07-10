@@ -89,7 +89,13 @@ export class VisitorPackagesService {
    */
   addVisitorPackage(visitorPackage: VisitorPackage) {
     return this.getVisitorPackages().then((packages) => {
-      packages.unshift(visitorPackage);
+      let index = packages.findIndex(item => item.packageId == visitorPackage.packageId);
+      if (index > -1) {
+        packages[index] = visitorPackage
+      }
+      else {
+        packages.unshift(visitorPackage);
+      }
       this.setVisitorPackages(packages);
     });
   }

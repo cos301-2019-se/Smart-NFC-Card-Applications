@@ -255,9 +255,27 @@ export class RequestModuleService {
       });
     }
     else {
-      let json: JSON = JSON.parse(`{'employeeId': ${employeeId}, 'startTime': '${startTime}', 'endTime': '${endTime}', 'packageId': '${packageId}', 
-        'wifiParamsId': ${wifiParamsId}, 'roomId': ${roomId}, 'limit': ${limit}`);
+      let json: JSON = JSON.parse(`{'employeeId': ${employeeId}, 'startTime': '${startTime}', 'endTime': '${endTime}', 'packageId': ${packageId}, 
+        'wifiParamsId': ${wifiParamsId}, 'roomId': ${roomId}, 'limit': ${limit}}`);
       return this.post(`${this.baseUrl}/app/editVisitorPackage`, json);
+    }
+  }
+
+  /**
+   * Function to edit a visitor package in the database
+   * @param packageId number Id of package to update
+   * @return Observable<Object> response containing json from back-end server
+   */
+  deleteVisitorPackage(packageId: number) {
+    if (this.demoMode) {
+      return new Observable<Object>(observer => {
+        observer.next(this.visitorPackageStub);
+        observer.complete();
+      });
+    }
+    else {
+      let json: JSON = JSON.parse(`{'packageId': ${packageId}}`);
+      return this.post(`${this.baseUrl}/app/deleteVisitorPackage`, json);
     }
   }
 }

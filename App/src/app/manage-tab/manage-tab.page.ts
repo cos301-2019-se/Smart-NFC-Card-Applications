@@ -300,7 +300,6 @@ export class ManageTabPage implements OnInit {
    */
   editVisitorPackage(packageId: number){    
     this.openEditVisitorPackageModal(this.packages.find(item => item.packageId == packageId));
-    //TODO: Update DB
   }
 
   /**
@@ -308,10 +307,16 @@ export class ManageTabPage implements OnInit {
    * @param packageId number Id of visitor package to remove
    */
   removeVisitorPackage(packageId: number){
-    //TODO: Delete from DB
-    this.packageService.removeSharedVisitorPackage(packageId).then(() => {
-      this.loadPackages();
-    });
+    this.req.deleteVisitorPackage(packageId).subscribe(json => {
+      if (json['success'] === true) {
+        this.packageService.removeSharedVisitorPackage(packageId).then(() => {
+          this.loadPackages();
+        });
+      }
+      else {
+        this.showMessage(`Could not delete package: ${json['message']}`, MessageType.error)
+      }
+    })
   }
 
   /**

@@ -209,8 +209,6 @@ class AppLogic{
      *  @return JSON {
      *                  clientId: int ID for client
      *               }
-     *
-     *  @TODO Test
      */
     async addClient(macAddress) {
         let data = {};
@@ -229,31 +227,6 @@ class AppLogic{
             }
         }
 
-        return data;
-    }
-
-    /**
-     *  Function to edit a clients details
-     *
-     *  @param clientId int ID of client
-     *  @param macAddress string Mac Address of client device
-     *
-     *  @return JSON {
-     *
-     *               }
-     *
-     *  @TODO Test
-     */
-    editClient(clientId, macAddress){
-        let data = {};
-        if(this.demoMode){
-            data.clientId = 0;
-        }
-        else{
-            me.sharedLogic.crudController.updateClient(clientId, macAddress, function (ret) {
-                data = ret.data;
-            });
-        }
         return data;
     }
 
@@ -316,8 +289,6 @@ class AppLogic{
      *  @return JSON {
      *                  wifiTempAccessId: int ID of temporary wifi access detail
      *               }
-     *
-     *  @TODO Test
      */
     async addTempWifi(wifiAccessParamsId){
         let data = {};
@@ -346,21 +317,28 @@ class AppLogic{
      *  @param wifiTempAccessId int ID of temporary wifi access
      *
      *  @return JSON {
-     *
+     *                  wifiTempAccessId: int ID of temporary wifi access
      *               }
      *
      *  @TODO Test
      */
-    editTempWifi(wifiAccessParamsId, wifiTempAccessId){
+    async editTempWifi(wifiAccessParamsId, wifiTempAccessId){
         let data = {};
-        if(this.demoMode){
-            data;
+
+        if(me.demoMode){
+            data.wifiTempAccessId = 0;
         }
         else{
-            me.sharedLogic.crudController.updateTempWifiAccess(wifiAccessParamsId, wifiTempAccessId, function (ret) {
-                data = ret.data;
-            });
+            let ret = await me.sharedLogic.crudController.updateTempWifiAccess(wifiTempAccessId, wifiAccessParamsId);
+
+            if(ret.success){
+                data.wifiTempAccessId = wifiTempAccessId;
+            }
+            else{
+                me.sharedLogic.endServe(ret.success, ret.message, ret.data);
+            }
         }
+
         return data;
     }
 
@@ -426,8 +404,6 @@ class AppLogic{
      *  @return JSON {
      *                  walletId: int ID of customer wallet
      *               }
-     *
-     *  @TODO Test
      */
     async addWallet(limit, spent){
         let data = {};
@@ -454,24 +430,30 @@ class AppLogic{
      *
      *  @param walletId int ID of the wallet to update
      *  @param limit float Limit a customer can spend
-     *  @param spent float Amount spent by customer
      *
      *  @return JSON {
-     *
+     *                  walletId: int ID of the wallet to update
      *               }
      *
      *  @TODO Test
      */
-    editWallet(walletId, limit, spent){
+    async editWallet(walletId, limit){
         let data = {};
-        if(this.demoMode){
-            data;
+
+        if(me.demoMode){
+            data.walletId = 0;
         }
         else{
-            me.sharedLogic.crudController.updateWallet(walletId, limit, spent, function (ret) {
-                data = ret.data;
-            });
+            let ret = await me.sharedLogic.crudController.updateWallet(walletId, limit, undefined);
+
+            if(ret.success){
+                data.walletId = walletId;
+            }
+            else{
+                me.sharedLogic.endServe(ret.success, ret.message, ret.data);
+            }
         }
+
         return data;
     }
 
@@ -535,8 +517,6 @@ class AppLogic{
      *  @return JSON {
      *                  tpaId: int ID of TPA created
      *               }
-     *
-     *  @TODO Test
      */
     async addTpa(){
         let data = {};
@@ -615,8 +595,6 @@ class AppLogic{
      *  @return JSON {
      *                  tpa_roomId: int ID of TPAxROOM
      *               }
-     *
-     *  @TODO Test
      */
     async addTpaRoom(tpaId, roomId){
         let data = {};
@@ -647,21 +625,28 @@ class AppLogic{
      *  @param roomId int ID of new room
      *
      *  @return JSON {
-     *
+     *                  tpa_roomId: int ID of TPAxRoom
      *               }
      *
      *  @TODO Test
      */
-    editTpaRoom(tpaIdCurrent, roomIdCurrent, tpaId, roomId){
+    async editTpaRoom(tpaIdCurrent, roomIdCurrent, tpaId, roomId){
         let data = {};
+
         if(this.demoMode){
-            data;
+            data.tpa_roomId = tpaId + "_" + roomId;
         }
         else{
-            me.sharedLogic.crudController.updateTPAxRoom(tpaIdCurrent, roomIdCurrent, tpaId, roomId,function (ret) {
-                data = ret.data;
-            });
+            let ret = me.sharedLogic.crudController.updateTPAxRoom(tpaIdCurrent, roomIdCurrent, tpaId, roomId);
+
+            if(ret.success){
+                data.tpa_roomId = tpaId + "_" + roomId;
+            }
+            else{
+                me.sharedLogic.endServe(ret.success, ret.message, ret.data);
+            }
         }
+
         return data;
     }
 
@@ -729,10 +714,6 @@ class AppLogic{
      *  @return JSON {
      *                  visitorPackageId: int ID of visitor package created
      *               }
-     *
-     *  @TODO Integrate with CrudController and Application
-     *  @TODO Return correct data
-     *  @TODO Test
      */
     async addVisitorPackage(){
         let success;
@@ -808,13 +789,13 @@ class AppLogic{
 
             if(!invalidParams) {
                 if(me.body.macAddress !== null){
-                    if(this.body.startTime !== null) {
-                        if(this.body.endTime !== null) {
-                            if(this.body.wifiAccessParamsId === null && this.body.roomId === null && (this.body.limit === null && this.body.spent === null)){
+                    if(me.body.startTime !== null) {
+                        if(me.body.endTime !== null) {
+                            if(me.body.wifiAccessParamsId === null && me.body.roomId === null && (me.body.limit === null && me.body.spent === null)){
                                 me.sharedLogic.endServe(false, "Invalid Parameters: at least one package options need to be selected", null);
                             }
                             else {
-                                if(this.demoMode){
+                                if(me.demoMode){
                                     data.visitorPackageId = 0;
                                     me.sharedLogic.endServe(true, "Visitor Package created - MOCK", data);
                                 }
@@ -951,20 +932,15 @@ class AppLogic{
      *  @param employeeId int ID of employee that created the visitor package
      *  @param startTime date Start Date of the visitor package
      *  @param endTime date End Date of the visitor package
-     *  @param macAddress string Mac Address of client device
      *  @param wifiAccessParamsId int ID of WiFi access point
      *  @param limit float Limit a customer can spend
-     *  @param spent float Amount spent by customer
+     *  @param roomId int ID of room
      *
      *  @return JSON {
      *                  visitorPackageId: int ID of visitor package created
      *               }
-     *
-     *  @TODO Integrate with CrudController and Application
-     *  @TODO Return correct data
-     *  @TODO Test
      */
-    editVisitorPackage(){
+    async editVisitorPackage(){
         let success;
         let message;
         let data = {};
@@ -972,149 +948,197 @@ class AppLogic{
         let presentParams = false;
         let presentReturn = "";
 
-        if(this.body.visitorPackageId === undefined){
+        if(me.body.visitorPackageId === undefined){
             presentParams = true;
             presentReturn += "visitorPackageId, ";
         }
 
-        if(this.body.employeeId === undefined){
+        if(me.body.employeeId === undefined){
             presentParams = true;
             presentReturn += "employeeId, ";
         }
 
-        if(this.body.startTime === undefined){
+        if(me.body.startTime === undefined){
             presentParams = true;
             presentReturn += "startTime, ";
         }
 
-        if(this.body.endTime === undefined){
+        if(me.body.endTime === undefined){
             presentParams = true;
             presentReturn += "endTime, ";
         }
 
-        if(this.body.macAddress === undefined){
-            presentParams = true;
-            presentReturn += "macAddress, ";
-        }
-
-        if(this.body.wifiAccessParamsId === undefined){
+        if(me.body.wifiAccessParamsId === undefined){
             presentParams = true;
             presentReturn += "wifiAccessParamsId, ";
         }
 
-        if(this.body.roomId === undefined){
+        if(me.body.roomId === undefined){
             presentParams = true;
             presentReturn += "roomId, ";
         }
 
-        if(this.body.limit === undefined){
+        if(me.body.limit === undefined){
             presentParams = true;
             presentReturn += "limit, ";
-        }
-
-        if(this.body.spent === undefined){
-            presentParams = true;
-            presentReturn += "spent, ";
         }
 
         if(!presentParams){
             let invalidParams = false;
             let invalidReturn = "";
 
-            if(!this.sharedLogic.validateNonEmpty(this.body.visitorPackageId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.visitorPackageId)){
                 invalidParams = true;
                 invalidReturn += "visitorPackageId, ";
             }
 
-            if(!this.sharedLogic.validateNonEmpty(this.body.employeeId)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.employeeId)){
                 invalidParams = true;
                 invalidReturn += "employeeId, ";
             }
 
-            if(!this.sharedLogic.validateNonEmpty(this.body.startTime)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.startTime)){
                 invalidParams = true;
                 invalidReturn += "startTime, ";
             }
 
-            if(!this.sharedLogic.validateNonEmpty(this.body.endTime)){
+            if(!me.sharedLogic.validateNonEmpty(me.body.endTime)){
                 invalidParams = true;
                 invalidReturn += "endTime, ";
             }
 
-            if(!this.sharedLogic.validateNonEmpty(this.body.macAddress)){
-                invalidParams = true;
-                invalidReturn += "macAddress, ";
-            }
-
-            if(!this.sharedLogic.validateNonEmpty(this.body.wifiAccessParamsId)){
-                invalidParams = true;
-                invalidReturn += "wifiAccessParamsId, ";
-            }
-
-            if(!this.sharedLogic.validateNonEmpty(this.body.roomId)){
-                invalidParams = true;
-                invalidReturn += "roomId, ";
-            }
-
-            if(!this.sharedLogic.validateNonEmpty(this.body.limit)){
-                invalidParams = true;
-                invalidReturn += "limit, ";
-            }
-
-            if(!this.sharedLogic.validateNonEmpty(this.body.spent)){
-                invalidParams = true;
-                invalidReturn += "spent, ";
-            }
-
             if(!invalidParams) {
-                if(this.body.macAddress !== null){
-                    if(this.body.startTime !== null){
-                        if(this.body.endTime !== null){
-                            if(this.body.wifiAccessParamsId === null && this.body.roomId === null && (this.body.limit === null && this.body.spent === null)){
-                                me.sharedLogic.endServe(false, "Invalid Parameters: at least one package options need to be selected", null);
-                            }
-                            else{
-                                let clientData;
-                                let wifiData;
-                                let tpaData;
-                                let tpaRoomData;
-                                let walletData;
-
-                                // ADD CLIENT
-                                clientData = this.addClient();
-
-                                // ADD WIFI
-                                if(this.body.wifiAccessParamsId !== null)
-                                    wifiData = this.addTempWifi();
-
-                                // ADD TPA
-                                if(this.body.roomId !== null){
-                                    tpaData = this.addTpa();
-                                    tpaRoomData = this.addTpaRoom();
-                                }
-
-                                // ADD WALLET
-                                if(this.body.limit !== null && this.body.spent !== null)
-                                    walletData = this.addWallet();
-
-                                me.sharedLogic.crudController.createVisitorPackage(wifiData.wifiTempAccessId, tpaData.tpaId, walletData.walletId, this.body.employeeId, clientData.clientId, this.body.startTime, this.body.endTime, function (ret) {
-                                    success = ret.success;
-                                    message = ret.message;
-                                    data.visitorPackageId = ret.data.visitorPackageId;
-                                    me.sharedLogic.endServe(success, message, data);
-                                })
-                            }
+                if(me.body.startTime !== null){
+                    if(me.body.endTime !== null){
+                        if(me.body.wifiAccessParamsId === null && me.body.roomId === null && me.body.limit === null){
+                            me.sharedLogic.endServe(false, "Invalid Parameters: at least one package options need to be selected", null);
                         }
                         else{
-                            me.sharedLogic.endServe(false, "Invalid Parameters: endTime cannot be null", null);
+                            let visitorPackage = await me.sharedLogic.crudController.getVisitorPackageByVisitorPackageId(me.body.visitorPackageId);
+                            let wifi = {};
+                            let tpa = {};
+                            let tpaRoom = {};
+                            let wallet = {};
+
+                            // EDIT WIFI
+                            if(me.body.wifiAccessParamsId !== null){
+                                if(visitorPackage.tempWifiAccessId === null){
+                                    wifi = await me.addTempWifi(me.body.wifiAccessParamsId);
+                                }
+                                else{
+                                    wifi = await me.editTempWifi(me.body.wifiAccessParamsId, me.body.wifiTempAccessId);
+                                }
+                            }
+
+                            // EDIT TPA
+                            if(me.body.roomId !== null){
+                                if(visitorPackage.tpaId === null){
+                                    tpa = await me.addTpa();
+                                    tpaRoom = await me.addTpaRoom(tpa.tpaId, me.body.roomId);
+                                }
+                                else{
+                                    tpaRoom = await me.editTpaRoom(visitorPackage.tpaId, me.body.roomIdCurrent, visitorPackage.tpaId, me.body.roomId);
+                                }
+                            }
+
+                            // EDIT WALLET
+                            if(me.body.limit !== null) {
+                                if(visitorPackage.walletId === null){
+                                    wallet = await me.addWallet(me.body.limit, 0);
+                                }
+                                else{
+                                    wallet = await me.editWallet(visitorPackage.linkWalletId, me.body.limit);
+                                }
+                            }
+
+                            if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length === 0 && Object.entries(wallet).length === 0){
+                                visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
+                                    wifi.wifiTempAccessId,
+                                    undefined,
+                                    undefined,
+                                    me.body.employeeId,
+                                    undefined,
+                                    me.body.startTime,
+                                    me.body.endTime)
+                            }
+                            else if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length === 0){
+                                visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
+                                    wifi.wifiTempAccessId,
+                                    tpa.tpaId,
+                                    undefined,
+                                    me.body.employeeId,
+                                    undefined,
+                                    me.body.startTime,
+                                    me.body.endTime)
+                            }
+                            else if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length === 0 && Object.entries(wallet).length !== 0){
+                                visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
+                                    wifi.wifiTempAccessId,
+                                    undefined,
+                                    wallet.walletId,
+                                    me.body.employeeId,
+                                    undefined,
+                                    me.body.startTime,
+                                    me.body.endTime)
+                            }
+                            else if(Object.entries(wifi).length === 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length === 0){
+                                visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
+                                    undefined,
+                                    tpa.tpaId,
+                                    undefined,
+                                    me.body.employeeId,
+                                    undefined,
+                                    me.body.startTime,
+                                    me.body.endTime)
+                            }
+                            else if(Object.entries(wifi).length === 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length !== 0){
+                                visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
+                                    undefined,
+                                    tpa.tpaId,
+                                    wallet.walletId,
+                                    me.body.employeeId,
+                                    undefined,
+                                    me.body.startTime,
+                                    me.body.endTime)
+                            }
+                            else if(Object.entries(wifi).length === 0 && Object.entries(tpa_room).length === 0 && Object.entries(wallet).length !== 0){
+                                visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
+                                    undefined,
+                                    undefined,
+                                    wallet.walletId,
+                                    me.body.employeeId,
+                                    undefined,
+                                    me.body.startTime,
+                                    me.body.endTime)
+                            }
+                            else if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length !== 0){
+                                visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
+                                    wifi.wifiTempAccessId,
+                                    tpa.tpaId,
+                                    wallet.walletId,
+                                    me.body.employeeId,
+                                    undefined,
+                                    me.body.startTime,
+                                    me.body.endTime)
+                            }
+
+                            if(visitorPackage.success){
+                                success = visitorPackage.success;
+                                message = visitorPackage.message;
+                                data.visitorPackageId = visitorPackage.data.visitorPackageId;
+                                me.sharedLogic.endServe(success, message, data);
+                            }
+                            else{
+                                me.sharedLogic.endServe(visitorPackage.success, visitorPackage.message, visitorPackage.data);
+                            }
                         }
                     }
                     else{
-                        me.sharedLogic.endServe(false, "Invalid Parameters: startTime cannot be null", null);
+                        me.sharedLogic.endServe(false, "Invalid Parameters: endTime cannot be null", null);
                     }
                 }
                 else{
-                    me.sharedLogic.endServe(false, "Invalid Parameters: macAddress cannot be null", null);
+                    me.sharedLogic.endServe(false, "Invalid Parameters: startTime cannot be null", null);
                 }
             }
             else{

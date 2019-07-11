@@ -1,4 +1,3 @@
-////////////////TODO -> before the page loads check if the api key exists and use that to login, otherwise load this page
 
 function login() {
     var username = $("#username").val();
@@ -19,7 +18,6 @@ function login() {
 				<button type="button" class="close" data-dismiss="alert">&times;</button>
 			    </div>`);
                 $("#loginFailedAlert").show();
-                // console.log($("#loginFailedAlert"));
             }
         });
 

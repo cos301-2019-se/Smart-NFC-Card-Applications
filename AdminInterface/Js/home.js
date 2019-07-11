@@ -13,9 +13,9 @@ function loadHomeContents(callback)
 		{
 			data = data.data;
 			console.log(data);
-            $("#companyName").text("Welcome, " + data.companyName);
+            $("#companyName").html('Representing<p class="font-weight-bold">' + data.companyName + '</p>');
             $("#companyWebsite").text(data.companyWebsite);
-            $("#companyUsername").text(data.username);
+            $("#username").html('Hello<p class="font-weight-bold">' + data.username + '</p>');
         } 
 		else 
 		{
@@ -25,5 +25,20 @@ function loadHomeContents(callback)
     });
 	
 	callback();
+}
+
+function details()
+{
+	window.location.replace("company.html");
+}
+
+function buildings()
+{
+	window.location.replace("buildings.html");
+}
+
+function employees()
+{
+	window.location.replace("employees.html");
 }
 

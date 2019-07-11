@@ -32,6 +32,8 @@ import { VisitorPackage } from '../models/visitor-package.model';
 import { FilterService } from '../services/filter.service';
 import { VisitorPackagesService } from '../services/visitor-packages.service';
 import { NfcControllerService } from '../services/nfc-controller.service';
+import { EditVisitorPackagePage } from '../edit-visitor-package/edit-visitor-package.page';
+import { DateService } from '../services/date.service';
 
 /**
 * Purpose:	This enum provides message types
@@ -62,7 +64,6 @@ export class ManageTabPage implements OnInit {
 
   username: string = '';
   password: string = '';
-  apiKeyName: string = 'apiKey';
   title: string = 'Login';
   loggedIn: boolean = false;
   isBusy: boolean = false;
@@ -81,6 +82,7 @@ export class ManageTabPage implements OnInit {
    * @param filterService FilterService injectable
    * @param packageService: VisitorPackagesService injectable
    * @param nfcService: NfcControllerService injectable
+   * @param dateService DateService injectable
    */
   constructor(
     private cardService: BusinessCardsService,
@@ -91,7 +93,8 @@ export class ManageTabPage implements OnInit {
     private loginService: LoggedInService,
     private filterService: FilterService,
     private packageService: VisitorPackagesService,
-    private nfcService: NfcControllerService
+    private nfcService: NfcControllerService,
+    private dateService: DateService
   ) { }
 
   /**
@@ -133,31 +136,19 @@ export class ManageTabPage implements OnInit {
    */
   login(){
     this.resetMessages();
-    if(this.username.trim() == "" || this.password.trim() == "") {
-      this.showMessage("Please enter a username and password.", messageType.error, this.messageTimeout);
-      return;
-    }
     this.isBusy = true;
-    this.req.login(this.username, this.password).subscribe(res => {
+    this.loginService.login(this.username, this.password).subscribe(res => {
       if (res['success'] === true) {
-        this.username = "";
-        this.password = "";
-        this.loginService.SetLoggedIn(true);
         this.loggedIn = true;
-        let apiKey = res['data']['apiKey'];
-        this.storage.Save(this.apiKeyName, apiKey);
-        this.req.getBusinessCard(res['data']['id']).subscribe(response => {
-          let cardDetails = response['data'];
-          this.cardService.setOwnBusinessCard(cardDetails);
-          this.updateTitle();
-        })
         this.showMessage(res['message'], messageType.success, this.messageTimeout);
       }
       else {
+        this.loggedIn = false;
         this.showMessage(res['message'], messageType.error, this.messageTimeout);
       }
-      this.isBusy = false;
+      this.updateTitle();
     });
+    this.isBusy = false;
   }
 
   /**
@@ -165,44 +156,33 @@ export class ManageTabPage implements OnInit {
    */
   logout(){
     this.resetMessages();
-    let res = this.req.logout();
-    if (res['success'] === true) {
-      this.showMessage(res['message'], messageType.success, this.messageTimeout);
-      this.loginService.SetLoggedIn(false);
-      this.loggedIn = false;
+    this.isBusy = true;
+    this.loginService.logout().subscribe(res => {
+      if (res['success'] === true) {
+        this.loggedIn = true;
+        this.showMessage(res['message'], messageType.success, this.messageTimeout);
+      }
+      else {
+        this.loggedIn = false;
+        this.showMessage(res['message'], messageType.error, this.messageTimeout);
+      }
       this.updateTitle();
-    }
-    else {
-      this.showMessage(res['message'], messageType.error, this.messageTimeout);
-    }
+    });
+    this.isBusy = false;
   }
 
   /**
    * Function that checks if the user is already logged in when the app starts
    */
   private checkLoggedIn() {
-    this.loginService.SetLoggedIn(false);
-    this.loggedIn = false;
-    /*if(this.apiKey === null || this.apiKey == '') {
-      this.loggedIn = false;
-    }
-    else {
-      let res = this.req.checkLoggedIn(this.apiKey);
-      if(res['success'] === true) {
-        this.loggedIn = true;
-      }
-      else {
-        this.loggedIn = false;
-      }
-    }*/
-    this.updateTitle();
+    this.loggedIn = this.loginService.isLoggedIn();
   }
 
   /**
    * Function that checks what the title of the component should be
    */
   private updateTitle() {
-    if(this.loginService.IsLoggedIn() === true) {
+    if(this.loginService.isLoggedIn() === true) {
       this.title = 'Menu';
     }
     else {
@@ -245,11 +225,6 @@ export class ManageTabPage implements OnInit {
     }
   }
 
-  private setCard() {
-    //this.cardService.SetOwnBusinessCard(this.cname, this.ename, this.cell, this.email, this.loc);
-    //this.success = `${this.cname} business card set.`;    
-  }
-
   /**
    * Function that displays the Create Visitor Package modal
    */
@@ -258,6 +233,23 @@ export class ManageTabPage implements OnInit {
       component: CreateVisitorPackagePage,
       showBackdrop: true,
       animated: true
+    });  
+    modal.onDidDismiss().then(() => {
+      this.loadPackages();
+    });
+    return await modal.present();  
+  }
+
+  /**
+   * Function that displays the Edit Visitor Package modal
+   * @param packageToEdit VisitorPackage to edit
+   */
+  async openEditVisitorPackageModal(packageToEdit: VisitorPackage) {
+    const modal = await this.modalController.create({
+      component: EditVisitorPackagePage,
+      showBackdrop: true,
+      animated: true,
+      componentProps: {packageToUpdate: packageToEdit}
     });  
     modal.onDidDismiss().then(() => {
       this.loadPackages();
@@ -285,26 +277,8 @@ export class ManageTabPage implements OnInit {
    * Function that formats the date for display
    * @param date any string or date object
    */
-  displayDate(date){
-    date = new Date(date);
-    let day = date.getDate();
-    if (day < 10) {
-      day = '0' + day.toString();
-    }
-    let month = date.getMonth() + 1;
-    if (month < 10) {
-      month = '0' + month.toString();
-    }
-    let year = date.getFullYear();
-    let hours = date.getHours();
-    if (hours < 10) {
-      hours = '0' + hours.toString();
-    }
-    let minutes = date.getMinutes();
-    if (minutes < 10) {
-      minutes = '0' + minutes.toString();
-    }
-    return `${year}/${month}/${day} ${hours}:${minutes}`;
+  displayDate(date: Date){
+    return this.dateService.displayDateFull(date);
   }
 
   /**
@@ -326,7 +300,7 @@ export class ManageTabPage implements OnInit {
   deleteExpired(){
     let currDate = new Date();
     this.packages.forEach(visitorPackage => {
-      if (visitorPackage.endDate < currDate) {
+      if (new Date(visitorPackage.endDate) < currDate) {
         this.packageService.removeSharedVisitorPackage(visitorPackage.packageId);
       }
     });
@@ -358,6 +332,15 @@ export class ManageTabPage implements OnInit {
   reshare(packageId: number) {
     let reshareObj: VisitorPackage = this.packages.find(item => item.packageId == packageId);
     this.shareVisitorPackage(reshareObj);
+  }
+
+  /**
+   * Function that opens a modal to allow a package to be changed
+   * @param packageId number Id of visitor package to edit
+   */
+  editVisitorPackage(packageId: number){    
+    this.openEditVisitorPackageModal(this.packages.find(item => item.packageId == packageId));
+    //TODO: Update DB
   }
 
   /**

@@ -29,6 +29,7 @@ import { VisitorPackage } from '../models/visitor-package.model';
 import { VisitorPackagesService } from '../services/visitor-packages.service';
 import { EventEmitterService } from '../services/event-emitter.service';   
 import { FilterService } from '../services/filter.service';   
+import { DateService } from '../services/date.service';
 
 /**
 * Purpose:	This enum provides message types
@@ -66,6 +67,7 @@ export class PackageTabPage implements OnInit{
    * @param device Device injectable
    * @param packageService VisitorPackagesService injectable
    * @param wifiService WifiService injectable
+   * @param dateService DateService injectable
    */
   constructor(
     private nfcService: NfcControllerService,
@@ -74,7 +76,8 @@ export class PackageTabPage implements OnInit{
     private packageService: VisitorPackagesService,
     private wifiService: WifiService,
     private eventEmitterService: EventEmitterService,
-    private filterService: FilterService
+    private filterService: FilterService,
+    private dateService: DateService
   ) { }
 
   ngOnInit() {    
@@ -108,7 +111,7 @@ export class PackageTabPage implements OnInit{
 
   menuEvent(functionName: string) {
     switch(functionName) {
-      case 'Share Device ID': this.shareId()
+      case 'Link to Package': this.shareId()
         break;
       case 'Receive Package': this.addVisitorPackage()
         break;
@@ -286,26 +289,8 @@ export class PackageTabPage implements OnInit{
    * Function that formats the date for display
    * @param date any string or date object
    */
-  displayDate(date){
-    date = new Date(date);
-    let day = date.getDate();
-    if (day < 10) {
-      day = '0' + day.toString();
-    }
-    let month = date.getMonth() + 1;
-    if (month < 10) {
-      month = '0' + month.toString();
-    }
-    let year = date.getFullYear();
-    let hours = date.getHours();
-    if (hours < 10) {
-      hours = '0' + hours.toString();
-    }
-    let minutes = date.getMinutes();
-    if (minutes < 10) {
-      minutes = '0' + minutes.toString();
-    }
-    return `${year}/${month}/${day} ${hours}:${minutes}`;
+  displayDate(date: Date){
+    return this.dateService.displayDateFull(date);
   }
 
   /**

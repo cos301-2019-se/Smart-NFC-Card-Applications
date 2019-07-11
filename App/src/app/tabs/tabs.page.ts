@@ -56,7 +56,7 @@ export class TabsPage {
       {name: 'Add Business Card'}
     ],
     'package-tab': [
-      {name: 'Share Device ID'},
+      {name: 'Link to Package'},
       {name: 'Receive Package'}
     ]
   };
@@ -89,7 +89,7 @@ export class TabsPage {
    * @param e Event that triggered the menu open
    */
   async openMenu(e) {
-    this.loggedIn = this.loginService.IsLoggedIn();
+    this.loggedIn = this.loginService.isLoggedIn();
     let buttons: Object[] = this.tabButtons[this.activeTab];
     buttons = buttons.filter(button => {
       if (button['requiresLogin'] != undefined) {

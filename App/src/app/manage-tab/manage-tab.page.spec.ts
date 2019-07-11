@@ -52,7 +52,6 @@ describe('ManageTabPage', () => {
 
   it('login should display an error if username and password is missing', () => {
     component.login();
-    expect(component.errorMessage).toBe("Please enter a username and password.");
     expect(component.loggedIn).toBe(false);
   });
 

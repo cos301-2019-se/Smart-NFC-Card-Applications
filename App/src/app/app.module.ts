@@ -8,7 +8,8 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PopoverMenuComponent } from './popover-menu/popover-menu.component';
-import { CreateVisitorPackagePageModule } from './create-visitor-package/create-visitor-package.module'
+import { CreateVisitorPackagePageModule } from './create-visitor-package/create-visitor-package.module';
+import { EditVisitorPackagePageModule } from './edit-visitor-package/edit-visitor-package.module';
 import { NFC, Ndef } from '@ionic-native/nfc/ngx';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { Platform } from '@ionic/angular';
@@ -27,6 +28,7 @@ import { LocationService } from './services/location.service';
 import { EventEmitterService } from './services/event-emitter.service';
 import { FilterService } from './services/filter.service';
 import { LoggedInService } from './services/logged-in.service';
+import { DateService } from './services/date.service';
 
 @NgModule({
   declarations: [
@@ -43,6 +45,7 @@ import { LoggedInService } from './services/logged-in.service';
     IonicStorageModule.forRoot(),
     HttpClientModule,
     CreateVisitorPackagePageModule,
+    EditVisitorPackagePageModule
   ],
   providers: [
     SplashScreen,
@@ -61,6 +64,7 @@ import { LoggedInService } from './services/logged-in.service';
     Device,
     FilterService,
     LoggedInService,
+    DateService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

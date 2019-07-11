@@ -56,9 +56,6 @@
           <ion-card-subtitle>{{ displayDate(package.startDate) }} to {{ displayDate(package.endDate) }}</ion-card-subtitle>
         </ion-card-header>     
         <ion-card-content *ngIf='detailToggles != [] && detailToggles[package.packageId]'>
-          <ion-item *ngIf='package.wifiSsid !== null'>
-            <ion-button expand="block" fill="outline" (click)='connectToWiFi(package.wifiSsid, package.wifiPassword, package.wifiType)'>Connect To WiFi</ion-button>
-          </ion-item>
           <ion-item>
             <ion-label *ngIf='package.wifiSsid !== null' ><ion-icon name="wifi"></ion-icon> Has WiFi access</ion-label>
             <ion-label *ngIf='package.wifiSsid === null' ><ion-icon name="wifi"></ion-icon> Doesn't have WiFi access</ion-label>
@@ -70,7 +67,7 @@
             <ion-label><ion-icon name="card"></ion-icon> Wallet not set up</ion-label>
           </ion-item>
           <ion-item>
-            <ion-button expand="block" fill="outline">Edit Package</ion-button>
+            <ion-button expand="block" fill="outline" (click)='editVisitorPackage(package.packageId)'>Edit Package</ion-button>
           </ion-item>
           <ion-item>
             <ion-button expand="block" fill="outline" (click)='reshare(package.packageId)'>Reshare Package</ion-button>

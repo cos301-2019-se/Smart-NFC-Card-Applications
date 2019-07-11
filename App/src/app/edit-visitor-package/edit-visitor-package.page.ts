@@ -1,17 +1,17 @@
 /**
-*	File Name:	    create-visitor-package.page.ts
+*	File Name:	    edit-visitor-package.page.ts
 *	Project:		    Smart-NFC-Application
 *	Orginization:	  VastExpanse
 *	Copyright:	    © Copyright 2019 University of Pretoria
-*	Classes:	      CreateVisitorPackagePage
+*	Classes:	      EditVisitorPackagePage
 *	Related documents:	None
 *
 *	Update History:
 *	Date		    Author		Version		Changes
 *	-----------------------------------------------------------------------------------------
-*	2019/06/26	Wian		  1.0		    Original
+*	2019/07/11	Wian		  1.0		    Original
 *
-*	Functional Description:   This file provides the modal to create visitor packages
+*	Functional Description:   This file provides the modal to edit visitor packages
 *	Error Messages:   “Error”
 *	Assumptions:  None
 *	Constraints: 	None
@@ -37,17 +37,19 @@ enum messageType{
 }
 
 /**
-* Purpose:	This class provides visitor package creation component
-*	Usage:		This class can be used to allow an employee to create a visitor package for a client
+* Purpose:	This class provides visitor package editing component
+*	Usage:		This class can be used to allow an employee to edit a visitor package for a client
 *	@author:	Wian du Plooy
 *	@version:	1.0
 */
 @Component({
-  selector: 'app-create-visitor-package',
-  templateUrl: './create-visitor-package.page.html',
-  styleUrls: ['./create-visitor-package.page.scss'],
+  selector: 'app-edit-visitor-package',
+  templateUrl: './edit-visitor-package.page.html',
+  styleUrls: ['./edit-visitor-package.page.scss'],
 })
-export class CreateVisitorPackagePage implements OnInit {
+export class EditVisitorPackagePage implements OnInit {
+
+  packageToUpdate: VisitorPackage = null;
 
   currentDate: Date = new Date();
   placeholderDate: string;
@@ -59,7 +61,6 @@ export class CreateVisitorPackagePage implements OnInit {
   errorMessage: string;
 
   employeeId: number = 1;
-  macAddress: string = null;
   startDate: Date = null;
   endDate: Date = null;
   roomIdString: string = '';
@@ -95,6 +96,14 @@ export class CreateVisitorPackagePage implements OnInit {
       { id: 2, name: "Offices" },
       { id: 3, name: "Labs" },
     ];
+
+    this.packageToUpdate = navParams.get('packageToUpdate');
+    this.startDate = this.packageToUpdate.startDate;
+    this.endDate = this.packageToUpdate.endDate;
+    let room: Object = this.rooms.find(room => room['name'] == this.packageToUpdate.access);
+    this.roomIdString = room ? room['id'] : null;
+    this.giveWiFi = (this.packageToUpdate.wifiSsid !== null);
+    this.limit = this.packageToUpdate.spendingLimit;
   }
 
   ngOnInit() {
@@ -114,7 +123,7 @@ export class CreateVisitorPackagePage implements OnInit {
   onSubmit(){
     let wifiParamsId = this.giveWiFi == true? 0: null;
     let roomId: number = this.roomIdString == '0' ? null: (+this.roomIdString);
-    this.createVisitorPackage(this.employeeId, this.startDate, this.endDate, this.macAddress, wifiParamsId, roomId, this.limit);
+    this.updateVisitorPackage(this.employeeId, this.startDate, this.endDate, wifiParamsId, roomId, this.limit);
   }
 
   /**
@@ -148,20 +157,13 @@ export class CreateVisitorPackagePage implements OnInit {
    * @param employeeId number Employee's id
    * @param startTime string DateTime of when the package becomes valid
    * @param endTime string DateTime of when the package expires
-   * @param macAddress string Mac Address of the client
    * @param wifiParamsId number WiFi's id visitor may connect to
    * @param roomId number Room's id visitor is visiting (furthest into the building)
    * @param limit number Max number of credits visitor can spend
    */
-  private async createVisitorPackage(employeeId: number, startTime: Date, endTime: Date, macAddress: string, wifiParamsId: number, roomId: number, limit: number){
-    console.log(startTime);
-    console.log(endTime);
+  private async updateVisitorPackage(employeeId: number, startTime: Date, endTime: Date, wifiParamsId: number, roomId: number, limit: number){
     if (employeeId === null) {
       this.showMessage("Ensure that you are logged in.", messageType.error, 5000);
-      return;
-    }
-    if (macAddress === null) {
-      this.showMessage("Adding a visitor is required.", messageType.error, 5000);
       return;
     }
     if (startTime === null || endTime === null) {
@@ -177,9 +179,8 @@ export class CreateVisitorPackagePage implements OnInit {
       return;
     }
     this.isBusy = true;
-    this.addVisitorPackageToDB(employeeId, startTime, endTime, macAddress, wifiParamsId, roomId, limit).subscribe(res => {
+    this.updateVisitorPackageInDB(employeeId, startTime, endTime, wifiParamsId, roomId, limit).subscribe(res => {
       this.isBusy = false;
-      let id: number = res['data']['visitorPackageId'];
       let ssid = null;
       let password = null;
       let type = null;
@@ -188,35 +189,18 @@ export class CreateVisitorPackagePage implements OnInit {
         password = 'Demo1234';
         type = 'WPA2';
       }
-      let visitorPackage: VisitorPackage = this.packageService.createVisitorPackage(id, 'Temp Comp Name', startTime, endTime, this.rooms.find(room => room['id'] == roomId)['name'], 
-        this.buildingLocation, ssid, password, type, limit, 0);
-      this.packageService.addSharedVisitorPackage(visitorPackage);
-      this.shareVisitorPackage(visitorPackage);
-    });
-  }
-
-  /**
-   * Function that share the visitor package with the client
-   * @param visitorPackage VisitorPackage object to share
-   */
-  private shareVisitorPackage(visitorPackage: VisitorPackage){
-    this.errorMessage = null;
-    this.successMessage = null;
-    this.infoMessage = null;
-    this.showMessage(`Hold the phone against the receiving phone.`, messageType.info, 0);
-    this.nfcService.SendData(visitorPackage.packageId, JSON.stringify(visitorPackage))
-    .then(() => {
-      this.showMessage("Package Shared", messageType.success, 0);
+      this.packageToUpdate.startDate = startTime;
+      this.packageToUpdate.endDate = endTime;
+      this.packageToUpdate.access = this.rooms.find(room => room['id'] == roomId)['name'];
+      this.packageToUpdate.wifiSsid = ssid;
+      this.packageToUpdate.wifiPassword = password;
+      this.packageToUpdate.wifiType = type;
+      this.packageToUpdate.spendingLimit = limit;
+      this.packageService.addSharedVisitorPackage(this.packageToUpdate);
+      this.showMessage("Package Updated", messageType.success, 0);
       setTimeout(() => {
         this.closeModal()
       }, 1500);
-    })
-    .catch((err) => {
-      this.showMessage(`Error: ${err} - Try turning on 'Android Beam'`, messageType.error, 0);
-    })
-    .finally(() => {
-      this.infoMessage = null;
-      this.nfcService.Finish();
     });
   }
 
@@ -225,38 +209,14 @@ export class CreateVisitorPackagePage implements OnInit {
    * @param employeeId number Employee's id
    * @param startTime string DateTime of when the package becomes valid
    * @param endTime string DateTime of when the package expires
-   * @param macAddress string Mac Address of the client
    * @param wifiParamsId number WiFi's id visitor may connect to
    * @param roomId number Room's id visitor is visiting (furthest into the building)
    * @param limit number Max number of credits visitor can spend
    * @return
    */
-  private addVisitorPackageToDB(employeeId: number, startTime: Date, endTime: Date, macAddress: string, wifiParamsId: number, roomId: number, limit: number){
+  private updateVisitorPackageInDB(employeeId: number, startTime: Date, endTime: Date, wifiParamsId: number, roomId: number, limit: number){
     let startTimeString = this.dateService.databaseDate(startTime);
     let endTimeString = this.dateService.databaseDate(endTime);
-    return this.requestService.addVisitorPackage(employeeId, startTimeString, endTimeString, macAddress, wifiParamsId, roomId, limit);
-  }
-
-  /**
-   * Function used to get the visitor DeviceID
-   */
-  assignVisitor(){
-    this.errorMessage = null;
-    this.successMessage = null;
-    this.infoMessage = null;
-    this.nfcService.IsEnabled()
-    .then(() => {
-      this.showMessage(`Hold the phone against the sharing device.`, messageType.info, 0);
-      this.nfcService.ReceiveData().subscribe(data => {
-        let payload = this.nfcService.BytesToString(data.tag.ndefMessage[0].payload)     
-        this.nfcService.Finish();
-        let uuid = payload.slice(3);
-        this.showMessage(`Visitor Device Selected.`, messageType.success, 2000);
-        this.macAddress = uuid;
-      });
-    })
-    .catch(() => {
-      this.showMessage(`NFC seems to be off. Please try turing it on.`, messageType.error, 0);
-    })
+    return this.requestService.updateVisitorPackage(this.packageToUpdate.packageId, employeeId, startTimeString, endTimeString, wifiParamsId, roomId, limit);
   }
 }

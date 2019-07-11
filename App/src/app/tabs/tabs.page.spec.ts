@@ -3,6 +3,10 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { TabsPage } from './tabs.page';
 import { PopoverController, AngularDelegate } from '@ionic/angular';
+import { LocalStorageService } from '../services/local-storage.service';
+import { IonicStorageModule } from '@ionic/storage';
+import { RequestModuleService } from '../services/request-module.service';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('TabsPage', () => {
   let component: TabsPage;
@@ -10,8 +14,14 @@ describe('TabsPage', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
+      imports: [
+        HttpClientModule,
+        IonicStorageModule.forRoot()
+      ],
       providers: [
         PopoverController,
+        LocalStorageService,
+        RequestModuleService,
         AngularDelegate
       ],
       declarations: [TabsPage],

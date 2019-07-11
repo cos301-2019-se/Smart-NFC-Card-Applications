@@ -236,23 +236,28 @@ export class RequestModuleService {
   }
 
   /**
-   * Function that converts a DateTime into a string as expected by the backend
-   * @param date Date to convert
-   * @return string formatted date
+   * Function to edit a visitor package in the database
+   * @param packageId number Id of package to update
+   * @param employeeId number Employee's id
+   * @param startTime string DateTime of when the package becomes valid
+   * @param endTime string DateTime of when the package expires
+   * @param wifiParamsId number WiFi's id visitor may connect to
+   * @param roomId number Room's id visitor is visiting (furthest into the building)
+   * @param limit number Max number of credits visitor can spend
+   * @param spent number Credits already spent on the virtual card (defaults to 0)
+   * @return Observable<Object> response containing json from back-end server
    */
-  dateTimeToString(date: Date){
-    date = new Date(date);
-    let day = date.getDate().toString();
-    if (day <= '9') {
-      day = '0' + day;
+  updateVisitorPackage(packageId: number, employeeId: number, startTime: string, endTime: string, wifiParamsId: number, roomId: number, limit: number) {
+    if (this.demoMode) {
+      return new Observable<Object>(observer => {
+        observer.next(this.visitorPackageStub);
+        observer.complete();
+      });
     }
-    let month = (date.getMonth() + 1).toString();
-    if (month <= '9') {
-      month = '0' + month;
+    else {
+      let json: JSON = JSON.parse(`{'employeeId': ${employeeId}, 'startTime': '${startTime}', 'endTime': '${endTime}', 'packageId': '${packageId}', 
+        'wifiParamsId': ${wifiParamsId}, 'roomId': ${roomId}, 'limit': ${limit}`);
+      return this.post(`${this.baseUrl}/app/editVisitorPackage`, json);
     }
-    let year = date.getFullYear();
-    let hours = date.getHours();
-    let minutes = date.getMinutes();
-    return `${year}/${month}/${day} ${hours}:${minutes}`;
   }
 }

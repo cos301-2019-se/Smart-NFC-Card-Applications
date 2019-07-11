@@ -1949,12 +1949,24 @@ class AdminLogic
                     data.employeeId = this.body.employeeId;
                     message = "employeeId Deleted! - Mock";
                     success = true;
+                    me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Delete Employee not implemented";
-                    data = null;
+                    let employeeObj = await me.sharedLogic.crudController.getEmployeeByEmployeeId(me.body.employeeId);
+
+                    if(employeeObj.success){
+                        console.log(employeeObj);
+                        let deleteEmployeeObj = await me.sharedLogic.crudController.deleteEmployee(me.body.employeeId);
+                        if(deleteEmployeeObj.success){
+                            let passwordObj = await me.sharedLogic.crudController.deletePassword(employeeObj.data.passwordId);
+                        }
+
+                        me.sharedLogic.endServe(true,"Employee Deleted", {employeeId: me.body.employeeId});
+
+                    }else {
+                        me.sharedLogic.endServe(false, "Employee Does not Exists", false)
+                    }
                 }
             }
             else{
@@ -1962,6 +1974,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
+                me.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -1969,8 +1982,9 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
+            me.sharedLogic.endServe(success, message, data);
         }
-        this.sharedLogic.endServe(success, message, data);
+
     }
 
     /**

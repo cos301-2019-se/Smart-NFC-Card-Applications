@@ -3,9 +3,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Index</title>
+    <title>Home</title>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="Js/home.js"></script>
     <script>
         // localStorage.clear(); // -----> uncomment this in order to see the login page again (the api key will be used otherwise)
         var tmpKey = localStorage.getItem("apiKey");
@@ -15,8 +16,13 @@
                     //if the api key is invalid, go to login page
                     window.location.replace("login.html");
                 } else {
-                    $("body").fadeIn(1000);
-                }
+					
+					loadHomeContents(function()
+					{
+						$("body").fadeIn(1000);
+					});
+					
+					}
             });
         } else {
             window.location.replace("login.html");
@@ -29,10 +35,35 @@
 </head>
 
 <body style="display: none">
-    <!-- CONTENT OF PAGE GOES HERE -->
-    <p>Index</p>
-    <!-- Scripts loaded at end of page -->
-    <script type="text/javascript" src="Js/index.js"></script>
+    <div class="container border col-md-10 col-10">
+		<h2 class="text-center" style="margin-top:20px">Company Home</h2>
+		
+		<div class="container">
+		  <div class="row border-top">
+			<div class="col-4 border-left">
+			  1 of 2
+			</div>
+			<div class="col-4 border-left border-right">
+			  2 of 2
+			</div>
+		  </div>
+		  <div class="row border-top border-bottom">
+			<div class="col-6 border-left">
+			  1 of 3
+			</div>
+			<div class="col-6 border-left border-right">
+			  2 of 3
+			</div>
+		  </div>
+		</div>
+		
+		<div class="form-group">
+
+			<button id="btnSubmit" onclick="login()" class="btn btn-primary">Submit</button>
+		</div>
+	</div>
+	
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>

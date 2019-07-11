@@ -1522,6 +1522,10 @@ class AdminLogic
      *                          }
      */
     async getRoomsByBuildingId(){
+		
+		//console.log("first" + this.body.buildingId);
+		//console.log(this.body);
+		
         let message;
         let data = new Object();
         let success;
@@ -1529,7 +1533,7 @@ class AdminLogic
         let presentParams = false;
         let presentReturn = "";
 
-        if(me.body.buildingId === undefined){
+        if(this.body.buildingId === undefined){
             presentParams = true;
             presentReturn += "buildingId, ";
         }
@@ -1537,14 +1541,14 @@ class AdminLogic
         if(!presentParams){
             let invalidParams = false;
             let invalidReturn = "";
-            if(!me.sharedLogic.validateNonEmpty(me.body.buildingId) || !me.sharedLogic.validateNumeric(me.body.buildingId)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.buildingId) || !this.sharedLogic.validateNumeric(this.body.buildingId)){
                 invalidParams = true;
                 invalidReturn += "buildingId, ";
             }
 
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(me.demoMode){
+                if(this.demoMode){
                     //return mock data
                     success = true;
                     message = "Rooms Retrieved!- Mock";
@@ -1561,19 +1565,23 @@ class AdminLogic
                         parentRoomList : "0,1,2",
                         buildingId : 0,
                     });
-                        me.sharedLogic.endServe(success, message, data);
+                        this.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    let roomObj = await me.sharedLogic.crudController.getRoomsByBuildingId(me.body.buildingId);
+					
+		
+                    let roomObj = await this.sharedLogic.crudController.getRoomsByBuildingId(this.body.buildingId);
                     if(roomObj.success){
                         success = roomObj.success;
                         message = "Rooms Retrieved!";
                         data = roomObj.data;
-                        me.sharedLogic.endServe(success, message, data);
+						//console.log("second" + this.body.buildingId);
+                        this.sharedLogic.endServe(success, message, data);
                     }
                     else{
-                        me.sharedLogic.endServe(roomObj.success, roomObj.message, null);
+						//console.log("second error" + this.body.buildingId);
+                        this.sharedLogic.endServe(roomObj.success, roomObj.message, null);
                     }
                 }
             }
@@ -1582,7 +1590,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
-                me.sharedLogic.endServe(success, message, data);
+                this.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -1590,7 +1598,7 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
-            me.sharedLogic.endServe(success, message, data);
+            this.sharedLogic.endServe(success, message, data);
         }
     }
 

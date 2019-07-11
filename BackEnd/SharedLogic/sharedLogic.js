@@ -251,6 +251,8 @@ class SharedLogic {
 					} else {
 						this.endServe(false, "Invalid Login Endpoint", null);
 					}
+				}else{
+					this.endServe(false, "Invalid API Key", null);
 				}
 			} else {
 				this.login();

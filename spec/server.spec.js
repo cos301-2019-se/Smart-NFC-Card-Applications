@@ -672,13 +672,15 @@ describe('Server.js Unit Testing', function () {
             '            "companyId": 0,\n\t' +
             '            "companyName": "Comp1",\n\t' +
             '            "companyWebsite": "www.Comp1.com",\n\t' +
-            '            "passwordId": 0\n\t' +
+            '            "passwordId": 0,\n\t' +
+            '            "username": "comp1"\n\t' +
             '        },\n\t' +
             '        {\n\t' +
             '            "companyId": 1,\n\t' +
             '            "companyName": "Comp2",\n\t' +
             '            "companyWebsite": "www.Comp2.com",\n\t' +
-            '            "passwordId": 1\n\t' +
+            '            "passwordId": 1,\n\t' +
+            '            "username": "comp2"\n\t' +
             '        }\n\t' +
             '    ]\n\t' +
             '}'
@@ -691,13 +693,15 @@ describe('Server.js Unit Testing', function () {
                             "companyId": 0,
                             "companyName": "Comp1",
                             "companyWebsite": "www.Comp1.com",
-                            "passwordId": 0
+                            "passwordId": 0,
+                            "username": "comp1"
                         },
                         {
                             "companyId": 1,
                             "companyName": "Comp2",
                             "companyWebsite": "www.Comp2.com",
-                            "passwordId": 1
+                            "passwordId": 1,
+                            "username": "comp2"
                         }
                     ]
                 });
@@ -1169,7 +1173,8 @@ describe('Server.js Unit Testing', function () {
             '            "email": "duncan@gmail.com",\n\t' +
             '            "companyId": 0,\n\t' +
             '            "buildingId": 0,\n\t' +
-            '            "passwordId": 0\n\t' +
+            '            "passwordId": 0,\n\t' +
+            '            "username": "dunc1"\n\t' +
             '        },\n\t' +
             '        {\n\t' +
             '            "employeeId": 1,\n\t' +
@@ -1180,7 +1185,8 @@ describe('Server.js Unit Testing', function () {
             '            "email": "piet.pompies@gmail.com",\n\t' +
             '            "companyId": 0,\n\t' +
             '            "buildingId": 0,\n\t' +
-            '            "passwordId": 0\n\t' +
+            '            "passwordId": 0,\n\t' +
+            '            "username": "dunc2"\n\t' +
             '        }\n\t' +
             '    ]\n\t' +
             '}'
@@ -1198,7 +1204,8 @@ describe('Server.js Unit Testing', function () {
                             "email": "duncan@gmail.com",
                             "companyId": 0,
                             "buildingId": 0,
-                            "passwordId": 0
+                            "passwordId": 0,
+                            "username": "dunc1"
                         },
                         {
                             "employeeId": 1,
@@ -1209,7 +1216,8 @@ describe('Server.js Unit Testing', function () {
                             "email": "piet.pompies@gmail.com",
                             "companyId": 0,
                             "buildingId": 0,
-                            "passwordId": 0
+                            "passwordId": 0,
+                            "username": "dunc2"
                         }
                     ]
                 });
@@ -1298,7 +1306,8 @@ describe('Server.js Unit Testing', function () {
             '            "email": "duncan@gmail.com",\n\t' +
             '            "companyId": 0,\n\t' +
             '            "buildingId": 0,\n\t' +
-            '            "passwordId": 0\n\t' +
+            '            "passwordId": 0,\n\t' +
+            '            "username": "dunc1"\n\t' +
             '        },\n\t' +
             '        {\n\t' +
             '            "employeeId": 1,\n\t' +
@@ -1309,7 +1318,8 @@ describe('Server.js Unit Testing', function () {
             '            "email": "piet.pompies@gmail.com",\n\t' +
             '            "companyId": 0,\n\t' +
             '            "buildingId": 0,\n\t' +
-            '            "passwordId": 1\n\t' +
+            '            "passwordId": 1,\n\t' +
+            '            "username": "dunc2"\n\t' +
             '        }\n\t' +
             '    ]\n\t' +
             '}'
@@ -1327,7 +1337,8 @@ describe('Server.js Unit Testing', function () {
                             "email": "duncan@gmail.com",
                             "companyId": 0,
                             "buildingId": 0,
-                            "passwordId": 0
+                            "passwordId": 0,
+                            "username": "dunc1"
                         },
                         {
                             "employeeId": 1,
@@ -1338,7 +1349,8 @@ describe('Server.js Unit Testing', function () {
                             "email": "piet.pompies@gmail.com",
                             "companyId": 0,
                             "buildingId": 0,
-                            "passwordId": 1
+                            "passwordId": 1,
+                            "username": "dunc2"
                         }
                     ]
                 });
@@ -1797,7 +1809,10 @@ describe('Server.js Unit Testing', function () {
             '            "buildingLongitude": "20,120,10",\n\t' +
             '            "buildingBranchName": "Vast Expanse JHB",\n\t' +
             '            "companyId": 0,\n\t' +
-            '            "wifiParamsId": 0\n\t' +
+            '            "wifiParamsId": 0,\n\t' +
+            '            "networkSsid": "Vast Expanse Guests",\n\t' +
+            '            "networkType": "TYPE",\n\t' +
+            '            "networkPassword": "1234"\n\t' +
             '        },\n\t' +
             '        {\n\t' +
             '            "buildingId": 1,\n\t' +
@@ -1805,7 +1820,10 @@ describe('Server.js Unit Testing', function () {
             '            "buildingLongitude": "20,120,10",\n\t' +
             '            "buildingBranchName": "Vast Expanse PTA",\n\t' +
             '            "companyId": 0,\n\t' +
-            '            "wifiParamsId": 1\n\t' +
+            '            "wifiParamsId": 1,\n\t' +
+            '            "networkSsid": "Vast Expanse Guests",\n\t' +
+            '            "networkType": "TYPE",\n\t' +
+            '            "networkPassword": "1234"\n\t' +
             '        }\n\t' +
             '    ]\n\t' +
             '}'
@@ -1820,7 +1838,10 @@ describe('Server.js Unit Testing', function () {
                             "buildingLongitude": "20,120,10",
                             "buildingBranchName": "Vast Expanse JHB",
                             "companyId": 0,
-                            "wifiParamsId": 0
+                            "wifiParamsId": 0,
+                            "networkSsid": "Vast Expanse Guests",
+                            "networkType": "TYPE",
+                            "networkPassword": "1234"
                         },
                         {
                             "buildingId": 1,
@@ -1828,7 +1849,10 @@ describe('Server.js Unit Testing', function () {
                             "buildingLongitude": "20,120,10",
                             "buildingBranchName": "Vast Expanse PTA",
                             "companyId": 0,
-                            "wifiParamsId": 1
+                            "wifiParamsId": 1,
+                            "networkSsid": "Vast Expanse Guests",
+                            "networkType": "TYPE",
+                            "networkPassword": "1234"
                         }
                     ]
                 });

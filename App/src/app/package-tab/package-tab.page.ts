@@ -30,16 +30,7 @@ import { VisitorPackagesService } from '../services/visitor-packages.service';
 import { EventEmitterService } from '../services/event-emitter.service';   
 import { FilterService } from '../services/filter.service';   
 import { DateService } from '../services/date.service';
-
-/**
-* Purpose:	This enum provides message types
-*	Usage:		This enum can be used to identify a type of message to display
-*	@author:	Wian du Plooy
-*	@version:	1.0
-*/
-enum messageType{
-    success, info, error
-}
+import { MessageType } from '../tabs/tabs.page';
 
 /**
 * Purpose:	This class provides the component that allows viewing of shared cards as well as adding new ones
@@ -55,9 +46,6 @@ enum messageType{
 export class PackageTabPage implements OnInit{
   packages: VisitorPackage[] = [];
   detailToggles = [];
-  errorMessage: string = null;
-  successMessage: string = null;
-  infoMessage: string = null;
   check;
 
   /**
@@ -81,7 +69,7 @@ export class PackageTabPage implements OnInit{
   ) { }
 
   ngOnInit() {    
-    this.eventEmitterService.subscriptions.push(
+    this.eventEmitterService.menuSubscribe(
       this.eventEmitterService.invokeMenuButtonEvent.subscribe(functionName => {    
           this.menuEvent(functionName);
         })
@@ -92,10 +80,7 @@ export class PackageTabPage implements OnInit{
    * Function triggers when the tab is navigated to
    */
   ionViewDidEnter() {
-    //Initialize message values 
-    this.errorMessage = null;
-    this.successMessage = null;
-    this.infoMessage = null;
+    this.showMessage('', MessageType.reset);
     // Gets the business cards
     this.loadPackages();
   }
@@ -172,14 +157,13 @@ export class PackageTabPage implements OnInit{
    * @param destination where to go to
    */
   navigate(destination){
-    this.errorMessage = null;
-    this.successMessage = null;
+    this.showMessage('', MessageType.reset);
     let dest = new LocationModel(destination.latitude, destination.longitude, destination.label);    
-    this.showMessage(`Please wait while navigator is launched.`, messageType.info, 5000);
+    this.showMessage(`Please wait while navigator is launched.`, MessageType.info, 5000);
     this.locationService.navigate(dest, () => {
-      this.showMessage(`Navigator launching.`, messageType.success, 5000);
+      this.showMessage(`Navigator launching.`, MessageType.success, 5000);
     }, (err) => {
-      this.showMessage(`Could not open launcher: ${err}`, messageType.error, 5000);
+      this.showMessage(`Could not open launcher: ${err}`, MessageType.error, 5000);
     });
   }
 
@@ -187,65 +171,33 @@ export class PackageTabPage implements OnInit{
    * Function that shares the device ID using NFC
    */
   public shareId(){
-    this.errorMessage = null;
-    this.successMessage = null;
-    this.infoMessage = null;
-    this.showMessage(`Hold the phone against the receiving phone.`, messageType.info, 0);
-    console.log(this.device.uuid);
+    this.showMessage('', MessageType.reset);
+    this.showMessage(`Hold the phone against the receiving phone.`, MessageType.info, 0);
     this.nfcService.SendData(this.device.uuid, this.device.uuid)
     .then(() => {
-      this.showMessage(`Shared Device ID.`, messageType.success, 5000);
+      this.showMessage(`Shared Device ID.`, MessageType.success, 5000);
     })
     .catch((err) => {
-      this.showMessage(`Error: ${err} - Try turning on 'Android Beam'`, messageType.error, 0);
+      this.showMessage(`Error: ${err} - Try turning on 'Android Beam'`, MessageType.error, 0);
     })
     .finally(() => {
-      this.infoMessage = null;
       this.nfcService.Finish();
     });
-  }
-
-  /**
-   * Function that displays a message to the user
-   * @param message string message to display
-   * @param type number from enum, type of message to display
-   * @param timeout number after how long it should disappear (0 = don't dissappear)
-   */
-  private showMessage(message: string, type: number, timeout: number = 0) {
-    this.successMessage = null;
-    this.infoMessage = null;
-    this.errorMessage = null;
-    switch(type) {
-      case messageType.success: 
-        this.successMessage = message;
-        if (timeout != 0) { setTimeout(() => { this.successMessage = null;}, timeout); }
-        break;
-      case messageType.info:
-        this.infoMessage = message;
-        if (timeout != 0) { setTimeout(() => { this.infoMessage = null;}, timeout); }
-        break;
-      case messageType.error:
-        this.errorMessage = message;
-        if (timeout != 0) { setTimeout(() => { this.errorMessage = null;}, timeout); }
-        break;
-    }
   }
 
   /**
    * Function listens for an NFC Tag with the Visitor Package
    */
   public addVisitorPackage(){
-    this.errorMessage = null;
-    this.successMessage = null;
-    this.infoMessage = null;
+    this.showMessage('', MessageType.reset);
     this.nfcService.IsEnabled()
     .then(() => {
-      this.showMessage(`Hold the phone against the sharing device.`, messageType.info, 0);
+      this.showMessage(`Hold the phone against the sharing device.`, MessageType.info, 0);
       this.nfcService.ReceiveData().subscribe(data => {
         let payload = this.nfcService.BytesToString(data.tag.ndefMessage[0].payload);    
         this.nfcService.Finish();
         let json = JSON.parse(payload.slice(3));
-        this.showMessage(`Received ${json.companyName} Visitor Package.`, messageType.success, 5000);
+        this.showMessage(`Received ${json.companyName} Visitor Package.`, MessageType.success, 5000);
         let newPackage: VisitorPackage = this.packageService.createVisitorPackage(json.packageId, json.companyName, json.startDate, json.endDate, json.access,
           json.location, json.wifiSsid, json.wifiPassword, json.wifiType, json.spendingLimit, json.amountSpent);
         this.packageService.addVisitorPackage(newPackage)
@@ -255,7 +207,7 @@ export class PackageTabPage implements OnInit{
       });
     })
     .catch(() => {
-      this.showMessage(`NFC seems to be off. Please try turing it on.`, messageType.error, 0);
+      this.showMessage(`NFC seems to be off. Please try turing it on.`, MessageType.error, 0);
     })
   }
 
@@ -278,10 +230,10 @@ export class PackageTabPage implements OnInit{
   connectToWiFi(ssid: string, password: string, type: string){
     this.wifiService.connectToWifi(ssid, password, type)
     .then(() => {
-      this.showMessage('Connected to WiFi', messageType.success, 2000);
+      this.showMessage('Connected to WiFi', MessageType.success, 2000);
     })
     .catch(err => {
-      this.showMessage(`Could not connect to WiFi: ${err}`, messageType.error, 5000);
+      this.showMessage(`Could not connect to WiFi: ${err}`, MessageType.error, 5000);
     });
   }  
 
@@ -304,5 +256,15 @@ export class PackageTabPage implements OnInit{
     startDate = new Date(startDate);
     endDate = new Date(endDate);
     return (startDate <= currDate && endDate >= currDate);
+  }
+
+  /**
+   * Function that displays a message to the user
+   * @param message string message to display
+   * @param type number from enum, type of message to display
+   * @param timeout number after how long it should disappear (0 = don't dissappear)
+   */
+  showMessage(message: string, type: number, timeout: number = 5000) {
+    this.eventEmitterService.messageEvent(message, type, timeout);
   }
 }

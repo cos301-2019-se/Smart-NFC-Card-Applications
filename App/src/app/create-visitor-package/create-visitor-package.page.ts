@@ -123,7 +123,7 @@ export class CreateVisitorPackagePage implements OnInit {
    * @param type number from enum, type of message to display
    * @param timeout number after how long it should disappear (0 = don't dissappear)
    */
-  private showMessage(message: string, type: number, timeout: number = 0) {
+  private showMessage(message: string, type: number, timeout: number = 5000) {
     this.successMessage = null;
     this.infoMessage = null;
     this.errorMessage = null;
@@ -154,8 +154,6 @@ export class CreateVisitorPackagePage implements OnInit {
    * @param limit number Max number of credits visitor can spend
    */
   private async createVisitorPackage(employeeId: number, startTime: Date, endTime: Date, macAddress: string, wifiParamsId: number, roomId: number, limit: number){
-    console.log(startTime);
-    console.log(endTime);
     if (employeeId === null) {
       this.showMessage("Ensure that you are logged in.", messageType.error, 5000);
       return;

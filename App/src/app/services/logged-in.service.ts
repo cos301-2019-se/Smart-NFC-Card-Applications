@@ -21,7 +21,7 @@ import { Injectable } from '@angular/core';
 import { RequestModuleService } from './request-module.service';
 import { LocalStorageService } from './local-storage.service';
 import { BusinessCardsService } from './business-cards.service';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 
 /**
 * Purpose:	This class provides the logged in service injectable
@@ -35,7 +35,7 @@ import { Subject } from 'rxjs';
 export class LoggedInService {
 
   private loggedIn: boolean = false;
-  private employeeId: number = 0;
+  private employeeId: number = null;
   private apiKeyName: string = 'apiKey';
 
   /**
@@ -61,9 +61,11 @@ export class LoggedInService {
   /**
    * Function to set the logged in status
    * @param isLoggedIn boolean to set loggedIn to
+   * @param employeeId number employee logged in or out (default = null)
    */
-  private setLoggedIn(isLoggedIn: boolean){
+  private setLoggedIn(isLoggedIn: boolean, employeeId: number = null){
     this.loggedIn = isLoggedIn;
+    this.employeeId = employeeId;
   }
 
   /**
@@ -75,26 +77,32 @@ export class LoggedInService {
   login(username: string, password: string){
     let subject = new Subject<Object>();
     if(username.trim() == "" || password.trim() == "") {
-      subject.next({success: false, message: "Please enter a username and password."});
-    }
-    else {
-      this.req.login(username, password).subscribe(res => {
-        if (res['success'] === true) {
-          this.setLoggedIn(true);
-          let apiKey = res['data']['apiKey'];
-          this.storage.Save(this.apiKeyName, apiKey);
-          this.req.getBusinessCard(res['data']['id']).subscribe(response => {
-            let cardDetails = response['data'];
-            this.cardService.setOwnBusinessCard(cardDetails);
-          })
-          subject.next({success: true, message: res['message']});
-        }
-        else {
-          subject.next({success: false, message: res['message']});
-        }
+      return new Observable<Object>(observer => {
+        observer.next({success: false, message: "Please enter a username and password."});
+        observer.complete();
       });
     }
-    return subject.asObservable();
+    else {
+      setTimeout(() => {
+        this.req.login(username, password).subscribe(res => {
+          if (res['success'] === true) {
+            this.setLoggedIn(true, res['data']['employeeId']);
+            let apiKey = res['data']['apiKey'];
+            this.storage.Save(this.apiKeyName, apiKey);
+            this.req.getBusinessCard(res['data']['id']).subscribe(response => {
+              let cardDetails = response['data'];
+              this.cardService.setOwnBusinessCard(cardDetails);
+            })
+            subject.next({success: true, message: res['message']});
+            subject.complete();
+          }
+          else {
+            subject.next({success: false, message: res['message']});
+          }
+        });
+      }, 100);
+      return subject.asObservable();
+    }
   }
 
   /**
@@ -103,15 +111,19 @@ export class LoggedInService {
    */
   logout(){
     let subject = new Subject<Object>();
-    this.req.logout().subscribe(res => {
-      if (res['success'] === true) {
-        this.setLoggedIn(false);
-        subject.next({success: true, message: res['message']});
-      }
-      else {
-        subject.next({success: false, message: res['message']});
-      }
-    });
+    setTimeout(() => {
+      this.req.logout().subscribe(res => {
+        if (res['success'] === true) {
+          this.setLoggedIn(false);
+          subject.next({success: true, message: res['message']});
+          subject.complete();
+        }
+        else {
+          subject.next({success: false, message: res['message']});
+          subject.complete();
+        }
+      });
+    }, 100);
     return subject.asObservable();
   }
 }

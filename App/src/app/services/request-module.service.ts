@@ -46,7 +46,7 @@ export class RequestModuleService {
     "message": "Login successful.",
     "data": {
         "apiKey": "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
-        "id": 0
+        "employeeId": 0
     }
   }`);
   logoutStub: JSON = JSON.parse(`{ 

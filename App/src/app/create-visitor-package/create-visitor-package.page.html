@@ -12,19 +12,13 @@
 <ion-content padding>
   <ion-progress-bar *ngIf='isBusy' type="indeterminate"></ion-progress-bar>  
   <ion-item *ngIf='successMessage' color='success'>
-    <ion-label text-wrap>
-      {{ successMessage }}
-    </ion-label>
+    <ion-label text-wrap> {{ successMessage }} </ion-label>
   </ion-item>
   <ion-item *ngIf='infoMessage' color='secondary'>
-    <ion-label text-wrap>
-      {{ infoMessage }}
-    </ion-label>
+    <ion-label text-wrap> {{ infoMessage }} </ion-label>
   </ion-item>
   <ion-item *ngIf='errorMessage' color='danger'>
-    <ion-label text-wrap>
-      {{ errorMessage }}
-    </ion-label>
+    <ion-label text-wrap> {{ errorMessage }} </ion-label>
   </ion-item>
 
   <ion-item lines="full">

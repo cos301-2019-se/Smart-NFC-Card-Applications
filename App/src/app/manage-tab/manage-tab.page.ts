@@ -34,16 +34,7 @@ import { VisitorPackagesService } from '../services/visitor-packages.service';
 import { NfcControllerService } from '../services/nfc-controller.service';
 import { EditVisitorPackagePage } from '../edit-visitor-package/edit-visitor-package.page';
 import { DateService } from '../services/date.service';
-
-/**
-* Purpose:	This enum provides message types
-*	Usage:		This enum can be used to identify a type of message to display
-*	@author:	Wian du Plooy
-*	@version:	1.0
-*/
-enum messageType{
-    success, info, error
-}
+import { MessageType } from '../tabs/tabs.page';
 
 /**
 * Purpose:	This class provides the login tab component
@@ -57,10 +48,6 @@ enum messageType{
   styleUrls: ['manage-tab.page.scss'],
 })
 export class ManageTabPage implements OnInit {
-
-  successMessage: string;
-  errorMessage: string;
-  infoMessage: string;
 
   username: string = '';
   password: string = '';
@@ -103,7 +90,7 @@ export class ManageTabPage implements OnInit {
   ngOnInit() {
     this.resetMessages();
     this.checkLoggedIn();    
-    this.eventEmitterService.subscriptions.push(
+    this.eventEmitterService.menuSubscribe(
       this.eventEmitterService.invokeMenuButtonEvent.subscribe(functionName => {    
           this.menuEvent(functionName);
         })
@@ -140,15 +127,17 @@ export class ManageTabPage implements OnInit {
     this.loginService.login(this.username, this.password).subscribe(res => {
       if (res['success'] === true) {
         this.loggedIn = true;
-        this.showMessage(res['message'], messageType.success, this.messageTimeout);
+        this.username = null;
+        this.password = null;
+        this.showMessage(res['message'], MessageType.success, this.messageTimeout);
       }
       else {
         this.loggedIn = false;
-        this.showMessage(res['message'], messageType.error, this.messageTimeout);
+        this.showMessage(res['message'], MessageType.error, this.messageTimeout);
       }
       this.updateTitle();
+      this.isBusy = false;
     });
-    this.isBusy = false;
   }
 
   /**
@@ -159,16 +148,15 @@ export class ManageTabPage implements OnInit {
     this.isBusy = true;
     this.loginService.logout().subscribe(res => {
       if (res['success'] === true) {
-        this.loggedIn = true;
-        this.showMessage(res['message'], messageType.success, this.messageTimeout);
+        this.loggedIn = false;
+        this.showMessage(res['message'], MessageType.success, this.messageTimeout);
       }
       else {
-        this.loggedIn = false;
-        this.showMessage(res['message'], messageType.error, this.messageTimeout);
+        this.showMessage(res['message'], MessageType.error, this.messageTimeout);
       }
       this.updateTitle();
+      this.isBusy = false;
     });
-    this.isBusy = false;
   }
 
   /**
@@ -194,35 +182,7 @@ export class ManageTabPage implements OnInit {
    * Function that resets the error and success messages
    */
   private resetMessages() {
-    this.successMessage = null;
-    this.errorMessage = null;
-    this.infoMessage = null;
-  }
-
-  /**
-   * Function that displays a message to the user
-   * @param message string message to display
-   * @param type number from enum, type of message to display
-   * @param timeout number after how long it should disappear (0 = don't dissappear)
-   */
-  private showMessage(message: string, type: number, timeout: number = 0) {
-    this.successMessage = null;
-    this.infoMessage = null;
-    this.errorMessage = null;
-    switch(type) {
-      case messageType.success: 
-        this.successMessage = message;
-        if (timeout != 0) { setTimeout(() => { this.successMessage = null;}, timeout); }
-        break;
-      case messageType.info:
-        this.infoMessage = message;
-        if (timeout != 0) { setTimeout(() => { this.infoMessage = null;}, timeout); }
-        break;
-      case messageType.error:
-        this.errorMessage = message;
-        if (timeout != 0) { setTimeout(() => { this.errorMessage = null;}, timeout); }
-        break;
-    }
+    this.showMessage('', MessageType.reset);
   }
 
   /**
@@ -359,21 +319,28 @@ export class ManageTabPage implements OnInit {
    * @param visitorPackage VisitorPackage object to share
    */
   private shareVisitorPackage(visitorPackage: VisitorPackage){
-    this.errorMessage = null;
-    this.successMessage = null;
-    this.infoMessage = null;
-    this.showMessage(`Hold the phone against the receiving phone.`, messageType.info, 0);
+    this.showMessage('', MessageType.reset);
+    this.showMessage(`Hold the phone against the receiving phone.`, MessageType.info, 0);
     this.nfcService.SendData(visitorPackage.packageId, JSON.stringify(visitorPackage))
     .then(() => {
-      this.showMessage("Package Reshared", messageType.success, 2000);
+      this.showMessage("Package Reshared", MessageType.success, 2000);
     })
     .catch((err) => {
-      this.showMessage(`Error: ${err} - Try turning on 'Android Beam'`, messageType.error, 5000);
+      this.showMessage(`Error: ${err} - Try turning on 'Android Beam'`, MessageType.error, 5000);
     })
     .finally(() => {
-      this.infoMessage = null;
       this.nfcService.Finish();
     });
+  }
+
+  /**
+   * Function that displays a message to the user
+   * @param message string message to display
+   * @param type number from enum, type of message to display
+   * @param timeout number after how long it should disappear (0 = don't dissappear)
+   */
+  showMessage(message: string, type: number, timeout: number = 5000) {
+    this.eventEmitterService.messageEvent(message, type, timeout);
   }
 }
 

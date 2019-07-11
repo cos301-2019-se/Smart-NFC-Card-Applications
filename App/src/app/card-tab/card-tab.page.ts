@@ -26,17 +26,8 @@ import { NfcControllerService } from '../services/nfc-controller.service';
 import { LocationService } from '../services/location.service';
 import { LocationModel } from '../models/location.model';
 import { EventEmitterService } from '../services/event-emitter.service';   
-import { FilterService } from '../services/filter.service';   
-
-/**
-* Purpose:	This enum provides message types
-*	Usage:		This enum can be used to identify a type of message to display
-*	@author:	Wian du Plooy
-*	@version:	1.0
-*/
-enum messageType{
-    success, info, error
-}
+import { FilterService } from '../services/filter.service';  
+import { MessageType } from '../tabs/tabs.page';
 
 /**
 * Purpose:	This class provides the component that allows viewing of shared cards as well as adding new ones
@@ -52,9 +43,6 @@ enum messageType{
 export class CardTabPage implements OnInit{
   cards: BusinessCard[] = [];
   detailToggles = [];
-  errorMessage: string = null;
-  successMessage: string = null;
-  infoMessage: string = null;
   check;
 
   /**
@@ -72,7 +60,7 @@ export class CardTabPage implements OnInit{
   ) { }
 
   ngOnInit() {    
-    this.eventEmitterService.subscriptions.push(
+    this.eventEmitterService.menuSubscribe(
       this.eventEmitterService.invokeMenuButtonEvent.subscribe(functionName => {    
           this.menuEvent(functionName);
         })
@@ -83,10 +71,7 @@ export class CardTabPage implements OnInit{
    * Function triggers when the tab is navigated to
    */
   ionViewDidEnter() {
-    //Initialize message values 
-    this.errorMessage = null;
-    this.successMessage = null;
-    this.infoMessage = null;
+    this.showMessage('', MessageType.reset);
     // Gets the business cards
     this.loadCards(); 
   }
@@ -144,16 +129,12 @@ export class CardTabPage implements OnInit{
    * Function listens for an NFC Tag with the Business Card
    */
   addCard(){
-    //Reset message values 
-    this.errorMessage = null;
-    this.successMessage = null;
-    this.infoMessage = null;
-
+    this.showMessage('', MessageType.reset);
     // Check if nfc is enabled
     this.nfcService.IsEnabled()
     .then(() => {
       // Continue if it is enabled
-      this.showMessage(`Hold the phone against the sharing device.`, messageType.info, 0);
+      this.showMessage(`Hold the phone against the sharing device.`, MessageType.info, 0);
       this.nfcService.ReceiveData().subscribe(data => {
         // read data from the payload
         let payload = this.nfcService.BytesToString(data.tag.ndefMessage[0].payload);
@@ -161,7 +142,7 @@ export class CardTabPage implements OnInit{
         this.nfcService.Finish();
         // through away the language modifier and parse it to json
         let json = JSON.parse(payload.slice(3));
-        this.showMessage(`Received ${json.companyName} Business Card.`, messageType.success, 5000);
+        this.showMessage(`Received ${json.companyName} Business Card.`, MessageType.success, 5000);
         // Add the card to the local storage
         this.cardService.addBusinessCard(json.companyId, json.companyName, json.employeeName, json.contactNumber, json.email, json.website, json.location)
         .then(() => {
@@ -171,7 +152,7 @@ export class CardTabPage implements OnInit{
     })
     .catch(() => {
       // If it is disabled, display error to user.
-      this.showMessage(`NFC seems to be off. Please try turing it on.`, messageType.error, 0);
+      this.showMessage(`NFC seems to be off. Please try turing it on.`, MessageType.error, 0);
     })
   }
 
@@ -223,14 +204,13 @@ export class CardTabPage implements OnInit{
    * @param destination where to go to
    */
   navigate(destination){
-    this.errorMessage = null;
-    this.successMessage = null;
+    this.showMessage('', MessageType.reset);
     let dest = new LocationModel(destination.latitude, destination.longitude, destination.label);    
-    this.showMessage(`Please wait while navigator is launched.`, messageType.info, 5000);
+    this.showMessage(`Please wait while navigator is launched.`, MessageType.info, 5000);
     this.locationService.navigate(dest, () => {
-      this.showMessage(`Navigator launching.`, messageType.success, 5000);
+      this.showMessage(`Navigator launching.`, MessageType.success, 5000);
     }, (err) => {
-      this.showMessage(`Could not open launcher: ${err}`, messageType.error, 5000);
+      this.showMessage(`Could not open launcher: ${err}`, MessageType.error, 5000);
     });
   }
 
@@ -240,23 +220,7 @@ export class CardTabPage implements OnInit{
    * @param type number from enum, type of message to display
    * @param timeout number after how long it should disappear (0 = don't dissappear)
    */
-  private showMessage(message: string, type: number, timeout: number = 0) {
-    this.successMessage = null;
-    this.infoMessage = null;
-    this.errorMessage = null;
-    switch(type) {
-      case messageType.success: 
-        this.successMessage = message;
-        if (timeout != 0) { setTimeout(() => { this.successMessage = null;}, timeout); }
-        break;
-      case messageType.info:
-        this.infoMessage = message;
-        if (timeout != 0) { setTimeout(() => { this.infoMessage = null;}, timeout); }
-        break;
-      case messageType.error:
-        this.errorMessage = message;
-        if (timeout != 0) { setTimeout(() => { this.errorMessage = null;}, timeout); }
-        break;
-    }
+  showMessage(message: string, type: number, timeout: number = 5000) {
+    this.eventEmitterService.messageEvent(message, type, timeout);
   }
 }

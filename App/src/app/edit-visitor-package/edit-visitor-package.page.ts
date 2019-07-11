@@ -132,7 +132,7 @@ export class EditVisitorPackagePage implements OnInit {
    * @param type number from enum, type of message to display
    * @param timeout number after how long it should disappear (0 = don't dissappear)
    */
-  private showMessage(message: string, type: number, timeout: number = 0) {
+  private showMessage(message: string, type: number, timeout: number = 5000) {
     this.successMessage = null;
     this.infoMessage = null;
     this.errorMessage = null;

@@ -1,15 +1,4 @@
 <ion-content padding >
-    <ion-item color='secondary' *ngIf='infoMessage !== null'>
-      <ion-icon name="information-circle"></ion-icon> {{ infoMessage }}
-    </ion-item>
-    <ion-item color='success' *ngIf='successMessage !== null'>
-      <ion-icon name="checkmark-circle"></ion-icon> {{ successMessage }}
-    </ion-item>
-    <ion-item color='danger' *ngIf='errorMessage !== null'>
-      <ion-icon name="close-circle"></ion-icon> {{ errorMessage }}
-      <br>
-      <ion-button color="light" (click)='retry()'>Settings</ion-button> 
-    </ion-item>
     
     <ion-item color='secondary' *ngIf='packages.length == 0'>
       <ion-label text-wrap> No visitor packages have been shared with you yet. </ion-label>

@@ -25,6 +25,7 @@ import { NfcControllerService } from '../services/nfc-controller.service';
 import { LocationService } from '../services/location.service';
 import { LocationModel } from '../models/location.model';
 import { EventEmitterService } from '../services/event-emitter.service';   
+import { MessageType } from '../tabs/tabs.page';
 
 /**
 * Purpose:	This class provides the component that allows sharing of cards
@@ -40,9 +41,6 @@ import { EventEmitterService } from '../services/event-emitter.service';
 export class ShareTabPage implements OnInit{
 
   card: BusinessCard;
-  error_message: string;
-  success_message: string;
-  info_message: string;
   check;
 
 
@@ -60,7 +58,7 @@ export class ShareTabPage implements OnInit{
   ) { }
 
   ngOnInit() {    
-    this.eventEmitterService.subscriptions.push(
+    this.eventEmitterService.menuSubscribe(
       this.eventEmitterService.invokeMenuButtonEvent.subscribe(functionName => {    
           this.menuEvent(functionName);
         })
@@ -71,10 +69,7 @@ export class ShareTabPage implements OnInit{
    * Function that triggers when the tab is navigated to
    */
   ionViewDidEnter() {
-    //Initialize message values 
-    this.error_message = null;
-    this.success_message = null;
-    this.info_message = null;
+    this.showMessage('', MessageType.reset);
     // Gets and sets the business card
     this.cardService.getOwnBusinessCard().then((val) => {
       this.card = val;
@@ -101,28 +96,23 @@ export class ShareTabPage implements OnInit{
    * Function that shares the current set business card
    */
   shareCard(){
-    // Resets some values
-    this.error_message = null;
-    this.success_message = null;
-    this.info_message = null;
+    this.showMessage('', MessageType.reset);
     this.cardService.getOwnBusinessCard().then((val) => {
       this.card = val;
     });
     // Displays info to the user
-    this.info_message = `Hold the phone against the receiving phone.`;
+    this.showMessage(`Hold the phone against the receiving phone.`, MessageType.info);
     // Uses NFC Service to send business card
     this.nfcService.SendData(this.card.businessCardId, JSON.stringify(this.card))
     .then(() => {
       // If it was successfull, display a success message to the user for 5s
-      this.success_message = `Shared ${this.card.companyName} Business Card`;
-      setTimeout(() => {this.success_message = null;}, 5000);
+      this.showMessage(`Shared ${this.card.companyName} Business Card`, MessageType.success, 5000);
     })
     .catch((err) => {
       // If it was unsuccessfull, display an error message to the user
-      this.error_message = `Error: ${err} - Try turning on 'Android Beam'`;
+      this.showMessage(`Error: ${err} - Try turning on 'Android Beam'`, MessageType.error, 5000);
     })
     .finally(() => {
-      this.info_message = null;
       // Whether it failed or succeeded, turn of the sharing
       this.nfcService.Finish();
     });
@@ -148,21 +138,22 @@ export class ShareTabPage implements OnInit{
    * @param destination where to go to
    */
   navigate(destination){
-    this.error_message = null;
-    this.success_message = null;
-    this.info_message = "Please wait while navigator is launched";
-    let dest = new LocationModel(destination.latitude, destination.longitude, destination.label);    
-    setTimeout(() => {this.info_message = null;}, 5000);
+    this.showMessage(`Please wait while navigator is launched`, MessageType.info, 5000);
+    let dest = new LocationModel(destination.latitude, destination.longitude, destination.label);  
     this.locationService.navigate(dest, () => {
-      this.info_message = null;
-      this.error_message = null;
-      this.success_message = "Navigator launching";
-      setTimeout(() => {this.success_message = null;}, 5000);
+      this.showMessage(`Navigator launching`, MessageType.success, 5000);
     }, (err) => {
-      this.info_message = null;
-      this.success_message = null;
-      this.error_message = `Could not open launcher: ${err}`;
-      setTimeout(() => {this.error_message = null;}, 5000);
+      this.showMessage(`Could not open launcher: ${err}`, MessageType.error, 5000);
     });
+  }
+
+  /**
+   * Function that displays a message to the user
+   * @param message string message to display
+   * @param type number from enum, type of message to display
+   * @param timeout number after how long it should disappear (0 = don't dissappear)
+   */
+  showMessage(message: string, type: number, timeout: number = 5000) {
+    this.eventEmitterService.messageEvent(message, type, timeout);
   }
 }

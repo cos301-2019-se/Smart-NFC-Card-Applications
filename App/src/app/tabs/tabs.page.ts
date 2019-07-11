@@ -3,7 +3,7 @@
 *	Project:		    Smart-NFC-Application
 *	Orginization:	  VastExpanse
 *	Copyright:	    © Copyright 2019 University of Pretoria
-*	Classes:	      TabsPage
+*	Classes:	      TabsPage, MessageType
 *	Related documents:	None
 *
 *	Update History:
@@ -16,12 +16,22 @@
 *	Assumptions:  That all the injectables are working
 *	Constraints: 	None
 */
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { PopoverController, IonSearchbar } from '@ionic/angular';
 import { PopoverMenuComponent } from '../popover-menu/popover-menu.component';
 import { EventEmitterService } from '../services/event-emitter.service';   
 import { FilterService } from '../services/filter.service';
 import { LoggedInService } from '../services/logged-in.service';
+
+/**
+* Purpose:	This enum provides message types
+*	Usage:		This enum can be used to identify a type of message to display
+*	@author:	Wian du Plooy
+*	@version:	1.0
+*/
+export enum MessageType{
+    success, info, error, reset
+}
 
 /**
 * Purpose:	This class provides the component that manages tabs
@@ -34,13 +44,17 @@ import { LoggedInService } from '../services/logged-in.service';
   templateUrl: 'tabs.page.html',
   styleUrls: ['tabs.page.scss']
 })
-export class TabsPage {
+export class TabsPage implements OnInit{
 
   @ViewChild('search') searchbar : IonSearchbar;
 
   showSearchBar: Boolean = false;
   loggedIn: Boolean = false;
   searchFilter: string = '';
+
+  errorMessage: string = null;
+  successMessage: string = null;
+  infoMessage: string = null;
 
   tabButtons: Object = {
     'manage-tab': [
@@ -75,6 +89,14 @@ export class TabsPage {
     private filter: FilterService,
     private loginService: LoggedInService
   ){}
+
+  ngOnInit() {       
+    this.eventEmitterService.messageSubscribe(
+      this.eventEmitterService.invokeMessageEvent.subscribe(({message, type, timeout}) => { 
+          this.showMessage(message, type, timeout);
+        })
+    );  
+  }
 
   /**
    * Function that sets the active tab parameter
@@ -138,5 +160,31 @@ export class TabsPage {
     setTimeout(() => {
       this.searchbar.setFocus();
     }, 500);
+  }
+
+  /**
+   * Function that displays a message to the user
+   * @param message string message to display
+   * @param type number from enum, type of message to display
+   * @param timeout number after how long it should disappear (0 = don't dissappear)
+   */
+  showMessage(message: string, type: number, timeout: number = 5000) {
+    this.successMessage = null;
+    this.infoMessage = null;
+    this.errorMessage = null;
+    switch(type) {
+      case MessageType.success: 
+        this.successMessage = message;
+        if (timeout != 0) { setTimeout(() => { this.successMessage = null;}, timeout); }
+        break;
+      case MessageType.info:
+        this.infoMessage = message;
+        if (timeout != 0) { setTimeout(() => { this.infoMessage = null;}, timeout); }
+        break;
+      case MessageType.error:
+        this.errorMessage = message;
+        if (timeout != 0) { setTimeout(() => { this.errorMessage = null;}, timeout); }
+        break;
+    }
   }
 }

@@ -8,7 +8,7 @@
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js"
 		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 	<script>
-		// localStorage.clear(); // -----> uncomment this in order to see the login page again (the api key will be used otherwise)
+		//localStorage.clear(); // -----> uncomment this in order to see the login page again (the api key will be used otherwise)
 		var tmpKey = localStorage.getItem("apiKey");
 		if (tmpKey) {
 			$.post("/admin/login", JSON.stringify({ "apiKey": tmpKey }), (data) => {
@@ -36,7 +36,7 @@
 
 <body style="display: none">
 	<div class="container border col-md-4 col-10">
-		<h2 class="text-center">Link Login</h2>
+		<h2 class="text-center" style="margin-top:20px">Link Login</h2>
 		<div id="alertContainer"></div>
 		<div class="form-group">
 			<label for="username">Username</label>

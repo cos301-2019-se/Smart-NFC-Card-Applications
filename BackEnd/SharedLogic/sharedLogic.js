@@ -10,7 +10,7 @@
  *	Date		Author		Version		Changes
  *	-----------------------------------------------------------------------------------------
  *	2019/05/21	Jared		1.0		    Original
- *	2019/07/11  Savvas		1.1			Made Admin Logging in Synchronous
+ *	2019/07/11  Savvas		1.1			Made Admin and App Logging in Synchronous. Allowed logging in via API Key
  *	Functional Description:	This class is used by the (other)Logic.js files i.e. the (Other)Logic
 							classes, and performs some common request data parsing, extraction, validation,
 							authentication and response functions for these (Other)Logic classes.
@@ -32,9 +32,9 @@ var crypto = require('crypto');
 				extraction, validation, authentication and response functionality, so that it does 
 				not have to be defined in those classes, it can be a set standard in this class.
  *
- *	@author:	Jared O'Reilly
+ *	@author:	Jared O'Reilly, edits by Savvas Panagiotou
  *
- *	@version:	1.0
+ *	@version:	1.1
  */
 class SharedLogic {
 	/**
@@ -197,7 +197,6 @@ class SharedLogic {
 	validAPITokenOnDB(apiToken) {
 		//checks in DB
 		return true;
-
 		if (this.demoMode) {
 			return true;
 		}
@@ -221,10 +220,42 @@ class SharedLogic {
 	 *	class's serve() function is called, hence the initial request handling checks are complete. If it is
 	 *	not a valid API Key, then a failure response is sent back.
      */
-	checkAPIToken() {
+	async checkAPIToken() {
 
 		if (this.from.endpoint === "login") {
-			this.login();
+			//two types of login - one with just api key and one with username and password
+			if (this.from.body.apiKey) {
+				var passwordDetails = await this.crudController.getPasswordByApiKey(this.from.body.apiKey);
+				var data = {};
+				if (passwordDetails.success) {
+					var subsystem = this.from.req.url.substring(1, this.from.req.url.substring(1).indexOf("/") + 1);
+					if (subsystem === "admin") {
+						var companyDetails = await this.crudController.getCompanyByPasswordId(passwordDetails.data.passwordId);
+						if (companyDetails.success) {
+							data.apiKey = passwordDetails.data.apiKey;
+							data.id = companyDetails.data.companyId;
+							this.endServe(true, "Login successful.", data);
+						} else {
+							this.endServe(false, "Invalid API Key", null);
+						}
+					} else if (subsystem === "app") {
+						//try look if this is an employee
+						var employeeDetails = await this.crudController.getEmployeeByPasswordId(passwordDetails.data.passwordId);
+						if (employeeDetails.success) {
+							data.apiKey = passwordDetails.data.apiKey;
+							data.id = employeeDetails.data.employeeId;
+							this.endServe(true, "Login successful.", data);
+						} else {
+							this.endServe(false, "Invalid API Key", null);
+						}
+					} else {
+						this.endServe(false, "Invalid Login Endpoint", null);
+					}
+				}
+			} else {
+				this.login();
+			}
+
 		}
 		else {
 			if (this.validAPITokenOnDB(this.from.body.apiKey)) {
@@ -243,7 +274,7 @@ class SharedLogic {
 	 *	from the body of the POST request, and then the following happens:
 		The username is searched for in the passwords table (This is the same process for both a company and a employee logging in).
 		 Then depending on whether this is a company login or an employee login, the corresponding passwordId is used 
-		 to serach either the employee or the company table
+		 to search either the employee or the company table
      */
 	async login() {
 		var subsystem = this.from.req.url.substring(1, this.from.req.url.substring(1).indexOf("/") + 1);
@@ -273,7 +304,7 @@ class SharedLogic {
 							//search for the employeeId in the employee table
 							var employeeDetails = await this.crudController.getEmployeeByPasswordId(passwordDetails.passwordId);
 							if (employeeDetails.success) {
-								apiKeyAndId = { correct: true, apiKey: passwordDetails.apiKey, id: employeeDetails.data.companyId };
+								apiKeyAndId = { correct: true, apiKey: passwordDetails.apiKey, id: employeeDetails.data.employeeId };
 							} else {
 								apiKeyAndId = { correct: false };
 							}

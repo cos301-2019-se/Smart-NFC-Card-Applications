@@ -1064,6 +1064,7 @@ describe('Server.js Unit Testing', function () {
             '        "companyId": 0,\n\t' +
             '        "buildingId": 0,\n\t' +
             '        "passwordId": 0\n\t' +
+            '        "username": "piet12"\n\t' +
             '    }\n\t' +
             '}'
             , function () {
@@ -1079,7 +1080,8 @@ describe('Server.js Unit Testing', function () {
                         "email": "piet.pompies@gmail.com",
                         "companyId": 0,
                         "buildingId": 0,
-                        "passwordId": 0
+                        "passwordId": 0,
+                        "username": "piet12"
                     }
                 });
             });

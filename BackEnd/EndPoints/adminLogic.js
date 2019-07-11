@@ -635,6 +635,7 @@ class AdminLogic
      *                          companyName: string The name of the company,
      *                          companyWebsite: string the website of the company,
      *                          passwordId: int The Password ID of the company
+     *                          username string the username of each company
      *                      }
      */
     async getCompanies(){
@@ -650,14 +651,16 @@ class AdminLogic
                 companyId:0,
                 companyName:"Comp1",
                 companyWebsite:"www.Comp1.com",
-                passwordId:0
+                passwordId:0,
+                username:"comp1"
             });
 
             data.push({
                 companyId:1,
                 companyName:"Comp2",
                 companyWebsite:"www.Comp2.com",
-                passwordId:1
+                passwordId:1,
+                username:"comp2"
             });
             me.sharedLogic.endServe(success, message, data);
         }
@@ -665,6 +668,13 @@ class AdminLogic
             //return data from crudController
             let companyObj = await me.sharedLogic.crudController.getAllCompanies();
             if(companyObj.success){
+                let passwordObj;
+                for(let countCompany = 0; countCompany<companyObj.data.length; countCompany++){
+                    passwordObj = await me.sharedLogic.crudController.getPasswordByPasswordId(companyObj.data[countCompany].passwordId);
+                    if(passwordObj.success){
+                        companyObj.data[countCompany].username = passwordObj.data.username;
+                    }
+                }
                 me.sharedLogic.endServe(companyObj.success, companyObj.message, companyObj.data)
             }
             else{
@@ -1076,6 +1086,9 @@ class AdminLogic
      *                  branchName string the name of the building
      *                  companyId int the ID of the company that the building belongs to
      *                  wifiParamsId int the ID of the wifi params that belong to the building
+     *                  networkSsid string The name of the wifi for guests to connect for
+     *                  networkType string The type of the wifi network for guests to connect to
+     *                  networkPassword string The password for the wifi network for access to the wifi for guests
      *                          }
      */
     async getBuildingsByCompanyId(){
@@ -1130,9 +1143,18 @@ class AdminLogic
                     //return data from crudController
                     let buildingObj = await me.sharedLogic.crudController.getBuildingsByCompanyId(me.body.companyId);
                     if(buildingObj.success){
-
+                        let wifiObj;
+                        for(let countBuilding = 0; countBuilding<buildingObj.data.length; countBuilding++){
+                            wifiObj = await me.sharedLogic.crudController.getWiFiParamsByWifiParamsId(buildingObj.data[countBuilding].wifiParamsId);
+                            if(wifiObj.success){
+                                buildingObj.data[countBuilding].networkSsid = wifiObj.data.ssid;
+                                buildingObj.data[countBuilding].networkType = wifiObj.data.networkType;
+                                buildingObj.data[countBuilding].networkPassword =wifiObj.data.password;
+                            }
+                        }
                         success = buildingObj.success;
                         message = "Buildings Retrieved!";
+
                         data = buildingObj.data;
                         me.sharedLogic.endServe(success, message, data);
                     }
@@ -1966,6 +1988,7 @@ class AdminLogic
      *                 companyId int the Company ID that the employee belongs to
      *                 buildingId int the Building ID where the employee works for
      *                 passwordId int The Password ID belonging to the Employee
+     *                 username string the username of the employee
      *              }
      */
     async getEmployeeByEmployeeId(){
@@ -2004,16 +2027,24 @@ class AdminLogic
                     data.companyId = 0;
                     data.buildingId = 0;
                     data.passwordId = 0;
+                    data.username = "piet12";
                     me.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
                     let employeeObj = await me.sharedLogic.crudController.getEmployeeByEmployeeId(me.body.employeeId);
                     if(employeeObj.success){
-                        success = employeeObj.success;
-                        message = "Employee Retrieved!";
-                        data = employeeObj.data;
-                        me.sharedLogic.endServe(success, message, data);
+                        let passwordObj = await me.sharedLogic.crudController.getPasswordByPasswordId(employeeObj.data.passwordId);
+                        if(passwordObj.success){
+                            success = employeeObj.success;
+                            message = "Employee Retrieved!";
+                            data = employeeObj.data;
+                            data.username = passwordObj.data.username;
+                            me.sharedLogic.endServe(success, message, data);
+                        }
+                        else{
+                            me.sharedLogic.endServe(passwordObj.success, passwordObj.message, null);
+                        }
                     }
                     else{
                         me.sharedLogic.endServe(employeeObj.success, employeeObj.message, null);
@@ -2052,6 +2083,7 @@ class AdminLogic
      *                 companyId int the Company ID that the employee belongs to
      *                 buildingId int the Building ID where the employee works for
      *                 passwordId int The Password ID belonging to the Employee
+     *                 username string the username of each employee
      *              }
      */
     async getEmployeesByCompanyId(){
@@ -2110,7 +2142,13 @@ class AdminLogic
                     //return data from crudController
                     let employeeObj = await me.sharedLogic.crudController.getEmployeesByCompanyId(me.body.companyId);
                     if(employeeObj.success){
-
+                        let passwordObj;
+                        for(let countEmployee = 0; countEmployee<employeeObj.data.length; countEmployee++){
+                            passwordObj = await me.sharedLogic.crudController.getPasswordByPasswordId(employeeObj.data[countEmployee].passwordId);
+                            if(passwordObj.success) {
+                                employeeObj.data[countEmployee].username = passwordObj.data.username;
+                            }
+                        }
                         success = employeeObj.success;
                         message = "Employees Retrieved!";
                         data = employeeObj.data;
@@ -2153,6 +2191,7 @@ class AdminLogic
      *                 companyId int the Company ID that the employee belongs to
      *                 buildingId int the Building ID where the employee works for
      *                 passwordId int The Password ID belonging to the Employee
+     *                 username string the username of the employee
      *              }
      */
     async getEmployeesByBuildingId(){
@@ -2192,7 +2231,8 @@ class AdminLogic
                             email: "duncan@gmail.com",
                             companyId: 0,
                             buildingId: me.body.buildingId,
-                            passwordId: 0
+                            passwordId: 0,
+                            username:"dunc12"
                     });
                     data.push({
                         employeeId : 1,
@@ -2203,7 +2243,8 @@ class AdminLogic
                         email : "piet.pompies@gmail.com",
                         companyId : 0,
                         buildingId : me.body.buildingId,
-                        passwordId : 1
+                        passwordId : 1,
+                        username:"dunc12"
                     });
                     me.sharedLogic.endServe(success, message, data);
                 }
@@ -2211,6 +2252,13 @@ class AdminLogic
                     //return data from crudController
                     let employeeObj = await me.sharedLogic.crudController.getEmployeesByBuildingId(me.body.buildingId);
                     if(employeeObj.success){
+                        let passwordObj;
+                        for(let countEmployee = 0; countEmployee<employeeObj.data.length; countEmployee++){
+                            passwordObj = await me.sharedLogic.crudController.getPasswordByPasswordId(employeeObj.data[countEmployee].passwordId);
+                            if(passwordObj.success){
+                                employeeObj.data[countEmployee].username = passwordObj.data.username;
+                            }
+                        }
                         success = employeeObj.success;
                         message = "Employees Retrieved!";
                         data = employeeObj.data;

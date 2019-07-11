@@ -10,7 +10,7 @@
  *	Date		Author		Version		Changes
  *	-----------------------------------------------------------------------------------------
  *	2019/05/21	Jared		1.0		    Original
- *
+ *	2019/07/11  Savvas		1.1			Made Admin Logging in Synchronous
  *	Functional Description:	This class is used by the (other)Logic.js files i.e. the (Other)Logic
 							classes, and performs some common request data parsing, extraction, validation,
 							authentication and response functions for these (Other)Logic classes.
@@ -241,115 +241,64 @@ class SharedLogic {
      *  This function will perform the login for either an employee or a company (based on the subsystem
 	 *	component of the url, extracted from the request's url). The username and password are extracted
 	 *	from the body of the POST request, and then the following happens:
-	 
-	 *	- 	For an employee: their details are fetched using their username, their hashed and salted password
-	 *		is then fetched, then the password they entered is hashed and salted and compared to the correct one,
-	 *		and if it is correct, their API Key is returned to them along with their employee ID.
-	 
-	 *	- 	For a company: the company's details are fetched using the company's username, their hashed and salted password
-	 *		is then fetched, then the password they entered is hashed and salted and compared to the correct one,
-	 *		and if it is correct, their API Key is returned to them along with their company ID.
+		The username is searched for in the passwords table (This is the same process for both a company and a employee logging in).
+		 Then depending on whether this is a company login or an employee login, the corresponding passwordId is used 
+		 to serach either the employee or the company table
      */
 	async login() {
-
 		var subsystem = this.from.req.url.substring(1, this.from.req.url.substring(1).indexOf("/") + 1);
 		var user = this.from.body.username;
 		var pass = this.from.body.password;
 		var apiKeyAndId = null;
 		var passwordDetails = null;
-		//switch on the subsystem entered
-		switch (subsystem) {
-			/*case "test":
-				apiKeyAndID = {correct: true, apiKey: "209s8kal193a009723527dnsndm285228", id : 5};
-				
-				break;*/
-
-
-			case "app":
-				var employeeDetails = null;
+		passwordDetails = null;
+		if (this.demoMode) {
+			passwordDetails = { success: true, data: { hash: "b1070db9b04cb6901a9964841c8560f5c09bcbb6649db2d008daf4df81a65da7", salt: "40qY4HyU", apiKey: "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^" } };
+		}
+		else {
+			passwordDetails = await this.crudController.getPasswordByUsername(user);
+		}
+		if (passwordDetails.success && passwordDetails.data && passwordDetails.data.hash && passwordDetails.data.salt) {
+			passwordDetails = passwordDetails.data;
+			var hashedPassword = passwordDetails.hash;
+			var salt = passwordDetails.salt;
+			var enteredHashedPassword = this.passwordHash(pass, salt);
+			if (enteredHashedPassword === hashedPassword) {
 				if (this.demoMode) {
-					employeeDetails = { success: true, data: { employeeId: 0, passwordId: 0 } };
-				}
-				else {
-					employeeDetails = this.crudController.getEmployee(user);
-				}
-				if (employeeDetails.success) {
-					employeeDetails = employeeDetails.data;
-					var passwordId = employeeDetails.passwordId;
-
-
-					passwordDetails = null;
-					if (this.demoMode) {
-						passwordDetails = { success: true, data: { passwordHash: "b1070db9b04cb6901a9964841c8560f5c09bcbb6649db2d008daf4df81a65da7", salt: "40qY4HyU", apiKey: "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^" } };
-					}
-					else {
-						passwordDetails = this.crudController.getPassword(passwordId);
-					}
-					if (passwordDetails.success) {
-						passwordDetails = passwordDetails.data;
-						var hashedPassword = passwordDetails.passwordHash;
-						var salt = passwordDetails.salt;
-
-
-						var enteredHashedPassword = this.passwordHash(pass, salt);
-						if (enteredHashedPassword === hashedPassword) {
-							apiKeyAndId = { correct: true, apiKey: passwordDetails.apiKey, id: employeeDetails.employeeId };
-						}
-						else {
-							apiKeyAndId = { correct: false };
-						}
-					}
-					else {
-						apiKeyAndId = { correct: false };
-					}
-				}
-				else {
-					apiKeyAndId = { correct: false };
-				}
-
-
-				break;
-
-
-			case "admin":
-				passwordDetails = null;
-				if (this.demoMode) {
-					passwordDetails = { success: true, data: { hash: "b1070db9b04cb6901a9964841c8560f5c09bcbb6649db2d008daf4df81a65da7", salt: "40qY4HyU", apiKey: "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^" } };
-				}
-				else {
-					passwordDetails = await this.crudController.getPasswordByUsername(user);
-				}
-				if (passwordDetails.success && passwordDetails.data && passwordDetails.data.hash && passwordDetails.data.salt) { //ensuring that the query has the required fields
-					passwordDetails = passwordDetails.data;
-					var hashedPassword = passwordDetails.hash;
-					var salt = passwordDetails.salt;
-					var enteredHashedPassword = this.passwordHash(pass, salt);
-					if (enteredHashedPassword === hashedPassword) {
-						if (this.demoMode) {
-							apiKeyAndId = { correct: true, apiKey: passwordDetails.apiKey, id: 0 }; //default zero id
-						} else {
-							//otherwise search for the companyId in the company table
+					apiKeyAndId = { correct: true, apiKey: passwordDetails.apiKey, id: 0 }; //default zero id for employee
+				} else {
+					//switch on the subsystem entered: note the above process is identical for both versions of logging in
+					switch (subsystem) {
+						case "app":
+							//search for the employeeId in the employee table
+							var employeeDetails = await this.crudController.getEmployeeByPasswordId(passwordDetails.passwordId);
+							if (employeeDetails.success) {
+								apiKeyAndId = { correct: true, apiKey: passwordDetails.apiKey, id: employeeDetails.data.companyId };
+							} else {
+								apiKeyAndId = { correct: false };
+							}
+							break;
+						case "admin":
+							//search for the companyId in the company table
 							var companyDetails = await this.crudController.getCompanyByPasswordId(passwordDetails.passwordId);
 							if (companyDetails.success) {
 								apiKeyAndId = { correct: true, apiKey: passwordDetails.apiKey, id: companyDetails.data.companyId };
 							} else {
 								apiKeyAndId = { correct: false };
 							}
-						}
-					}
-					else {
-						apiKeyAndId = { correct: false };
+							break;
+						default:
+							apiKeyAndId = { correct: false };
 					}
 				}
-				else {
-					apiKeyAndId = { correct: false };
-				}
-				break;
-
-			default:
+			}
+			else {
 				apiKeyAndId = { correct: false };
+			}
 		}
-
+		else {
+			apiKeyAndId = { correct: false };
+		}
 
 		if (apiKeyAndId.correct === true) {
 			var data = new Object();
@@ -360,19 +309,17 @@ class SharedLogic {
 		else {
 			this.endServe(false, "Incorrect username and/or password.", {});
 		}
-
-
 	}
 
 	/**
-     *  This function takes in the 3 components to be formatted into a JSON object, an object is then
+	 *  This function takes in the 3 components to be formatted into a JSON object, an object is then
 	 *	constructed and then is stringified into a JSON String representation. A status code is attached
 	 *	to the response, a content type header and lastly the stringified JSON is attached as the body of
 	 *	response. This response is then returned to the outside user.
 	 *	@param success boolean The value of success to be returned in the response to the user
 	 *	@param message String The value of the message to be returned in the response to the user
 	 *	@param data Object The object containing the data values to be returned in the response to the user
-     */
+	 */
 	endServe(success, message, data) {
 		var responseObject = new Object();
 		var json = null;
@@ -490,35 +437,35 @@ class SharedLogic {
 	}
 
 	/**
-     *  This function generates a random string of length 200, conforming to our api key format
-     */
+	 *  This function generates a random string of length 200, conforming to our api key format
+	 */
 	genApiKey() {
 		return this.randomString(200);
 	}
 
 	/**
-     *  This function generates a random string of length 20, conforming to our salt format
-     */
+	 *  This function generates a random string of length 20, conforming to our salt format
+	 */
 	genSalt() {
 		return this.randomString(20);
 	}
 
 	/**
-     *  This function takes in a password, generates a random salt and then hashes them using the hash
+	 *  This function takes in a password, generates a random salt and then hashes them using the hash
 	 *  function selected and used in the passwordHash function, returning that hash
 	 *	@param pass String The password entered by the user
-     */
+	 */
 	genHash(pass) {
 		return passwordHash(pass, genSalt());
 	}
 
 	/**
-     *  This function takes in a password and a salt, and then hashes that password and salt combination
+	 *  This function takes in a password and a salt, and then hashes that password and salt combination
 	 *	according to how it was hashed and salted before being stored on the DB (for correctness). This is
 	 *	not implemented yet, as a hashing and salting scheme has not yet been picked.
 	 *	@param pass String The password entered by the user
 	 *	@param salt String The salt associated with that user on the DB
-     */
+	 */
 	passwordHash(pass, salt) {
 		//sha256
 
@@ -528,9 +475,9 @@ class SharedLogic {
 	}
 
 	/**
-     *  This function generates a random alphanumeric string of a certain length
+	 *  This function generates a random alphanumeric string of a certain length
 	 *	@param length the length of the random string to generate
-     */
+	 */
 	randomString(length) {
 		var result = '';
 		var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -542,9 +489,9 @@ class SharedLogic {
 	}
 
 	/**
-     *  This function returns the date of now + addHours many hours, wrapping around with days
+	 *  This function returns the date of now + addHours many hours, wrapping around with days
 	 *	@param the amount of hours to add on
-     */
+	 */
 	getDate(addHours) {
 		var currentDate = new Date();
 		var year = currentDate.getFullYear();

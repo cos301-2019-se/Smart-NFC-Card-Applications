@@ -352,6 +352,9 @@ class SharedLogic {
 	 *	@param data Object The object containing the data values to be returned in the response to the user
 	 */
 	endServe(success, message, data) {
+		
+		this.crudController.client.end();
+		
 		var responseObject = new Object();
 		var json = null;
 		responseObject.success = success;

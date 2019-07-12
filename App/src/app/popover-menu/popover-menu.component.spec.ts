@@ -1,3 +1,22 @@
+/**
+*	File Name:	    popover-menu.component.spec.ts
+*	Project:		    Smart-NFC-Application
+*	Orginization:	  VastExpanse
+*	Copyright:	    © Copyright 2019 University of Pretoria
+*	Classes:	      None
+*	Related documents:	None
+*
+*	Update History:
+*	Date		    Author		Version		Changes
+*	-----------------------------------------------------------------------------------------
+*	2019/07/10	Wian		  1.0		    Original
+*
+*	Functional Description:   This file provides the tests for its respective component
+*	Error Messages:   “Error”
+*	Assumptions:  That all the injectables are working
+*	Constraints: 	None
+*/
+
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 

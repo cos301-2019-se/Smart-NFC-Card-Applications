@@ -9,11 +9,19 @@ export class FilterService {
 
   constructor() { }
 
+  /**
+   * Function returns the current filter string
+   * @return string filter
+   */
   public getFilter(): string {
     return this.headerFilter;
   }
 
-  public setFilter(filter): void {
+  /**
+   * Function sets the current filter string
+   * @param filter string filter
+   */
+  public setFilter(filter: string): void {
     this.headerFilter = filter;
   }
 }

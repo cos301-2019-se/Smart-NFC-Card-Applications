@@ -1,3 +1,21 @@
+/**
+*	File Name:	    app.module.ts
+*	Project:		    Smart-NFC-Application
+*	Orginization:	  VastExpanse
+*	Copyright:	    © Copyright 2019 University of Pretoria
+*	Classes:	      AppModule
+*	Related documents:	None
+*
+*	Update History:
+*	Date		    Author		Version		Changes
+*	-----------------------------------------------------------------------------------------
+*	2019/05/19	Wian		  1.0		    Original
+*
+*	Functional Description:   This file allows the module to be imported to use the component
+*	Error Messages:   “Error”
+*	Assumptions:  That all the injectables are working
+*	Constraints: 	None
+*/
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
@@ -30,6 +48,12 @@ import { FilterService } from './services/filter.service';
 import { LoggedInService } from './services/logged-in.service';
 import { DateService } from './services/date.service';
 
+/**
+* Purpose:	This class provides the module for the app
+*	Usage:		This module is the main app module
+*	@author:	Wian du Plooy
+*	@version:	1.0
+*/
 @NgModule({
   declarations: [
     AppComponent, 

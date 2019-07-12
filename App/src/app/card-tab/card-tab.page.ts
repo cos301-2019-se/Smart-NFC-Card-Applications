@@ -18,7 +18,6 @@
 *	Assumptions:  That all the injectables are working
 *	Constraints: 	None
 */
-
 import { Component, OnInit } from '@angular/core';
 import { BusinessCardsService } from '../services/business-cards.service';
 import { BusinessCard } from '../models/business-card.model';

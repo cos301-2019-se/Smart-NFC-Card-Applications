@@ -1,3 +1,21 @@
+/**
+*	File Name:	    card-tab.page.spec.ts
+*	Project:		    Smart-NFC-Application
+*	Orginization:	  VastExpanse
+*	Copyright:	    © Copyright 2019 University of Pretoria
+*	Classes:	      CardTabPage
+*	Related documents:	None
+*
+*	Update History:
+*	Date		    Author		Version		Changes
+*	-----------------------------------------------------------------------------------------
+*	2019/05/19	Wian		  1.0		    Original
+*
+*	Functional Description:   This file provides the tests for its respective component
+*	Error Messages:   “Error”
+*	Assumptions:  That all the injectables are working
+*	Constraints: 	None
+*/
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 

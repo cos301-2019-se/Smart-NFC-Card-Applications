@@ -56,7 +56,7 @@ describe('BusinessCardsService', () => {
     })
   });
 
-  it('addVisitorPackage add a visitor package to the list when valid data given', (done) => {
+  it('addBusinessCard add a visitor package to the list when valid data given', (done) => {
     const service: BusinessCardsService = TestBed.get(BusinessCardsService);
     let date = new Date();
     service.addBusinessCard('0_0', 'Company Name', 'Employee Name', '000 000 0000', 'email@gmail.com', 'http://website.co.za', new LocationModel(0,0,'Location')).then(() => {
@@ -68,7 +68,7 @@ describe('BusinessCardsService', () => {
     })
   });
 
-  it('removeVisitorPackage should not delete anything if the visitor package does not exist', (done) => {
+  it('removeBusinessCard should not delete anything if the visitor package does not exist', (done) => {
     const service: BusinessCardsService = TestBed.get(BusinessCardsService);
     let date = new Date();
     service.addBusinessCard('0_0', 'Company Name', 'Employee Name', '000 000 0000', 'email@gmail.com', 'http://website.co.za', new LocationModel(0,0,'Location')).then(() => {
@@ -83,7 +83,7 @@ describe('BusinessCardsService', () => {
     })
   });
 
-  it('removeVisitorPackage should delete the visitor package if it is there to remove', (done) => {
+  it('removeBusinessCard should delete the visitor package if it is there to remove', (done) => {
     const service: BusinessCardsService = TestBed.get(BusinessCardsService);
     let date = new Date();
     service.removeBusinessCard('0_0')

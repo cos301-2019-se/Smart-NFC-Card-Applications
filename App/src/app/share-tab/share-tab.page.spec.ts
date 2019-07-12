@@ -31,6 +31,8 @@ import { BusinessCardsService } from '../services/business-cards.service';
 import { LocalStorageService } from '../services/local-storage.service';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
+import { HttpClientModule } from '@angular/common/http';
+import { RequestModuleService } from '../services/request-module.service';
 
 describe('ShareTab', () => {
   let component: ShareTabPage;
@@ -41,7 +43,8 @@ describe('ShareTab', () => {
       declarations: [ShareTabPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [
-        IonicStorageModule.forRoot()
+        IonicStorageModule.forRoot(),
+        HttpClientModule
       ],
       providers: [
         AndroidPermissions,
@@ -50,7 +53,8 @@ describe('ShareTab', () => {
         NfcControllerService,
         NFC, Ndef,
         Geolocation,
-        LaunchNavigator
+        LaunchNavigator,
+        RequestModuleService
       ]
     }).compileComponents();
   }));

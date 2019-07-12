@@ -53,4 +53,13 @@ export class LocalStorageService {
   Load(key: string){
     return this.storage.get(key);
   }
+
+  /**
+   * Function that removes the value associated with a key
+   * @param key string key to remove
+   * @return any value
+   */
+  Remove(key: string){
+    return this.storage.remove(key);
+  }
 }

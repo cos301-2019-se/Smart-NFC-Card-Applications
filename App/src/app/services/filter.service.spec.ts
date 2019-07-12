@@ -28,4 +28,21 @@ describe('FilterService', () => {
     const service: FilterService = TestBed.get(FilterService);
     expect(service).toBeTruthy();
   });
+
+  it('getFilter should initially return an empty string', () => {
+    const service: FilterService = TestBed.get(FilterService);
+    expect(service.getFilter()).toBe('');
+  });
+
+  it('setFilter should set the current filter string', () => {
+    const service: FilterService = TestBed.get(FilterService);
+    service.setFilter('search term');
+    expect(service.headerFilter).toBe('search term');
+  });
+
+  it('getFilter should return the filter string that is set', () => {
+    const service: FilterService = TestBed.get(FilterService);
+    service.setFilter('search term');
+    expect(service.getFilter()).toBe('search term');
+  });
 });

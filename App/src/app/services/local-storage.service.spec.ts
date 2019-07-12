@@ -33,4 +33,42 @@ describe('LocalStorageService', () => {
     const service: LocalStorageService = TestBed.get(LocalStorageService);
     expect(service).toBeTruthy();
   });
+
+  it('Load should return null if a value is not found', (done) => {
+    const service: LocalStorageService = TestBed.get(LocalStorageService);
+    service.Load('test').then(data => {
+      expect(data).toBe(null);
+      done();
+    })
+  });
+
+  it('Save should add a key value pair', (done) => {
+    const service: LocalStorageService = TestBed.get(LocalStorageService);
+    service.Save('test', 'test')
+    .then(() => {
+      service.Load('test').then(data => {
+        expect(data).toBe('test');
+        done();
+      })
+    })
+  });
+
+  it('Load should get the saved value', (done) => {
+    const service: LocalStorageService = TestBed.get(LocalStorageService);
+    service.Load('test').then(data => {
+      expect(data).toBe('test');
+      done();
+    })
+  });
+
+  it('Remove should remove the key value pair', (done) => {
+    const service: LocalStorageService = TestBed.get(LocalStorageService);
+    service.Remove('test')
+    .then(() => {
+      service.Load('test').then(data => {
+        expect(data).toBe(null);
+        done();
+      })
+    })
+  });
 });

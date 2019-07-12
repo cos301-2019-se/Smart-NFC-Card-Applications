@@ -22,8 +22,10 @@
   <ion-list>
     <ion-card *ngFor="let package of packages | filter: 'access': filterService.getFilter()">
         <ion-card-header (click)='toggleDetails(package.packageId)'>
-          <ion-icon class="trash" name="trash" (click)='removeVisitorPackage(package.packageId)'></ion-icon>
-          <ion-card-title><ion-icon *ngIf='checkInEffect(package.startDate, package.endDate)' color='success' name="calendar"></ion-icon> {{ package.access }}</ion-card-title>
+          <ion-card-title>
+            <ion-icon *ngIf='checkInEffect(package.startDate, package.endDate)' color='success' name="calendar"></ion-icon> {{ package.access }}
+            <ion-icon class="trash" name="trash" (click)='$event.stopPropagation(); removeVisitorPackage(package.packageId)'></ion-icon>
+          </ion-card-title>
           <ion-card-subtitle>{{ displayDate(package.startDate) }} to {{ displayDate(package.endDate) }}</ion-card-subtitle>
         </ion-card-header>     
         <ion-card-content *ngIf='detailToggles != [] && detailToggles[package.packageId]'>

@@ -15,7 +15,10 @@
                     //if the api key is invalid, go to login page
                     window.location.replace("login.html");
                 } else {
-                    $("body").fadeIn(1000);
+                    loadCompany(function()
+                    {
+                        $("body").fadeIn(1000);
+                    });
                 }
             });
         } else {
@@ -29,8 +32,200 @@
 </head>
 
 <body style="display: none">
-    <!-- CONTENT OF PAGE GOES HERE -->
-    <p>Company</p>
+
+    <div class="container border col-md-10 col-10">
+        <h2 id="companyNameHead" class="text-center" style="margin-top:20px; margin-bottom:20px">CompanyName</h2>
+
+        <h4  class="text-left" style="margin-top:20px; margin-bottom:20px">About The Company</h4>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text font-weight-bold">Company Name</span>
+            </div>
+            <input type="text" class="form-control" id="aboutCompanyName" disabled>
+        </div>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text font-weight-bold">Website</span>
+            </div>
+            <input type="text" class="form-control" id="aboutCompanyWebsite" disabled>
+        </div>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text font-weight-bold">Number of Buildings</span>
+            </div>
+            <input type="text" class="form-control" id="aboutCompanyBuildings" disabled>
+        </div>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text font-weight-bold">Number of Employees</span>
+            </div>
+            <input type="text" class="form-control" id="aboutCompanyEmployees" disabled>
+        </div>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text font-weight-bold">Username</span>
+            </div>
+            <input type="text" class="form-control" id="aboutCompanyUsername" disabled>
+        </div>
+
+        <div class="btn-toolbar justify-content-between" role="toolbar">
+            <div class="input-group">
+                <button id="btnEditCompany" onclick="fillEditCompany();$('#editCompanyModal').modal('show');" class="btn btn-success" style="margin-top:20px; margin-right:5px">Edit Company</button>
+
+                <button id="btnEditPassword" onclick="$('#addBuildingModal').modal('show');" class="btn btn-success" style="margin-top:20px">Change Password</button>
+            </div>
+            <div class="btn-group" role="group">
+                <button id="btn" onclick="window.location.replace('home.html');" class="btn btn-default pull-right" style="margin-top:20px">Back to Home</button>
+            </div>
+        </div>
+
+        <h2 class="text-center" style="margin-top:20px; margin-bottom:20px; font-size: 12px">(c) University of Pretoria, 2019.</h2>
+
+    </div>
+
+    <div class="modal fade" id="editCompanyModal" tabindex="-1" role="dialog" aria-labelledby="editCompanyModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCompanyModalLabel">Edit Company</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <form class="was-validated">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text font-weight-bold">Company Name</span>
+                            </div>
+                            <input type="text" class="form-control" id="editCompanyName" required>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend ">
+                                <span class="input-group-text font-weight-bold">Website</span>
+                            </div>
+                            <input type="text" class="form-control" id="editCompanyWebsite" required>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text font-weight-bold">Username</span>
+                            </div>
+                            <input type="text" class="form-control" id="editCompanyUsername" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" onclick="editCompany()">Edit Company</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--<div class="modal fade" id="editBuildingModal" tabindex="-1" role="dialog" aria-labelledby="editBuildingModalLabel" aria-hidden="true">-->
+        <!--<div class="modal-dialog" role="document">-->
+            <!--<div class="modal-content">-->
+                <!--<div class="modal-header">-->
+                    <!--<h5 class="modal-title" id="editBuildingModalLabel">Edit Building</h5>-->
+                    <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+                        <!--<span aria-hidden="true">&times;</span>-->
+                    <!--</button>-->
+                <!--</div>-->
+                <!--<div class="modal-body">-->
+
+
+
+                    <!--<form>-->
+                        <!--<div class="input-group mb-3">-->
+                            <!--<div class="input-group-prepend">-->
+                                <!--<span class="input-group-text">Building Name</span>-->
+                            <!--</div>-->
+                            <!--<input type="text" class="form-control" id="buildingNameE">-->
+                        <!--</div>-->
+                        <!--<div class="input-group mb-3">-->
+                            <!--<div class="input-group-prepend">-->
+                                <!--<span class="input-group-text">Latitude</span>-->
+                            <!--</div>-->
+                            <!--<input type="text" class="form-control" id="latE">-->
+                        <!--</div>-->
+                        <!--<div class="input-group mb-3">-->
+                            <!--<div class="input-group-prepend">-->
+                                <!--<span class="input-group-text">Longitude</span>-->
+                            <!--</div>-->
+                            <!--<input type="text" class="form-control" id="longiE">-->
+                        <!--</div>-->
+                        <!--<div class="input-group mb-3">-->
+                            <!--<div class="input-group-prepend">-->
+                                <!--<span class="input-group-text">Wifi SSID</span>-->
+                            <!--</div>-->
+                            <!--<input type="text" class="form-control" id="wifiSSIDE">-->
+                        <!--</div>-->
+                        <!--<div class="input-group mb-3">-->
+                            <!--<div class="input-group-prepend">-->
+                                <!--<span class="input-group-text">Wifi Type</span>-->
+                            <!--</div>-->
+                            <!--<input type="text" class="form-control" id="wifiTypeE">-->
+                        <!--</div>-->
+                        <!--<div class="input-group mb-3">-->
+                            <!--<div class="input-group-prepend">-->
+                                <!--<span class="input-group-text">Wifi Password</span>-->
+                            <!--</div>-->
+                            <!--<input type="text" class="form-control" id="wifiPasswordE">-->
+                        <!--</div>-->
+                    <!--</form>-->
+                <!--</div>-->
+                <!--<div class="modal-footer">-->
+                    <!--<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>-->
+                    <!--<button type="button" class="btn btn-success" onclick="saveBuildingChanges()">Save Changes</button>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+
+    <!--<div class="modal fade" id="addRoomModal" tabindex="-1" role="dialog" aria-labelledby="addRoomModalLabel" aria-hidden="true">-->
+        <!--<div class="modal-dialog" role="document">-->
+            <!--<div class="modal-content">-->
+                <!--<div class="modal-header">-->
+                    <!--<h5 class="modal-title" id="addRoomModalLabel">Add Room</h5>-->
+                    <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+                        <!--<span aria-hidden="true">&times;</span>-->
+                    <!--</button>-->
+                <!--</div>-->
+                <!--<div class="modal-body">-->
+
+
+
+                    <!--<form>-->
+                        <!--<div class="input-group mb-3">-->
+                            <!--<div class="input-group-prepend">-->
+                                <!--<span class="input-group-text">Room Name</span>-->
+                            <!--</div>-->
+                            <!--<input type="text" class="form-control" id="roomName">-->
+                        <!--</div>-->
+                        <!--<div class="input-group mb-3">-->
+                            <!--<div class="input-group-prepend">-->
+                                <!--<span class="input-group-text">Direct Parent Room/s</span>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                        <!--<div id="roomParentList">-->
+
+                        <!--</div>-->
+
+                    <!--</form>-->
+                <!--</div>-->
+                <!--<div class="modal-footer">-->
+                    <!--<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>-->
+                    <!--<button type="button" class="btn btn-success" onclick="addRoom()">Add Room</button>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
     <!-- Scripts loaded at end of page -->
     <script type="text/javascript" src="Js/company.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"

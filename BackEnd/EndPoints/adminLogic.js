@@ -1099,7 +1099,7 @@ class AdminLogic
         let presentParams = false;
         let presentReturn = "";
 
-        if(me.body.companyId === undefined){
+        if(this.body.companyId === undefined){
             presentParams = true;
             presentReturn += "companyId, ";
         }
@@ -1107,14 +1107,14 @@ class AdminLogic
         if(!presentParams){
             let invalidParams = false;
             let invalidReturn = "";
-            if(!me.sharedLogic.validateNonEmpty(me.body.companyId) || !me.sharedLogic.validateNumeric(me.body.companyId)){
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
                 invalidParams = true;
                 invalidReturn += "companyId, ";
             }
 
             //if parameters are valid then execute function
             if(!invalidParams){
-                if(me.demoMode){
+                if(this.demoMode){
                     //return mock data
                     success = true;
                     message = "Retrieved Building! - mock";
@@ -1124,7 +1124,7 @@ class AdminLogic
                         buildingLatitude : "20,120,10",
                         buildingLongitude : "20,120,10",
                         buildingBranchName : "Vast Expanse JHB",
-                        companyId : me.body.companyId,
+                        companyId : this.body.companyId,
                         wifiParamsId : 0
                     });
 
@@ -1133,19 +1133,19 @@ class AdminLogic
                         buildingLatitude : "20,120,10",
                         buildingLongitude : "20,120,10",
                         buildingBranchName : "Vast Expanse PTA",
-                        companyId : me.body.companyId,
+                        companyId : this.body.companyId,
                         wifiParamsId : 1
                     });
 
-                    me.sharedLogic.endServe(success, message, data);
+                    this.sharedLogic.endServe(success, message, data);
                 }
                 else{
                     //return data from crudController
-                    let buildingObj = await me.sharedLogic.crudController.getBuildingsByCompanyId(me.body.companyId);
+                    let buildingObj = await this.sharedLogic.crudController.getBuildingsByCompanyId(this.body.companyId);
                     if(buildingObj.success){
                         let wifiObj;
                         for(let countBuilding = 0; countBuilding<buildingObj.data.length; countBuilding++){
-                            wifiObj = await me.sharedLogic.crudController.getWiFiParamsByWifiParamsId(buildingObj.data[countBuilding].wifiParamsId);
+                            wifiObj = await this.sharedLogic.crudController.getWiFiParamsByWifiParamsId(buildingObj.data[countBuilding].wifiParamsId);
                             if(wifiObj.success){
                                 buildingObj.data[countBuilding].networkSsid = wifiObj.data.ssid;
                                 buildingObj.data[countBuilding].networkType = wifiObj.data.networkType;
@@ -1156,10 +1156,10 @@ class AdminLogic
                         message = "Buildings Retrieved!";
 
                         data = buildingObj.data;
-                        me.sharedLogic.endServe(success, message, data);
+                        this.sharedLogic.endServe(success, message, data);
                     }
                     else{
-                        me.sharedLogic.endServe(buildingObj.success, buildingObj.message, null);
+                        this.sharedLogic.endServe(buildingObj.success, buildingObj.message, null);
                     }
                 }
             }
@@ -1168,7 +1168,7 @@ class AdminLogic
                 message = "Invalid Parameters: "+invalidReturn;
                 message = message.slice(0, message.length-2);
                 data = null;
-                me.sharedLogic.endServe(success, message, data);
+                this.sharedLogic.endServe(success, message, data);
             }
         }
         else{
@@ -1176,7 +1176,7 @@ class AdminLogic
             message = "Missing Parameters: "+presentReturn;
             message = message.slice(0, message.length-2);
             data = null;
-            me.sharedLogic.endServe(success, message, data);
+            this.sharedLogic.endServe(success, message, data);
         }
     }
 

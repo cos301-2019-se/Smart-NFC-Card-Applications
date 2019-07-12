@@ -92,6 +92,8 @@ export class CardTabPage implements OnInit{
     switch(functionName) {
       case 'Add Business Card': this.addCard()
         break;
+      case 'Refresh All Cards': this.showMessage('Refresh feature coming soon.', MessageType.error);
+        break;
     }
   }
 
@@ -189,6 +191,14 @@ export class CardTabPage implements OnInit{
       ]
     });
     await alert.present();
+  }
+
+  /**
+   * Function refreshes a business card from db
+   * @param cardId string Id of business card to refresh
+   */
+  refreshCard(cardId: string){
+    this.showMessage('Refresh feature coming soon.', MessageType.error);
   }
 
   /**

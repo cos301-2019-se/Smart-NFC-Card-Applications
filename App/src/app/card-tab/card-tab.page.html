@@ -11,6 +11,7 @@
               <ion-card-title>
                 {{ card.companyName }}
                 <ion-icon item-right class="trash" name="trash" (click)='$event.stopPropagation(); removeCard(card.businessCardId);'></ion-icon>
+                <ion-icon item-right class="trash" name="refresh" (click)='$event.stopPropagation(); refreshCard(card.businessCardId);'></ion-icon>
               </ion-card-title>
               <ion-card-subtitle *ngIf='detailToggles == [] || !detailToggles[card.businessCardId]'>{{ card.employeeName }}</ion-card-subtitle>
             </ion-card-header>     

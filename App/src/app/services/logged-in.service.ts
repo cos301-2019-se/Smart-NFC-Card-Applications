@@ -100,7 +100,7 @@ export class LoggedInService {
             subject.next({success: false, message: res['message']});
           }
         });
-      }, 100);
+      }, 50);
       return subject.asObservable();
     }
   }
@@ -123,7 +123,35 @@ export class LoggedInService {
           subject.complete();
         }
       });
-    }, 100);
+    }, 50);
+    return subject.asObservable();
+  }
+
+  /**
+   * Function that reloads the employee's business card
+   * @return Observable<Object> { success: boolean, message: string} 
+   */
+  reloadBusinessCard(){
+    let subject = new Subject<Object>();
+    setTimeout(() => {
+      this.req.getBusinessCard(this.employeeId).subscribe(response => {
+        if (response['success'] === true) {
+          let cardDetails = response['data'];
+          this.cardService.setOwnBusinessCard(cardDetails).then(() => {
+            subject.next({ success: true, message: '' });
+            subject.complete();
+          })
+          .catch(err => {
+            subject.next({ success: false, message: err });
+            subject.complete();
+          });
+        }
+        else {
+          subject.next({success: false, message: response['message']});
+          subject.complete();
+        }
+      })
+    }, 50);
     return subject.asObservable();
   }
 }

@@ -64,14 +64,19 @@ export class TabsPage implements OnInit{
       {name: 'Logout', requiresLogin: true}
     ],
     'share-tab': [
+      {name: 'Refresh', requiresLogin: true},
       {name: 'Share'}
     ],
     'card-tab': [
-      {name: 'Add Business Card'}
+      {name: 'Add Business Card'},
+      {name: 'Refresh All Cards', requiresLogin: true}
     ],
     'package-tab': [
       {name: 'Link to Package'},
-      {name: 'Receive Package'}
+      {name: 'Receive Package'},
+      {name: 'Refresh All Packages', requiresLogin: true},
+      {name: 'Access'},
+      {name: 'Pay'}
     ]
   };
   activeTab: string = 'manage-tab'; 

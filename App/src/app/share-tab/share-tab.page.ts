@@ -26,6 +26,7 @@ import { LocationService } from '../services/location.service';
 import { LocationModel } from '../models/location.model';
 import { EventEmitterService } from '../services/event-emitter.service';   
 import { MessageType } from '../tabs/tabs.page';
+import { LoggedInService } from '../services/logged-in.service';
 
 /**
 * Purpose:	This class provides the component that allows sharing of cards
@@ -49,12 +50,15 @@ export class ShareTabPage implements OnInit{
    * @param cardService BusinessCardsService injectable
    * @param nfcService NfcControllerService injectable
    * @param locationService LocationService injectable
+   * @param eventEmitterService EventEmitterService injectable
+   * @param req RequestModuleService injectable
    */
   constructor(
     private cardService: BusinessCardsService,
     private nfcService: NfcControllerService,
     private locationService: LocationService,
-    private eventEmitterService: EventEmitterService   
+    private eventEmitterService: EventEmitterService,
+    private loginService: LoggedInService
   ) { }
 
   ngOnInit() {    
@@ -87,6 +91,8 @@ export class ShareTabPage implements OnInit{
 
   menuEvent(functionName: string) {
     switch(functionName) {
+      case 'Refresh': this.reloadCard()
+        break;
       case 'Share': this.shareCard()
         break;
     }
@@ -155,5 +161,19 @@ export class ShareTabPage implements OnInit{
    */
   showMessage(message: string, type: number, timeout: number = 5000) {
     this.eventEmitterService.messageEvent(message, type, timeout);
+  }
+
+  /**
+   * Function that pull the business card from the database again
+   */
+  reloadCard() {
+    this.loginService.reloadBusinessCard().subscribe(res => {
+      if (res['success'] === true) {
+        this.showMessage('Business card refreshed', MessageType.success)
+      }
+      else {
+        this.showMessage(`Could not refresh: ${res['message']}`, MessageType.error)
+      }
+    })
   }
 }

@@ -102,6 +102,12 @@ export class PackageTabPage implements OnInit{
         break;
       case 'Receive Package': this.addVisitorPackage()
         break;
+      case 'Refresh All Packages': this.showMessage('Refresh feature coming soon.', MessageType.error);
+        break;
+      case 'Access': this.showMessage('Access control feature coming soon.', MessageType.error)
+        break;
+      case 'Pay': this.showMessage('Payment feature coming soon.', MessageType.error)
+        break;
     }
   }
 
@@ -230,7 +236,7 @@ export class PackageTabPage implements OnInit{
         }, {
           text: 'Delete',
           handler: () => {
-            this.packageService.removeSharedVisitorPackage(packageId)
+            this.packageService.removeVisitorPackage(packageId)
             .then(() => {
               this.loadPackages();
               this.showMessage(`Deleted the ${visitorPackage.companyName} package`, MessageType.success);
@@ -243,6 +249,14 @@ export class PackageTabPage implements OnInit{
       ]
     });
     await alert.present();
+  }
+
+  /**
+   * Function refreshes a visitor package from db
+   * @param packageId number Id of visitor package to refresh
+   */
+  refreshVisitorPackage(packageId: number){
+    this.showMessage('Refresh feature coming soon.', MessageType.error);
   }
 
   /**

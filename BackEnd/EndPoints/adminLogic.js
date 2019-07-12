@@ -148,6 +148,9 @@ class AdminLogic
                 this.editPassword();
                 break;
 
+            case "editEmployeePassword":
+                this.editEmployeePassword();
+                break;
             //wifiParams
             case "editWifiParam":
                 this.editWifiParam();
@@ -2354,7 +2357,7 @@ class AdminLogic
                     //return mock data
                     success = true;
                     message = "Password Successfully changed!";
-                    this.sharedLogic.endServe(success, message, data);
+                    this.sharedLogic.endServe(success, message, {});
                 }
                 else{
                     //return data from crudController
@@ -2381,6 +2384,85 @@ class AdminLogic
                     }
                     else{
                         this.sharedLogic.endServe(apiKeyObj.success, apiKeyObj.message, null);
+                    }
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                this.sharedLogic.endServe(success, message, data);
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+            this.sharedLogic.endServe(success, message, data);
+        }
+    }
+
+    /**
+     * This Function will be used to change the password
+     *
+     * @params employeeId string The Api key of the user
+     * @params password The old password of the user
+     */
+    async editEmployeePassword(){
+        var message;
+        var data = new Object();
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(this.body.employeeId === undefined){
+            presentParams = true;
+            presentReturn += "employeeId, ";
+        }
+        if(this.body.password === undefined){
+            presentParams = true;
+            presentReturn += "password, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeId) || !this.sharedLogic.validateNumeric(this.body.employeeId)){
+                invalidParams = true;
+                invalidReturn += "employeeId, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.password)){
+                invalidParams = true;
+                invalidReturn += "password, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    success = true;
+                    message = "Password Successfully changed!";
+                    this.sharedLogic.endServe(success, message, {});
+                }
+                else{
+                    //return data from crudController
+                    let employeeObj = await this.sharedLogic.crudController.getEmployeeByEmployeeId(this.body.employeeId);
+                    if(employeeObj.success){
+
+                        let salt = this.sharedLogic.genSalt();
+                        let passwordObj = await this.sharedLogic.crudController.updatePassword(employeeObj.data.passwordId, undefined, this.sharedLogic.passwordHash(this.body.password,salt), salt, undefined,undefined );
+                        if(passwordObj.success){
+                            this.sharedLogic.endServe(passwordObj.success, passwordObj.message, {});
+                        }
+                        else{
+                            this.sharedLogic.endServe(passwordObj.success, passwordObj.message, null);
+                        }
+                    }
+                    else{
+                        this.sharedLogic.endServe(false, employeeObj.message, null);
                     }
                 }
             }

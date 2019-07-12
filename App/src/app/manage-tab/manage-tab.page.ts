@@ -24,7 +24,7 @@ import { BusinessCardsService } from '../services/business-cards.service';
 import { LocalStorageService } from '../services/local-storage.service';
 import { RequestModuleService } from '../services/request-module.service';
 import { Observable } from 'rxjs';
-import { ModalController } from '@ionic/angular';
+import { ModalController, AlertController } from '@ionic/angular';
 import { CreateVisitorPackagePage } from '../create-visitor-package/create-visitor-package.page';
 import { EventEmitterService } from '../services/event-emitter.service';   
 import { LoggedInService } from '../services/logged-in.service';
@@ -81,7 +81,8 @@ export class ManageTabPage implements OnInit {
     private filterService: FilterService,
     private packageService: VisitorPackagesService,
     private nfcService: NfcControllerService,
-    private dateService: DateService
+    private dateService: DateService,
+    private alertController: AlertController
   ) { }
 
   /**
@@ -257,14 +258,31 @@ export class ManageTabPage implements OnInit {
   /**
    * Function deletes all packages that has already expired (locally only)
    */
-  deleteExpired(){
-    let currDate = new Date();
-    this.packages.forEach(visitorPackage => {
-      if (new Date(visitorPackage.endDate) < currDate) {
-        this.packageService.removeSharedVisitorPackage(visitorPackage.packageId);
-      }
+  async deleteExpired(){
+    const alert = await this.alertController.create({
+      header: 'Delete Expired Packages',
+      message: `Are you sure you want to <strong>delete expired</strong> packages?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => { }
+        }, {
+          text: 'Delete',
+          handler: () => {
+            let currDate = new Date();
+            this.packages.forEach(visitorPackage => {
+              if (new Date(visitorPackage.endDate) < currDate) {
+                this.packageService.removeSharedVisitorPackage(visitorPackage.packageId);
+              }
+            });
+            this.loadPackages();
+            this.showMessage('Deleted expired packages.', MessageType.success);
+          }
+        }
+      ]
     });
-    this.loadPackages();
+    await alert.present();
   }
 
   /**
@@ -306,17 +324,38 @@ export class ManageTabPage implements OnInit {
    * Function removes a visitor package from the list
    * @param packageId number Id of visitor package to remove
    */
-  removeVisitorPackage(packageId: number){
-    this.req.deleteVisitorPackage(packageId).subscribe(json => {
-      if (json['success'] === true) {
-        this.packageService.removeSharedVisitorPackage(packageId).then(() => {
-          this.loadPackages();
-        });
-      }
-      else {
-        this.showMessage(`Could not delete package: ${json['message']}`, MessageType.error)
-      }
-    })
+  async removeVisitorPackage(packageId: number){
+    let visitorPackage: VisitorPackage = this.packages.find(visitorPackage => visitorPackage.packageId == packageId);
+    const alert = await this.alertController.create({
+      header: 'Delete Visitor Package',
+      message: `Are you sure you want to <strong>delete the ${visitorPackage.access}</strong> package of the visitor?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => { }
+        }, {
+          text: 'Delete',
+          handler: () => {
+            this.req.deleteVisitorPackage(packageId).subscribe(json => {
+              if (json['success'] === true) {
+                this.packageService.removeSharedVisitorPackage(packageId).then(() => {
+                  this.showMessage(`Deleted the ${visitorPackage.access} package`, MessageType.success);
+                  this.loadPackages();
+                })
+                .catch(err => {
+                  this.showMessage(`Couldn't delete: ${err}`, MessageType.error);
+                });
+              }
+              else {
+                this.showMessage(`Could not delete package: ${json['message']}`, MessageType.error)
+              }
+            })
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   /**

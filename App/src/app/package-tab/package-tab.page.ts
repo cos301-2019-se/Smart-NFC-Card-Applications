@@ -31,6 +31,7 @@ import { EventEmitterService } from '../services/event-emitter.service';
 import { FilterService } from '../services/filter.service';   
 import { DateService } from '../services/date.service';
 import { MessageType } from '../tabs/tabs.page';
+import { AlertController } from '@ionic/angular';
 
 /**
 * Purpose:	This class provides the component that allows viewing of shared cards as well as adding new ones
@@ -65,7 +66,8 @@ export class PackageTabPage implements OnInit{
     private wifiService: WifiService,
     private eventEmitterService: EventEmitterService,
     private filterService: FilterService,
-    private dateService: DateService
+    private dateService: DateService,
+    private alertController: AlertController
   ) { }
 
   ngOnInit() {    
@@ -215,10 +217,32 @@ export class PackageTabPage implements OnInit{
    * Function removes a visitor package from the list
    * @param packageId number Id of visitor package to remove
    */
-  removeVisitorPackage(packageId: number){
-    this.packageService.removeVisitorPackage(packageId).then(() => {
-      this.loadPackages();
+  async removeVisitorPackage(packageId: number){
+    let visitorPackage: VisitorPackage = this.packages.find(visitorPackage => visitorPackage.packageId == packageId);
+    const alert = await this.alertController.create({
+      header: 'Delete Visitor Package',
+      message: `Are you sure you want to <strong>delete the ${visitorPackage.companyName}</strong> package?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => { }
+        }, {
+          text: 'Delete',
+          handler: () => {
+            this.packageService.removeSharedVisitorPackage(packageId)
+            .then(() => {
+              this.loadPackages();
+              this.showMessage(`Deleted the ${visitorPackage.companyName} package`, MessageType.success);
+            })
+            .catch(err => {
+              this.showMessage(`Couldn't delete: ${err}`, MessageType.error);
+            });
+          }
+        }
+      ]
     });
+    await alert.present();
   }
 
   /**

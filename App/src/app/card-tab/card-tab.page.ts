@@ -27,6 +27,7 @@ import { LocationModel } from '../models/location.model';
 import { EventEmitterService } from '../services/event-emitter.service';   
 import { FilterService } from '../services/filter.service';  
 import { MessageType } from '../tabs/tabs.page';
+import { AlertController } from '@ionic/angular';
 
 /**
 * Purpose:	This class provides the component that allows viewing of shared cards as well as adding new ones
@@ -43,19 +44,22 @@ export class CardTabPage implements OnInit{
   cards: BusinessCard[] = [];
   detailToggles = [];
   check;
-
   /**
    * Constructor that takes all injectables
    * @param cardService BusinessCardsService injectable
    * @param nfcService NfcControllerService injectable
    * @param locationService LocationService injectable
+   * @param eventEmitterService EventEmitterService injectable
+   * @param filterService FilterService injectable
+   * @param alertController AlertController injectable
    */
   constructor(
     private cardService: BusinessCardsService,
     private nfcService: NfcControllerService,
     private locationService: LocationService,
     private eventEmitterService: EventEmitterService,
-    private filterService: FilterService
+    private filterService: FilterService,
+    private alertController: AlertController
   ) { }
 
   ngOnInit() {    
@@ -159,10 +163,32 @@ export class CardTabPage implements OnInit{
    * Function removes a business card from the list
    * @param cardId string Id of business card to remove
    */
-  removeCard(cardId: string){
-    this.cardService.removeBusinessCard(cardId).then(() => {
-      this.loadCards();
+  async removeCard(cardId: string){
+    let card: BusinessCard = this.cards.find(card => card.businessCardId == cardId);
+    const alert = await this.alertController.create({
+      header: 'Delete Business Card',
+      message: `Are you sure you want to <strong>delete ${card.employeeName}</strong>'s business card?`,
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => { }
+        }, {
+          text: 'Delete',
+          handler: () => {
+            this.cardService.removeBusinessCard(cardId)
+            .then(() => {
+              this.loadCards();
+              this.showMessage(`Deleted ${card.employeeName}'s business card`, MessageType.success);
+            })
+            .catch(err => {
+              this.showMessage(`Couldn't delete: ${err}`, MessageType.error);
+            });
+          }
+        }
+      ]
     });
+    await alert.present();
   }
 
   /**

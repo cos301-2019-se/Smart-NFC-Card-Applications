@@ -19,6 +19,7 @@
                     {
                         $("body").fadeIn(1000);
                     });
+
                 }
             });
         } else {
@@ -26,6 +27,7 @@
         }
 
     </script>
+    <script type="text/javascript" src="Js/company.js"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="Css/styles.css">
@@ -73,11 +75,15 @@
             <input type="text" class="form-control" id="aboutCompanyUsername" disabled>
         </div>
 
+        <div class="alert alert-danger collapse" id="returnMessage">
+            <strong>Error!</strong> Please fill in all the fields.
+        </div>
+
         <div class="btn-toolbar justify-content-between" role="toolbar">
             <div class="input-group">
                 <button id="btnEditCompany" onclick="fillEditCompany();$('#editCompanyModal').modal('show');" class="btn btn-success" style="margin-top:20px; margin-right:5px">Edit Company</button>
 
-                <button id="btnEditPassword" onclick="$('#addBuildingModal').modal('show');" class="btn btn-success" style="margin-top:20px">Change Password</button>
+                <button id="btnEditPassword" onclick="preparePassword();$('#editPasswordModal').modal('show');" class="btn btn-success" style="margin-top:20px">Change Password</button>
             </div>
             <div class="btn-group" role="group">
                 <button id="btn" onclick="window.location.replace('home.html');" class="btn btn-default pull-right" style="margin-top:20px">Back to Home</button>
@@ -119,6 +125,9 @@
                             <input type="text" class="form-control" id="editCompanyUsername" required>
                         </div>
                     </form>
+                    <div class="alert alert-danger collapse" id="editCompanyWarning">
+                        <strong>Error!</strong> Please fill in all the fields.
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
@@ -128,106 +137,52 @@
         </div>
     </div>
 
-    <!--<div class="modal fade" id="editBuildingModal" tabindex="-1" role="dialog" aria-labelledby="editBuildingModalLabel" aria-hidden="true">-->
-        <!--<div class="modal-dialog" role="document">-->
-            <!--<div class="modal-content">-->
-                <!--<div class="modal-header">-->
-                    <!--<h5 class="modal-title" id="editBuildingModalLabel">Edit Building</h5>-->
-                    <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
-                        <!--<span aria-hidden="true">&times;</span>-->
-                    <!--</button>-->
-                <!--</div>-->
-                <!--<div class="modal-body">-->
+    <div class="modal fade" id="editPasswordModal" tabindex="-1" role="dialog" aria-labelledby="editPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editPasswordModalLabel">Change Password</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
 
+                    <form class="was-validated">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text font-weight-bold">Old Password</span>
+                            </div>
+                            <input type="text" class="form-control" id="editOldPassword" required>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text font-weight-bold">New Password</span>
+                            </div>
+                            <input type="text" class="form-control" id="editNewPassword" required>
+                        </div>
 
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text font-weight-bold">Repeat New Password</span>
+                            </div>
+                            <input type="text" class="form-control" id="editRepeatNewPassword" required>
 
-                    <!--<form>-->
-                        <!--<div class="input-group mb-3">-->
-                            <!--<div class="input-group-prepend">-->
-                                <!--<span class="input-group-text">Building Name</span>-->
-                            <!--</div>-->
-                            <!--<input type="text" class="form-control" id="buildingNameE">-->
-                        <!--</div>-->
-                        <!--<div class="input-group mb-3">-->
-                            <!--<div class="input-group-prepend">-->
-                                <!--<span class="input-group-text">Latitude</span>-->
-                            <!--</div>-->
-                            <!--<input type="text" class="form-control" id="latE">-->
-                        <!--</div>-->
-                        <!--<div class="input-group mb-3">-->
-                            <!--<div class="input-group-prepend">-->
-                                <!--<span class="input-group-text">Longitude</span>-->
-                            <!--</div>-->
-                            <!--<input type="text" class="form-control" id="longiE">-->
-                        <!--</div>-->
-                        <!--<div class="input-group mb-3">-->
-                            <!--<div class="input-group-prepend">-->
-                                <!--<span class="input-group-text">Wifi SSID</span>-->
-                            <!--</div>-->
-                            <!--<input type="text" class="form-control" id="wifiSSIDE">-->
-                        <!--</div>-->
-                        <!--<div class="input-group mb-3">-->
-                            <!--<div class="input-group-prepend">-->
-                                <!--<span class="input-group-text">Wifi Type</span>-->
-                            <!--</div>-->
-                            <!--<input type="text" class="form-control" id="wifiTypeE">-->
-                        <!--</div>-->
-                        <!--<div class="input-group mb-3">-->
-                            <!--<div class="input-group-prepend">-->
-                                <!--<span class="input-group-text">Wifi Password</span>-->
-                            <!--</div>-->
-                            <!--<input type="text" class="form-control" id="wifiPasswordE">-->
-                        <!--</div>-->
-                    <!--</form>-->
-                <!--</div>-->
-                <!--<div class="modal-footer">-->
-                    <!--<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>-->
-                    <!--<button type="button" class="btn btn-success" onclick="saveBuildingChanges()">Save Changes</button>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
+                        </div>
+                    </form>
+                    <div class="alert alert-danger collapse" id="editPasswordWarning">
+                        <strong>Error!</strong> Please fill in all the fields.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" onclick="editPassword()">Change Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!--<div class="modal fade" id="addRoomModal" tabindex="-1" role="dialog" aria-labelledby="addRoomModalLabel" aria-hidden="true">-->
-        <!--<div class="modal-dialog" role="document">-->
-            <!--<div class="modal-content">-->
-                <!--<div class="modal-header">-->
-                    <!--<h5 class="modal-title" id="addRoomModalLabel">Add Room</h5>-->
-                    <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
-                        <!--<span aria-hidden="true">&times;</span>-->
-                    <!--</button>-->
-                <!--</div>-->
-                <!--<div class="modal-body">-->
-
-
-
-                    <!--<form>-->
-                        <!--<div class="input-group mb-3">-->
-                            <!--<div class="input-group-prepend">-->
-                                <!--<span class="input-group-text">Room Name</span>-->
-                            <!--</div>-->
-                            <!--<input type="text" class="form-control" id="roomName">-->
-                        <!--</div>-->
-                        <!--<div class="input-group mb-3">-->
-                            <!--<div class="input-group-prepend">-->
-                                <!--<span class="input-group-text">Direct Parent Room/s</span>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--<div id="roomParentList">-->
-
-                        <!--</div>-->
-
-                    <!--</form>-->
-                <!--</div>-->
-                <!--<div class="modal-footer">-->
-                    <!--<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>-->
-                    <!--<button type="button" class="btn btn-success" onclick="addRoom()">Add Room</button>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</div>-->
     <!-- Scripts loaded at end of page -->
-    <script type="text/javascript" src="Js/company.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
         integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
         crossorigin="anonymous"></script>

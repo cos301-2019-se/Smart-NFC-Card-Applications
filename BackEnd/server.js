@@ -72,7 +72,7 @@ function run(callback) {
 				
 				if(req.url == "/")
 				{
-					fs.readFile("./../AdminInterface/index.html", (err,fileContent) =>
+					fs.readFile("./../AdminInterface/login.html", (err,fileContent) =>
 					{
 						res.end(fileContent);
 					});

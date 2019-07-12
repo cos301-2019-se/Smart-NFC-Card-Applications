@@ -1,5 +1,5 @@
 var employeeData; //array of employee objects
-var companyData; // array of company objects
+var companyName; // array of company objects
 var buildingData; //array of buidlings corresponding to the company object
 var apiKey;
 var companyId;
@@ -11,36 +11,41 @@ $(document).ready(function () {
     if (apiKey == null || companyId == null) {
         window.location.replace("login.html");
     } else {
-        let fetchEmployees = new Promise((resolve, reject) => { fetchEmployeeData(resolve, reject); });
-        let fetchCompaniesAndBuidlings = new Promise((resolve, reject) => { fetchCompanyData(resolve, reject); });
-
-        Promise.all([fetchEmployees, fetchCompaniesAndBuidlings]).then(() => {
-            console.log("Employee Data:");
-            console.log(employeeData);
-            console.log("Company Data:");
-            console.log(companyData);
-            console.log("Building Data:");
-            console.log(buildingData);
-            tableBody = $('#tableBody');
-            populateTable();
-        }).catch((error) => {
-            displayError(error);
-        });
+        fetchDataAndPopulateTable();
 
         $('#darkmode').change(function () {
             $('#table').toggleClass("table-dark");
             $('body').toggleClass("dark-theme");
         });
-
     }
 });
 
+
+function fetchDataAndPopulateTable() {
+    let fetchEmployees = new Promise((resolve, reject) => { fetchEmployeeData(resolve, reject); });
+    let fetchBuildings = new Promise((resolve, reject) => { fetchBuildingData(resolve, reject); });
+    let fetchCompany = new Promise((resolve, reject) => { fetchCompanyName(resolve, reject) });
+
+    Promise.all([fetchEmployees, fetchBuildings, fetchCompany]).then(() => {
+        console.log("Employee Data:");
+        console.log(employeeData);
+        console.log("Company Data:");
+        console.log(companyName);
+        console.log("Building Data:");
+        console.log(buildingData);
+        tableBody = $('#tableBody');
+        populateTable();
+        $('#successModal').modal('show');
+    }).catch((error) => {
+        displayError(error);
+    });
+}
+
+var submissionObject;
 function populateTable() {
-    if (!employeeData || !companyData || !buildingData)
+    if (!employeeData || !companyName || !buildingData)
         return;
     tableBody.empty();
-    var myCompanyBuildings = buildingData[companyId];
-
     for (var i = 0; i < employeeData.length; i++) {
         var employee = employeeData[i];
         var empId = employee.employeeId;
@@ -50,8 +55,8 @@ function populateTable() {
         var title = employee.title;
         var cell = employee.cellphone;
         var email = employee.email;
-        var company = companyData[companyId];
-        var building = buildingData[companyId][employee.buildingId];
+        var company = companyName;
+        var building = buildingData[employee.buildingId];
 
         tableBody.append(
             `<tr>
@@ -64,13 +69,97 @@ function populateTable() {
             <td>${email}</td>
             <td>${company}</td>
             <td>${building}</td>
+            <td><button type="button" class="btn btn-primary editButton">Edit</button></td>
             </tr>`
         );
     }
 
     $('#table').DataTable(); //Initialize Table
+    //listener for edit clicks
+    $('.editButton').on("click", function () {
+        var row = $(this).closest('tr').first();
+        var fields = [];
+        row.children().each(function () {
+            fields.push($(this).html());
+        });
+        submissionObject = { employeeId: fields[0] };
+        $("#successContainer").empty();
+        $("#btnSubmit").attr("disabled", false);
+        addValuesToModal(fields);
+        $('#editEmployeeModal').modal('show');
+    });
+}
 
+function submitEditEmployee() {
+    $("#editEmployeeWarning").hide();
+    retrieveValuesFromModal();
+    if (submissionObject.employeeName.length === 0 || submissionObject.employeeSurname.length === 0 || submissionObject.username.length === 0 || submissionObject.employeeTitle.length === 0 || submissionObject.employeeCellphone === 0 || submissionObject.employeeEmail.length === 0) {
+        $("#editEmployeeWarning").show();
+    } else {
+        console.log(submissionObject);
+        submissionObject.apiKey = apiKey;
+        $.post("/admin/editEmployee", JSON.stringify(submissionObject), (data) => {
+            if (data.success) {
+                console.log("successfully modified employee");
+                $("#successContainer").empty().append(`
+            <div class="alert alert-success hide" role="alert">
+            <h4 class="alert-heading">Operation Successful!</h4>
+            Employee modified successfully. Please <a href="./employees.html" class="alert-link">refresh</a> the page in
+            order to view the updated information in the table.
+            </div>
+            `);
+                $("#btnSubmit").attr("disabled", true);
+            } else {
+                console.log(data.message);
+                console.log("failed to modify employee");
+            }
+        });
+    }
 
+}
+
+function retrieveValuesFromModal() {
+    //prepare a potential submission object
+    submissionObject.employeeName = $('#editFirstName').val().trim();
+    submissionObject.employeeSurname = $('#editSurname').val().trim();
+    submissionObject.username = $('#editUsername').val().trim();
+    submissionObject.employeeTitle = $('#editTitle').val().trim();
+    submissionObject.employeeCellphone = $('#editCellphone').val().trim();
+    submissionObject.employeeEmail = $('#editEmail').val().trim();
+    submissionObject.buildingId = $('#buildingSelect').val().trim();
+
+}
+
+function addValuesToModal(fields) {
+
+    //populate modal
+    $('#editFirstName').val(fields[1]);
+    $('#editSurname').val(fields[2]);
+    $('#editUsername').val(fields[3]);
+    $('#editTitle').val(fields[4]);
+    $('#editCellphone').val(fields[5]);
+    $('#editEmail').val(fields[6]);
+    var currentBuildingId = findBuildingIdFromBuildingName(fields[8]);
+    var selector = $('#buildingSelect');
+    selector.empty();
+    for (var id in buildingData) {
+        if (buildingData.hasOwnProperty(id)) {
+            if (id == currentBuildingId) {
+                selector.append(`<option value="${id}" selected>${buildingData[id]}</option>`);
+            } else {
+                selector.append(`<option value="${id}">${buildingData[id]}</option>`);
+            }
+        }
+    }
+    $('#editBuilding').val(fields[8]);
+}
+
+function findBuildingIdFromBuildingName(name) {
+    for (var id in buildingData) {
+        if (buildingData[id] === name) {
+            return id;
+        }
+    }
 }
 
 function fetchEmployeeData(resolve, reject) {
@@ -84,64 +173,38 @@ function fetchEmployeeData(resolve, reject) {
     });
 }
 
-function fetchCompanyData(resolve, reject) {
-    $.post("/admin/getCompanies", JSON.stringify({ "apiKey": apiKey }), (data) => {
+
+
+function fetchBuildingData(resolve, reject) {
+    buildingData = {};
+
+    $.post("/admin/getBuildingsByCompanyId", JSON.stringify({ "apiKey": apiKey, "companyId": companyId }), (data) => {
         if (data.success) {
-            var tempData = data.data;
-            //trim the data to what is needed
-            companyData = {};
-            var tempCompany;
-            for (var i = 0; i < tempData.length; i++) {
-                tempCompany = tempData[i];
-                companyData[tempCompany.companyId] = tempCompany.companyName;
+            var buildingsArray;
+            buildingsArray = Object.values(data.data);
+            var trimmedObj = {};
+            for (var j = 0; j < buildingsArray.length; j++) {
+                var building = buildingsArray[j];
+                trimmedObj[building.buildingId] = building.branchName;
             }
-            let promise = new Promise((res, rej) => { fetchBuildingData(res, rej); });
-            promise.then(() => {
-                resolve();
-            }).catch((err) => {
-                reject(err);
-            });
+            buildingData = trimmedObj;
+
+            resolve();
         } else {
-            reject("Failed to retrieve company information. Please try again later");
+            reject("Failed to get buildings: " + data.message);
         }
     });
 }
 
-function fetchBuildingData(res, rej) {
-    buildingData = {};
-    var promiseArray = [];
-    var companyIds = Object.keys(companyData);
-    for (var i = 0; i < companyIds.length; i++) {
-        promiseArray.push(new Promise((resolve, reject) => {
-            $.post("/admin/getBuildingsByCompanyId", JSON.stringify({ "apiKey": apiKey, "companyId": companyIds[i] }), (data) => {
-                if (data.success) {
-                    resolve(data.data);
-                } else {
-                    reject("Failed to get building: " + data.message);
-                }
-            });
-        }));
-    }
-    //all companies must have buildings in order to display the table
-    Promise.all(promiseArray)
-        .then((resultsArray) => {
-            var buildingsArray;
-            for (var i = 0; i < companyIds.length; i++) {
-                buildingsArray = Object.values(resultsArray[i]);
-                var trimmedArray = [];
-                var trimmedObj = {};
-                for (var j = 0; j < buildingsArray.length; j++) {
-                    var building = buildingsArray[j];
-                    trimmedArray.push({ "buildingId": building.buildingId, "branchName": building.branchName });
-                    trimmedObj[building.buildingId] = building.branchName;
-                }
-                buildingData[companyIds[i]] = trimmedObj;
-            }
-            res(); // resolves the incoming promise from fetchCompanyData
-        })
-        .catch((err) => {
-            rej("Failed to find buildings for certain companies. Please contact your system administrator. Error: " + err); // some coding error in handling happened
-        });;
+function fetchCompanyName(resolve, reject) {
+    $.post("/admin/getCompanyByCompanyId", JSON.stringify({ "apiKey": apiKey, "companyId": companyId }), (data) => {
+        if (data.success) {
+            companyName = data.data.companyName;
+            resolve();
+        } else {
+            reject("Failed to get company: " + data.message);
+        }
+    });
 }
 
 function displayError(message) {

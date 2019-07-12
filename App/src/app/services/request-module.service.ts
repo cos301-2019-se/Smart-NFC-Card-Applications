@@ -230,7 +230,7 @@ export class RequestModuleService {
     }
     else {
       let json: JSON = JSON.parse(`{'employeeId': ${employeeId}, 'startTime': '${startTime}', 'endTime': '${endTime}', 'macAddress': '${macAddress}', 
-        'wifiParamsId': ${wifiParamsId}, 'roomId': ${roomId}, 'limit': ${limit}, 'spent': ${spent}}`);
+        'wifiAccessParamsId': ${wifiParamsId}, 'roomId': ${roomId}, 'limit': ${limit}, 'spent': ${spent}}`);
       return this.post(`${this.baseUrl}/app/addVisitorPackage`, json);
     }
   }
@@ -255,8 +255,8 @@ export class RequestModuleService {
       });
     }
     else {
-      let json: JSON = JSON.parse(`{'employeeId': ${employeeId}, 'startTime': '${startTime}', 'endTime': '${endTime}', 'packageId': ${packageId}, 
-        'wifiParamsId': ${wifiParamsId}, 'roomId': ${roomId}, 'limit': ${limit}}`);
+      let json: JSON = JSON.parse(`{'visitorPackageId': ${packageId}, 'employeeId': ${employeeId}, 'startTime': '${startTime}', 'endTime': '${endTime}', 
+        'wifiAccessParamsId': ${wifiParamsId}, 'roomId': ${roomId}, 'limit': ${limit}}`);
       return this.post(`${this.baseUrl}/app/editVisitorPackage`, json);
     }
   }

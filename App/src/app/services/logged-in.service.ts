@@ -86,7 +86,7 @@ export class LoggedInService {
       setTimeout(() => {
         this.req.login(username, password).subscribe(res => {
           if (res['success'] === true) {
-            this.setLoggedIn(true, res['data']['employeeId']);
+            this.setLoggedIn(true, res['data']['id']);
             let apiKey = res['data']['apiKey'];
             this.storage.Save(this.apiKeyName, apiKey);
             this.req.getBusinessCard(res['data']['id']).subscribe(response => {

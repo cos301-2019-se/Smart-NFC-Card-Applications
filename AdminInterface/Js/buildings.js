@@ -144,6 +144,10 @@ function loadBuildings(callback)
 			{
 				//$("#addBuildingModal").modal('show');
 			}
+			else if(data.message === "Invalid API Key")
+			{
+				window.location.replace("login.html");
+			}
 			else
 			{
 				console.log("error: " + data.message);

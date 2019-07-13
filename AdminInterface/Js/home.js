@@ -4,9 +4,6 @@ function loadHomeContents(callback)
 	var api = localStorage.getItem("apiKey");
 	var id = localStorage.getItem("id");
 	
-	console.log(api);
-	console.log(id);
-	
 	
 	$.post("/admin/getCompanyByCompanyId", JSON.stringify({ "apiKey": api , "companyId" : id}), (data) => {
         if (data.success === true) 

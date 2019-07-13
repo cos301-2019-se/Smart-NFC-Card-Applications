@@ -194,19 +194,25 @@ class SharedLogic {
      *  This function is a helper function for checkAPIToken(), which, when CRUDController has been implemented, will
 	 *	scan the DB and look for that API key in the DB, if it is in the DB, then it is valid, if not, then it is not.
      */
-	validAPITokenOnDB(apiToken) {
+	async validAPITokenOnDB(apiToken) 
+	{
 		//checks in DB
-		return true;
-		if (this.demoMode) {
+		
+		if (this.demoMode) 
+		{
 			return true;
 		}
-		else {
-			var passwordDetails = this.crudController.getPassword(apiToken);
+		else 
+		{
+			//checks if in DB
+			var passwordDetails = await this.crudController.getPasswordByApiKey(apiToken);
 
-			if (passwordDetails.success) {
+			if (passwordDetails.success) 
+			{
 				return true;
 			}
-			else {
+			else 
+			{
 				return false;
 			}
 		}
@@ -260,7 +266,9 @@ class SharedLogic {
 
 		}
 		else {
-			if (this.validAPITokenOnDB(this.from.body.apiKey)) {
+			
+			var validApiKey = await this.validAPITokenOnDB(this.from.body.apiKey)
+			if (validApiKey) {
 				this.from.serve();
 			}
 			else {

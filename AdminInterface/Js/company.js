@@ -15,6 +15,12 @@ function loadCompany(callback){
         }
         else {
             console.log("Error in GetCompanyByCompanyId "+data.message);
+			
+			if(data.message === "Invalid API Key")
+			{
+				window.location.replace("login.html");
+			}
+			
         }
     });
     // retrives number of buildings
@@ -85,7 +91,7 @@ function editCompany(){
         $("#editCompanyWarning").show();
     }else{
 
-        let confirmation = confirm("Please confirm you wish to change the company details");
+        let confirmation = confirm("Are you sure you want to update the company details?");
         if(confirmation === true){
 
             let api = localStorage.getItem("apiKey");
@@ -147,7 +153,7 @@ function editPassword(){
         $("#editPasswordWarning").show();
     }else{
 
-        let confirmation = confirm("Please confirm you wish to change the company password");
+        let confirmation = confirm("Are you sure you want to change the company password?");
         if(confirmation === true){
 
             let api = localStorage.getItem("apiKey");

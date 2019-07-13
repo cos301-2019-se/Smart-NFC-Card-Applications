@@ -71,15 +71,15 @@ class AppLogic{
 
             // Employee Details
             case "getEmployeeDetails":
-                me.getEmployeeDetails();  // TODO Implement
+                me.getEmployeeDetails();  // TODO Integrate
                 break;
 
             // Visitor Package
             case "addVisitorPackage":
-                me.addVisitorPackage();
+                me.addVisitorPackage();   // TODO Integrate
                 break;
             case "editVisitorPackage":
-                me.editVisitorPackage();  // TODO Test
+                me.editVisitorPackage();  // TODO Integrate
                 break;
             case "getVisitorPackage":
                 me.getVisitorPackage();   // TODO
@@ -212,9 +212,23 @@ class AppLogic{
      *  @param employeeId int ID of an employee
      *
      *  @return JSON {
-     *                  building: JSON Building object
-     *                  rooms: JSON Room objects
-     *                  wifi: JSON WiFi object
+     *                  building: JSON {
+     *                                      buildingId: int ID of building
+     *                                      latitude: string Latitude of building
+     *                                      longitude: string Longitude of building
+     *                                      branchName: string Name of building
+     *                                 }
+     *                  rooms: Array of JSON objects {
+     *                                                  roomId: int ID of room
+     *                                                  roomName: string Name of the room
+     *                                                  parentRoomList: string List of parent rooms to the room
+     *                                               }
+     *                  wifi: JSON {
+     *                                  wifiAccessParamsId: int ID of wifi access param
+     *                                  ssid: string SSID of wifi access param
+     *                                  networkType: string Type of wifi access param
+     *                                  password: string Password of wifi access param
+     *                             }
      *               }
      */
     async getEmployeeDetails(){
@@ -241,30 +255,47 @@ class AppLogic{
 
             if(!invalidParams) {
                 if(me.demoMode){
-                    let building = {};
-                    let rooms = {};
-                    let wifi = {};
 
-                    building.branchName = "University of Pretoria";
-                    building.latitude = "10";
-                    building.longitude = "11";
-
-
-                    data.building = building;
-
-
-                    data.businessCardId = "0_0";
-                    data.companyName = "Vast Expanse";
-                    data.companyWebsite = "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications";
-                    data.employeeName = "Tjaart";
-                    data.employeeSurname = "Booyens";
-                    data.employeeTitle = "Mr";
-                    data.employeeCellphone = "0791807734";
-                    data.employeeEmail = "u17021775@tuks.co.za";
-                    me.sharedLogic.endServe(true, "Business card information loaded successfully - MOCK", data);
                 }
                 else {
+                    let employee = await me.sharedLogic.crudController.getEmployeeByEmployeeId(me.body.employeeId);
 
+                    if(employee.success){
+                        let building = await me.sharedLogic.crudController.getBuildingByBuildingId(employee.data.buildingId);
+
+                        if(building.success){
+                            let rooms = await me.sharedLogic.crudController.getRoomsByBuildingId(employee.data.buildingId);
+
+                            if(rooms.success){
+                                let wifi = await me.sharedLogic.crudController.getWiFiParamsByWifiParamsId(building.data.wifiParamsId);
+
+                                if(wifi.success){
+                                    success = true;
+                                    message = "Successfully retrieved employee details";
+                                    data.building = building.data;
+                                    data.rooms = rooms.data;
+                                    data.wifi = wifi.data;
+                                    me.sharedLogic.endServe(success, message, data);
+                                }
+                                else{
+                                    console.log(4);
+                                    me.sharedLogic.endServe(wifi.success, wifi.message, wifi.data);
+                                }
+                            }
+                            else{
+                                console.log(3);
+                                me.sharedLogic.endServe(rooms.success, rooms.message, rooms.data);
+                            }
+                        }
+                        else{
+                            console.log(2);
+                            me.sharedLogic.endServe(building.success, building.message, building.data);
+                        }
+                    }
+                    else{
+                        console.log(1);
+                        me.sharedLogic.endServe(employee.success, employee.message, employee.data);
+                    }
                 }
             }
             else{
@@ -323,7 +354,7 @@ class AppLogic{
      *                  macAddress: string Mac Address of client device
      *               }
      *
-     *  @TODO Test
+     *  @TODO
      */
     getClient(clientId){
         let data = {};
@@ -349,7 +380,7 @@ class AppLogic{
      *                  clientId: int ID of client
      *               }
      *
-     *  @TODO Test
+     *  @TODO
      */
     deleteClient(clientId){
         let data = {};
@@ -402,8 +433,6 @@ class AppLogic{
      *  @return JSON {
      *                  wifiTempAccessId: int ID of temporary wifi access
      *               }
-     *
-     *  @TODO Test
      */
     async editTempWifi(wifiTempAccessId, wifiAccessParamsId){
         let data = {};
@@ -435,7 +464,7 @@ class AppLogic{
      *                  wifiAccessParamsId: ID of WiFi access point
      *               }
      *
-     *  @TODO Test
+     *  @TODO
      */
     getTempWifi(wifiTempAccessId){
         let data = {};
@@ -461,9 +490,7 @@ class AppLogic{
      *                  wifiTempAccess: int ID of temporary wifi access
      *               }
      *
-     *  @TODO Integrate with CrudController and Application
-     *  @TODO Return correct data
-     *  @TODO Test
+     *  @TODO
      */
     deleteTempWifi(wifiTempAccessId){
         let data = {};
@@ -517,8 +544,6 @@ class AppLogic{
      *  @return JSON {
      *                  walletId: int ID of the wallet to update
      *               }
-     *
-     *  @TODO Test
      */
     async editWallet(walletId, limit){
         let data = {};
@@ -551,7 +576,7 @@ class AppLogic{
      *                  spent: float Amount spent on the wallet
      *               }
      *
-     *  @TODO Test
+     *  @TODO
      */
     getWallet(walletId){
         let data = {};
@@ -579,7 +604,7 @@ class AppLogic{
      *
      *               }
 
-     *  @TODO Test
+     *  @TODO
      */
     deleteWallet(walletId){
         let data = {};
@@ -630,7 +655,7 @@ class AppLogic{
      *                  tpaId: int ID of TPA
      *               }
      *
-     *  @TODO Test
+     *  @TODO
      */
     getTpa(tpaId){
         let data = {};
@@ -654,7 +679,7 @@ class AppLogic{
      *
      *               }
      *
-     *  @TODO Test
+     *  @TODO
      */
     deleteTpa(tpaId){
         let data = {};
@@ -710,8 +735,6 @@ class AppLogic{
      *  @return JSON {
      *                  tpa_roomId: int ID of TPAxRoom
      *               }
-     *
-     *  @TODO Test
      */
     async editTpaRoom(tpaIdCurrent, roomIdCurrent, tpaId, roomId){
         let data = {};
@@ -733,31 +756,29 @@ class AppLogic{
         return data;
     }
 
-    // /**
-    //  *  Function to retrieve the rooms of a TPA
-    //  *
-    //  *  @param tpaId int ID of TPA
-    //  *
-    //  *  @return JSON {
-    //  *
-    //  *               }
-    //  *
-    //  *  @TODO Integrate with CrudController and Application
-    //  *  @TODO Return correct data
-    //  *  @TODO Test
-    //  */
-    // getTpaRoom(tpaId){
-    //     let data = {};
-    //     if(this.demoMode){
-    //         data;
-    //     }
-    //     else{
-    //         me.sharedLogic.crudController.updateTpaRoom(tpaIdCurrent, roomIdCurrent, tpaId, roomId,function (ret) {
-    //             data = ret.data;
-    //         });
-    //     }
-    //     return data;
-    // }
+    /**
+     *  Function to retrieve the rooms of a TPA
+     *
+     *  @param tpaId int ID of TPA
+     *
+     *  @return JSON {
+     *
+     *               }
+     *
+     *  @TODO Test
+     */
+    getTpaRoom(tpaId){
+        let data = {};
+        if(this.demoMode){
+            data;
+        }
+        else{
+            me.sharedLogic.crudController.updateTpaRoom(tpaIdCurrent, roomIdCurrent, tpaId, roomId,function (ret) {
+                data = ret.data;
+            });
+        }
+        return data;
+    }
 
     /**
      *  Function to delete a room from a TPA
@@ -768,6 +789,8 @@ class AppLogic{
      *  @return JSON {
      *
      *               }
+     *
+     *  @TODO
      */
     deleteTpaRoom(tpaId, roomId){
         let data = {};
@@ -1098,9 +1121,6 @@ class AppLogic{
                         }
                         else{
                             let visitorPackage = await me.sharedLogic.crudController.getVisitorPackageByVisitorPackageId(me.body.visitorPackageId);
-                            console.log("Visitor Package");
-                            console.log(visitorPackage);
-
 
                             let wifi = {};
                             let tpa = {};
@@ -1125,8 +1145,7 @@ class AppLogic{
                                 }
                                 else{
                                     let ret = await me.sharedLogic.crudController.getTPAxRoomsByTpaId(visitorPackage.data.tpaId);
-                                    console.log(ret);
-                                    tpa_room = await me.editTpaRoom(ret.data.tpaId, ret.data.roomId, ret.data.tpaId, me.body.roomId);
+                                    tpa_room = await me.editTpaRoom(ret.data[0].tpaId, ret.data[0].roomId, ret.data[0].tpaId, me.body.roomId);
                                 }
                             }
 
@@ -1140,93 +1159,15 @@ class AppLogic{
                                 }
                             }
 
-                            console.log("WIFI\n");
-                            console.log(wifi);
-                            console.log("TPAxROOM\n");
-                            console.log(tpa_room);
-                            console.log("WALLET\n");
-                            console.log(wallet);
-
-                            // if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length === 0 && Object.entries(wallet).length === 0){
-                            //     visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
-                            //         wifi.wifiTempAccessId,
-                            //         undefined,
-                            //         undefined,
-                            //         me.body.employeeId,
-                            //         undefined,
-                            //         me.body.startTime,
-                            //         me.body.endTime)
-                            // }
-                            // else if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length === 0){
-                            //     visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
-                            //         wifi.wifiTempAccessId,
-                            //         tpa.tpaId,
-                            //         undefined,
-                            //         me.body.employeeId,
-                            //         undefined,
-                            //         me.body.startTime,
-                            //         me.body.endTime)
-                            // }
-                            // else if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length === 0 && Object.entries(wallet).length !== 0){
-                            //     visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
-                            //         wifi.wifiTempAccessId,
-                            //         undefined,
-                            //         wallet.walletId,
-                            //         me.body.employeeId,
-                            //         undefined,
-                            //         me.body.startTime,
-                            //         me.body.endTime)
-                            // }
-                            // else if(Object.entries(wifi).length === 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length === 0){
-                            //     visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
-                            //         undefined,
-                            //         tpa.tpaId,
-                            //         undefined,
-                            //         me.body.employeeId,
-                            //         undefined,
-                            //         me.body.startTime,
-                            //         me.body.endTime)
-                            // }
-                            // else if(Object.entries(wifi).length === 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length !== 0){
-                            //     visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
-                            //         undefined,
-                            //         tpa.tpaId,
-                            //         wallet.walletId,
-                            //         me.body.employeeId,
-                            //         undefined,
-                            //         me.body.startTime,
-                            //         me.body.endTime)
-                            // }
-                            // else if(Object.entries(wifi).length === 0 && Object.entries(tpa_room).length === 0 && Object.entries(wallet).length !== 0){
-                            //     visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
-                            //         undefined,
-                            //         undefined,
-                            //         wallet.walletId,
-                            //         me.body.employeeId,
-                            //         undefined,
-                            //         me.body.startTime,
-                            //         me.body.endTime)
-                            // }
-                            // else if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length !== 0){
-                            //     visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
-                            //         wifi.wifiTempAccessId,
-                            //         tpa.tpaId,
-                            //         wallet.walletId,
-                            //         me.body.employeeId,
-                            //         undefined,
-                            //         me.body.startTime,
-                            //         me.body.endTime)
-                            // }
-                            //
-                            // if(visitorPackage.success){
-                            //     success = visitorPackage.success;
-                            //     message = visitorPackage.message;
-                            //     data.visitorPackageId = visitorPackage.data.visitorPackageId;
-                            //     me.sharedLogic.endServe(success, message, data);
-                            // }
-                            // else{
-                            //     me.sharedLogic.endServe(visitorPackage.success, visitorPackage.message, visitorPackage.data);
-                            // }
+                            if(visitorPackage.success){
+                                success = visitorPackage.success;
+                                message = visitorPackage.message;
+                                data.visitorPackageId = visitorPackage.data.visitorPackageId;
+                                me.sharedLogic.endServe(success, message, data);
+                            }
+                            else{
+                                me.sharedLogic.endServe(visitorPackage.success, visitorPackage.message, visitorPackage.data);
+                            }
                         }
                     }
                     else{
@@ -1262,9 +1203,7 @@ class AppLogic{
      *  @return JSON {
      *
      *               }
-     *
-     *  @TODO Integrate with CrudController and Application
-     *  @TODO Return correct data
+
      *  @TODO Test
      */
     getVisitorPackage(){
@@ -1278,8 +1217,6 @@ class AppLogic{
      *
      *  @return JSON array
      *
-     *  @TODO Integrate with CrudController and Application
-     *  @TODO Return correct data
      *  @TODO Test
      */
     getVisitorPackages(){
@@ -1295,8 +1232,6 @@ class AppLogic{
      *
      *               }
      *
-     *  @TODO Integrate with CrudController and Application
-     *  @TODO Return correct data
      *  @TODO Test
      */
     deleteVisitorPackage(){

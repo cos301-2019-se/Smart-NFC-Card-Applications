@@ -42,3 +42,7 @@ function employees()
 	window.location.replace("employees.html");
 }
 
+function logout(){
+	localStorage.clear();
+	window.location.replace("login.html");
+}

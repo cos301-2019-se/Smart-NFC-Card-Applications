@@ -426,5 +426,12 @@ function addRoom()
     });
 	
 	
-	
+
+}
+
+
+
+function logout(){
+	localStorage.clear();
+	window.location.replace("login.html");
 }

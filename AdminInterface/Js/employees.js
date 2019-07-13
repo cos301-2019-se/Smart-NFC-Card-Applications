@@ -210,3 +210,10 @@ function fetchCompanyName(resolve, reject) {
 function displayError(message) {
     alert(message); // change to bootstrap pretty
 }
+
+
+
+function logout(){
+    localStorage.clear();
+    window.location.replace("login.html");
+}

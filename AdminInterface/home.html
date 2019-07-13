@@ -19,7 +19,7 @@
 					
 					loadHomeContents(function()
 					{
-						$("body").fadeIn(1000);
+						$("body").fadeIn(500);
 					});
 					
 					}
@@ -57,8 +57,8 @@
 			</li>
 		</ul>
 	</nav>
-    <div class="container border col-md-10 col-10">
-		<h2 class="text-center" style="margin-top:20px; margin-bottom:20px">Welcome to Link!</h2>
+    <div class="container col-md-10 col-10">
+		<h2 class="text-center" style="margin-top:30px; margin-bottom:20px" id="welcome">Welcome to Link!</h2>
 		
 		<div class="container">
 		  <div class="row border-top" style="height: 80px">
@@ -68,30 +68,29 @@
 			</div>
 		  </div>
 		  <div class="row border-top" style="height: 120px">
-			<div class="col-4 border-left text-center" style="padding-top:20px;font-size:calc(6px + 0.6vw)">
+			<div class="col-4 border-left text-center" style="padding-top:40px;font-size:calc(6px + 0.6vw)">
 			  Edit the details of your company, such as company name, website and username, and change the password you use.
 			</div>
-			<div class="col-4 border-left text-center">
-			  <button id="btnBuildings" onclick="buildings()" class="btn btn-warning" style="width: 80%; height:50px; margin-top:35px;font-size:calc(9px + 0.6vw)">Buildings</button>
+			<div class="col-4 border-left text-center" style="padding-top:40px;font-size:calc(6px + 0.6vw)";>
+			  Add buildings (composed of rooms) to your company, to represent your office spaces - which your employees will work in.
 			</div>
-			<div class="col-4 border-left border-right text-center" style="padding-top:20px;font-size:calc(6px + 0.6vw)";>
+			<div class="col-4 border-left border-right text-center" style="padding-top:40px;font-size:calc(6px + 0.6vw)";>
 			  Add employees to your company to allow them to use the Link app on their phones, view these employees and edit their details.
 			</div>
 		  </div>
-		  <div class="row border-top border-bottom" style="height: 120px">
+		  <div class="row border-bottom" style="height: 120px">
 			<div class="col-4 border-left text-center">
-			  <button id="btnDetails" onclick="details()" class="btn btn-primary" style="width: 80%; height:50px; margin-top:35px;font-size:calc(9px + 0.6vw)">Details</button>
+			  <button id="btnDetails" onclick="details()" class="btn btn-primary" style="width: 80%; height:50px; margin-top:20px;font-size:calc(9px + 0.6vw)">Details</button>
 			</div>
-			<div class="col-4 border-left text-center" style="padding-top:20px;font-size:calc(6px + 0.6vw)";>
-			  Add buildings (composed of rooms) to your company, to represent your office spaces - which your employees will work in.
+			<div class="col-4 border-left text-center">
+			  <button id="btnBuildings" onclick="buildings()" class="btn btn-warning" style="width: 80%; height:50px; margin-top:20px;font-size:calc(9px + 0.6vw)">Buildings</button>
 			</div>
 			<div class="col-4 border-left border-right text-center">
-			  <button id="btnCompany" onclick="employees()" class="btn btn-success" style="width: 80%; height:50px; margin-top:35px;font-size:calc(8px + 0.6vw)">Employees</button>
+			  <button id="btnCompany" onclick="employees()" class="btn btn-success" style="width: 80%; height:50px; margin-top:20px;font-size:calc(8px + 0.6vw)">Employees</button>
 			</div>
 		  </div>
 		</div>
 		
-		<h2 class="text-center" style="margin-top:20px; margin-bottom:20px; font-size: 12px">(c) University of Pretoria, 2019.</h2>
 		
 	</div>
 	<footer id="sticky-footer" class="py-4 bg-light text-black-100" style="bottom: 0px; position: absolute; width: 100%;">

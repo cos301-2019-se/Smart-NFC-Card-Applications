@@ -3,6 +3,8 @@ function loadBuildings(callback)
 	var api = localStorage.getItem("apiKey");
 	var id = localStorage.getItem("id");
 	
+	$("#buildingList").empty();
+	
 	//console.log(api);
 	//console.log(id);
 	
@@ -183,7 +185,9 @@ function addBuilding()
 			data = data.data;
 			console.log(data);
 			
+			
 			window.location.replace("buildings.html");
+			
         } 
 		else 
 		{
@@ -230,7 +234,7 @@ function editBuilding(buildingId)
 			
 			$("#editBuildingModal").modal('show');
 			
-			//window.location.replace("buildings.html");
+			//loadBuildings(function(){});
         } 
 		else 
 		{
@@ -289,7 +293,10 @@ function saveBuildingChanges()
 					
 					
 					
-					window.location.replace("buildings.html");
+					loadBuildings(function()
+					{ 
+						$("#editBuildingModal").modal('hide'); 
+					});
 				} 
 				else 
 				{
@@ -337,7 +344,7 @@ function openRoomModal(buildingId)
 					  '<label><input type="checkbox" value="' + cur2.roomId + '" class="roomSelectParent">' + cur2.roomName + '</label></div>');
 						}
 						
-						//window.location.replace("buildings.html");
+						//loadBuildings(function(){});
 					} 
 					else 
 					{

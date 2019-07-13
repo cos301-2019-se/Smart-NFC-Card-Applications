@@ -1229,10 +1229,10 @@ class AdminLogic
                 invalidParams = true;
                 invalidReturn += "roomName, ";
             }
-            if(!this.sharedLogic.validateNonEmpty(this.body.parentRoomList)){
-                invalidParams = true;
-                invalidReturn += "parentRoomList, ";
-            }
+            // if(!this.sharedLogic.validateNonEmpty(this.body.parentRoomList)){
+            //     invalidParams = true;
+            //     invalidReturn += "parentRoomList, ";
+            // }
             if(!this.sharedLogic.validateNonEmpty(this.body.buildingId) || !this.sharedLogic.validateNumeric(this.body.buildingId)){
                 invalidParams = true;
                 invalidReturn += "buildingId, ";

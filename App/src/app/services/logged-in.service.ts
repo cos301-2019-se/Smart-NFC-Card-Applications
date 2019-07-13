@@ -22,6 +22,7 @@ import { RequestModuleService } from './request-module.service';
 import { LocalStorageService } from './local-storage.service';
 import { BusinessCardsService } from './business-cards.service';
 import { Subject, Observable } from 'rxjs';
+import { AccountModel } from '../models/account.model';
 
 /**
 * Purpose:	This class provides the logged in service injectable
@@ -35,7 +36,8 @@ import { Subject, Observable } from 'rxjs';
 export class LoggedInService {
 
   private loggedIn: boolean = false;
-  private employeeId: number = null;
+  private account: AccountModel = new AccountModel();
+  private accountStorageName: string = 'account';
   private apiKeyName: string = 'apiKey';
 
   /**
@@ -65,7 +67,7 @@ export class LoggedInService {
    */
   private setLoggedIn(isLoggedIn: boolean, employeeId: number = null){
     this.loggedIn = isLoggedIn;
-    this.employeeId = employeeId;
+    this.account.employeeId = employeeId;
   }
 
   /**
@@ -134,7 +136,7 @@ export class LoggedInService {
   reloadBusinessCard(){
     let subject = new Subject<Object>();
     setTimeout(() => {
-      this.req.getBusinessCard(this.employeeId).subscribe(response => {
+      this.req.getBusinessCard(this.account.employeeId).subscribe(response => {
         if (response['success'] === true) {
           let cardDetails = response['data'];
           this.cardService.setOwnBusinessCard(cardDetails).then(() => {
@@ -153,5 +155,29 @@ export class LoggedInService {
       })
     }, 50);
     return subject.asObservable();
+  }
+
+  /**
+   * Function that returns the employee id
+   * @return number id
+   */
+  getEmployeeId(){
+    return this.account.employeeId;
+  }
+
+  /**
+   * Function that returns building details in the form of a location with a label
+   * @return LocationModel building location
+   */
+  getBuildingLoc(){
+    return this.account.building;
+  }
+
+  /**
+   * Function that returns the rooms the employee has access to
+   * @return RoomModel[] rooms
+   */
+  getRooms(){
+    return this.account.rooms;
   }
 }

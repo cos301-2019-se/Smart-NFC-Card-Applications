@@ -25,6 +25,7 @@ import { VisitorPackagesService } from '../services/visitor-packages.service';
 import { VisitorPackage } from '../models/visitor-package.model';
 import { LocationModel } from '../models/location.model';
 import { DateService } from '../services/date.service';
+import { LoggedInService } from '../services/logged-in.service';
 
 /**
 * Purpose:	This enum provides message types
@@ -58,7 +59,7 @@ export class CreateVisitorPackagePage implements OnInit {
   infoMessage: string;
   errorMessage: string;
 
-  employeeId: number = 1;
+  employeeId: number = null;
   macAddress: string = null;
   startDate: Date = null;
   endDate: Date = null;
@@ -77,6 +78,7 @@ export class CreateVisitorPackagePage implements OnInit {
    * @param nfcService NfcControllerService injectable
    * @param packageService VisitorPackagesService injectable
    * @param dateService DateService injectable
+   * @param loginService LoggedInService injectable
    */
   constructor(
     private navParams: NavParams,
@@ -84,17 +86,15 @@ export class CreateVisitorPackagePage implements OnInit {
     private requestService: RequestModuleService,
     private nfcService: NfcControllerService,
     private packageService: VisitorPackagesService,
-    private dateService: DateService
+    private dateService: DateService,
+    private loginService: LoggedInService
   ) { 
     this.placeholderDate = dateService.displayDate(this.currentDate);
     this.placeholderTime = dateService.displayTime(this.currentDate);
 
-    this.buildingLocation = new LocationModel(-25.780297, 28.277432, 'EPI-USE');
-    this.rooms = [
-      { id: 1, name: "Lobby" },
-      { id: 2, name: "Offices" },
-      { id: 3, name: "Labs" },
-    ];
+    this.employeeId = this.loginService.getEmployeeId();
+    this.buildingLocation = this.loginService.getBuildingLoc();
+    this.rooms = this.loginService.getRooms();
   }
 
   ngOnInit() {

@@ -57,55 +57,74 @@
             </li>
         </ul>
     </nav>
+	
+	<h1 class="pb-1 text-center" style="margin-top:30px">Employees</h1>
 
-    <div class="container col-md-10 mb-3 mt-3">
-        <h1 class="pb-1 text-center">Employees</h1>
+    <div class="container col-md-11 border" style="padding-top:20px; padding-bottom:20px; margin-bottom:90px">
         <div class="text-center">
-            <button type="button" class="btn btn-success btn-md" onclick="initializeAddEmployee()">
-                Add Employee <i class="fa fa-plus fa-lg"></i>
-            </button>
+            
         </div>
+		<div class="table-responsive" style="padding-bottom:10px">
+			<table class="table table-striped table-bordered" id="table" style="font-size:13px">
+				<thead>
+					<th>Employee Id</th>
+					<th>First Name</th>
+					<th>Surname</th>
+					<th>Username</th>
+					<th>Title</th>
+					<th>Cellphone</th>
+					<th>Email</th>
+					<th>Company</th>
+					<th>Building</th>
+					<th></th>
+				</thead>
+				<tbody id="tableBody">
 
-        <table class="table table-striped table-bordered" id="table">
-            <thead>
-                <th>Employee Id</th>
-                <th>First Name</th>
-                <th>Surname</th>
-                <th>Username</th>
-                <th>Title</th>
-                <th>Cellphone</th>
-                <th>Email</th>
-                <th>Comapany</th>
-                <th>Building</th>
-                <th></th>
-            </thead>
-            <tbody id="tableBody">
-
-            </tbody>
-            <tfoot>
-                <th>Employee Id</th>
-                <th>First Name</th>
-                <th>Surname</th>
-                <th>Username</th>
-                <th>Title</th>
-                <th>Cellphone</th>
-                <th>Email</th>
-                <th>Comapany</th>
-                <th>Building</th>
-                <th></th>
-            </tfoot>
-        </table>
-        <div class="btn-group" role="group">
-            <button id="btnHome" onclick="window.location.replace('home.html');" class="btn btn-default pull-right"
-                style="margin-top:20px">Back to Home</button>
-        </div>
+				</tbody>
+				<!--<tfoot>
+					<th>Employee Id</th>
+					<th>First Name</th>
+					<th>Surname</th>
+					<th>Username</th>
+					<th>Title</th>
+					<th>Cellphone</th>
+					<th>Email</th>
+					<th>Comapany</th>
+					<th>Building</th>
+					<th></th>
+				</tfoot>-->
+			</table>
+		</div>
+		<div class="btn-toolbar justify-content-between" role="toolbar">
+			<div class="input-group">
+				<button type="button" class="btn btn-success btn-md" onclick="initializeAddEmployee()" style="height:40px;margin-top:10px">
+					Add Employee <i class="fa fa-plus fa-lg"></i>
+				</button>
+			</div>
+			<div class="btn-group" role="group">
+				<button id="btnBackHome" onclick="window.location.replace('home.html');" class="btn btn-default pull-right" style="margin-top:10px">Back to Home</button>
+			</div>
+		</div>
         <div class="custom-control custom-switch">
             <input type="checkbox" class="custom-control-input" id="darkmode">
-            <label class="custom-control-label" for="darkmode">Toggle this switch for dark mode</label>
+            <label class="custom-control-label" for="darkmode" style="margin-top:10px">Toggle this switch for dark mode</label>
         </div>
+		
+		
+		
 
 
-        <div class="modal fade" id="editEmployeeModal" tabindex="-1" role="dialog"
+
+    </div>
+	
+		
+    <footer id="sticky-footer" class="py-4 bg-light text-black-100" style="bottom: 0px; position: fixed; width: 100%;">
+		<div class="container text-center">
+			<small>Link (c) University of Pretoria, 2019.</small>
+		</div>
+	</footer>
+	
+	<div class="modal fade" id="editEmployeeModal" tabindex="-1" role="dialog"
             aria-labelledby="editEmployeeModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
@@ -255,16 +274,6 @@
                 </div>
             </div>
         </div>
-
-
-
-
-    </div>
-    <footer id="sticky-footer" class="py-4 bg-light text-black-100" style="bottom: 0px; position: absolute; width: 100%;">
-        <div class="container text-center">
-            <small>(c) University of Pretoria, 2019.</small>
-        </div>
-    </footer>
 
     <!-- Scripts loaded at end of page -->
     <script type="text/javascript" src="Js/employees.js"></script>

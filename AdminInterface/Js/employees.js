@@ -97,11 +97,15 @@ function submitEditEmployee() {
                 $("#successContainer").empty().append(`
             <div class="alert alert-success hide" role="alert">
             <h4 class="alert-heading">Operation Successful!</h4>
-            Employee modified successfully. Please <a href="./employees.html" class="alert-link">refresh</a> the page in
+            Employee modified successfully.`);
+
+			/*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
             order to view the updated information in the table.
             </div>
-            `);
+            `);*/
                 $("#btnSubmit").attr("disabled", true);
+				//$('#editEmployeeModal').modal('hide');
+				fetchDataAndPopulateTable();
             } else {
                 console.log(data.message);
                 console.log("failed to modify employee");
@@ -193,11 +197,15 @@ function addEmployee() {
                 $("#successContainerAddedEmployee").empty().append(`
             <div class="alert alert-success hide" role="alert">
             <h4 class="alert-heading">Operation Successful!</h4>
-            Employee added successfully. Please <a href="./employees.html" class="alert-link">refresh</a> the page in
+            Employee added successfully.`);
+
+			/*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
             order to view the updated information in the table.
             </div>
-            `);
+            `);*/
                 $("#btnAddEmployee").attr("disabled", true);
+				//$('#addEmployeeModal').modal('hide');
+				fetchDataAndPopulateTable();
             } else {
                 console.log("failed to add employee");
                 console.log(data.message);

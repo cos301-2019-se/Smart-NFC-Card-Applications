@@ -66,28 +66,33 @@ class AppLogic{
         switch(this.endpoint){
             // Business Card
             case "getBusinessCard":
-                this.getBusinessCard();
+                me.getBusinessCard();
+                break;
+
+            // Employee Details
+            case "getEmployeeDetails":
+                me.getEmployeeDetails();  // TODO Implement
                 break;
 
             // Visitor Package
             case "addVisitorPackage":
-                this.addVisitorPackage();   // TODO
+                me.addVisitorPackage();
                 break;
             case "editVisitorPackage":
-                this.editVisitorPackage();  // TODO
+                me.editVisitorPackage();  // TODO Test
                 break;
             case "getVisitorPackage":
-                this.getVisitorPackage();   // TODO
+                me.getVisitorPackage();   // TODO
                 break;
             case "getVisitorPackages":
-                this.getVisitorPackages();  // TODO
+                me.getVisitorPackages();  // TODO
                 break;
             case "deleteVisitorPackage":
-                this.deleteVisitorPackage();// TODO
+                me.deleteVisitorPackage();// TODO
                 break;
 
             default:
-                this.sharedLogic.endServe(false, "Invalid Endpoint", null);
+                me.sharedLogic.endServe(false, "Invalid Endpoint", null);
         }
     }
 
@@ -182,6 +187,84 @@ class AppLogic{
                     else{
                         me.sharedLogic.endServe(employeeData.success, employeeData.message, employeeData.data);
                     }
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: " + invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                me.sharedLogic.endServe(success, message, data);
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: " + presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+            me.sharedLogic.endServe(success, message, data);
+        }
+    }
+
+    /**
+     *  Function that returns only the employee details.
+     *
+     *  @param employeeId int ID of an employee
+     *
+     *  @return JSON {
+     *                  building: JSON Building object
+     *                  rooms: JSON Room objects
+     *                  wifi: JSON WiFi object
+     *               }
+     */
+    async getEmployeeDetails(){
+        let success;
+        let message;
+        let data = {};
+
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(me.body.employeeId === undefined){
+            presentParams = true;
+            presentReturn += "employeeId, ";
+        }
+
+        if(!presentParams) {
+            let invalidParams = false;
+            let invalidReturn = "";
+
+            if (!me.sharedLogic.validateNonEmpty(me.body.employeeId)) {
+                invalidParams = true;
+                invalidReturn += "employeeId, ";
+            }
+
+            if(!invalidParams) {
+                if(me.demoMode){
+                    let building = {};
+                    let rooms = {};
+                    let wifi = {};
+
+                    building.branchName = "University of Pretoria";
+                    building.latitude = "10";
+                    building.longitude = "11";
+
+
+                    data.building = building;
+
+
+                    data.businessCardId = "0_0";
+                    data.companyName = "Vast Expanse";
+                    data.companyWebsite = "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications";
+                    data.employeeName = "Tjaart";
+                    data.employeeSurname = "Booyens";
+                    data.employeeTitle = "Mr";
+                    data.employeeCellphone = "0791807734";
+                    data.employeeEmail = "u17021775@tuks.co.za";
+                    me.sharedLogic.endServe(true, "Business card information loaded successfully - MOCK", data);
+                }
+                else {
+
                 }
             }
             else{
@@ -322,7 +405,7 @@ class AppLogic{
      *
      *  @TODO Test
      */
-    async editTempWifi(wifiAccessParamsId, wifiTempAccessId){
+    async editTempWifi(wifiTempAccessId, wifiAccessParamsId){
         let data = {};
 
         if(me.demoMode){
@@ -633,11 +716,11 @@ class AppLogic{
     async editTpaRoom(tpaIdCurrent, roomIdCurrent, tpaId, roomId){
         let data = {};
 
-        if(this.demoMode){
+        if(me.demoMode){
             data.tpa_roomId = tpaId + "_" + roomId;
         }
         else{
-            let ret = me.sharedLogic.crudController.updateTPAxRoom(tpaIdCurrent, roomIdCurrent, tpaId, roomId);
+            let ret = await me.sharedLogic.crudController.updateTPAxRoom(tpaIdCurrent, roomIdCurrent, tpaId, roomId);
 
             if(ret.success){
                 data.tpa_roomId = tpaId + "_" + roomId;
@@ -933,8 +1016,8 @@ class AppLogic{
      *  @param startTime date Start Date of the visitor package
      *  @param endTime date End Date of the visitor package
      *  @param wifiAccessParamsId int ID of WiFi access point
-     *  @param limit float Limit a customer can spend
      *  @param roomId int ID of room
+     *  @param limit float Limit a customer can spent
      *
      *  @return JSON {
      *                  visitorPackageId: int ID of visitor package created
@@ -1015,9 +1098,13 @@ class AppLogic{
                         }
                         else{
                             let visitorPackage = await me.sharedLogic.crudController.getVisitorPackageByVisitorPackageId(me.body.visitorPackageId);
+                            console.log("Visitor Package");
+                            console.log(visitorPackage);
+
+
                             let wifi = {};
                             let tpa = {};
-                            let tpaRoom = {};
+                            let tpa_room = {};
                             let wallet = {};
 
                             // EDIT WIFI
@@ -1026,111 +1113,120 @@ class AppLogic{
                                     wifi = await me.addTempWifi(me.body.wifiAccessParamsId);
                                 }
                                 else{
-                                    wifi = await me.editTempWifi(me.body.wifiAccessParamsId, me.body.wifiTempAccessId);
+                                    wifi = await me.editTempWifi(visitorPackage.data.tempWifiAccessId, me.body.wifiAccessParamsId);
                                 }
                             }
 
                             // EDIT TPA
                             if(me.body.roomId !== null){
-                                if(visitorPackage.tpaId === null){
+                                if(visitorPackage.data.tpaId === null){
                                     tpa = await me.addTpa();
-                                    tpaRoom = await me.addTpaRoom(tpa.tpaId, me.body.roomId);
+                                    tpa_room = await me.addTpaRoom(tpa.tpaId, me.body.roomId);
                                 }
                                 else{
-                                    tpaRoom = await me.editTpaRoom(visitorPackage.tpaId, me.body.roomIdCurrent, visitorPackage.tpaId, me.body.roomId);
+                                    let ret = await me.sharedLogic.crudController.getTPAxRoomsByTpaId(visitorPackage.data.tpaId);
+                                    console.log(ret);
+                                    tpa_room = await me.editTpaRoom(ret.data.tpaId, ret.data.roomId, ret.data.tpaId, me.body.roomId);
                                 }
                             }
 
                             // EDIT WALLET
                             if(me.body.limit !== null) {
-                                if(visitorPackage.walletId === null){
+                                if(visitorPackage.data.walletId === null){
                                     wallet = await me.addWallet(me.body.limit, 0);
                                 }
                                 else{
-                                    wallet = await me.editWallet(visitorPackage.linkWalletId, me.body.limit);
+                                    wallet = await me.editWallet(visitorPackage.data.linkWalletId, me.body.limit);
                                 }
                             }
 
-                            if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length === 0 && Object.entries(wallet).length === 0){
-                                visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
-                                    wifi.wifiTempAccessId,
-                                    undefined,
-                                    undefined,
-                                    me.body.employeeId,
-                                    undefined,
-                                    me.body.startTime,
-                                    me.body.endTime)
-                            }
-                            else if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length === 0){
-                                visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
-                                    wifi.wifiTempAccessId,
-                                    tpa.tpaId,
-                                    undefined,
-                                    me.body.employeeId,
-                                    undefined,
-                                    me.body.startTime,
-                                    me.body.endTime)
-                            }
-                            else if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length === 0 && Object.entries(wallet).length !== 0){
-                                visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
-                                    wifi.wifiTempAccessId,
-                                    undefined,
-                                    wallet.walletId,
-                                    me.body.employeeId,
-                                    undefined,
-                                    me.body.startTime,
-                                    me.body.endTime)
-                            }
-                            else if(Object.entries(wifi).length === 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length === 0){
-                                visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
-                                    undefined,
-                                    tpa.tpaId,
-                                    undefined,
-                                    me.body.employeeId,
-                                    undefined,
-                                    me.body.startTime,
-                                    me.body.endTime)
-                            }
-                            else if(Object.entries(wifi).length === 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length !== 0){
-                                visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
-                                    undefined,
-                                    tpa.tpaId,
-                                    wallet.walletId,
-                                    me.body.employeeId,
-                                    undefined,
-                                    me.body.startTime,
-                                    me.body.endTime)
-                            }
-                            else if(Object.entries(wifi).length === 0 && Object.entries(tpa_room).length === 0 && Object.entries(wallet).length !== 0){
-                                visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
-                                    undefined,
-                                    undefined,
-                                    wallet.walletId,
-                                    me.body.employeeId,
-                                    undefined,
-                                    me.body.startTime,
-                                    me.body.endTime)
-                            }
-                            else if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length !== 0){
-                                visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
-                                    wifi.wifiTempAccessId,
-                                    tpa.tpaId,
-                                    wallet.walletId,
-                                    me.body.employeeId,
-                                    undefined,
-                                    me.body.startTime,
-                                    me.body.endTime)
-                            }
+                            console.log("WIFI\n");
+                            console.log(wifi);
+                            console.log("TPAxROOM\n");
+                            console.log(tpa_room);
+                            console.log("WALLET\n");
+                            console.log(wallet);
 
-                            if(visitorPackage.success){
-                                success = visitorPackage.success;
-                                message = visitorPackage.message;
-                                data.visitorPackageId = visitorPackage.data.visitorPackageId;
-                                me.sharedLogic.endServe(success, message, data);
-                            }
-                            else{
-                                me.sharedLogic.endServe(visitorPackage.success, visitorPackage.message, visitorPackage.data);
-                            }
+                            // if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length === 0 && Object.entries(wallet).length === 0){
+                            //     visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
+                            //         wifi.wifiTempAccessId,
+                            //         undefined,
+                            //         undefined,
+                            //         me.body.employeeId,
+                            //         undefined,
+                            //         me.body.startTime,
+                            //         me.body.endTime)
+                            // }
+                            // else if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length === 0){
+                            //     visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
+                            //         wifi.wifiTempAccessId,
+                            //         tpa.tpaId,
+                            //         undefined,
+                            //         me.body.employeeId,
+                            //         undefined,
+                            //         me.body.startTime,
+                            //         me.body.endTime)
+                            // }
+                            // else if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length === 0 && Object.entries(wallet).length !== 0){
+                            //     visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
+                            //         wifi.wifiTempAccessId,
+                            //         undefined,
+                            //         wallet.walletId,
+                            //         me.body.employeeId,
+                            //         undefined,
+                            //         me.body.startTime,
+                            //         me.body.endTime)
+                            // }
+                            // else if(Object.entries(wifi).length === 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length === 0){
+                            //     visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
+                            //         undefined,
+                            //         tpa.tpaId,
+                            //         undefined,
+                            //         me.body.employeeId,
+                            //         undefined,
+                            //         me.body.startTime,
+                            //         me.body.endTime)
+                            // }
+                            // else if(Object.entries(wifi).length === 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length !== 0){
+                            //     visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
+                            //         undefined,
+                            //         tpa.tpaId,
+                            //         wallet.walletId,
+                            //         me.body.employeeId,
+                            //         undefined,
+                            //         me.body.startTime,
+                            //         me.body.endTime)
+                            // }
+                            // else if(Object.entries(wifi).length === 0 && Object.entries(tpa_room).length === 0 && Object.entries(wallet).length !== 0){
+                            //     visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
+                            //         undefined,
+                            //         undefined,
+                            //         wallet.walletId,
+                            //         me.body.employeeId,
+                            //         undefined,
+                            //         me.body.startTime,
+                            //         me.body.endTime)
+                            // }
+                            // else if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length !== 0 && Object.entries(wallet).length !== 0){
+                            //     visitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(me.body.visitorPackageId,
+                            //         wifi.wifiTempAccessId,
+                            //         tpa.tpaId,
+                            //         wallet.walletId,
+                            //         me.body.employeeId,
+                            //         undefined,
+                            //         me.body.startTime,
+                            //         me.body.endTime)
+                            // }
+                            //
+                            // if(visitorPackage.success){
+                            //     success = visitorPackage.success;
+                            //     message = visitorPackage.message;
+                            //     data.visitorPackageId = visitorPackage.data.visitorPackageId;
+                            //     me.sharedLogic.endServe(success, message, data);
+                            // }
+                            // else{
+                            //     me.sharedLogic.endServe(visitorPackage.success, visitorPackage.message, visitorPackage.data);
+                            // }
                         }
                     }
                     else{

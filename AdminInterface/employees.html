@@ -29,10 +29,11 @@
     <link rel="stylesheet" href="Css/styles.css">
     <!-- Data Table imports -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.css" />
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body style="display: none">
+
     <!-- CONTENT OF PAGE GOES HERE -->
     <nav class="navbar navbar-expand-sm bg-light navbar-light fixed-top">
         <a class="navbar-brand font-weight-bold" href="home.html">Link</a>
@@ -56,7 +57,15 @@
             </li>
         </ul>
     </nav>
-    <div class="container mb-3 mt-3">
+
+    <div class="container col-md-10 mb-3 mt-3">
+        <h1 class="pb-1 text-center">Employees</h1>
+        <div class="text-center">
+            <button type="button" class="btn btn-success btn-md" onclick="initializeAddEmployee()">
+                Add Employee <i class="fa fa-plus fa-lg"></i>
+            </button>
+        </div>
+
         <table class="table table-striped table-bordered" id="table">
             <thead>
                 <th>Employee Id</th>
@@ -168,6 +177,84 @@
         </div>
 
 
+
+        <div class="modal fade" id="addEmployeeModal" tabindex="-1" role="dialog"
+            aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add an Employee</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="successContainerAddedEmployee"></div>
+                    <div class="modal-body">
+                        <form class="was-validated">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text font-weight-bold">First Name</span>
+                                </div>
+                                <input type="text" class="form-control" id="addFirstName" required>
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend ">
+                                    <span class="input-group-text font-weight-bold">Surname</span>
+                                </div>
+                                <input type="text" class="form-control" id="addSurname" required>
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text font-weight-bold">Title</span>
+                                </div>
+                                <input type="text" class="form-control" id="addTitle" required>
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text font-weight-bold">Cellphone</span>
+                                </div>
+                                <input type="text" class="form-control" id="addCellphone" required>
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text font-weight-bold">Email</span>
+                                </div>
+                                <input type="text" class="form-control" id="addEmail" required>
+                            </div>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text font-weight-bold">Create Password</span>
+                                </div>
+                                <input type="password" class="form-control password" id="addPassword" required>
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text font-weight-bold">Confirm Password</span>
+                                </div>
+                                <input type="password" class="form-control password" id="addPasswordConfirm" required>
+                            </div>
+                        </form>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text font-weight-bold">Building</span>
+                            </div>
+                            <select id="buildingSelectAddEmployee" class="custom-select">
+                            </select>
+                        </div>
+
+                        <div class="alert alert-danger collapse" id="editEmployeeWarning">
+                            <strong>Error!</strong> Please fill in all the fields.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="button" id="btnAddEmployee" class="btn btn-success" onclick="addEmployee()">Add
+                            Employee</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
 

@@ -97,19 +97,21 @@
 		  <div class="modal-body">
 	 
 	 
-	 
-			<form>
+			<div class="alert alert-danger collapse" id="addBuildingWarning">
+                <strong>Error!</strong> Please fill in all the fields.
+            </div>
+			<form class="was-validated">
 			  <div class="input-group mb-3">
 				<div class="input-group-prepend">
 				  <span class="input-group-text">Building Name</span>
 				</div>
-				<input type="text" class="form-control" id="buildingName">
+				<input type="text" class="form-control" id="buildingName" required>
 			  </div>
 				<div class="input-group mb-3">
 					<div class="input-group-prepend">
 						<span class="input-group-text">Address</span>
 					</div>
-					<input type="text" class="form-control" id="addAddress" placeholder="Enter an address">
+					<input type="text" class="form-control" id="addAddress" placeholder="Enter an address" required>
 				</div>
 				<div class="input-group mb-3" style="align-content: center;">
 					<div id="addMap" style="width: 30em; height: 12em;"></div>
@@ -130,19 +132,19 @@
 				<div class="input-group-prepend">
 				  <span class="input-group-text">Wifi SSID</span>
 				</div>
-				<input type="text" class="form-control" id="wifiSSID">
+				<input type="text" class="form-control" id="wifiSSID" required>
 			  </div>
 			  <div class="input-group mb-3">
 				<div class="input-group-prepend">
 				  <span class="input-group-text">Wifi Type</span>
 				</div>
-				<input type="text" class="form-control" id="wifiType">
+				<input type="text" class="form-control" id="wifiType" required>
 			  </div>
 			  <div class="input-group mb-3">
 				<div class="input-group-prepend">
 				  <span class="input-group-text">Wifi Password</span>
 				</div>
-				<input type="text" class="form-control" id="wifiPassword">
+				<input type="text" class="form-control" id="wifiPassword" required>
 			  </div>
 			</form>
 		  </div>
@@ -166,19 +168,21 @@
 		  <div class="modal-body">
 	 
 	 
-	 
-			<form>
+			<div class="alert alert-danger collapse" id="editBuildingWarning">
+                <strong>Error!</strong> Please fill in all the fields.
+            </div>
+			<form class="was-validated">
 			  <div class="input-group mb-3">
 				<div class="input-group-prepend">
 				  <span class="input-group-text">Building Name</span>
 				</div>
-				<input type="text" class="form-control" id="buildingNameE">
+				<input type="text" class="form-control" id="buildingNameE" required>
 			  </div>
 				<div class="input-group mb-3">
 					<div class="input-group-prepend">
 						<span class="input-group-text">Address</span>
 					</div>
-					<input type="text" class="form-control" id="editAddress" placeholder="Enter an address">
+					<input type="text" class="form-control" id="editAddress" placeholder="Enter an address" required>
 				</div>
 				<div class="input-group mb-3" style="align-content: center;">
 					<div id="editMap" style="width: 30em; height: 12em;"></div>
@@ -199,19 +203,19 @@
 				<div class="input-group-prepend">
 				  <span class="input-group-text">Wifi SSID</span>
 				</div>
-				<input type="text" class="form-control" id="wifiSSIDE">
+				<input type="text" class="form-control" id="wifiSSIDE" required>
 			  </div>
 			  <div class="input-group mb-3">
 				<div class="input-group-prepend">
 				  <span class="input-group-text">Wifi Type</span>
 				</div>
-				<input type="text" class="form-control" id="wifiTypeE">
+				<input type="text" class="form-control" id="wifiTypeE" required>
 			  </div>
 			  <div class="input-group mb-3">
 				<div class="input-group-prepend">
 				  <span class="input-group-text">Wifi Password</span>
 				</div>
-				<input type="text" class="form-control" id="wifiPasswordE">
+				<input type="text" class="form-control" id="wifiPasswordE" required>
 			  </div>
 			</form>
 		  </div>
@@ -235,13 +239,15 @@
 		  <div class="modal-body">
 	 
 	 
-	 
-			<form>
+			<div class="alert alert-danger collapse" id="addRoomWarning">
+                <strong>Error!</strong> Please fill in all the fields.
+            </div>
+			<form class="was-validated">
 			  <div class="input-group mb-3">
 				<div class="input-group-prepend">
 				  <span class="input-group-text">Room Name</span>
 				</div>
-				<input type="text" class="form-control" id="roomName">
+				<input type="text" class="form-control" id="roomName" required>
 			  </div>
 			  <div class="input-group mb-3">
 				<div class="input-group-prepend">

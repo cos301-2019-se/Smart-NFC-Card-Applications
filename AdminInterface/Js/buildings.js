@@ -157,14 +157,21 @@ function loadBuildings(callback)
 
 function addBuilding()
 {
-	var buildingName = $("#buildingName").val();
+	var buildingName = $("#buildingName").val().trim();
 	var lat = $("#lat").val();
 	var longi = $("#longi").val();
-	var wifiSSID = $("#wifiSSID").val();
-	var wifiType = $("#wifiType").val();
-	var wifiPassword = $("#wifiPassword").val();
+	var wifiSSID = $("#wifiSSID").val().trim();
+	var wifiType = $("#wifiType").val().trim();
+	var wifiPassword = $("#wifiPassword").val().trim();
 	var id = parseInt(localStorage.getItem("id"));
 	var api = localStorage.getItem("apiKey");
+	
+	if(buildingName === "" || lat === "" || longi === "" || wifiSSID === "" || wifiType === "" || wifiPassword === "")
+	{
+		$("#addBuildingWarning").show();
+		return;
+	}
+	
 	
 	
 	
@@ -256,12 +263,20 @@ function saveBuildingChanges()
 	var wifiParamsId = localStorage.getItem("currentWifiParamsEdit");
 	
 	var api = localStorage.getItem("apiKey");
-	var buildingName = $("#buildingNameE").val();
+	var buildingName = $("#buildingNameE").val().trim();
 	var lat = $("#latE").val();
 	var longi = $("#longiE").val();
-	var wifiSSID = $("#wifiSSIDE").val();
-	var wifiType = $("#wifiTypeE").val();
-	var wifiPassword = $("#wifiPasswordE").val();
+	var wifiSSID = $("#wifiSSIDE").val().trim();
+	var wifiType = $("#wifiTypeE").val().trim();
+	var wifiPassword = $("#wifiPasswordE").val().trim();
+	
+	
+	
+	if(buildingName === "" || lat === "" || longi === "" || wifiSSID === "" || wifiType === "" || wifiPassword === "")
+	{
+		$("#editBuildingWarning").show();
+		return;
+	}
 	
 	
 	
@@ -373,7 +388,9 @@ function openRoomModal(buildingId)
 function addRoom()
 {
 	var buildingId = parseInt(localStorage.getItem("currentBuildingAddingRoomTo"));
-	var roomName = $("#roomName").val();
+	
+	var roomName = $("#roomName").val().trim();
+	
 	var parentArr = $(".roomSelectParent:checked").toArray();
 	var parentRoomList = "";
 	for(var i = 0; i < parentArr.length; i++)
@@ -409,6 +426,13 @@ function addRoom()
 	
 	var id = parseInt(localStorage.getItem("id"));
 	var api = localStorage.getItem("apiKey");
+	
+	
+	if(roomName === "")
+	{
+		$("#addRoomWarning").show();
+		return;
+	}
 	
 	
 	

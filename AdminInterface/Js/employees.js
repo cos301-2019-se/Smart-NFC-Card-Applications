@@ -27,15 +27,8 @@ function fetchDataAndPopulateTable() {
     let fetchCompany = new Promise((resolve, reject) => { fetchCompanyName(resolve, reject) });
 
     Promise.all([fetchEmployees, fetchBuildings, fetchCompany]).then(() => {
-        console.log("Employee Data:");
-        console.log(employeeData);
-        console.log("Company Data:");
-        console.log(companyName);
-        console.log("Building Data:");
-        console.log(buildingData);
         tableBody = $('#tableBody');
         populateTable();
-        $('#successModal').modal('show');
     }).catch((error) => {
         displayError(error);
     });
@@ -161,6 +154,103 @@ function findBuildingIdFromBuildingName(name) {
         }
     }
 }
+
+function initializeAddEmployee() {
+    clearAddEmployeeModal();
+    $("#btnAddEmployee").attr("disabled", false);
+    $("#successContainerAddedEmployee").empty();
+    $('#addEmployeeModal').modal('show');
+    //add buildings
+    var selector = $('#buildingSelectAddEmployee');
+    selector.empty();
+    selector.append(`<option value="default" selected>Select a building...</option>`);
+    for (var id in buildingData) {
+        if (buildingData.hasOwnProperty(id)) {
+            selector.append(`<option value="${id}">${buildingData[id]}</option>`);
+        }
+    }
+}
+
+function clearAddEmployeeModal() {
+    $("#addFirstName").val("");
+    $("#addSurname").val("");
+    $("#addTitle").val("");
+    $("#addEmail").val("");
+    $("#addCellphone").val("");
+    $("#addPassword").val("");
+    $("#addPasswordConfirm").val("");
+}
+
+
+function addEmployee() {
+    var newEmployeeObj = {};
+    if (retrieveValuesFromAddEmployee(newEmployeeObj)) {
+        console.log(newEmployeeObj);
+        newEmployeeObj.apiKey = apiKey;
+        $.post("/admin/addEmployee", JSON.stringify(newEmployeeObj), (data) => {
+            if (data.success) {
+                console.log("successfully added employee");
+                $("#successContainerAddedEmployee").empty().append(`
+            <div class="alert alert-success hide" role="alert">
+            <h4 class="alert-heading">Operation Successful!</h4>
+            Employee added successfully. Please <a href="./employees.html" class="alert-link">refresh</a> the page in
+            order to view the updated information in the table.
+            </div>
+            `);
+                $("#btnAddEmployee").attr("disabled", true);
+            } else {
+                console.log("failed to add employee");
+                console.log(data.message);
+            }
+        });
+    } else {
+        console.log("Fix your inputs!")
+    }
+
+}
+
+function retrieveValuesFromAddEmployee(newEmployeeObj) {
+    newEmployeeObj.employeeName = $("#addFirstName").val().trim();
+    if (isEmpty(newEmployeeObj.employeeName)) return false;
+
+    newEmployeeObj.employeeSurname = $('#addSurname').val().trim();
+    if (isEmpty(newEmployeeObj.employeeSurname)) return false;
+
+    newEmployeeObj.employeeTitle = $('#addTitle').val().trim();
+    if (isEmpty(newEmployeeObj.employeeTitle)) return false;
+
+    newEmployeeObj.employeeEmail = $('#addEmail').val().trim();
+    if (isEmpty(newEmployeeObj.employeeEmail)) return false; //for now just an empty check, but later can extend validation
+
+    newEmployeeObj.employeeCellphone = $('#addCellphone').val().trim();
+    if (isEmpty(newEmployeeObj.employeeCellphone)) return false;
+
+    newEmployeeObj.buildingId = $('#buildingSelectAddEmployee').val().trim();
+    if ((newEmployeeObj.buildingId) == "default") return false;
+    newEmployeeObj.buildingId = parseInt(newEmployeeObj.buildingId);
+
+    newEmployeeObj.employeePassword = $('#addPassword').val().trim();
+    if (newEmployeeObj.employeePassword !== $("#addPasswordConfirm").val().trim()) return false;
+
+    newEmployeeObj.companyId = parseInt(companyId);
+
+    return true;
+}
+
+
+function isEmpty(field) {
+    if (field.length === 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+
+
+
+
 
 function fetchEmployeeData(resolve, reject) {
     $.post("/admin/getEmployeesByCompanyId", JSON.stringify({ "apiKey": apiKey, "companyId": companyId }), (data) => {

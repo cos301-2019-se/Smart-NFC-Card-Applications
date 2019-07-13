@@ -23,7 +23,6 @@
  */
 
 let SharedLogic = require('./../SharedLogic/sharedLogic.js');
-// let me = null;
 
 /**
  * 	Purpose:	This class is to allow the admin application of Link to complete its needed operations
@@ -47,7 +46,6 @@ class AdminLogic
         this.sharedLogic = new SharedLogic(this);
         this.body = "{}";
         this.endpoint = "";
-        // me = this;
     }
 
     /**
@@ -148,9 +146,11 @@ class AdminLogic
             case "editPassword":
                 this.editPassword();
                 break;
-
             case "editEmployeePassword":
                 this.editEmployeePassword();
+                break;
+            case "editCompanyPassword":
+                this.editCompanyPassword();
                 break;
             //wifiParams
             case "editWifiParam":
@@ -2466,6 +2466,85 @@ class AdminLogic
                     }
                     else{
                         this.sharedLogic.endServe(false, employeeObj.message, null);
+                    }
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                this.sharedLogic.endServe(success, message, data);
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+            this.sharedLogic.endServe(success, message, data);
+        }
+    }
+
+    /**
+     * This Function will be used to change the password
+     *
+     * @params companyId string The Api key of the user
+     * @params password The old password of the user
+     */
+    async editCompanyPassword(){
+        var message;
+        var data = new Object();
+        var success;
+
+        var presentParams = false;
+        var presentReturn = "";
+
+        if(this.body.companyId === undefined){
+            presentParams = true;
+            presentReturn += "companyId, ";
+        }
+        if(this.body.password === undefined){
+            presentParams = true;
+            presentReturn += "password, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            var invalidParams = false;
+            var invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
+                invalidParams = true;
+                invalidReturn += "companyId, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.password)){
+                invalidParams = true;
+                invalidReturn += "password, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    success = true;
+                    message = "Password Successfully changed!";
+                    this.sharedLogic.endServe(success, message, {});
+                }
+                else{
+                    //return data from crudController
+                    let companyObj = await this.sharedLogic.crudController.getCompanyByCompanyId(this.body.companyId);
+                    if(companyObj.success){
+
+                        let salt = this.sharedLogic.genSalt();
+                        let passwordObj = await this.sharedLogic.crudController.updatePassword(companyObj.data.passwordId, undefined, this.sharedLogic.passwordHash(this.body.password,salt), salt, undefined,undefined );
+                        if(passwordObj.success){
+                            this.sharedLogic.endServe(passwordObj.success, passwordObj.message, {});
+                        }
+                        else{
+                            this.sharedLogic.endServe(passwordObj.success, passwordObj.message, null);
+                        }
+                    }
+                    else{
+                        this.sharedLogic.endServe(false, companyObj.message, null);
                     }
                 }
             }

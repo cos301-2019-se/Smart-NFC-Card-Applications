@@ -46,7 +46,7 @@ export class RequestModuleService {
     "message": "Login successful.",
     "data": {
         "apiKey": "lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
-        "employeeId": 0
+        "id": 0
     }
   }`);
   logoutStub: JSON = JSON.parse(`{ 
@@ -72,6 +72,30 @@ export class RequestModuleService {
     "message": "Business card information loaded successfully",
     "data": {
         "visitorPackageId": 0
+    }
+  }`);
+  employeeDetailsStub: JSON = JSON.parse(`{
+    "success": true,
+    "message": "Successfully retrieved employee details",
+    "data":{
+      "building": {
+        "BranchName": "Building Name",
+        "latitude": 24.1234,
+        "longitude": 27.891
+      },
+      "rooms": [
+        {"roomId": 0, "roomName":"Lobby"},
+        {"roomId": 1, "roomName":"Office 1"},
+        {"roomId": 2, "roomName":"Office 2"},
+        {"roomId": 3, "roomName":"Office 3"},
+        {"roomId": 4, "roomName":"Labs"}
+      ],
+      "wifi": {
+        "wifiParamsId": 0,
+        "ssid": "DemoSSID",
+        "password": "Demo1234",
+        "networkType": "WPA2"
+      }
     }
   }`);
 
@@ -276,6 +300,24 @@ export class RequestModuleService {
     else {
       let json: JSON = JSON.parse(`{'packageId': ${packageId}}`);
       return this.post(`${this.baseUrl}/app/deleteVisitorPackage`, json);
+    }
+  }
+
+  /**
+   * Function that gets details of the employee to populate an account object
+   * @param employeeId number id of the employee
+   * @return Observable<Object> response containing json from back-end server
+   */
+  getEmployeeDetails(employeeId: number){
+    if (this.demoMode) {
+      return new Observable<Object>(observer => {
+        observer.next(this.employeeDetailsStub);
+        observer.complete();
+      });
+    }
+    else {
+      let json: JSON = JSON.parse(`{'employeeId': ${employeeId}}`);
+      return this.post(`${this.baseUrl}/app/getEmployeeDetails`, json);
     }
   }
 }

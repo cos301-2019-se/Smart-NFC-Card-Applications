@@ -26,6 +26,7 @@ import { VisitorPackage } from '../models/visitor-package.model';
 import { LocationModel } from '../models/location.model';
 import { DateService } from '../services/date.service';
 import { LoggedInService } from '../services/logged-in.service';
+import { WifiDetailsModel } from '../models/wifi-details.model';
 
 /**
 * Purpose:	This enum provides message types
@@ -66,6 +67,10 @@ export class EditVisitorPackagePage implements OnInit {
   endDate: Date = null;
   roomIdString: string = '';
   giveWiFi: boolean = null;
+  wifiParamsId: number = null;
+  wifiSsid: string = null;
+  wifiPassword: string = null;
+  wifiType: string = null;
   limit: number = null;
 
   buildingLocation: LocationModel;
@@ -100,9 +105,23 @@ export class EditVisitorPackagePage implements OnInit {
     this.packageToUpdate = navParams.get('packageToUpdate');
     this.startDate = this.packageToUpdate.startDate;
     this.endDate = this.packageToUpdate.endDate;
-    let room: Object = this.rooms.find(room => room['name'] == this.packageToUpdate.access);
-    this.roomIdString = room ? room['id'] : null;
+    if (this.rooms != null && this.rooms != []){
+      let room: Object = this.rooms.find(room => room['name'] == this.packageToUpdate.access);
+      this.roomIdString = room ? room['id'] : null;
+    }
+    else {
+      this.roomIdString = '-1';
+    }
     this.giveWiFi = (this.packageToUpdate.wifiSsid !== null);
+
+    let wifiDetails: WifiDetailsModel = this.loginService.getWifiDetails();
+    if (wifiDetails != null){
+      this.wifiParamsId = wifiDetails.getId();
+      this.wifiSsid = wifiDetails.getSsid();
+      this.wifiPassword = wifiDetails.getPassword();
+      this.wifiType = wifiDetails.getType();
+    }
+    
     this.limit = this.packageToUpdate.spendingLimit;
   }
 
@@ -121,9 +140,9 @@ export class EditVisitorPackagePage implements OnInit {
    * Function that gets called when submit is pressed
    */
   onSubmit(){
-    let wifiParamsId = this.giveWiFi == true? 0: null;
-    let roomId: number = this.roomIdString == '0' ? null: (+this.roomIdString);
-    this.updateVisitorPackage(this.employeeId, this.startDate, this.endDate, wifiParamsId, roomId, this.limit);
+    this.wifiParamsId = this.giveWiFi == true ? this.wifiParamsId : null;
+    let roomId: number = this.roomIdString == '-1' ? null: (+this.roomIdString);
+    this.updateVisitorPackage(this.employeeId, this.startDate, this.endDate, this.wifiParamsId, roomId, this.limit);
   }
 
   /**
@@ -185,13 +204,18 @@ export class EditVisitorPackagePage implements OnInit {
       let password = null;
       let type = null;
       if (this.giveWiFi) {
-        ssid = 'DemoSSID';
-        password = 'Demo1234';
-        type = 'WPA2';
+        ssid = this.wifiSsid;
+        password = this.wifiPassword;
+        type = this.wifiType;
       }
       this.packageToUpdate.startDate = startTime;
       this.packageToUpdate.endDate = endTime;
-      this.packageToUpdate.access = this.rooms.find(room => room['id'] == roomId)['name'];
+      if (this.rooms!= null && this.rooms != []) {
+        this.packageToUpdate.access = this.rooms.find(room => room['id'] == roomId)['name'];
+      }
+      else {
+        this.packageToUpdate.access = 'Unknown';
+      }
       this.packageToUpdate.wifiSsid = ssid;
       this.packageToUpdate.wifiPassword = password;
       this.packageToUpdate.wifiType = type;

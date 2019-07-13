@@ -23,6 +23,9 @@ import { LocalStorageService } from './local-storage.service';
 import { BusinessCardsService } from './business-cards.service';
 import { Subject, Observable } from 'rxjs';
 import { AccountModel } from '../models/account.model';
+import { LocationModel } from '../models/location.model';
+import { RoomModel } from '../models/room.model';
+import { WifiDetailsModel } from '../models/wifi-details.model';
 
 /**
 * Purpose:	This class provides the logged in service injectable
@@ -88,12 +91,26 @@ export class LoggedInService {
       setTimeout(() => {
         this.req.login(username, password).subscribe(res => {
           if (res['success'] === true) {
-            this.setLoggedIn(true, res['data']['id']);
+            this.account.employeeId = res['data']['id'];
+            this.setLoggedIn(true, this.account.employeeId);
             let apiKey = res['data']['apiKey'];
             this.storage.Save(this.apiKeyName, apiKey);
-            this.req.getBusinessCard(res['data']['id']).subscribe(response => {
+            this.req.getBusinessCard(this.account.employeeId).subscribe(response => {
               let cardDetails = response['data'];
+              this.account.company = cardDetails['companyName'];
               this.cardService.setOwnBusinessCard(cardDetails);
+            })
+            this.req.getEmployeeDetails(this.account.employeeId).subscribe(response => {
+              let accountDetails = response['data'];
+              let buildingDetails = accountDetails['building'];
+              this.account.building = new LocationModel(buildingDetails['branchName'], buildingDetails['latitude'], buildingDetails['longitude']); 
+              let roomDetail = accountDetails['rooms'];
+              this.account.rooms = [];
+              roomDetail.forEach(room => {
+                this.account.rooms.push(new RoomModel(room['roomId'], room['roomName']));
+              });
+              let wifiDetails = accountDetails['wifi'];
+              this.account.wifi = new WifiDetailsModel(wifiDetails['wifiParamsId'], wifiDetails['ssid'], wifiDetails['networkType'], wifiDetails['password'])
             })
             subject.next({success: true, message: res['message']});
             subject.complete();
@@ -139,6 +156,7 @@ export class LoggedInService {
       this.req.getBusinessCard(this.account.employeeId).subscribe(response => {
         if (response['success'] === true) {
           let cardDetails = response['data'];
+          this.account.company = cardDetails['companyName'];
           this.cardService.setOwnBusinessCard(cardDetails).then(() => {
             subject.next({ success: true, message: '' });
             subject.complete();
@@ -166,6 +184,14 @@ export class LoggedInService {
   }
 
   /**
+   * Function that returns the company's name
+   * @return string company name
+   */
+  getCompanyName(){
+    return this.account.company;
+  }
+
+  /**
    * Function that returns building details in the form of a location with a label
    * @return LocationModel building location
    */
@@ -179,5 +205,13 @@ export class LoggedInService {
    */
   getRooms(){
     return this.account.rooms;
+  }
+
+  /**
+   * Function that returns the wifi details the employee has access to
+   * @return WifiDetailsModel wifi details
+   */
+  getWifiDetails(){
+    return this.account.wifi;
   }
 }

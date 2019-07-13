@@ -26,6 +26,7 @@ import { VisitorPackage } from '../models/visitor-package.model';
 import { LocationModel } from '../models/location.model';
 import { DateService } from '../services/date.service';
 import { LoggedInService } from '../services/logged-in.service';
+import { WifiDetailsModel } from '../models/wifi-details.model';
 
 /**
 * Purpose:	This enum provides message types
@@ -65,6 +66,10 @@ export class CreateVisitorPackagePage implements OnInit {
   endDate: Date = null;
   roomIdString: string = '';
   giveWiFi: boolean = null;
+  wifiParamsId: number = null;
+  wifiSsid: string = null;
+  wifiPassword: string = null;
+  wifiType: string = null;
   limit: number = null;
 
   buildingLocation: LocationModel;
@@ -92,6 +97,13 @@ export class CreateVisitorPackagePage implements OnInit {
     this.placeholderDate = dateService.displayDate(this.currentDate);
     this.placeholderTime = dateService.displayTime(this.currentDate);
 
+    let wifiDetails: WifiDetailsModel = this.loginService.getWifiDetails();
+    if (wifiDetails != null){
+      this.wifiParamsId = wifiDetails.getId();
+      this.wifiSsid = wifiDetails.getSsid();
+      this.wifiPassword = wifiDetails.getPassword();
+      this.wifiType = wifiDetails.getType();
+    }
     this.employeeId = this.loginService.getEmployeeId();
     this.buildingLocation = this.loginService.getBuildingLoc();
     this.rooms = this.loginService.getRooms();
@@ -112,9 +124,9 @@ export class CreateVisitorPackagePage implements OnInit {
    * Function that gets called when submit is pressed
    */
   onSubmit(){
-    let wifiParamsId = this.giveWiFi == true? 0: null;
-    let roomId: number = this.roomIdString == '0' ? null: (+this.roomIdString);
-    this.createVisitorPackage(this.employeeId, this.startDate, this.endDate, this.macAddress, wifiParamsId, roomId, this.limit);
+    this.wifiParamsId = this.giveWiFi == true ? this.wifiParamsId : null;
+    let roomId: number = this.roomIdString == '-1' ? null: (+this.roomIdString);
+    this.createVisitorPackage(this.employeeId, this.startDate, this.endDate, this.macAddress, this.wifiParamsId, roomId, this.limit);
   }
 
   /**
@@ -178,16 +190,15 @@ export class CreateVisitorPackagePage implements OnInit {
     this.addVisitorPackageToDB(employeeId, startTime, endTime, macAddress, wifiParamsId, roomId, limit).subscribe(res => {
       this.isBusy = false;
       let id: number = res['data']['visitorPackageId'];
-      let ssid = null;
-      let password = null;
-      let type = null;
-      if (this.giveWiFi) {
-        ssid = 'DemoSSID';
-        password = 'Demo1234';
-        type = 'WPA2';
+      if (!this.giveWiFi) {
+        this.wifiSsid = null;
+        this.wifiPassword = null;
+        this.wifiType = null;
       }
-      let visitorPackage: VisitorPackage = this.packageService.createVisitorPackage(id, 'Temp Comp Name', startTime, endTime, this.rooms.find(room => room['id'] == roomId)['name'], 
-        this.buildingLocation, ssid, password, type, limit, 0);
+      let access: string = this.rooms.find(room => room['id'] == roomId)['name'];
+      let companyName = this.loginService.getCompanyName();
+      let visitorPackage: VisitorPackage = this.packageService.createVisitorPackage(id, companyName, startTime, endTime, access, 
+        this.buildingLocation, this.wifiSsid, this.wifiSsid, this.wifiType, limit, 0);
       this.packageService.addSharedVisitorPackage(visitorPackage);
       this.shareVisitorPackage(visitorPackage);
     });

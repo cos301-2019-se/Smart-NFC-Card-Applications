@@ -69,7 +69,7 @@ function populateTable() {
 
     $('#table').DataTable(); //Initialize Table
     //listener for edit clicks
-    $('.editButton').on("click", function () {
+    $('#table').on("click", ".editButton", function () {
         var row = $(this).closest('tr').first();
         var fields = [];
         row.children().each(function () {
@@ -99,13 +99,13 @@ function submitEditEmployee() {
             <h4 class="alert-heading">Operation Successful!</h4>
             Employee modified successfully.`);
 
-			/*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
-            order to view the updated information in the table.
-            </div>
-            `);*/
+                /*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
+                order to view the updated information in the table.
+                </div>
+                `);*/
                 $("#btnSubmit").attr("disabled", true);
-				//$('#editEmployeeModal').modal('hide');
-				fetchDataAndPopulateTable();
+                //$('#editEmployeeModal').modal('hide');
+                fetchDataAndPopulateTable();
             } else {
                 console.log(data.message);
                 console.log("failed to modify employee");
@@ -199,13 +199,13 @@ function addEmployee() {
             <h4 class="alert-heading">Operation Successful!</h4>
             Employee added successfully.`);
 
-			/*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
-            order to view the updated information in the table.
-            </div>
-            `);*/
+                /*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
+                order to view the updated information in the table.
+                </div>
+                `);*/
                 $("#btnAddEmployee").attr("disabled", true);
-				//$('#addEmployeeModal').modal('hide');
-				fetchDataAndPopulateTable();
+                //$('#addEmployeeModal').modal('hide');
+                fetchDataAndPopulateTable();
             } else {
                 console.log("failed to add employee");
                 console.log(data.message);
@@ -311,7 +311,7 @@ function displayError(message) {
 
 
 
-function logout(){
+function logout() {
     localStorage.clear();
     window.location.replace("login.html");
 }

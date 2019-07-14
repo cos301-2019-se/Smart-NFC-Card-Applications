@@ -526,7 +526,6 @@ class AppLogic{
         else{
             let ret = await me.sharedLogic.crudController.createWallet(limit, spent);
 
-            console.log(ret);
             if(ret.success){
                 data.walletId = ret.data.linkWalletId;
             }
@@ -1139,6 +1138,9 @@ class AppLogic{
                                     wifi = await me.editTempWifi(visitorPackage.data.tempWifiAccessId, me.body.wifiAccessParamsId);
                                 }
                             }
+                            else if(me.body.wifiAccessParamsId === null && visitorPackage.data.tempWifiAccessId !== null){
+                                wifi.wifiTempAccessId = null;
+                            }
 
                             // EDIT TPA
                             if(me.body.roomId !== null){
@@ -1151,6 +1153,9 @@ class AppLogic{
                                     tpa_room = await me.editTpaRoom(ret.data[0].tpaId, ret.data[0].roomId, ret.data[0].tpaId, me.body.roomId);
                                 }
                             }
+                            else if(me.body.roomId === null && visitorPackage.data.tpaId !== null){
+                                tpa.tpaId = null;
+                            }
 
                             // EDIT WALLET
                             if(me.body.limit !== null) {
@@ -1160,6 +1165,9 @@ class AppLogic{
                                 else{
                                     wallet = await me.editWallet(visitorPackage.data.linkWalletId, me.body.limit);
                                 }
+                            }
+                            else if(me.body.limit === null && visitorPackage.data.linkWalletId === null){
+                                wallet.walletId = null;
                             }
 
                             // EDIT VISITORPACKAGE

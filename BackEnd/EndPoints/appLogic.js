@@ -518,12 +518,13 @@ class AppLogic{
     async addWallet(limit, spent){
         let data = {};
 
-        if(this.demoMode){
+        if(me.demoMode){
             data.walletId = 0;
         }
         else{
             let ret = await me.sharedLogic.crudController.createWallet(limit, spent);
 
+            console.log(ret);
             if(ret.success){
                 data.walletId = ret.data.linkWalletId;
             }
@@ -1129,7 +1130,7 @@ class AppLogic{
 
                             // EDIT WIFI
                             if(me.body.wifiAccessParamsId !== null){
-                                if(visitorPackage.tempWifiAccessId === null){
+                                if(visitorPackage.data.tempWifiAccessId === null){
                                     wifi = await me.addTempWifi(me.body.wifiAccessParamsId);
                                 }
                                 else{
@@ -1151,7 +1152,7 @@ class AppLogic{
 
                             // EDIT WALLET
                             if(me.body.limit !== null) {
-                                if(visitorPackage.data.walletId === null){
+                                if(visitorPackage.data.linkWalletId === null){
                                     wallet = await me.addWallet(me.body.limit, 0);
                                 }
                                 else{
@@ -1159,10 +1160,20 @@ class AppLogic{
                                 }
                             }
 
-                            if(visitorPackage.success){
-                                success = visitorPackage.success;
-                                message = visitorPackage.message;
-                                data.visitorPackageId = visitorPackage.data.visitorPackageId;
+                            // EDIT VISITORPACKAGE
+                            let newVisitorPackage = await me.sharedLogic.crudController.updateVisitorPackage(visitorPackage.data.visitorPackageId,
+                                wifi.wifiTempAccessId,
+                                tpa.tpaId,
+                                wallet.walletId,
+                                visitorPackage.data.employeeId,
+                                visitorPackage.data.clientId,
+                                me.body.startTime,
+                                me.body.endTime);
+
+                            if(newVisitorPackage.success){
+                                success = newVisitorPackage.success;
+                                message = newVisitorPackage.message;
+                                data.visitorPackageId = me.body.visitorPackageId;
                                 me.sharedLogic.endServe(success, message, data);
                             }
                             else{

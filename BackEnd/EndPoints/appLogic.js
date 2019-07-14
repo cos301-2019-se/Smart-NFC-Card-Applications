@@ -230,6 +230,8 @@ class AppLogic{
      *                                  password: string Password of wifi access param
      *                             }
      *               }
+     *
+     * @TODO Return mock data
      */
     async getEmployeeDetails(){
         let success;

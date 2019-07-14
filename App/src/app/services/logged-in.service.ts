@@ -103,7 +103,7 @@ export class LoggedInService {
             this.req.getEmployeeDetails(this.account.employeeId).subscribe(response => {
               let accountDetails = response['data'];
               let buildingDetails = accountDetails['building'];
-              this.account.building = new LocationModel(buildingDetails['branchName'], buildingDetails['latitude'], buildingDetails['longitude']); 
+              this.account.building = new LocationModel(buildingDetails['latitude'], buildingDetails['longitude'], buildingDetails['BranchName']); 
               let roomDetail = accountDetails['rooms'];
               this.account.rooms = [];
               roomDetail.forEach(room => {
@@ -134,6 +134,7 @@ export class LoggedInService {
       this.req.logout().subscribe(res => {
         if (res['success'] === true) {
           this.setLoggedIn(false);
+          this.account = new AccountModel();
           subject.next({success: true, message: res['message']});
           subject.complete();
         }
@@ -158,7 +159,7 @@ export class LoggedInService {
           let cardDetails = response['data'];
           this.account.company = cardDetails['companyName'];
           this.cardService.setOwnBusinessCard(cardDetails).then(() => {
-            subject.next({ success: true, message: '' });
+            subject.next({ success: true, message: 'Successfully reloaded business card' });
             subject.complete();
           })
           .catch(err => {

@@ -34,7 +34,15 @@ export class AccountModel {
     public rooms: RoomModel[];
     public wifi: WifiDetailsModel;
 
+    /**
+     * Function that constructs a new account model (sets everything to null)
+     * @return AccountModel that was created
+     */
     constructor(){
-        
+        this.employeeId = null;
+        this.company = null;
+        this.building = null;
+        this.rooms = null;
+        this.wifi = null;
     }
 }

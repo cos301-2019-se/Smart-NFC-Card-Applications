@@ -36,11 +36,12 @@ import { LocalStorageService } from './local-storage.service';
 })
 export class RequestModuleService {
 
-  demoMode: boolean = true;
+  demoMode: boolean = false;
   apiKeyName: string = 'apiKey';
   apiKey: string = '';
 
-  baseUrl: string = "https://smart-nfc-application.herokuapp.com";
+  //baseUrl: string = "https://smart-nfc-application.herokuapp.com";
+  baseUrl: string = "http://192.168.88.155:3000";
   loginStub: JSON = JSON.parse(`{
     "success": true,
     "message": "Login successful.",
@@ -168,6 +169,7 @@ export class RequestModuleService {
       });
     }
     else {
+      this.apiKey = null;
       let json: JSON = JSON.parse(`{ "username": "${username.trim()}", "password": "${password.trim()}" }`);
       return this.post(`${this.baseUrl}/app/login`, json);
     }
@@ -253,8 +255,8 @@ export class RequestModuleService {
       });
     }
     else {
-      let json: JSON = JSON.parse(`{'employeeId': ${employeeId}, 'startTime': '${startTime}', 'endTime': '${endTime}', 'macAddress': '${macAddress}', 
-        'wifiAccessParamsId': ${wifiParamsId}, 'roomId': ${roomId}, 'limit': ${limit}, 'spent': ${spent}}`);
+      let json: JSON = JSON.parse(`{"employeeId": ${employeeId}, "startTime": "${startTime}", "endTime": "${endTime}", "macAddress": "${macAddress}", 
+      "wifiAccessParamsId": ${wifiParamsId}, "roomId": ${roomId}, "limit": ${limit}, "spent": ${spent}}`);
       return this.post(`${this.baseUrl}/app/addVisitorPackage`, json);
     }
   }
@@ -279,8 +281,8 @@ export class RequestModuleService {
       });
     }
     else {
-      let json: JSON = JSON.parse(`{'visitorPackageId': ${packageId}, 'employeeId': ${employeeId}, 'startTime': '${startTime}', 'endTime': '${endTime}', 
-        'wifiAccessParamsId': ${wifiParamsId}, 'roomId': ${roomId}, 'limit': ${limit}}`);
+      let json: JSON = JSON.parse(`{"visitorPackageId": ${packageId}, "employeeId": ${employeeId}, "startTime": "${startTime}", "endTime": "${endTime}", 
+      "wifiAccessParamsId": ${wifiParamsId}, "roomId": ${roomId}, "limit": ${limit}}`);
       return this.post(`${this.baseUrl}/app/editVisitorPackage`, json);
     }
   }
@@ -298,7 +300,7 @@ export class RequestModuleService {
       });
     }
     else {
-      let json: JSON = JSON.parse(`{'packageId': ${packageId}}`);
+      let json: JSON = JSON.parse(`{"packageId": ${packageId}}`);
       return this.post(`${this.baseUrl}/app/deleteVisitorPackage`, json);
     }
   }
@@ -316,7 +318,7 @@ export class RequestModuleService {
       });
     }
     else {
-      let json: JSON = JSON.parse(`{'employeeId': ${employeeId}}`);
+      let json: JSON = JSON.parse(`{"employeeId": ${employeeId}}`);
       return this.post(`${this.baseUrl}/app/getEmployeeDetails`, json);
     }
   }

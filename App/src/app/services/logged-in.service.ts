@@ -94,30 +94,39 @@ export class LoggedInService {
             this.account.employeeId = res['data']['id'];
             this.setLoggedIn(true, this.account.employeeId);
             let apiKey = res['data']['apiKey'];
-            this.storage.Save(this.apiKeyName, apiKey);
-            this.req.getBusinessCard(this.account.employeeId).subscribe(response => {
-              let cardDetails = response['data'];
-              this.account.company = cardDetails['companyName'];
-              this.cardService.setOwnBusinessCard(cardDetails);
-            })
-            this.req.getEmployeeDetails(this.account.employeeId).subscribe(response => {
-              let accountDetails = response['data'];
-              let buildingDetails = accountDetails['building'];
-              this.account.building = new LocationModel(buildingDetails['latitude'], buildingDetails['longitude'], buildingDetails['BranchName']); 
-              let roomDetail = accountDetails['rooms'];
-              this.account.rooms = [];
-              roomDetail.forEach(room => {
-                this.account.rooms.push(new RoomModel(room['roomId'], room['roomName']));
-              });
-              let wifiDetails = accountDetails['wifi'];
-              this.account.wifi = new WifiDetailsModel(wifiDetails['wifiParamsId'], wifiDetails['ssid'], wifiDetails['networkType'], wifiDetails['password'])
-            })
+            this.storage.Save(this.apiKeyName, apiKey)
+            .then(() => {
+              this.req.getEmployeeDetails(this.account.employeeId).subscribe(response => {
+                let accountDetails = response['data'];
+                let buildingDetails = accountDetails['building'];
+                if (buildingDetails != undefined) {
+                  this.account.building = new LocationModel(buildingDetails['latitude'], buildingDetails['longitude'], buildingDetails['branchName']); 
+                  console.log(this.account.building);
+                }
+                let roomDetail = accountDetails['rooms'];
+                this.account.rooms = [];
+                roomDetail.forEach(room => {
+                  this.account.rooms.push(new RoomModel(room['roomId'], room['roomName']));
+                });
+                let wifiDetails = accountDetails['wifi'];
+                this.account.wifi = new WifiDetailsModel(wifiDetails['wifiParamsId'], wifiDetails['ssid'], wifiDetails['networkType'], wifiDetails['password']);
+                this.req.getBusinessCard(this.account.employeeId).subscribe(response => {
+                  let cardDetails = response['data'];
+                  this.account.company = cardDetails['companyName'];
+                  this.cardService.setOwnBusinessCard(cardDetails);
+                })
+              })
+            });
             subject.next({success: true, message: res['message']});
             subject.complete();
           }
           else {
             subject.next({success: false, message: res['message']});
+            subject.complete();
           }
+        }, err => {
+          subject.next({success: false, message: `Something went wrong: ${err.message}`});
+          subject.complete();
         });
       }, 50);
       return subject.asObservable();
@@ -142,6 +151,9 @@ export class LoggedInService {
           subject.next({success: false, message: res['message']});
           subject.complete();
         }
+      }, err => {
+        subject.next({success: false, message: `Something went wrong: ${err.message}`});
+        subject.complete();
       });
     }, 50);
     return subject.asObservable();
@@ -171,7 +183,10 @@ export class LoggedInService {
           subject.next({success: false, message: response['message']});
           subject.complete();
         }
-      })
+      }, err => {
+        subject.next({success: false, message: `Something went wrong: ${err.message}`});
+        subject.complete();
+      });
     }, 50);
     return subject.asObservable();
   }

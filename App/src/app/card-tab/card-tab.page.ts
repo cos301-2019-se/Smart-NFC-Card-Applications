@@ -102,7 +102,7 @@ export class CardTabPage implements OnInit{
    */
   loadCards(){
     // Get cards
-    this.cardService.getBusinessCards().then((val) => {      
+    this.cardService.getBusinessCards().then((val) => {    
       this.cards = val;
       // If it is null, set it as an empty array
       if (this.cards == null) {

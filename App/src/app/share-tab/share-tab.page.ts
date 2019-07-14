@@ -170,6 +170,9 @@ export class ShareTabPage implements OnInit{
     this.loginService.reloadBusinessCard().subscribe(res => {
       if (res['success'] === true) {
         this.showMessage('Business card refreshed', MessageType.success)
+        this.cardService.getOwnBusinessCard().then((val) => {
+          this.card = val;
+        });
       }
       else {
         this.showMessage(`Could not refresh: ${res['message']}`, MessageType.error)

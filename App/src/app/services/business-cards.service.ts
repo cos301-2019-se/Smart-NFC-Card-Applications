@@ -87,10 +87,10 @@ export class BusinessCardsService {
    * @param longitude string Employee's branch longitude
    * @retun Promise returns promise from saving to storage
    */
-  setOwnBusinessCard({businessCardId, companyName, employeeTitle, employeeName, employeeSurname, employeeCellphone, employeeEmail, website, branchName, latitude, longitude}) {
+  setOwnBusinessCard({businessCardId, companyName, employeeTitle, employeeName, employeeSurname, employeeCellphone, employeeEmail, companyWebsite, branchName, latitude, longitude}) {
     let employeeFullName = `${employeeTitle} ${employeeName} ${employeeSurname}`;
     let location = new LocationModel(latitude, longitude, branchName);
-    let businessCard: BusinessCard = this.createBusinessCard(businessCardId, companyName, employeeFullName, employeeCellphone, employeeEmail, website, location);
+    let businessCard: BusinessCard = this.createBusinessCard(businessCardId, companyName, employeeFullName, employeeCellphone, employeeEmail, companyWebsite, location);
     return this.storage.Save(this.ownBusinessCardKey, businessCard);
   }
 
@@ -132,6 +132,7 @@ export class BusinessCardsService {
    */
   getBusinessCards() {
     return this.storage.Load(this.cardListKey).then((cards) => {      
+      if (cards == null) return [];
       cards.forEach(element => {
         element.location = new LocationModel(element.location.latitude, element.location.longitude, element.location.label)
       });

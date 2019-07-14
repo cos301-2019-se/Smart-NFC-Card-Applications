@@ -271,13 +271,22 @@ export class ManageTabPage implements OnInit {
           text: 'Delete',
           handler: () => {
             let currDate = new Date();
-            
+            let numExpiredPackages = 0;
+
             this.packages = this.packages.filter(elem => {
+              if ((new Date(elem.endDate)) <= currDate) numExpiredPackages++;
               return (new Date(elem.endDate)) > currDate;
             })
             this.packageService.setSharedVisitorPackages(this.packages).then(() => {
               this.loadPackages();
-              this.showMessage('Deleted expired packages.', MessageType.success);
+              let successMessage = 'Success';
+              if (numExpiredPackages > 0) {
+                successMessage = 'Deleted expired packages.';
+              }
+              else {
+                successMessage = 'No expired packages to delete.';
+              }
+              this.showMessage(successMessage, MessageType.success);
             });
           }
         }

@@ -80,7 +80,7 @@ export class RequestModuleService {
     "data":{
       "building": {
         "BranchName": "Building Name",
-        "latitude": 24.1234,
+        "latitude": -24.1234,
         "longitude": 27.891
       },
       "rooms": [

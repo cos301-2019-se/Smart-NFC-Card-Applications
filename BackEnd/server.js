@@ -44,6 +44,7 @@ function run(callback) {
 	const server = http.createServer((req, res) => {
 
 		var urlToSwitchOn = req.url.substring(1, req.url.substring(1).indexOf("/")+1);
+		//console.log("switch:" + urlToSwitchOn);
 		switch(urlToSwitchOn)
 		{
 			case "test":
@@ -65,16 +66,28 @@ function run(callback) {
 				break;
 
 			case "/":
+				console.log(req.url);
 				res.statusCode = 200;
 				res.setHeader('Content-Type', 'text/html');
-				fs.readFile("./../AdminInterface/index.html", (err,fileContent) =>
+				
+				if(req.url == "/")
 				{
-					res.end(fileContent);
-				});
+					fs.readFile("./../AdminInterface/login.html", (err,fileContent) =>
+					{
+						res.end(fileContent);
+					});
+				}
+				else
+				{
+					fs.readFile("./../AdminInterface" + req.url, (err,fileContent) =>
+					{
+						res.end(fileContent);
+					});
+				}
 				break;
 
 			case "Css":
-				console.log(req.url);
+				//console.log(req.url);
 				res.statusCode = 200;
 				res.setHeader('Content-Type', 'text/css');
 				fs.readFile("./../AdminInterface"+req.url, (err,fileContent) =>
@@ -84,7 +97,7 @@ function run(callback) {
 				break;
 
 			case "Js":
-				console.log(req.url);
+				//console.log(req.url);
 				res.statusCode = 200;
 				res.setHeader('Content-Type', 'text/javascript');
 				fs.readFile("./../AdminInterface"+req.url, (err,fileContent) =>
@@ -94,7 +107,7 @@ function run(callback) {
 				break;
 
 			case "Image":
-				console.log(req.url);
+				//console.log(req.url);
 				res.statusCode = 200;
 				if(req.url.match("jpe") || req.url.match("jpeg") || req.url.match("jpg")){
 					res.setHeader('Content-Type', 'image/jpeg');

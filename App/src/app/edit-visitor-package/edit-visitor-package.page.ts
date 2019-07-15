@@ -200,31 +200,36 @@ export class EditVisitorPackagePage implements OnInit {
     this.isBusy = true;
     this.updateVisitorPackageInDB(employeeId, startTime, endTime, wifiParamsId, roomId, limit).subscribe(res => {
       this.isBusy = false;
-      let ssid = null;
-      let password = null;
-      let type = null;
-      if (this.giveWiFi) {
-        ssid = this.wifiSsid;
-        password = this.wifiPassword;
-        type = this.wifiType;
-      }
-      this.packageToUpdate.startDate = startTime;
-      this.packageToUpdate.endDate = endTime;
-      if (this.rooms!= null && this.rooms != []) {
-        this.packageToUpdate.access = this.rooms.find(room => room['id'] == roomId)['name'];
+      if (res['success'] === true) {
+        let ssid = null;
+        let password = null;
+        let type = null;
+        if (this.giveWiFi) {
+          ssid = this.wifiSsid;
+          password = this.wifiPassword;
+          type = this.wifiType;
+        }
+        this.packageToUpdate.startDate = startTime;
+        this.packageToUpdate.endDate = endTime;
+        if (this.rooms!= null && this.rooms != []) {
+          this.packageToUpdate.access = this.rooms.find(room => room['id'] == roomId)['name'];
+        }
+        else {
+          this.packageToUpdate.access = 'Unknown';
+        }
+        this.packageToUpdate.wifiSsid = ssid;
+        this.packageToUpdate.wifiPassword = password;
+        this.packageToUpdate.wifiType = type;
+        this.packageToUpdate.spendingLimit = limit;
+        this.packageService.addSharedVisitorPackage(this.packageToUpdate);
+        this.showMessage("Package Updated", messageType.success, 0);
+        setTimeout(() => {
+          this.closeModal()
+        }, 1500);
       }
       else {
-        this.packageToUpdate.access = 'Unknown';
+        this.showMessage(`Could not update package: ${res['message']}`, messageType.error);
       }
-      this.packageToUpdate.wifiSsid = ssid;
-      this.packageToUpdate.wifiPassword = password;
-      this.packageToUpdate.wifiType = type;
-      this.packageToUpdate.spendingLimit = limit;
-      this.packageService.addSharedVisitorPackage(this.packageToUpdate);
-      this.showMessage("Package Updated", messageType.success, 0);
-      setTimeout(() => {
-        this.closeModal()
-      }, 1500);
     });
   }
 

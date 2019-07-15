@@ -27,6 +27,7 @@ import { LocationModel } from '../models/location.model';
 import { DateService } from '../services/date.service';
 import { LoggedInService } from '../services/logged-in.service';
 import { WifiDetailsModel } from '../models/wifi-details.model';
+import { MessageType } from '../tabs/tabs.page';
 
 /**
 * Purpose:	This enum provides message types
@@ -96,7 +97,12 @@ export class CreateVisitorPackagePage implements OnInit {
   ) { 
     this.placeholderDate = dateService.displayDate(this.currentDate);
     this.placeholderTime = dateService.displayTime(this.currentDate);
+  }
 
+  ngOnInit() {
+  }
+
+  ionViewDidEnter() {
     let wifiDetails: WifiDetailsModel = this.loginService.getWifiDetails();
     if (wifiDetails != null){
       this.wifiParamsId = wifiDetails.getId();
@@ -107,9 +113,6 @@ export class CreateVisitorPackagePage implements OnInit {
     this.employeeId = this.loginService.getEmployeeId();
     this.buildingLocation = this.loginService.getBuildingLoc();
     this.rooms = this.loginService.getRooms();
-  }
-
-  ngOnInit() {
   }
 
   /**
@@ -189,18 +192,23 @@ export class CreateVisitorPackagePage implements OnInit {
     this.isBusy = true;
     this.addVisitorPackageToDB(employeeId, startTime, endTime, macAddress, wifiParamsId, roomId, limit).subscribe(res => {
       this.isBusy = false;
-      let id: number = res['data']['visitorPackageId'];
-      if (!this.giveWiFi) {
-        this.wifiSsid = null;
-        this.wifiPassword = null;
-        this.wifiType = null;
+      if (res['success'] === true) {
+        let id: number = res['data']['visitorPackageId'];
+        if (!this.giveWiFi) {
+          this.wifiSsid = null;
+          this.wifiPassword = null;
+          this.wifiType = null;
+        }
+        let access: string = this.rooms.find(room => room['id'] == roomId)['name'];
+        let companyName = this.loginService.getCompanyName();
+        let visitorPackage: VisitorPackage = this.packageService.createVisitorPackage(id, companyName, startTime, endTime, access, 
+          this.buildingLocation, this.wifiSsid, this.wifiPassword, this.wifiType, limit, 0);
+        this.packageService.addSharedVisitorPackage(visitorPackage);
+        this.shareVisitorPackage(visitorPackage);
       }
-      let access: string = this.rooms.find(room => room['id'] == roomId)['name'];
-      let companyName = this.loginService.getCompanyName();
-      let visitorPackage: VisitorPackage = this.packageService.createVisitorPackage(id, companyName, startTime, endTime, access, 
-        this.buildingLocation, this.wifiSsid, this.wifiSsid, this.wifiType, limit, 0);
-      this.packageService.addSharedVisitorPackage(visitorPackage);
-      this.shareVisitorPackage(visitorPackage);
+      else {
+        this.showMessage(`Error adding to DB: ${res['message']}`, MessageType.error);
+      }
     });
   }
 

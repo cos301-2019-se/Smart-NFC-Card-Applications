@@ -59,6 +59,7 @@ export class TabsPage implements OnInit{
   tabButtons: Object = {
     'manage-tab': [
       {name: 'Login', requiresLogin: false},
+      {name: 'Refresh Account Details', requiresLogin: true},
       {name: 'Create Visitor Package', requiresLogin: true},
       {name: 'Delete Expired Packages', requiresLogin: true},
       {name: 'Logout', requiresLogin: true}
@@ -74,9 +75,7 @@ export class TabsPage implements OnInit{
     'package-tab': [
       {name: 'Link to Package'},
       {name: 'Receive Package'},
-      {name: 'Refresh All Packages', requiresLogin: true},
-      {name: 'Access'},
-      {name: 'Pay'}
+      {name: 'Refresh All Packages', requiresLogin: true}
     ]
   };
   activeTab: string = 'manage-tab'; 

@@ -48,6 +48,7 @@ export class WifiService {
       });
     }
     algorithm = algorithm == "WPA2"? "WPA" : algorithm;
+    console.log(ssid, password, algorithm);
     return await this.hotspot.connect(ssid, null, password, algorithm, false)
   }
 

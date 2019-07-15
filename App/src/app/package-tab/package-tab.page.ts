@@ -104,10 +104,6 @@ export class PackageTabPage implements OnInit{
         break;
       case 'Refresh All Packages': this.showMessage('Refresh feature coming soon.', MessageType.error);
         break;
-      case 'Access': this.showMessage('Access control feature coming soon.', MessageType.error)
-        break;
-      case 'Pay': this.showMessage('Payment feature coming soon.', MessageType.error)
-        break;
     }
   }
 
@@ -252,14 +248,6 @@ export class PackageTabPage implements OnInit{
   }
 
   /**
-   * Function refreshes a visitor package from db
-   * @param packageId number Id of visitor package to refresh
-   */
-  refreshVisitorPackage(packageId: number){
-    this.showMessage('Refresh feature coming soon.', MessageType.error);
-  }
-
-  /**
    * Function attempts to connect to WiFi
    * @param ssid string network name
    * @param password string network password
@@ -304,5 +292,29 @@ export class PackageTabPage implements OnInit{
    */
   showMessage(message: string, type: number, timeout: number = 5000) {
     this.eventEmitterService.messageEvent(message, type, timeout);
+  }
+
+  /**
+   * Function refreshes a visitor package from db
+   * @param packageId number Id of visitor package to refresh
+   */
+  refreshVisitorPackage(packageId: number){
+    this.showMessage('Refresh feature coming soon.', MessageType.error);
+  }
+
+  /**
+   * Function checks against access control if it can unlock door
+   * @param packageId number Id of visitor package to check
+   */
+  unlock(packageId: number){
+    this.showMessage('Unlock feature coming soon.', MessageType.error);
+  }
+
+  /**
+   * Function attempts to pay using a visitor rpackage
+   * @param packageId number Id of visitor package to check
+   */
+  pay(packageId: number){
+    this.showMessage('Payment feature coming soon.', MessageType.error);
   }
 }

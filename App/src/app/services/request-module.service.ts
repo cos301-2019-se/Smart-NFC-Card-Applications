@@ -40,8 +40,7 @@ export class RequestModuleService {
   apiKeyName: string = 'apiKey';
   apiKey: string = '';
 
-  //baseUrl: string = "https://smart-nfc-application.herokuapp.com";
-  baseUrl: string = "http://192.168.88.155:3000";
+  baseUrl: string = "https://smart-nfc-application.herokuapp.com";
   loginStub: JSON = JSON.parse(`{
     "success": true,
     "message": "Login successful.",
@@ -182,15 +181,15 @@ export class RequestModuleService {
   logout() {
     this.storage.Save(this.apiKeyName, '');
     this.apiKey = '';
-    if(this.demoMode) {
+    //if(this.demoMode) {
       return new Observable<Object>(observer => {
         observer.next(this.logoutStub);
         observer.complete();
       });
-    }
+    /*}
     else {
       return this.post(`${this.baseUrl}/app/logout`);
-    }
+    }*/
   }
 
   /**
@@ -293,16 +292,16 @@ export class RequestModuleService {
    * @return Observable<Object> response containing json from back-end server
    */
   deleteVisitorPackage(packageId: number) {
-    if (this.demoMode) {
+    //if (this.demoMode) {
       return new Observable<Object>(observer => {
         observer.next(this.visitorPackageStub);
         observer.complete();
       });
-    }
+    /*}
     else {
       let json: JSON = JSON.parse(`{"packageId": ${packageId}}`);
       return this.post(`${this.baseUrl}/app/deleteVisitorPackage`, json);
-    }
+    }*/
   }
 
   /**

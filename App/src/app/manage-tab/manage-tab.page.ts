@@ -110,6 +110,8 @@ export class ManageTabPage implements OnInit {
     switch(functionName) {
       case 'Login': this.login();
         break;
+      case 'Refresh Account Details': this.refreshAccountDetails();
+        break;
       case 'Create Visitor Package': this.openCreateVisitorPackageModal();
         break;
       case 'Delete Expired Packages': this.deleteExpired();
@@ -395,6 +397,20 @@ export class ManageTabPage implements OnInit {
    */
   showMessage(message: string, type: number, timeout: number = 5000) {
     this.eventEmitterService.messageEvent(message, type, timeout);
+  }
+
+  /**
+   * Function that fetches the account details from the db again
+   */
+  refreshAccountDetails(){
+    this.loginService.refreshAccountDetails().subscribe(res => {
+      if (res['success'] === true) {
+        this.showMessage(res['message'], MessageType.success);
+      }
+      else {
+        this.showMessage(res['message'], MessageType.error);
+      }
+    });
   }
 }
 

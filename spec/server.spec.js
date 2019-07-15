@@ -33,15 +33,14 @@ describe('Server.js Unit Testing', function () {
     afterAll(function () {
         server.close();
     });
-	
-	/*
+
     // Tjaart
     describe("POST " + endpoint + "/app/getBusinessCard", function () {
         let data = {};
         beforeAll(function (done) {
             var jsonDataObj = {
                 demoMode: true
-            }; // fill in data to send to endpoint
+            };
             Request.post({
                 url: endpoint + "/app/getBusinessCard",
                 body: jsonDataObj,
@@ -67,12 +66,12 @@ describe('Server.js Unit Testing', function () {
             '    "message": "No API Key or not all login details provided",\n\t' +
             '    "data": {}\n\t' +
             '}', function () {
-                expect(data.body).toEqual({
-                    "success": false,
-                    "message": "No API Key or not all login details provided",
-                    "data": {}
-                });
+            expect(data.body).toEqual({
+                "success": false,
+                "message": "No API Key or not all login details provided",
+                "data": {}
             });
+        });
     });
 
     describe("POST " + endpoint + "/app/getBusinessCard", function () {
@@ -81,7 +80,7 @@ describe('Server.js Unit Testing', function () {
             var jsonDataObj = {
                 demoMode: true,
                 apiKey: "12lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^"
-            }; // fill in data to send to endpoint
+            };
             Request.post({
                 url: endpoint + "/app/getBusinessCard",
                 body: jsonDataObj,
@@ -107,12 +106,12 @@ describe('Server.js Unit Testing', function () {
             '    "message": "Missing Parameters: employeeId",\n\t' +
             '    "data": {}\n\t' +
             '}', function () {
-                expect(data.body).toEqual({
-                    "success": false,
-                    "message": "Missing Parameters: employeeId",
-                    "data": {}
-                });
+            expect(data.body).toEqual({
+                "success": false,
+                "message": "Missing Parameters: employeeId",
+                "data": {}
             });
+        });
     });
 
     describe("POST " + endpoint + "/app/getBusinessCard", function () {
@@ -121,10 +120,74 @@ describe('Server.js Unit Testing', function () {
             var jsonDataObj = {
                 demoMode: true,
                 apiKey: "12lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
-                employeeId: -1
-            }; // fill in data to send to endpoint
+                employeeId: 0
+            };
             Request.post({
                 url: endpoint + "/app/getBusinessCard",
+                body: jsonDataObj,
+                json: true
+            }, function (error, response, body) {
+                data.status = response.statusCode;
+                data.contentType = response.headers['content-type'];
+                data.body = response.body;
+                done();
+            });
+        });
+
+        it('should return with statusCode 200', function () {
+            expect(data.status).toEqual(200);
+        });
+
+        it('should set content type = application/json', function () {
+            expect(data.contentType).toEqual('application/json');
+        });
+
+        it('should return a json object = \n\t{\n\t' +
+            '    "success": true,\n\t' +
+            '    "message": "Business card information loaded successfully - Mock",\n\t' +
+            '    "data": {\n\t' +
+            '        "businessCardId": "0_0",\n\t' +
+            '        "companyName": "Vast Expanse",\n\t' +
+            '        "companyWebsite": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications",\n\t' +
+            '        "branchName": "University of Pretoria",\n\t' +
+            '        "latitude": "10",\n\t' +
+            '        "longitude": "11",\n\t' +
+            '        "employeeName": "Tjaart",\n\t' +
+            '        "employeeSurname": "Booyens",\n\t' +
+            '        "employeeTitle": "Mr",\n\t' +
+            '        "employeeCellphone": "0791807734",\n\t' +
+            '        "employeeEmail": "u17021775@tuks.co.za"\n\t' +
+            '    }\n\t' +
+            '}', function () {
+            expect(data.body).toEqual({
+                "success": true,
+                "message": "Business card information loaded successfully - MOCK",
+                "data": {
+                    "businessCardId": "0_0",
+                    "companyName": "Vast Expanse",
+                    "companyWebsite": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications",
+                    "branchName": "University of Pretoria",
+                    "latitude": "10",
+                    "longitude": "11",
+                    "employeeName": "Tjaart",
+                    "employeeSurname": "Booyens",
+                    "employeeTitle": "Mr",
+                    "employeeCellphone": "0791807734",
+                    "employeeEmail": "u17021775@tuks.co.za",
+                }
+            });
+        });
+    });
+
+    describe("POST " + endpoint + "/app/getEmployeeDetails", function () {
+        let data = {};
+        beforeAll(function (done) {
+            var jsonDataObj = {
+                demoMode: true,
+                apiKey: "12lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^"
+            };
+            Request.post({
+                url: endpoint + "/app/getEmployeeDetails",
                 body: jsonDataObj,
                 json: true
             }, function (error, response, body) {
@@ -145,27 +208,27 @@ describe('Server.js Unit Testing', function () {
 
         it('should return a json object = \n\t{\n\t' +
             '    "success": false,\n\t' +
-            '    "message": "Invalid Parameters: employeeId",\n\t' +
+            '    "message": "Missing Parameters: employeeId",\n\t' +
             '    "data": {}\n\t' +
             '}', function () {
-                expect(data.body).toEqual({
-                    "success": false,
-                    "message": "Invalid Parameters: employeeId",
-                    "data": {}
-                });
+            expect(data.body).toEqual({
+                "success": false,
+                "message": "Missing Parameters: employeeId",
+                "data": {}
             });
+        });
     });
 
-    describe("POST " + endpoint + "/app/getBusinessCard", function () {
+    describe("POST " + endpoint + "/app/getEmployeeDetails", function () {
         let data = {};
         beforeAll(function (done) {
             var jsonDataObj = {
                 demoMode: true,
                 apiKey: "12lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
                 employeeId: 0
-            }; // fill in data to send to endpoint
+            };
             Request.post({
-                url: endpoint + "/app/getBusinessCard",
+                url: endpoint + "/app/getEmployeeDetails",
                 body: jsonDataObj,
                 json: true
             }, function (error, response, body) {
@@ -186,43 +249,124 @@ describe('Server.js Unit Testing', function () {
 
         it('should return a json object = \n\t{\n\t' +
             '    "success": true,\n\t' +
-            '    "message": "Business card information loaded successfully - Mock",\n\t' +
+            '    "message": "Successfully retrieved employee details - Mock",\n\t' +
             '    "data": {\n\t' +
-            '        "employeeTitle": "Mr",\n\t' +
-            '        "employeeName": "Tjaart",\n\t' +
-            '        "employeeSurname": "Booyens",\n\t' +
-            '        "employeeCellphone": "0791807734",\n\t' +
-            '        "employeeEmail": "u17021775@tuks.co.za",\n\t' +
-            '        "companyName": "Vast Expanse",\n\t' +
-            '        "website": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications"\n\t' +
+            '        "building": {\n\t' +
+            '           "buildingId": 0,\n\t' +
+            '           "latitude": "10",\n\t' +
+            '           "longitude": "11",\n\t' +
+            '           "branchName": "Mock Building"\n\t' +
+            '        },\n\t' +
+            '        "rooms": [\n\t' +
+            '           {\n\t' +
+            '               "roomId": 0,\n\t' +
+            '               "roomName": "Mock Room",\n\t' +
+            '               "parentRoomList": ""\n\t' +
+            '           },\n\t' +
+            '           {\n\t' +
+            '               "roomId": 1,\n\t' +
+            '               "roomName": "Mock Room 2",\n\t' +
+            '               "parentRoomList": "0"\n\t' +
+            '           }\n\t' +
+            '       ],\n\t' +
+            '       "wifi": {\n\t' +
+            '           "wifiAccessParamsId": 0,\n\t' +
+            '           "ssid": "Mock Wifi",\n\t' +
+            '           "networkType": "WPA",\n\t' +
+            '           "password": "MockPass"\n\t' +
+            '       }\n\t' +
             '    }\n\t' +
             '}', function () {
-                expect(data.body).toEqual({
-                    "success": true,
-                    "message": "Business card information loaded successfully - Mock",
-                    "data": {
-                        "employeeTitle": "Mr",
-                        "employeeName": "Tjaart",
-                        "employeeSurname": "Booyens",
-                        "employeeCellphone": "0791807734",
-                        "employeeEmail": "u17021775@tuks.co.za",
-                        "companyName": "Vast Expanse",
-                        "website": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications"
+            expect(data.body).toEqual({
+                "success": true,
+                "message": "Successfully retrieved employee details - Mock",
+                "data": {
+                    "building" : {
+                        "buildingId": 0,
+                        "latitude": "10",
+                        "longitude": "11",
+                        "branchName": "Mock Building"
+                    },
+                    "rooms": [
+                        {
+                            "roomId": 0,
+                            "roomName": "Mock Room",
+                            "parentRoomList": ""
+                        },
+                        {
+                            "roomId": 1,
+                            "roomName": "Mock Room 2",
+                            "parentRoomList": "0"
+                        }
+                    ],
+                    "wifi": {
+                        "wifiAccessParamsId": 0,
+                        "ssid": "Mock Wifi",
+                        "networkType": "WPA",
+                        "password": "MockPass"
                     }
-                });
+                }
             });
+        });
     });
 
-    describe("POST " + endpoint + "/app/getBusinessCard", function () {
+    describe("POST " + endpoint + "/app/addVisitorPackage", function () {
+        let data = {};
+        beforeAll(function (done) {
+            var jsonDataObj = {
+                demoMode: true,
+                apiKey: "12lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^"
+            };
+            Request.post({
+                url: endpoint + "/app/addVisitorPackage",
+                body: jsonDataObj,
+                json: true
+            }, function (error, response, body) {
+                data.status = response.statusCode;
+                data.contentType = response.headers['content-type'];
+                data.body = response.body;
+                done();
+            });
+        });
+
+        it('should return with statusCode 200', function () {
+            expect(data.status).toEqual(200);
+        });
+
+        it('should set content type = application/json', function () {
+            expect(data.contentType).toEqual('application/json');
+        });
+
+        it('should return a json object = \n\t{\n\t' +
+            '    "success": false,\n\t' +
+            '    "message": "Missing Parameters: employeeId, startTime, endTime, macAddress, wifiAccessParamsId, roomId, limit, spent",\n\t' +
+            '    "data": {}\n\t' +
+            '}', function () {
+            expect(data.body).toEqual({
+                "success": false,
+                "message": "Missing Parameters: employeeId, startTime, endTime, macAddress, wifiAccessParamsId, roomId, limit, spent",
+                "data": {}
+            });
+        });
+    });
+
+    describe("POST " + endpoint + "/app/addVisitorPackage", function () {
         let data = {};
         beforeAll(function (done) {
             var jsonDataObj = {
                 demoMode: true,
                 apiKey: "12lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
-                employeeId: 1
-            }; // fill in data to send to endpoint
+                employeeId: 0,
+                startTime: "2019-07-02 10:26:54.123",
+                endTime: "2019-07-03 10:26:54.123",
+                macAddress: "c4:86:e9:04:00:02",
+                wifiAccessParamsId: 0,
+                roomId: 0,
+                limit: 100,
+                spent: 0
+            };
             Request.post({
-                url: endpoint + "/app/getBusinessCard",
+                url: endpoint + "/app/addVisitorPackage",
                 body: jsonDataObj,
                 json: true
             }, function (error, response, body) {
@@ -243,33 +387,111 @@ describe('Server.js Unit Testing', function () {
 
         it('should return a json object = \n\t{\n\t' +
             '    "success": true,\n\t' +
-            '    "message": "Business card information loaded successfully - Mock",\n\t' +
+            '    "message": "Visitor Package created - MOCK",\n\t' +
             '    "data": {\n\t' +
-            '        "employeeTitle": "Mr",\n\t' +
-            '        "employeeName": "Tjaart",\n\t' +
-            '        "employeeSurname": "Booyens",\n\t' +
-            '        "employeeCellphone": "0791807734",\n\t' +
-            '        "employeeEmail": "u17021775@tuks.co.za",\n\t' +
-            '        "companyName": "Vast Expanse",\n\t' +
-            '        "website": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications"\n\t' +
+            '       "visitorPackageId": 0\n\t' +
             '    }\n\t' +
             '}', function () {
-                expect(data.body).toEqual({
-                    "success": true,
-                    "message": "Business card information loaded successfully - Mock",
-                    "data": {
-                        "employeeTitle": "Mr",
-                        "employeeName": "Tjaart",
-                        "employeeSurname": "Booyens",
-                        "employeeCellphone": "0791807734",
-                        "employeeEmail": "u17021775@tuks.co.za",
-                        "companyName": "Vast Expanse",
-                        "website": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications"
-                    }
-                });
+            expect(data.body).toEqual({
+                "success": true,
+                "message": "Visitor Package created - MOCK",
+                "data": {
+                    "visitorPackageId": 0
+                }
             });
+        });
     });
-	*/
+
+    describe("POST " + endpoint + "/app/editVisitorPackage", function () {
+        let data = {};
+        beforeAll(function (done) {
+            var jsonDataObj = {
+                demoMode: true,
+                apiKey: "12lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^"
+            };
+            Request.post({
+                url: endpoint + "/app/editVisitorPackage",
+                body: jsonDataObj,
+                json: true
+            }, function (error, response, body) {
+                data.status = response.statusCode;
+                data.contentType = response.headers['content-type'];
+                data.body = response.body;
+                done();
+            });
+        });
+
+        it('should return with statusCode 200', function () {
+            expect(data.status).toEqual(200);
+        });
+
+        it('should set content type = application/json', function () {
+            expect(data.contentType).toEqual('application/json');
+        });
+
+        it('should return a json object = \n\t{\n\t' +
+            '    "success": false,\n\t' +
+            '    "message": "Missing Parameters: visitorPackageId, employeeId, startTime, endTime, wifiAccessParamsId, roomId, limit",\n\t' +
+            '    "data": {}\n\t' +
+            '}', function () {
+            expect(data.body).toEqual({
+                "success": false,
+                "message": "Missing Parameters: visitorPackageId, employeeId, startTime, endTime, wifiAccessParamsId, roomId, limit",
+                "data": {}
+            });
+        });
+    });
+
+    describe("POST " + endpoint + "/app/editVisitorPackage", function () {
+        let data = {};
+        beforeAll(function (done) {
+            var jsonDataObj = {
+                demoMode: true,
+                apiKey: "12lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
+                visitorPackageId: 0,
+                employeeId: 0,
+                startTime: "2019-07-02 10:26:54.123",
+                endTime: "2019-07-03 10:26:54.123",
+                wifiAccessParamsId: 0,
+                roomId: 0,
+                limit: 100
+            };
+            Request.post({
+                url: endpoint + "/app/editVisitorPackage",
+                body: jsonDataObj,
+                json: true
+            }, function (error, response, body) {
+                data.status = response.statusCode;
+                data.contentType = response.headers['content-type'];
+                data.body = response.body;
+                done();
+            });
+        });
+
+        it('should return with statusCode 200', function () {
+            expect(data.status).toEqual(200);
+        });
+
+        it('should set content type = application/json', function () {
+            expect(data.contentType).toEqual('application/json');
+        });
+
+        it('should return a json object = \n\t{\n\t' +
+            '    "success": true,\n\t' +
+            '    "message": "Edited Visitor Package - MOCK",\n\t' +
+            '    "data": {\n\t' +
+            '       "visitorPackageId": 0\n\t' +
+            '    }\n\t' +
+            '}', function () {
+            expect(data.body).toEqual({
+                "success": true,
+                "message": "Edited Visitor Package - MOCK",
+                "data": {
+                    "visitorPackageId": 0
+                }
+            });
+        });
+    });
 
     //Duncan
     describe("POST " + endpoint + "/admin/addCompany", function () {

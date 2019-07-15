@@ -1093,7 +1093,7 @@ describe('Server.js Unit Testing', function () {
             });
     });
 
-/*
+
     describe("POST " + endpoint + "/admin/getEmployeesByCompanyId", function () {
         let data = new Object();
         beforeAll(function (done) {
@@ -1360,7 +1360,7 @@ describe('Server.js Unit Testing', function () {
                     ]
                 });
             });
-    });*/
+    });
 
     describe("POST " + endpoint + "/admin/addBuilding", function () {
         let data = new Object();

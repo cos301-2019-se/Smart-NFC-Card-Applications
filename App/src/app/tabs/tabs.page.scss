@@ -1,1 +1,30 @@
+ion-toolbar {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+}
 
+ion-tab-bar {
+    background-color: var(--ion-color-primary);
+    height: 3em;
+    border: none;
+    box-shadow: 0 -3px 3px -3px rgba(0, 0, 0, 0.14);
+}
+
+ion-title {
+    color: var(--ion-color-primary-contrast);
+}
+
+ion-tab-button {
+    font-size: 1em;
+    background-color: transparent;
+    color: var(--ion-color-primary-light);
+}
+
+.active-tab {
+    color: var(--ion-color-primary-contrast);
+    border-top: 0.1em solid var(--ion-color-primary-contrast);
+}
+
+.messageArea {
+    --background: var(--ion-color-primary-contrast);
+}

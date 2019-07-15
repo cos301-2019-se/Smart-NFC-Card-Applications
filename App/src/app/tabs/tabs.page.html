@@ -1,19 +1,41 @@
 <ion-tabs>
 
-  <ion-tab-bar slot="bottom">
-    <ion-tab-button tab="loginTab">
-      <ion-icon name="apps"></ion-icon>
-      <ion-label>Menu</ion-label>
-    </ion-tab-button>
+  <ion-toolbar slot="top">
+    <ion-title *ngIf='!showSearchBar'> Project Link Beta </ion-title>
+    <ion-searchbar #search *ngIf='showSearchBar' [(ngModel)]="searchFilter" (ionChange)="updateSearch()" (ionCancel)="toggleSearchBar()" showCancelButton="always"></ion-searchbar>
+    <ion-buttons slot='primary'>
+        <ion-button (click)='openMenu($event)'>
+          <ion-icon slot="icon-only" name="menu"></ion-icon>
+        </ion-button>
+    </ion-buttons>
+    <ion-buttons *ngIf='!showSearchBar' slot='secondary'>
+        <ion-button (click)='toggleSearchBar(); focusButton()'>
+          <ion-icon slot="icon-only" name="search"></ion-icon>
+        </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
 
-    <ion-tab-button tab="tab2">
-      <ion-icon name="share"></ion-icon>
+  <ion-toolbar *ngIf='infoMessage || successMessage || errorMessage' class="messageArea" slot="top">
+    <ion-item color='secondary' *ngIf='infoMessage !== null'> {{ infoMessage }} </ion-item>
+    <ion-item color='success' *ngIf='successMessage !== null'> {{ successMessage }} </ion-item>
+    <ion-item color='danger' *ngIf='errorMessage !== null'> {{ errorMessage }} </ion-item>
+  </ion-toolbar>
+
+  <ion-tab-bar slot="bottom">
+      <ion-tab-button tab="manage-tab" [class.active-tab]="(activeTab=='manage-tab')" (click)="setActive('manage-tab')">
+        <ion-label>Manage</ion-label>
+      </ion-tab-button>
+      
+    <ion-tab-button tab="share-tab" [class.active-tab]="(activeTab=='share-tab')" (click)="setActive('share-tab')">
       <ion-label>Share</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="tab3">
-      <ion-icon name="list"></ion-icon>
-      <ion-label>View</ion-label>
+    <ion-tab-button tab="card-tab" [class.active-tab]="(activeTab=='card-tab')" (click)="setActive('card-tab')">
+      <ion-label>Cards</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="package-tab" [class.active-tab]="(activeTab=='package-tab')" (click)="setActive('package-tab')">
+      <ion-label>Packages</ion-label>
     </ion-tab-button>
   </ion-tab-bar>
 

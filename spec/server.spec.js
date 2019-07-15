@@ -2505,7 +2505,7 @@ describe('Server.js Unit Testing', function () {
             });
     });
 
-	/*
+	
     //jared
     describe("POST " + endpoint + "/app/getBusinessCard", function () {
         let data = new Object();
@@ -2648,21 +2648,14 @@ describe('Server.js Unit Testing', function () {
             expect(data.status).toEqual(200);
         });
 
-        it('should set content type = application/json', function () {
-            expect(data.contentType).toEqual('application/json');
+        it('should set content type = text/html', function () {
+            expect(data.contentType).toEqual('text/html');
         });
 
-        it('should return a json object \n\t{\n\t' +
-            '    "success": false,\n\t' +
-            '    "message": "Invalid Endpoint",\n\t' +
-            '    "data": {}\n\t' +
+        it('should return undefined' +
             '}', function () {
                 expect(data.body).toEqual(
-                    {
-                        "success": false,
-                        "message": "Invalid Endpoint",
-                        "data": {}
-                    })
+                    undefined)
 
             });
     });
@@ -2687,21 +2680,14 @@ describe('Server.js Unit Testing', function () {
             expect(data.status).toEqual(200);
         });
 
-        it('should set content type = application/json', function () {
-            expect(data.contentType).toEqual('application/json');
+        it('should set content type = text/html', function () {
+            expect(data.contentType).toEqual('text/html');
         });
 
-        it('should return a json object \n\t{\n\t' +
-            '    "success": false,\n\t' +
-            '    "message": "Invalid Endpoint",\n\t' +
-            '    "data": {}\n\t' +
+        it('should return undefined' +
             '}', function () {
                 expect(data.body).toEqual(
-                    {
-                        "success": false,
-                        "message": "Invalid Endpoint",
-                        "data": {}
-                    })
+                    undefined)
 
             });
     });
@@ -2738,7 +2724,7 @@ describe('Server.js Unit Testing', function () {
                 expect(data.body).toEqual(
                     {
                         "success": false,
-                        "message": "Invalid Endpoint",
+                        "message": "Invalid Endpoint /wrong/getBusinessCard",
                         "data": {}
                     })
 
@@ -2924,7 +2910,7 @@ describe('Server.js Unit Testing', function () {
 
             });
     });
-	*/
+	
 
 	/*
     // Unit Tests for CrudController

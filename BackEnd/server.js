@@ -66,20 +66,19 @@ function run(callback) {
 				break;
 
 			case "/":
-				console.log(req.url);
 				res.statusCode = 200;
 				res.setHeader('Content-Type', 'text/html');
 				
 				if(req.url == "/")
 				{
-					fs.readFile("./../AdminInterface/login.html", (err,fileContent) =>
+					fs.readFile("./AdminInterface/login.html", (err,fileContent) =>
 					{
 						res.end(fileContent);
 					});
 				}
 				else
 				{
-					fs.readFile("./../AdminInterface" + req.url, (err,fileContent) =>
+					fs.readFile("./AdminInterface" + req.url, (err,fileContent) =>
 					{
 						res.end(fileContent);
 					});
@@ -90,7 +89,7 @@ function run(callback) {
 				//console.log(req.url);
 				res.statusCode = 200;
 				res.setHeader('Content-Type', 'text/css');
-				fs.readFile("./../AdminInterface"+req.url, (err,fileContent) =>
+				fs.readFile("./AdminInterface"+req.url, (err,fileContent) =>
 				{
 					res.end(fileContent);
 				});
@@ -100,7 +99,7 @@ function run(callback) {
 				//console.log(req.url);
 				res.statusCode = 200;
 				res.setHeader('Content-Type', 'text/javascript');
-				fs.readFile("./../AdminInterface"+req.url, (err,fileContent) =>
+				fs.readFile("./AdminInterface"+req.url, (err,fileContent) =>
 				{
 					res.end(fileContent);
 				});
@@ -115,7 +114,7 @@ function run(callback) {
 				else if(req.url.match("png")){
 					res.setHeader('Content-Type', 'image/png');
 				}
-				fs.readFile("./../AdminInterface"+req.url, (err,fileContent) =>
+				fs.readFile("./AdminInterface"+req.url, (err,fileContent) =>
 				{
 					res.end(fileContent);
 				});

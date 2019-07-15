@@ -2146,7 +2146,8 @@ class AdminLogic
                         email:"duncan@gmail.com",
                         companyId:this.body.companyId,
                         buildingId:0,
-                        passwordId:0
+                        passwordId:0,
+                        username:"dunc1"
                     });
                     data.push({
                         employeeId : 1,
@@ -2157,7 +2158,8 @@ class AdminLogic
                         email : "piet.pompies@gmail.com",
                         companyId : this.body.companyId,
                         buildingId : 0,
-                        passwordId : 0
+                        passwordId : 0,
+                        username:"dunc2"
                     });
                     this.sharedLogic.endServe(success, message, data);
                 }
@@ -2255,7 +2257,7 @@ class AdminLogic
                             companyId: 0,
                             buildingId: this.body.buildingId,
                             passwordId: 0,
-                            username:"dunc12"
+                            username:"dunc1"
                     });
                     data.push({
                         employeeId : 1,
@@ -2267,7 +2269,7 @@ class AdminLogic
                         companyId : 0,
                         buildingId : this.body.buildingId,
                         passwordId : 1,
-                        username:"dunc12"
+                        username:"dunc2"
                     });
                     this.sharedLogic.endServe(success, message, data);
                 }

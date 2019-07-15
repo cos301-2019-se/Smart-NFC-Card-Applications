@@ -165,7 +165,7 @@ function addBuilding()
 	var lat = $("#lat").val();
 	var longi = $("#longi").val();
 	var wifiSSID = $("#wifiSSID").val().trim();
-	var wifiType = $("#wifiType").val().trim();
+	var wifiType = $("#wifiType option:selected").val().trim();
 	var wifiPassword = $("#wifiPassword").val().trim();
 	var id = parseInt(localStorage.getItem("id"));
 	var api = localStorage.getItem("apiKey");
@@ -239,7 +239,7 @@ function editBuilding(buildingId)
 			$("#latE").val(data.latitude);
 			$("#longiE").val(data.longitude);
 			$("#wifiSSIDE").val(data.networkSsid);
-			$("#wifiTypeE").val(data.networkType);
+			$('#wifiTypeE option[value=' + data.networkType + ']').attr('selected','selected');
 			$("#wifiPasswordE").val(data.networkPassword);
 	
 			localStorage.setItem("currentBuildingEdit", data.buildingId);
@@ -271,7 +271,7 @@ function saveBuildingChanges()
 	var lat = $("#latE").val();
 	var longi = $("#longiE").val();
 	var wifiSSID = $("#wifiSSIDE").val().trim();
-	var wifiType = $("#wifiTypeE").val().trim();
+	var wifiType = $("#wifiTypeE option:selected").val().trim();
 	var wifiPassword = $("#wifiPasswordE").val().trim();
 	
 	

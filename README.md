@@ -27,9 +27,3 @@ Link also allows for an employee of a company to easily setup hosting for this v
 <a href="https://app.zenhub.com/workspaces/vastexpanseworkspace-5cc2c99dba27a75ea1e3f5d1/board?repos=182156651" target="_blank">Vast Expanse Project Management tool (Accessed via ZenHub) ![ZenHub](https://i.imgur.com/Qqg8JhO.png)</a>
 
 ---
-## About Vast Expanse
-
-For more information on the members of our team, please follow the link below:
-<a href="https://drive.google.com/file/d/1-tDnIjJepypZB_R3h-_ZB-ahTeXIOJ-D/view?usp=sharing" target="_blank">About Vast Expanse</a>
-
----

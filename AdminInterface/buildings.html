@@ -18,9 +18,11 @@
                     window.location.replace("login.html");
                 } else {
 				
-					loadBuildings(function()
-					{
-						$("body").fadeIn(500);
+					$(window).on('load', function(){
+						loadBuildings(function()
+						{
+							$("body").fadeIn(500);
+						});
 					});
                 }
             });

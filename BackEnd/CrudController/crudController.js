@@ -2594,6 +2594,15 @@ class CrudController {
 	}
 
 	//Jared Helpers
+	/**
+	 * Helper function for the Inserts performed in the database. It creates the insert statement based on the tablename,
+	 * the id field of the table, and the values of the columns, and returns that query string.
+	 * @param tableName The name of the table to be inserted into
+	 * @param tableIdName The name of the id field of that table
+	 * @param columns An array containing all column names of that table except id
+	 * @param values An array containing all values to be inserted into the parallel column in columns
+	 * @return string The query string
+	 */
 	constructInsert(tableName, tableIdName, columns, values) {
 		var query = "INSERT INTO " + tableName + "(";
 		var columnsString = columns.join(',');
@@ -2614,6 +2623,14 @@ class CrudController {
 		return query;
 	}
 
+	/**
+	 * Helper function for the Inserts performed in the database. It takes in 2 values and 2 lists,
+	 * and inserts the first value into the first list, and the second value into the second list
+	 * @param val1 The value to be inserted into list1
+	 * @param val2 The value to be inserted into list2
+	 * @param list1 An array that val1 will be inserted in, at the end
+	 * @param list2 An array that val2 will be inserted in, at the end
+	 */
 	bigAppend(val1, val2, list1, list2) {
 		list1.push(val1);
 		list2.push(val2);

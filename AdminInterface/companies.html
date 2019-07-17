@@ -17,10 +17,13 @@
                     //if the api key is invalid, go to login page
                     window.location.replace("login.html");
                 } else {
-                    loadCompanies(function()
-                    {
-                        $("body").fadeIn(500);
-                    });
+				
+					$(window).on('load', function(){
+						loadCompanies(function()
+						{
+							$("body").fadeIn(500);
+						});
+					});
                 }
             });
         } else {

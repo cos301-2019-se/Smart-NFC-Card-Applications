@@ -96,9 +96,16 @@ export class LoggedInService {
             let apiKey = res['data']['apiKey'];
             this.storage.Save(this.apiKeyName, apiKey)
             .then(() => {
-              this.refreshAccountDetails();
-              subject.next({success: true, message: res['message']});
-              subject.complete();
+              this.refreshAccountDetails().subscribe(response => {
+                if (response['success'] === true) {
+                  subject.next({success: true, message: res['message']});
+                  subject.complete();
+                }
+                else {
+                  subject.next({success: true, message: `${res['message']}, but could not load details: ${response['message']}`});
+                  subject.complete();
+                }
+              });
             });
           }
           else {

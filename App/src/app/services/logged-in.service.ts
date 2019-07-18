@@ -71,6 +71,9 @@ export class LoggedInService {
   private setLoggedIn(isLoggedIn: boolean, employeeId: number = null){
     this.loggedIn = isLoggedIn;
     this.account.employeeId = employeeId;
+    if (isLoggedIn !== true) {
+      this.storage.Remove(this.apiKeyName);
+    }
   }
 
   /**
@@ -94,11 +97,19 @@ export class LoggedInService {
             this.account.employeeId = res['data']['id'];
             this.setLoggedIn(true, this.account.employeeId);
             let apiKey = res['data']['apiKey'];
+            this.req.setApiKey(apiKey);
             this.storage.Save(this.apiKeyName, apiKey)
             .then(() => {
-              this.refreshAccountDetails();
-              subject.next({success: true, message: res['message']});
-              subject.complete();
+              this.refreshAccountDetails().subscribe(response => {
+                if (response['success'] === true) {
+                  subject.next({success: true, message: res['message']});
+                  subject.complete();
+                }
+                else {
+                  subject.next({success: true, message: `${res['message']}, but could not load details: ${response['message']}`});
+                  subject.complete();
+                }
+              });
             });
           }
           else {
@@ -121,25 +132,39 @@ export class LoggedInService {
   refreshAccountDetails(){
     let subject = new Subject<Object>();
     this.req.getEmployeeDetails(this.account.employeeId).subscribe(response => {
-      let accountDetails = response['data'];
-      let buildingDetails = accountDetails['building'];
-      if (buildingDetails != undefined) {
-        this.account.building = new LocationModel(buildingDetails['latitude'], buildingDetails['longitude'], buildingDetails['branchName']); 
+      if (response['success'] === true) {
+        let accountDetails = response['data'];
+        let buildingDetails = accountDetails['building'];
+        if (buildingDetails != undefined) {
+          this.account.building = new LocationModel(buildingDetails['latitude'], buildingDetails['longitude'], buildingDetails['branchName']); 
+        }
+        let roomDetail = accountDetails['rooms'];
+        this.account.rooms = [];
+        if (this.account.rooms != undefined) {
+          roomDetail.forEach(room => {
+            this.account.rooms.push(new RoomModel(room['roomId'], room['roomName']));
+          });
+        }
+        let wifiDetails = accountDetails['wifi'];
+        this.account.wifi = new WifiDetailsModel(wifiDetails['wifiParamsId'], wifiDetails['ssid'], wifiDetails['networkType'], wifiDetails['password']);
+        this.req.getBusinessCard(this.account.employeeId).subscribe(response => {
+          if (response['success'] === true) {
+            let cardDetails = response['data'];
+            this.account.company = cardDetails['companyName'];
+            this.cardService.setOwnBusinessCard(cardDetails);
+            subject.next({success: true, message: 'Successfull refreshed account details.'});
+            subject.complete();
+          }
+          else {
+            subject.next({success: false, message: response['message']});
+            subject.complete();
+          }
+        });
       }
-      let roomDetail = accountDetails['rooms'];
-      this.account.rooms = [];
-      roomDetail.forEach(room => {
-        this.account.rooms.push(new RoomModel(room['roomId'], room['roomName']));
-      });
-      let wifiDetails = accountDetails['wifi'];
-      this.account.wifi = new WifiDetailsModel(wifiDetails['wifiParamsId'], wifiDetails['ssid'], wifiDetails['networkType'], wifiDetails['password']);
-      this.req.getBusinessCard(this.account.employeeId).subscribe(response => {
-        let cardDetails = response['data'];
-        this.account.company = cardDetails['companyName'];
-        this.cardService.setOwnBusinessCard(cardDetails);
-      });
-      subject.next({success: true, message: 'Successfull refreshed account details.'});
-      subject.complete();
+      else {
+        subject.next({success: false, message: response['message']});
+        subject.complete();
+      }
     }, err => {
       subject.next({success: false, message: 'Error refreshing account details.'});
       subject.complete();
@@ -157,6 +182,7 @@ export class LoggedInService {
       this.req.logout().subscribe(res => {
         if (res['success'] === true) {
           this.setLoggedIn(false);
+          this.req.setApiKey('');
           this.account = new AccountModel();
           subject.next({success: true, message: res['message']});
           subject.complete();

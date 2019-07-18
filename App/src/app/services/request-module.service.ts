@@ -107,13 +107,7 @@ export class RequestModuleService {
   constructor(
     private storage: LocalStorageService,
     private http: HttpClient
-  ) { 
-    this.storage.Load(this.apiKeyName)
-    .then((key) => {
-      this.apiKey = key;
-    })
-    .catch();   
-  }
+  ) { }
 
   /**
    * Makes a get request using http
@@ -144,10 +138,7 @@ export class RequestModuleService {
       json = JSON.parse('{}');
     }
     if (this.apiKey == null || this.apiKey == '') {
-      this.storage.Load(this.apiKeyName)
-      .then((key) => {
-        this.apiKey = key;
-      })
+      return json;
     }
     json[this.apiKeyName] = this.apiKey;
     return json;
@@ -179,8 +170,6 @@ export class RequestModuleService {
    * @return Observable<Object> response containing json from back-end server
    */
   logout() {
-    this.storage.Save(this.apiKeyName, '');
-    this.apiKey = '';
     //if(this.demoMode) {
       return new Observable<Object>(observer => {
         observer.next(this.logoutStub);
@@ -320,5 +309,13 @@ export class RequestModuleService {
       let json: JSON = JSON.parse(`{"employeeId": ${employeeId}}`);
       return this.post(`${this.baseUrl}/app/getEmployeeDetails`, json);
     }
+  }
+
+  /**
+   * Function that sets the api for the module to use
+   * @param apiKey string api key
+   */
+  setApiKey(apiKey: string){
+    this.apiKey = apiKey;
   }
 }

@@ -71,6 +71,9 @@ export class LoggedInService {
   private setLoggedIn(isLoggedIn: boolean, employeeId: number = null){
     this.loggedIn = isLoggedIn;
     this.account.employeeId = employeeId;
+    if (isLoggedIn !== true) {
+      this.storage.Remove(this.apiKeyName);
+    }
   }
 
   /**
@@ -94,6 +97,7 @@ export class LoggedInService {
             this.account.employeeId = res['data']['id'];
             this.setLoggedIn(true, this.account.employeeId);
             let apiKey = res['data']['apiKey'];
+            this.req.setApiKey(apiKey);
             this.storage.Save(this.apiKeyName, apiKey)
             .then(() => {
               this.refreshAccountDetails().subscribe(response => {
@@ -178,6 +182,7 @@ export class LoggedInService {
       this.req.logout().subscribe(res => {
         if (res['success'] === true) {
           this.setLoggedIn(false);
+          this.req.setApiKey('');
           this.account = new AccountModel();
           subject.next({success: true, message: res['message']});
           subject.complete();

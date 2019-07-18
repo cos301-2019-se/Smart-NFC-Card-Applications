@@ -4,7 +4,8 @@ var buildingData; //array of buidlings corresponding to the company object
 var apiKey;
 var companyId;
 var tableBody;
-//TODO -> change password
+var checkEditPassFields = false;
+
 $(document).ready(function () {
     companyId = localStorage.getItem("id");
     apiKey = localStorage.getItem("apiKey");
@@ -76,43 +77,91 @@ function populateTable() {
             fields.push($(this).html());
         });
         submissionObject = { employeeId: fields[0] };
-        $("#successContainer").empty();
-        $("#btnSubmit").attr("disabled", false);
+        setupEditModal();
         addValuesToModal(fields);
         $('#editEmployeeModal').modal('show');
     });
 }
 
+function setupEditModal() {
+    $("#successContainer").empty();
+    $('#editPasswordContainer').empty();
+    $("#btnSubmit").attr("disabled", false);
+    $('#btnExpandEditPassword').show();
+    $('#editEmployeePasswordWarning').hide();
+    checkEditPassFields = false;
+}
+
 function submitEditEmployee() {
     $("#editEmployeeWarning").hide();
+    $("#editEmployeePasswordWarning").hide();
     retrieveValuesFromModal();
     if (submissionObject.employeeName.length === 0 || submissionObject.employeeSurname.length === 0 || submissionObject.username.length === 0 || submissionObject.employeeTitle.length === 0 || submissionObject.employeeCellphone === 0 || submissionObject.employeeEmail.length === 0) {
         $("#editEmployeeWarning").show();
     } else {
-        console.log(submissionObject);
-        submissionObject.apiKey = apiKey;
-        $.post("/admin/editEmployee", JSON.stringify(submissionObject), (data) => {
-            if (data.success) {
-                console.log("successfully modified employee");
-                $("#successContainer").empty().append(`
+        var passwordPromise = null;
+        if (checkEditPassFields) {
+            var password = $('#editModalPass').val().trim();
+            var confirmPassword = $('#editModalPassConfirm').val().trim();
+            if (password === confirmPassword) {
+                var passwordObject = {
+                    "employeeId": submissionObject.employeeId,
+                    "apiKey": apiKey,
+                    "password": password
+                }
+
+                passwordPromise = new Promise((resolve, reject) => {
+                    $.post("/admin/editEmployeePassword", JSON.stringify(passwordObject), (data) => {
+                        if (data.success) {
+                            console.log("successfully modified employee's password");
+                            resolve();
+                        } else {
+                            console.log("failed to modify employee" + data.message);
+                            reject();
+                        }
+                    });
+                })
+            } else {
+                $("#editEmployeePasswordWarning").html(`<strong>Error!</strong> Passwords do not match.`).show();
+                return; // do not continue with the posts
+            }
+
+        }
+        if (passwordPromise) {
+            passwordPromise.then(() => {
+                postEmployeeSubmission();
+            }).catch(() => {
+                $("#editEmployeePasswordWarning").html(`<strong>Error!</strong> Failed to update password.`).show();
+            })
+        } else {
+            postEmployeeSubmission();
+        }
+    }
+
+}
+
+function postEmployeeSubmission() {
+    console.log(submissionObject);
+    submissionObject.apiKey = apiKey;
+    $.post("/admin/editEmployee", JSON.stringify(submissionObject), (data) => {
+        if (data.success) {
+            console.log("successfully modified employee");
+            $("#successContainer").empty().append(`
             <div class="alert alert-success hide" role="alert">
             <h4 class="alert-heading">Operation Successful!</h4>
             Employee modified successfully.`);
 
-                /*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
-                order to view the updated information in the table.
-                </div>
-                `);*/
-                $("#btnSubmit").attr("disabled", true);
-                //$('#editEmployeeModal').modal('hide');
-                fetchDataAndPopulateTable();
-            } else {
-                console.log(data.message);
-                console.log("failed to modify employee");
-            }
-        });
-    }
-
+            /*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
+            order to view the updated information in the table.
+            </div>
+            `);*/
+            $("#btnSubmit").attr("disabled", true);
+            //$('#editEmployeeModal').modal('hide');
+            fetchDataAndPopulateTable();
+        } else {
+            console.log("failed to modify employee" + data.message);
+        }
+    });
 }
 
 function retrieveValuesFromModal() {
@@ -124,11 +173,9 @@ function retrieveValuesFromModal() {
     submissionObject.employeeCellphone = $('#editCellphone').val().trim();
     submissionObject.employeeEmail = $('#editEmail').val().trim();
     submissionObject.buildingId = $('#buildingSelect').val().trim();
-
 }
 
 function addValuesToModal(fields) {
-
     //populate modal
     $('#editFirstName').val(fields[1]);
     $('#editSurname').val(fields[2]);
@@ -185,7 +232,6 @@ function clearAddEmployeeModal() {
     $("#addPasswordConfirm").val("");
 }
 
-
 function addEmployee() {
     var newEmployeeObj = {};
     if (retrieveValuesFromAddEmployee(newEmployeeObj)) {
@@ -214,7 +260,6 @@ function addEmployee() {
     } else {
         console.log("Fix your inputs!")
     }
-
 }
 
 function retrieveValuesFromAddEmployee(newEmployeeObj) {
@@ -245,7 +290,6 @@ function retrieveValuesFromAddEmployee(newEmployeeObj) {
     return true;
 }
 
-
 function isEmpty(field) {
     if (field.length === 0) {
         return true;
@@ -254,10 +298,24 @@ function isEmpty(field) {
     }
 }
 
-
-
-
-
+function expandEditPassword() {
+    $('#editPasswordContainer').empty().append(`
+     <div class="input-group mb-3">
+           <div class="input-group-prepend">
+               <span class="input-group-text font-weight-bold">New Password</span>
+          </div>
+           <input type="password" class="form-control" id="editModalPass" placeholder="e.g Pass" required>
+     </div>
+     <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                 <span class="input-group-text font-weight-bold">Confirm Password</span>
+             </div>
+             <input type="password" class="form-control" id="editModalPassConfirm" placeholder="e.g Pass" required>
+     </div>
+    `);
+    $('#btnExpandEditPassword').hide();
+    checkEditPassFields = true;
+}
 
 
 function fetchEmployeeData(resolve, reject) {
@@ -270,8 +328,6 @@ function fetchEmployeeData(resolve, reject) {
         }
     });
 }
-
-
 
 function fetchBuildingData(resolve, reject) {
     buildingData = {};
@@ -306,10 +362,11 @@ function fetchCompanyName(resolve, reject) {
 }
 
 function displayError(message) {
-    alert(message); // change to bootstrap pretty
+    console.log("AWE")
+    $('#mainErrorAlert').html(` 
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <strong>Error!</strong> ${message}`).show();
 }
-
-
 
 function logout() {
     localStorage.clear();

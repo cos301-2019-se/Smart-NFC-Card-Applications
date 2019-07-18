@@ -2410,8 +2410,8 @@ class AdminLogic
     /**
      * This Function will be used to change the password
      *
-     * @params employeeId string The Api key of the user
-     * @params password The old password of the user
+     * @params employeeId int The ID key of the employee
+     * @params password string The password of the user
      */
     async editEmployeePassword(){
         var message;
@@ -2489,8 +2489,8 @@ class AdminLogic
     /**
      * This Function will be used to change the password
      *
-     * @params companyId string The Api key of the user
-     * @params password The old password of the user
+     * @params companyId int The Id  key of the company
+     * @params password string The password of the user
      */
     async editCompanyPassword(){
         var message;

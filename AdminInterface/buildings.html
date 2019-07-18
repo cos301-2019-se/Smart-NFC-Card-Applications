@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Buildings</title>
+	<link rel="icon" href="Image/favicon.ico">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="Js/buildings.js"></script>
@@ -17,10 +18,12 @@
                     window.location.replace("login.html");
                 } else {
 				
-					loadBuildings(function()
-					{
-						$("body").fadeIn(500);
-					});
+					//$(window).on('load', function(){
+						loadBuildings(function()
+						{
+							$("body").fadeIn(500);
+						});
+					//});
                 }
             });
         } else {
@@ -55,7 +58,7 @@
 				<a class="nav-link" href="company.html">Profile</a>
 			</li>
 			<li class="nav-item">
-				<a class="nav-link" onclick="logout();">Logout</a>
+				<a class="nav-link" href ="" onclick="logout();">Logout</a>
 			</li>
 		</ul>
 	</nav>
@@ -103,34 +106,34 @@
 			<form class="was-validated">
 			  <div class="input-group mb-3">
 				<div class="input-group-prepend">
-				  <span class="input-group-text">Building Name</span>
+				  <span class="input-group-text font-weight-bold">Building Name</span>
 				</div>
 				<input type="text" class="form-control" id="buildingName" placeholder="e.g Head Office" required>
 			  </div>
 				<div class="input-group mb-3">
 					<div class="input-group-prepend">
-						<span class="input-group-text">Address</span>
+						<span class="input-group-text font-weight-bold" onclick=" $('#addLat').toggleClass('collapse'); $('#addLong').toggleClass('collapse');">Address</span>
 					</div>
 					<input type="text" class="form-control" id="addAddress" placeholder="e.g 123 example street" required>
 				</div>
 				<div class="input-group mb-3" style="align-content: center;">
 					<div id="addMap" style="width: 30em; height: 12em;"></div>
 				</div>
-			  <div class="input-group mb-3 collapse">
+			  <div class="input-group mb-3 collapse" id="addLat">
 				<div class="input-group-prepend">
-				  <span class="input-group-text">Latitude</span>
+				  <span class="input-group-text font-weight-bold">Latitude</span>
 				</div>
 				<input type="text" class="form-control" id="lat">
 			  </div>
-			  <div class="input-group mb-3 collapse">
+			  <div class="input-group mb-3 collapse" id="addLong">
 				<div class="input-group-prepend">
-				  <span class="input-group-text">Longitude</span>
+				  <span class="input-group-text font-weight-bold">Longitude</span>
 				</div>
 				<input type="text" class="form-control" id="longi">
 			  </div>
 			  <div class="input-group mb-3">
 				<div class="input-group-prepend">
-				  <span class="input-group-text">Wifi SSID</span>
+				  <span class="input-group-text font-weight-bold">Wifi SSID</span>
 				</div>
 				<input type="text" class="form-control" id="wifiSSID" placeholder="e.g Network Name" required>
 			  </div>
@@ -146,7 +149,7 @@
 			  </div>
 			  <div class="input-group mb-3">
 				<div class="input-group-prepend">
-				  <span class="input-group-text">Wifi Password</span>
+				  <span class="input-group-text font-weight-bold">Wifi Password</span>
 				</div>
 				<input type="text" class="form-control" id="wifiPassword" placeholder="e.g Network Pass" required>
 			  </div>
@@ -178,34 +181,34 @@
 			<form class="was-validated">
 			  <div class="input-group mb-3">
 				<div class="input-group-prepend">
-				  <span class="input-group-text">Building Name</span>
+				  <span class="input-group-text font-weight-bold">Building Name</span>
 				</div>
 				<input type="text" class="form-control" id="buildingNameE" required>
 			  </div>
 				<div class="input-group mb-3">
 					<div class="input-group-prepend">
-						<span class="input-group-text">Address</span>
+						<span class="input-group-text font-weight-bold" onclick ="$('#editLat').toggleClass('collapse'); $('#editLong').toggleClass('collapse');">Address</span>
 					</div>
 					<input type="text" class="form-control" id="editAddress" placeholder="Enter an address" required>
 				</div>
 				<div class="input-group mb-3" style="align-content: center;">
 					<div id="editMap" style="width: 30em; height: 12em;"></div>
 				</div>
-			  <div class="input-group mb-3 collapse">
+			  <div class="input-group mb-3 collapse" id="editLat">
 				<div class="input-group-prepend">
-				  <span class="input-group-text">Latitude</span>
+				  <span class="input-group-text font-weight-bold">Latitude</span>
 				</div>
 				<input type="text" class="form-control" id="latE">
 			  </div>
-			  <div class="input-group mb-3 collapse">
+			  <div class="input-group mb-3 collapse" id="editLong">
 				<div class="input-group-prepend">
-				  <span class="input-group-text">Longitude</span>
+				  <span class="input-group-text font-weight-bold">Longitude</span>
 				</div>
 				<input type="text" class="form-control" id="longiE">
 			  </div>
 			  <div class="input-group mb-3">
 				<div class="input-group-prepend">
-				  <span class="input-group-text">Wifi SSID</span>
+				  <span class="input-group-text font-weight-bold">Wifi SSID</span>
 				</div>
 				<input type="text" class="form-control" id="wifiSSIDE" required>
 			  </div>
@@ -221,7 +224,7 @@
 			  </div>
 			  <div class="input-group mb-3">
 				<div class="input-group-prepend">
-				  <span class="input-group-text">Wifi Password</span>
+				  <span class="input-group-text font-weight-bold">Wifi Password</span>
 				</div>
 				<input type="text" class="form-control" id="wifiPasswordE" required>
 			  </div>

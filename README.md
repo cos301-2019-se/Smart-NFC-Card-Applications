@@ -15,7 +15,7 @@ Link also allows for an employee of a company to easily setup hosting for this v
 
 <a href="https://drive.google.com/open?id=1cynmSySu-TgLqwUTzn0U6HebI_pZgzVv" target="_blank">User Manual</a>
 
-<a href="https://drive.google.com/open?id=13P64HBHa9MJv6qiM7_P4_7hrZHRkSdoB" target="_blank">Coding Standards Document</a>
+<a href="https://drive.google.com/open?id=15CMhDhjeBmWDBoVyoZd4yAlq_t3G6gvv" target="_blank">Coding Standards Document</a>
 
 <a href="https://drive.google.com/open?id=18iK1KTraFavfCc_z3L1BY2YZvm40TvCf" target="_blank">Testing Policy</a>
 

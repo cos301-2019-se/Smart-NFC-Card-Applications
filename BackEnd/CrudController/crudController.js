@@ -123,7 +123,7 @@ class CrudController {
 			var viewRes = await this.client.query("CREATE VIEW " + this.mva["tpaxroom"] + " AS " + 
 			"(SELECT * FROM tpaxroom)", []);
 			
-			return "";
+			return "Pass";
 		}
 		else
 		{
@@ -131,6 +131,11 @@ class CrudController {
 			//console.log(apiKey);
 			
 			let passwordIdTemp = await this.getPasswordByApiKey(apiKey);
+			
+			if(passwordIdTemp.success === false)
+			{
+				return "Fail";
+			}
 			
 			this.myPasswordId = passwordIdTemp.data.passwordId;
 			
@@ -365,7 +370,7 @@ class CrudController {
 			
 			
 			
-			return "";
+			return "Pass";
 		}
 	}
 	
@@ -377,7 +382,7 @@ class CrudController {
 		}
 		catch(error)
 		{
-			console.log(error.message);
+			//console.log(error.message);
 		}
 		try
 		{
@@ -385,7 +390,7 @@ class CrudController {
 		}
 		catch(error)
 		{
-			console.log(error.message);
+			//console.log(error.message);
 		}
 		try
 		{
@@ -393,7 +398,7 @@ class CrudController {
 		}
 		catch(error)
 		{
-			console.log(error.message);
+			//console.log(error.message);
 		}
 		try
 		{
@@ -401,7 +406,7 @@ class CrudController {
 		}
 		catch(error)
 		{
-			console.log(error.message);
+			//console.log(error.message);
 		}
 		try
 		{
@@ -409,7 +414,7 @@ class CrudController {
 		}
 		catch(error)
 		{
-			console.log(error.message);
+			//console.log(error.message);
 		}
 		try
 		{
@@ -417,7 +422,7 @@ class CrudController {
 		}
 		catch(error)
 		{
-			console.log(error.message);
+			//console.log(error.message);
 		}
 		try
 		{
@@ -425,7 +430,7 @@ class CrudController {
 		}
 		catch(error)
 		{
-			console.log(error.message);
+			//console.log(error.message);
 		}
 		try
 		{
@@ -433,7 +438,7 @@ class CrudController {
 		}
 		catch(error)
 		{
-			console.log(error.message);
+			//console.log(error.message);
 		}
 		try
 		{
@@ -441,7 +446,7 @@ class CrudController {
 		}
 		catch(error)
 		{
-			console.log(error.message);
+			//console.log(error.message);
 		}
 		try
 		{
@@ -449,7 +454,7 @@ class CrudController {
 		}
 		catch(error)
 		{
-			console.log(error.message);
+			//console.log(error.message);
 		}
 		try
 		{
@@ -457,7 +462,7 @@ class CrudController {
 		}
 		catch(error)
 		{
-			console.log(error.message);
+			//console.log(error.message);
 		}
 		try
 		{
@@ -465,7 +470,7 @@ class CrudController {
 		}
 		catch(error)
 		{
-			console.log(error.message);
+			//console.log(error.message);
 		}
 		try
 		{
@@ -473,7 +478,7 @@ class CrudController {
 		}
 		catch(error)
 		{
-			console.log(error.message);
+			//console.log(error.message);
 		}
 		
 		return viewRes;

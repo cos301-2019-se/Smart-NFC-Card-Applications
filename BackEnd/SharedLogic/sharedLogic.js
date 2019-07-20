@@ -120,7 +120,20 @@ class SharedLogic {
 		else {
 			let viewRes = await this.crudController.initialize(this.from.body.apiKey);
 			//console.log(viewRes);
-			this.extractEndpoint();
+			
+			if(this.demoMode === true)
+			{
+				this.extractEndpoint();
+			}
+			else if(viewRes === "Fail" )
+			{
+				this.endServe(false, "Invalid API Key", null);
+			}
+			else
+			{
+				this.extractEndpoint();
+			}
+			
 		}
 	}
 

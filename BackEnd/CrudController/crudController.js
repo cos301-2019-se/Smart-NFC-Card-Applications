@@ -44,26 +44,440 @@ class CrudController {
 		this.demoMode = true;
 		this.apiKey = null;
 		this.isEmployee = true;
+		this.myPasswordId = null;
+		this.myViewRandom = null;
+		this.mva = [];
 
-		/*this.client = new Client({
+		this.client = new Client({
 		  user: 'postgres',
 		  host: 'localhost',
 		  database: 'link',
 		  password: 'nbuser',
 		  port: 5432,
-		});*/
-
-		this.client = new Client({
-			connectionString: process.env.DATABASE_URL
 		});
 
+		/*this.client = new Client({
+			connectionString: process.env.DATABASE_URL
+		});*/
+
 		this.client.connect();
+		
+		
 
 
 	}
 
-	initialize(apiKey) {
-		///////////////////////////////////////////////////////////// TODO
+	async initialize(apiKey) {
+		
+		if(apiKey === "")
+		{
+			this.myPasswordId = 0;
+		
+			this.myViewRandom = this.randomString(10);
+			
+			let tableNameArray = [
+			"building",
+			"client",
+			"company",
+			"employee",
+			"nfcaccesspoints",
+			"password",
+			"room",
+			"tempwifiaccess",
+			"tpa",
+			"tpaxroom",
+			"visitorpackage",
+			"wallet",
+			"wifiparams"
+			];
+			for(var i = 0; i < tableNameArray.length; i++)
+			{
+				let thisTable = tableNameArray[i];
+				this.mva[thisTable] = thisTable + "_" + this.myPasswordId + "_" + this.myViewRandom;
+			}
+			
+			var viewRes = await this.client.query("CREATE VIEW " + this.mva["company"] + " AS " + 
+			"(SELECT * FROM company)", []);
+			var viewRes = await this.client.query("CREATE VIEW " + this.mva["building"] + " AS " + 
+			"(SELECT * FROM building)", []);
+			var viewRes = await this.client.query("CREATE VIEW " + this.mva["employee"] + " AS " + 
+			"(SELECT * FROM employee)", []);
+			var viewRes = await this.client.query("CREATE VIEW " + this.mva["password"] + " AS " + 
+			"(SELECT * FROM password)", []);
+			var viewRes = await this.client.query("CREATE VIEW " + this.mva["client"] + " AS " + 
+			"(SELECT * FROM client)", []);
+			var viewRes = await this.client.query("CREATE VIEW " + this.mva["visitorpackage"] + " AS " + 
+			"(SELECT * FROM visitorpackage)", []);
+			var viewRes = await this.client.query("CREATE VIEW " + this.mva["wifiparams"] + " AS " + 
+			"(SELECT * FROM wifiparams)", []);
+			var viewRes = await this.client.query("CREATE VIEW " + this.mva["room"] + " AS " + 
+			"(SELECT * FROM room)", []);
+			var viewRes = await this.client.query("CREATE VIEW " + this.mva["nfcaccesspoints"] + " AS " + 
+			"(SELECT * FROM nfcaccesspoints)", []);
+			var viewRes = await this.client.query("CREATE VIEW " + this.mva["tempwifiaccess"] + " AS " + 
+			"(SELECT * FROM tempwifiaccess)", []);
+			var viewRes = await this.client.query("CREATE VIEW " + this.mva["tpa"] + " AS " + 
+			"(SELECT * FROM tpa)", []);
+			var viewRes = await this.client.query("CREATE VIEW " + this.mva["wallet"] + " AS " + 
+			"(SELECT * FROM wallet)", []);
+			var viewRes = await this.client.query("CREATE VIEW " + this.mva["tpaxroom"] + " AS " + 
+			"(SELECT * FROM tpaxroom)", []);
+			
+			return "";
+		}
+		else
+		{
+		
+			//console.log(apiKey);
+			
+			let passwordIdTemp = await this.getPasswordByApiKey(apiKey);
+			
+			this.myPasswordId = passwordIdTemp.data.passwordId;
+			
+			this.myViewRandom = this.randomString(10);
+			
+			let tableNameArray = [
+			"building",
+			"client",
+			"company",
+			"employee",
+			"nfcaccesspoints",
+			"password",
+			"room",
+			"tempwifiaccess",
+			"tpa",
+			"tpaxroom",
+			"visitorpackage",
+			"wallet",
+			"wifiparams"
+			];
+			for(var i = 0; i < tableNameArray.length; i++)
+			{
+				let thisTable = tableNameArray[i];
+				this.mva[thisTable] = thisTable + "_" + this.myPasswordId + "_" + this.myViewRandom;
+			}
+			
+			let inEmployee = await this.getEmployeeByPasswordId(this.myPasswordId);
+			
+			let companyFalseEmployeeTrue = inEmployee.success === true;
+			
+			//console.log(companyFalseEmployeeTrue);
+			
+			if(companyFalseEmployeeTrue === false)
+			{
+				
+				//company, building, employee
+				let companyId = await this.getCompanyByPasswordId(this.myPasswordId);
+				companyId = companyId.data.companyId;
+				
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["company"] + " AS " + 
+				"(SELECT * FROM company WHERE companyID = " + companyId + ")", []);
+				
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["building"] + " AS " + 
+				"(SELECT * FROM building WHERE companyID = " + companyId + ")", []);
+				
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["employee"] + " AS " + 
+				"(SELECT * FROM employee WHERE companyID = " + companyId + ")", []);
+				
+				
+				
+				//password
+				var passResult = await this.getEmployeesByCompanyId(companyId);
+				if(passResult.success === false)
+				{
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["password"] + " AS " + 
+					"(SELECT * FROM password WHERE passwordId IN (" + this.myPasswordId + "))", []);
+				}
+				else
+				{
+					passResult = passResult.data;
+					for(var i = 0; i < passResult.length; i++)
+					{
+						passResult[i] = passResult[i].passwordId;
+					}
+					
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["password"] + " AS " + 
+					"(SELECT * FROM password WHERE passwordId IN (" + this.myPasswordId + "," + passResult.join(",") + "))", []);
+				}
+				
+				
+				
+				//client		
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["client"] + " AS " + 
+				"(SELECT * FROM client)", []);
+				
+				
+				
+				
+				//visitorpackage
+				var empArr = await this.getEmployeesByCompanyId(companyId);
+				if(empArr.success === false)
+				{
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["visitorpackage"] + " AS " + 
+					"(SELECT * FROM visitorpackage WHERE employeeId IN (0))", []);
+				}
+				else
+				{
+					empArr = empArr.data;
+					for(var i = 0; i < empArr.length; i++)
+					{
+						empArr[i] = empArr[i].employeeId;
+					}
+					
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["visitorpackage"] + " AS " + 
+					"(SELECT * FROM visitorpackage WHERE employeeId IN (" + empArr.join(",") + "))", []);
+				}
+				
+				
+				//wifiparams, room, nfcaccesspoints
+				var bldArr = await this.getBuildingsByCompanyId(companyId);
+				if(bldArr.success === false)
+				{
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["wifiparams"] + " AS " + 
+					"(SELECT * FROM wifiparams WHERE wifiParamsId IN (0))", []);
+					
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["room"] + " AS " + 
+					"(SELECT * FROM room WHERE roomId IN (0))", []);
+					
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["nfcaccesspoints"] + " AS " + 
+					"(SELECT * FROM nfcaccesspoints WHERE nfcReaderId IN (0))", []);
+				}
+				else
+				{
+					bldArr = bldArr.data;
+					for(var i = 0; i < bldArr.length; i++)
+					{
+						bldArr[i] = bldArr[i].buildingId;
+					}
+					
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["wifiparams"] + " AS " + 
+					"(SELECT * FROM wifiparams WHERE wifiParamsId IN " +
+					"(SELECT wifiParamsId FROM building WHERE buildingId IN (" + bldArr.join(",") + ")))", []);
+					
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["room"] + " AS " + 
+					"(SELECT * FROM room WHERE buildingId IN (" + bldArr.join(",") + "))", []);
+					
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["nfcaccesspoints"] + " AS " + 
+					"(SELECT * FROM nfcaccesspoints WHERE roomId IN " +
+					"(SELECT roomId FROM room WHERE buildingId IN (" + bldArr.join(",") + ")))", []);
+				}
+				
+				
+				//tempwifiaccess, tpa, wallet
+				let twaArr = [];
+				let tpaArr = [];
+				let walArr = [];
+				if(empArr.success === false)
+				{
+					
+				}
+				else
+				{
+					for(var i = 0; i < empArr.length; i++)
+					{
+						let thisEmp = empArr[i];
+						let visPackArr = await this.getVisitorPackagesByEmployeeId(thisEmp);
+						if(visPackArr.success === false)
+						{
+							
+						}
+						else
+						{
+							visPackArr = visPackArr.data;
+							for(var i = 0; i < visPackArr.length; i++)
+							{
+								twaArr.push(visPackArr[i].tempWifiAccessId);
+								tpaArr.push(visPackArr[i].tpaId);
+								walArr.push(visPackArr[i].linkWalletId);
+							}
+						}			
+					}
+				}
+				
+				if(twaArr.length === 0)
+				{
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["tempwifiaccess"] + " AS " + 
+					"(SELECT * FROM tempwifiaccess WHERE tempWifiAccessId IN (0))", []);
+					
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["tpa"] + " AS " + 
+					"(SELECT * FROM tpa WHERE tpaId IN (0))", []);
+					
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["wallet"] + " AS " + 
+					"(SELECT * FROM wallet WHERE linkWalletId IN (0))", []);
+				}
+				else
+				{
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["tempwifiaccess"] + " AS " + 
+					"(SELECT * FROM tempwifiaccess WHERE tempWifiAccessId IN (" + twaArr.join(",") + "))", []);
+					
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["tpa"] + " AS " + 
+					"(SELECT * FROM tpa WHERE tpaId IN (" + tpaArr.join(",") + "))", []);
+					
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["wallet"] + " AS " + 
+					"(SELECT * FROM wallet WHERE linkWalletId IN (" + walArr.join(",") + "))", []);
+				}
+				
+				
+				if(tpaArr.length === 0)
+				{
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["tpaxroom"] + " AS " + 
+					"(SELECT * FROM tpaxroom WHERE tpaId IN (0))", []);
+				}
+				else
+				{
+					var viewRes = await this.client.query("CREATE VIEW " + this.mva["tpaxroom"] + " AS " + 
+					"(SELECT * FROM tpaxroom WHERE tpaId IN (" + tpaArr.join(",") + "))", []);
+				}
+				
+			}
+			else
+			{
+				//employees
+				
+				
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["company"] + " AS " + 
+				"(SELECT * FROM company)", []);
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["building"] + " AS " + 
+				"(SELECT * FROM building)", []);
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["employee "] + " AS " + 
+				"(SELECT * FROM employee)", []);
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["password"] + " AS " + 
+				"(SELECT * FROM password)", []);
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["client"] + " AS " + 
+				"(SELECT * FROM client)", []);
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["visitorpackage"] + " AS " + 
+				"(SELECT * FROM visitorpackage)", []);
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["wifiparams"] + " AS " + 
+				"(SELECT * FROM wifiparams)", []);
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["room"] + " AS " + 
+				"(SELECT * FROM room)", []);
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["nfcaccesspoints"] + " AS " + 
+				"(SELECT * FROM nfcaccesspoints)", []);
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["tempwifiaccess"] + " AS " + 
+				"(SELECT * FROM tempwifiaccess)", []);
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["tpa"] + " AS " + 
+				"(SELECT * FROM tpa)", []);
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["wallet"] + " AS " + 
+				"(SELECT * FROM wallet)", []);
+				var viewRes = await this.client.query("CREATE VIEW " + this.mva["tpaxroom"] + " AS " + 
+				"(SELECT * FROM tpaxroom)", []);
+			}
+			
+			
+			
+			return "";
+		}
+	}
+	
+	async deInitialize() {
+		
+		try
+		{
+			var viewRes = await this.client.query("DROP VIEW " + this.mva["building"], []);
+		}
+		catch(error)
+		{
+			console.log(error.message);
+		}
+		try
+		{
+			var viewRes = await this.client.query("DROP VIEW " + this.mva["client"], []);
+		}
+		catch(error)
+		{
+			console.log(error.message);
+		}
+		try
+		{
+			var viewRes = await this.client.query("DROP VIEW " + this.mva["company"], []);
+		}
+		catch(error)
+		{
+			console.log(error.message);
+		}
+		try
+		{
+			var viewRes = await this.client.query("DROP VIEW " + this.mva["employee"], []);
+		}
+		catch(error)
+		{
+			console.log(error.message);
+		}
+		try
+		{
+			var viewRes = await this.client.query("DROP VIEW " + this.mva["nfcaccesspoints"], []);
+		}
+		catch(error)
+		{
+			console.log(error.message);
+		}
+		try
+		{
+			var viewRes = await this.client.query("DROP VIEW " + this.mva["password"], []);
+		}
+		catch(error)
+		{
+			console.log(error.message);
+		}
+		try
+		{
+			var viewRes = await this.client.query("DROP VIEW " + this.mva["room"], []);
+		}
+		catch(error)
+		{
+			console.log(error.message);
+		}
+		try
+		{
+			var viewRes = await this.client.query("DROP VIEW " + this.mva["tempwifiaccess"], []);
+		}
+		catch(error)
+		{
+			console.log(error.message);
+		}
+		try
+		{
+			var viewRes = await this.client.query("DROP VIEW " + this.mva["tpa"], []);
+		}
+		catch(error)
+		{
+			console.log(error.message);
+		}
+		try
+		{
+			var viewRes = await this.client.query("DROP VIEW " + this.mva["tpaxroom"], []);
+		}
+		catch(error)
+		{
+			console.log(error.message);
+		}
+		try
+		{
+			var viewRes = await this.client.query("DROP VIEW " + this.mva["visitorpackage"], []);
+		}
+		catch(error)
+		{
+			console.log(error.message);
+		}
+		try
+		{
+			var viewRes = await this.client.query("DROP VIEW " + this.mva["wallet"], []);
+		}
+		catch(error)
+		{
+			console.log(error.message);
+		}
+		try
+		{
+			var viewRes = await this.client.query("DROP VIEW " + this.mva["wifiparams"], []);
+		}
+		catch(error)
+		{
+			console.log(error.message);
+		}
+		
+		return viewRes;
+		
 	}
 
 	/**
@@ -114,7 +528,7 @@ class CrudController {
 	*	@return { companyId, companyName, companyWebsite, passwordId }
 	*/
 	async getCompanyByCompanyId(companyId) {
-		var query = 'SELECT * FROM Company WHERE companyId = $1';
+		var query = 'SELECT * FROM ' + this.mva["company"] + ' WHERE companyId = $1';
 
 		var ret = null;
 
@@ -149,7 +563,7 @@ class CrudController {
 	*	@return { companyId, companyName, companyWebsite, passwordId }
 	*/
 	async getCompanyByPasswordId(passwordId) {
-		var query = 'SELECT * FROM Company WHERE passwordId = $1';
+		var query = 'SELECT * FROM company WHERE passwordId = $1';
 
 		var ret = null;
 
@@ -331,7 +745,7 @@ class CrudController {
 	*	@return { buildingId, latitude, longitude, branchName, companyId, wifiParamsId }
 	*/
 	async getBuildingByBuildingId(buildingId) {
-		var query = 'SELECT * FROM Building WHERE buildingId = $1';
+		var query = 'SELECT * FROM ' + this.mva["building"] + ' WHERE buildingId = $1';
 
 		var ret = null;
 		let res;
@@ -367,7 +781,7 @@ class CrudController {
 	*	@return [ { buildingId, latitude, longitude, branchName, companyId, wifiParamsId } ]
 	*/
 	async getBuildingsByCompanyId(companyId) {
-		var query = 'SELECT * FROM Building WHERE companyId = $1';
+		var query = 'SELECT * FROM ' + this.mva["building"] + ' WHERE companyId = $1';
 
 		var ret = null;
 
@@ -411,7 +825,7 @@ class CrudController {
 *	@return [ { buildingId, latitude, longitude, branchName, companyId, wifiParamsId } ]
 */
 	async getBuildingsByWifiParamsId(wifiParamsId) {
-		var query = 'SELECT * FROM Building WHERE wifiParamsId = $1';
+		var query = 'SELECT * FROM ' + this.mva["building"] + ' WHERE wifiParamsId = $1';
 
 		var ret = null;
 
@@ -567,7 +981,7 @@ class CrudController {
 	*	@return { passwordId, username, hash, salt, apiKey, expirationDate }
 	*/
 	async getPasswordByPasswordId(passwordId) {
-		var query = 'SELECT * FROM Password WHERE passwordId = $1';
+		var query = 'SELECT * FROM ' + this.mva["password"] + ' WHERE passwordId = $1';
 
 		var ret = null;
 		let res;
@@ -603,7 +1017,7 @@ class CrudController {
 	*	@return { passwordId, username, hash, salt, apiKey, expirationDate }
 	*/
 	async getPasswordByUsername(username) {
-		var query = 'SELECT * FROM Password WHERE username = $1';
+		var query = 'SELECT * FROM ' + this.mva["password"] + ' WHERE username = $1';
 
 		var ret = null;
 
@@ -775,7 +1189,7 @@ class CrudController {
 	*	@return { roomId, roomName, parentRoomList, buildingId }
 	*/
 	async getRoomByRoomId(roomId) {
-		var query = 'SELECT * FROM Room WHERE roomId = $1';
+		var query = 'SELECT * FROM ' + this.mva["room"] + ' WHERE roomId = $1';
 
 		var ret = null;
 		let res;
@@ -809,7 +1223,7 @@ class CrudController {
 	*	@return [ { roomId, roomName, parentRoomList, buildingId } ]
 	*/
 	async getRoomsByBuildingId(buildingId) {
-		var query = 'SELECT * FROM Room WHERE buildingId = $1';
+		var query = 'SELECT * FROM ' + this.mva["room"] + ' WHERE buildingId = $1';
 
 		var ret = null;
 
@@ -947,7 +1361,7 @@ class CrudController {
 	*	@return { nfcReaderId, roomId }
 	*/
 	async getNFCAccessPointsByNfcReaderId(nfcReaderId) {
-		var query = 'SELECT * FROM NFCAccessPoints WHERE nfcReaderId = $1';
+		var query = 'SELECT * FROM ' + this.mva["nfcaccesspoints"] + ' WHERE nfcReaderId = $1';
 
 		var ret = null;
 		let res;
@@ -979,7 +1393,7 @@ class CrudController {
 	*	@return [ { nfcReaderId, roomId } ]
 	*/
 	async getNFCAccessPointssByRoomId(roomId) {
-		var query = 'SELECT * FROM NFCAccessPoints WHERE roomId = $1';
+		var query = 'SELECT * FROM ' + this.mva["nfcaccesspoints"] + ' WHERE roomId = $1';
 
 		var ret = null;
 
@@ -1127,7 +1541,7 @@ class CrudController {
 	*	@return { employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId }
 	*/
 	async getEmployeeByEmployeeId(employeeId) {
-		var query = 'SELECT * FROM Employee WHERE employeeId = $1';
+		var query = 'SELECT * FROM ' + this.mva["employee"] + ' WHERE employeeId = $1';
 
 		var ret = null;
 
@@ -1209,7 +1623,7 @@ class CrudController {
 	*	@return [ { employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId } ]
 	*/
 	async getEmployeesByCompanyId(companyId) {
-		var query = 'SELECT * FROM Employee WHERE companyId = $1';
+		var query = 'SELECT * FROM ' + this.mva["employee"] + ' WHERE companyId = $1';
 
 		var ret = null;
 
@@ -1255,7 +1669,7 @@ class CrudController {
 	*	@return [ { employeeId, firstName, surname, title, cellphone, email, companyId, buildingId, passwordId } ]
 	*/
 	async getEmployeesByBuildingId(buildingId) {
-		var query = 'SELECT * FROM Employee WHERE buildingId = $1';
+		var query = 'SELECT * FROM ' + this.mva["employee"] + ' WHERE buildingId = $1';
 
 		var ret = null;
 		let res;
@@ -1406,7 +1820,7 @@ class CrudController {
 	*	@return { clientId, macAddress }
 	*/
 	async getClientByClientId(clientId) {
-		var query = 'SELECT * FROM Client WHERE clientId = $1';
+		var query = 'SELECT * FROM ' + this.mva["client"] + ' WHERE clientId = $1';
 
 		var ret = null;
 
@@ -1439,7 +1853,7 @@ class CrudController {
 	*	@return { clientId, macAddress }
 	*/
 	async getClientByMacAddress(macAddress) {
-		var query = 'SELECT * FROM Client WHERE macAddress = $1';
+		var query = 'SELECT * FROM ' + this.mva["client"] + ' WHERE macAddress = $1';
 
 		var ret = null;
 
@@ -1570,7 +1984,7 @@ class CrudController {
 	*	@return { wifiParamsId, ssid, networkType, password }
 	*/
 	async getWiFiParamsByWifiParamsId(wifiParamsId) {
-		var query = 'SELECT * FROM WiFiParams WHERE wifiParamsId = $1';
+		var query = 'SELECT * FROM ' + this.mva["wifiparams"] + ' WHERE wifiParamsId = $1';
 
 		var ret = null;
 
@@ -1698,7 +2112,7 @@ class CrudController {
 	*	@return { tempWifiAccessId, wifiParamsId }
 	*/
 	async getTempWifiAccessByTempWifiAccessId(tempWifiAccessId) {
-		var query = 'SELECT * FROM TempWifiAccess WHERE tempWifiAccessId = $1';
+		var query = 'SELECT * FROM ' + this.mva["tempwifiaccess"] + ' WHERE tempWifiAccessId = $1';
 
 		var ret = null;
 
@@ -1731,7 +2145,7 @@ class CrudController {
 	*	@return [ { tempWifiAccessId, wifiParamsId } ]
 	*/
 	async getTempWifiAccesssByWifiParamsId(wifiParamsId) {
-		var query = 'SELECT * FROM TempWifiAccess WHERE wifiParamsId = $1';
+		var query = 'SELECT * FROM ' + this.mva["tempwifiaccess"] + ' WHERE wifiParamsId = $1';
 
 		var ret = null;
 
@@ -1876,7 +2290,7 @@ class CrudController {
 	*	@return { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime }
 	*/
 	async getVisitorPackageByVisitorPackageId(visitorPackageId) {
-		var query = 'SELECT * FROM VisitorPackage WHERE visitorPackageId = $1';
+		var query = 'SELECT * FROM ' + this.mva["visitorpackage"] + ' WHERE visitorPackageId = $1';
 
 		var ret = null;
 
@@ -1915,7 +2329,7 @@ class CrudController {
 	*	@return { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime }
 	*/
 	async getVisitorPackageByTempWifiAccessId(tempWifiAccessId) {
-		var query = 'SELECT * FROM VisitorPackage WHERE tempWifiAccessId = $1';
+		var query = 'SELECT * FROM ' + this.mva["visitorpackage"] + ' WHERE tempWifiAccessId = $1';
 
 		var ret = null;
 
@@ -1954,7 +2368,7 @@ class CrudController {
 	*	@return { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime }
 	*/
 	async getVisitorPackageByTpaId(tpaId) {
-		var query = 'SELECT * FROM VisitorPackage WHERE tpaId = $1';
+		var query = 'SELECT * FROM ' + this.mva["visitorpackage"] + ' WHERE tpaId = $1';
 
 		var ret = null;
 
@@ -1993,7 +2407,7 @@ class CrudController {
 	*	@return { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime }
 	*/
 	async getVisitorPackageByLinkWalletId(linkWalletId) {
-		var query = 'SELECT * FROM VisitorPackage WHERE linkWalletId = $1';
+		var query = 'SELECT * FROM ' + this.mva["visitorpackage"] + ' WHERE linkWalletId = $1';
 
 		var ret = null;
 
@@ -2032,7 +2446,7 @@ class CrudController {
 	*	@return [ { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime } ]
 	*/
 	async getVisitorPackagesByEmployeeId(employeeId) {
-		var query = 'SELECT * FROM VisitorPackage WHERE employeeId = $1';
+		var query = 'SELECT * FROM ' + this.mva["visitorpackage"] + ' WHERE employeeId = $1';
 
 		var ret = null;
 
@@ -2077,7 +2491,7 @@ class CrudController {
 	*	@return [ { visitorPackageId, tempWifiAccessId, tpaId, linkWalletId, employeeId, clientId, startTime, endTime } ]
 	*/
 	async getVisitorPackagesByClientId(clientId) {
-		var query = 'SELECT * FROM VisitorPackage WHERE clientId = $1';
+		var query = 'SELECT * FROM ' + this.mva["visitorpackage"] + ' WHERE clientId = $1';
 
 		var ret = null;
 
@@ -2218,7 +2632,7 @@ class CrudController {
 	*	@return { tpaId }
 	*/
 	async getTPAByTpaId(tpaId) {
-		var query = 'SELECT * FROM TPA WHERE tpaId = $1';
+		var query = 'SELECT * FROM ' + this.mva["tpa"] + ' WHERE tpaId = $1';
 
 		var ret = null;
 
@@ -2310,7 +2724,7 @@ class CrudController {
 	*	@return [ { tpaId, roomId } ]
 	*/
 	async getTPAxRoomsByTpaId(tpaId) {
-		var query = 'SELECT * FROM TPAxRoom WHERE tpaId = $1';
+		var query = 'SELECT * FROM ' + this.mva["tpaxroom"] + ' WHERE tpaId = $1';
 
 		var ret = null;
 
@@ -2349,7 +2763,7 @@ class CrudController {
 	*	@return [ { tpaId, roomId } ]
 	*/
 	async getTPAxRoomsByRoomId(roomId) {
-		var query = 'SELECT * FROM TPAxRoom WHERE roomId = $1';
+		var query = 'SELECT * FROM ' + this.mva["tpaxroom"] + ' WHERE roomId = $1';
 
 		var ret = null;
 
@@ -2499,7 +2913,7 @@ class CrudController {
 	*	@return { linkWalletId, maxLimit, spent }
 	*/
 	async getWalletByLinkWalletId(linkWalletId) {
-		var query = 'SELECT * FROM Wallet WHERE linkWalletId = $1';
+		var query = 'SELECT * FROM ' + this.mva["wallet"] + ' WHERE linkWalletId = $1';
 
 		var ret = null;
 
@@ -2667,6 +3081,10 @@ class CrudController {
 	 * @param idValue Value of the column ID that uniquely identifies a record
 	 */
 	constructUpdate(tableName, paramList, idName, idValue) {
+		
+		tableName = tableName.toLowerCase();
+		tableName = this.mva[tableName];
+		
 		var query = "UPDATE " + tableName + " SET ";
 
 		for (var i = 1; i < paramList.length + 1; i++) {
@@ -2688,6 +3106,8 @@ class CrudController {
 	 * @param idName Name of the column ID that uniquely identifies a record
 	 */
 	constructDelete(tableName, idName) {
+		tableName = tableName.toLowerCase();
+		tableName = this.mva[tableName];
 		return "DELETE FROM " + tableName + " WHERE " + idName + " = $1";
 	}
 
@@ -2802,6 +3222,20 @@ class CrudController {
 		else {
 			return false
 		}
+	}
+	
+	/**
+	 *  This function generates a random alphanumeric string of a certain length
+	 *	@param length the length of the random string to generate
+	 */
+	randomString(length) {
+		var result = '';
+		var chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+		var choiceLength = chars.length;
+		for (var i = 0; i < length; i++) {
+			result += chars.charAt(Math.floor(Math.random() * choiceLength));
+		}
+		return result;
 	}
 }
 

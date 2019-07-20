@@ -105,76 +105,21 @@ class SharedLogic {
      *  This function checks that the body has either an API Key OR both a username and password. It then starts
 	 *	the endpoint extraction.
      */
-	validateBody() {
-
-		/*
-		var me = this;
-		
-		me.crudController.createPassword("username1",'hash','salt','apiKey1','2019-06-26 18:00:00.123', function(passwordId)
-		{
-			console.log(passwordId);
-		me.crudController.createClient("macaddress1", function(clientId)
-			{
-				console.log(clientId);
-		me.crudController.createWallet(300.0,100.0,function(linkWalletId)
-				{
-					console.log(linkWalletId);
-		me.crudController.createTPA(function(tpaId)
-					{
-						console.log(tpaId);
-		me.crudController.createCompany('companyName','companyWebsite',passwordId.data.passwordId,function(companyId)
-						{
-							console.log(companyId);
-		me.crudController.createWiFiParams('ssid','networkType','password',function(wifiParamsId)
-							{
-								console.log(wifiParamsId);
-		me.crudController.createBuilding('latitude','longitude','branchName',companyId.data.companyId,wifiParamsId.data.wifiParamsId,function(buildingId)
-								{
-									console.log(buildingId);
-		me.crudController.createRoom('roomName','parentRoomList',buildingId.data.buildingId,function(roomId)
-									{
-										console.log(roomId);
-		me.crudController.createNFCAccessPoints(roomId.data.roomId,function(nfcReaderId)
-										{
-											console.log(nfcReaderId);
-		me.crudController.createTempWifiAccess(wifiParamsId.data.wifiParamsId,function(tempWifiAccessId)
-											{
-												console.log(tempWifiAccessId);
-		me.crudController.createTPAxRoom(tpaId.data.tpaId,roomId.data.roomId,function(tpaxroomId)
-												{
-													console.log(tpaxroomId);
-		me.crudController.createEmployee('firstName','surname','title','cellphone','email',companyId.data.companyId,buildingId.data.buildingId,passwordId.data.passwordId,function(employeeId)
-													{
-														console.log(employeeId);
-		me.crudController.createVisitorPackage(null,null,linkWalletId.data.linkWalletId,employeeId.data.employeeId,clientId.data.clientId,'2019-06-26 12:00:00.123','2019-06-26 19:00:00.123',function(visitorPackageId)
-														{
-															console.log(visitorPackageId);
-															
-														});
-													});
-												});
-											});
-										});
-									});
-								});
-							});
-						});
-					});
-				});
-			});
-		});
-		*/
+	async validateBody() {
 
 		if (this.from.body.apiKey === undefined) {
 			if (this.from.body.username === undefined || this.from.body.password === undefined) {
 				this.endServe(false, "No API Key or not all login details provided", null);
 			}
 			else {
+				let viewRes = await this.crudController.initialize("");
+				//console.log(viewRes);
 				this.extractEndpoint();
 			}
 		}
 		else {
-			this.crudController.initialize(this.from.body.apiKey);
+			let viewRes = await this.crudController.initialize(this.from.body.apiKey);
+			//console.log(viewRes);
 			this.extractEndpoint();
 		}
 	}
@@ -361,9 +306,14 @@ class SharedLogic {
 	 *	@param message String The value of the message to be returned in the response to the user
 	 *	@param data Object The object containing the data values to be returned in the response to the user
 	 */
-	endServe(success, message, data) {
+	async endServe(success, message, data) {
 		
+		
+		var viewRes = await this.crudController.deInitialize();
+		//console.log(viewRes);
 		this.crudController.client.end();
+		
+		
 		
 		var responseObject = new Object();
 		var json = null;

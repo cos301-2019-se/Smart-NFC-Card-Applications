@@ -112,13 +112,13 @@ class SharedLogic {
 				this.endServe(false, "No API Key or not all login details provided", null);
 			}
 			else {
-				let viewRes = await this.crudController.initialize("");
+				let viewRes = await this.crudController.initialize("", this.from.demoMode);
 				//console.log(viewRes);
 				this.extractEndpoint();
 			}
 		}
 		else {
-			let viewRes = await this.crudController.initialize(this.from.body.apiKey);
+			let viewRes = await this.crudController.initialize(this.from.body.apiKey, this.from.demoMode);
 			//console.log(viewRes);
 			
 			if(this.demoMode === true)

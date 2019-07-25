@@ -47,21 +47,23 @@ class CrudController {
 		this.myPasswordId = null;
 		this.myViewRandom = null;
 		this.mva = [];
+		
+		let CON_STRING = process.env.DATABASE_URL || "postgres://postgres:nbuser@localhost:5432/link";
 
-		/*
-		//localhost database
+		
+		/*//localhost database
 		this.client = new Client({
 		  user: 'postgres',
 		  host: 'localhost',
 		  database: 'link',
 		  password: 'nbuser',
 		  port: 5432,
-		});
-		*/
+		});*/
+		
 		
 		//heroku localhost database
 		this.client = new Client({
-			connectionString: process.env.DATABASE_URL
+			connectionString: CON_STRING
 		});
 		
 		//heroku remote database
@@ -77,7 +79,12 @@ class CrudController {
 
 	}
 
-	async initialize(apiKey) {
+	async initialize(apiKey, demoMode) {
+		
+		if(demoMode)
+		{
+			return "Pass";
+		}
 		
 		if(apiKey === "")
 		{

@@ -341,6 +341,8 @@ class SharedLogic {
 			json = JSON.stringify(responseObject);
 		}
 
+		console.log("Done with: " + this.from.req.url);
+		
 		this.from.res.statusCode = 200;
 		this.from.res.setHeader('Content-Type', 'application/json');
 		this.from.res.setHeader('Access-Control-Allow-Origin', '*');

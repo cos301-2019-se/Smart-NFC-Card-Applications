@@ -48,17 +48,27 @@ class CrudController {
 		this.myViewRandom = null;
 		this.mva = [];
 
-		/*this.client = new Client({
+		/*
+		//localhost database
+		this.client = new Client({
 		  user: 'postgres',
 		  host: 'localhost',
 		  database: 'link',
 		  password: 'nbuser',
 		  port: 5432,
-		});*/
-
+		});
+		*/
+		
+		//heroku localhost database
 		this.client = new Client({
 			connectionString: process.env.DATABASE_URL
 		});
+		
+		//heroku remote database
+		/*this.client = new Client({
+			connectionString: "postgres://erskkykrvrmiqb:f44bb553c6ba0b4c76f17f86675579440075de3d3f6d764430c0faa3e778623f@ec2-54-220-0-91.eu-west-1.compute.amazonaws.com:5432/d53d0m9448vm6h",
+			ssl: true
+		});*/
 
 		this.client.connect();
 		
@@ -282,6 +292,7 @@ class CrudController {
 					{
 						let thisEmp = empArr[i];
 						let visPackArr = await this.getVisitorPackagesByEmployeeId(thisEmp);
+						
 						if(visPackArr.success === false)
 						{
 							
@@ -289,11 +300,20 @@ class CrudController {
 						else
 						{
 							visPackArr = visPackArr.data;
-							for(var i = 0; i < visPackArr.length; i++)
+							for(var j = 0; j < visPackArr.length; j++)
 							{
-								twaArr.push(visPackArr[i].tempWifiAccessId);
-								tpaArr.push(visPackArr[i].tpaId);
-								walArr.push(visPackArr[i].linkWalletId);
+								if(visPackArr[j].tempWifiAccessId)
+								{
+									twaArr.push(visPackArr[j].tempWifiAccessId);
+								}
+								if(visPackArr[j].tpaId)
+								{
+									tpaArr.push(visPackArr[j].tpaId);
+								}
+								if(visPackArr[j].linkWalletId)
+								{
+									walArr.push(visPackArr[j].linkWalletId);
+								}
 							}
 						}			
 					}

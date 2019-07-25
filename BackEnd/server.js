@@ -45,7 +45,7 @@ function run(callback) {
 
 		var urlToSwitchOn = req.url.substring(1, req.url.substring(1).indexOf("/")+1);
 		//console.log("switch:" + urlToSwitchOn);
-		//console.log(req.url);
+		console.log(req.url);
 		switch(urlToSwitchOn)
 		{
 			case "test":

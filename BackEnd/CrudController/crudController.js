@@ -2737,7 +2737,7 @@ class CrudController {
 		try {
 			res = await this.client.query(this.constructInsert("Transaction", "transactionId", c, v), v);
 			ret = this.buildDefaultResponseObject(true, "Successfully added transaction", false, false);
-			ret.data.transactionId = res.rows[0].transactionId;
+			ret.data.transactionId = res.rows[0].transactionid;
 			return ret;
 		}
 		catch (err) {

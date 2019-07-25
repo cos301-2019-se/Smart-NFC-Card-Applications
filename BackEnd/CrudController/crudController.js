@@ -48,7 +48,8 @@ class CrudController {
 		this.myViewRandom = null;
 		this.mva = [];
 		
-		let CON_STRING = process.env.DATABASE_URL || "postgres://postgres:nbuser@localhost:5432/link";
+		//let CON_STRING = process.env.DATABASE_URL;
+
 
 		
 		/*//localhost database
@@ -63,7 +64,7 @@ class CrudController {
 		
 		//heroku localhost database
 		this.client = new Client({
-			connectionString: CON_STRING
+			connectionString: process.env.DATABASE_URL
 		});
 		
 		//heroku remote database
@@ -72,7 +73,14 @@ class CrudController {
 			ssl: true
 		});*/
 
-		this.client.connect();
+		this.client.connect()
+		.catch(err => 
+		{
+			this.client = new Client({
+				connectionString: "postgres://postgres:nbuser@localhost:5432/link"
+			});
+			return this.client.connect()
+		});
 		
 		
 

@@ -74,8 +74,6 @@ class CrudController {
 		});*/
 
 		this.client.connect();
-		
-		/*
 		.catch(err => 
 		{
 			this.client = new Client({
@@ -88,7 +86,6 @@ class CrudController {
 		{
 			
 		});
-		*/
 		
 		
 

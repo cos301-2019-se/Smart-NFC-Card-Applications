@@ -1,3 +1,21 @@
+/*
+$.post("/admin/editEmployee
+$.post("/admin/editPaymentPoint
+
+$.post("/admin/addEmployee
+$.post("/admin/addPaymentPoint
+
+$.post("/admin/getEmployeesByCompanyId
+$.post("/admin/getPaymentPointsByCompanyId
+
+
+$.post("/admin/getBuildingsByCompanyId
+
+
+$.post("/admin/getCompanyByCompanyId
+
+
+*/
 var paymentPointData; //array of employee objects
 var companyName; // array of company objects
 var buildingData; //array of buidlings corresponding to the company object

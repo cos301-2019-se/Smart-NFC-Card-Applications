@@ -73,19 +73,19 @@ class CrudController {
 			ssl: true
 		});*/
 
-		this.client.connect();
+		this.client.connect()
 		.catch(err => 
 		{
 			this.client = new Client({
 				connectionString: "postgres://postgres:nbuser@localhost:5432/link"
 			});
 			return this.client.connect()
-			
 		})
 		.catch(err =>
 		{
 			
 		});
+		
 		
 		
 

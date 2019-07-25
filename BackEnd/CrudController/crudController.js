@@ -2592,6 +2592,288 @@ class CrudController {
 			return ret;
 		}
 	}
+	
+	
+	//new for payment!
+	
+	
+	/**
+	*	Creates a new nfcPaymentPoint
+	*	@param buildingId 
+	*	@param description 
+	*	@return { nfcPaymentPointId }
+	*/
+	async createNfcPaymentPoint(buildingId, description) {
+		var c = [];
+		var v = [];
+
+		this.bigAppend(Object.keys({ buildingId })[0], buildingId, c, v);
+		this.bigAppend(Object.keys({ description })[0], description, c, v);
+
+		var ret = null;
+		let res;
+		try {
+			res = await this.client.query(this.constructInsert("NfcPaymentPoints", "nfcPaymentPointId", c, v), v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added nfcpaymentpoint", false, false);
+			ret.data.nfcPaymentPointId = res.rows[0].nfcpaymentpointid;
+			return ret;
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+
+	}
+	
+	
+
+	/**
+	*	Retrieves a nfcPaymentPoint using nfcPaymentPointId
+	*	@param nfcPaymentPointId 
+	*	@return { nfcPaymentPointId, buildingId, description }
+	*/
+	async getNfcPaymentPointByNfcPaymentPointId(nfcPaymentPointId) {
+		var query = 'SELECT * FROM NfcPaymentPoints WHERE nfcPaymentPointId = $1';
+
+		var ret = null;
+
+
+		let res;
+		try {
+			res = await this.client.query(query, [nfcPaymentPointId]);
+			if (res.rows.length == 0) {
+				ret = this.returnDatabaseError("no rows in NfcPaymentPoints with that matching nfcPaymentPointId");
+				return ret;
+			}
+			else {
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved nfcPaymentPoint", false, false);
+				ret.data.nfcPaymentPointId = res.rows[0].nfcpaymentpointid;
+				ret.data.buildingId = res.rows[0].buildingid;
+				ret.data.description = res.rows[0].description;
+				return ret;
+			}
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+	
+	/**
+	*	Retrieves a set of nfcPaymentPoints using buildingId
+	*	@param buildingId 
+	*	@return [ { nfcPaymentPointId, buildingId, description } ]
+	*/
+	async getNfcPaymentPointsByBuildingId(buildingId) {
+		var query = 'SELECT * FROM NfcPaymentPoints WHERE buildingId = $1';
+
+		var ret = null;
+
+
+		let res;
+		try {
+			res = await this.client.query(query, [buildingId]);
+			if (res.rows.length == 0) {
+				ret = this.returnDatabaseError("no rows in NfcPaymentPoints with that matching buildingId");
+				return ret;
+			}
+			else {
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved nfcPaymentPoints", false, true);
+				for (var i = 0; i < res.rows.length; i++) {
+					var obj = {};
+					
+					obj.nfcPaymentPointId = res.rows[i].nfcpaymentpointid;
+					obj.buildingId = res.rows[i].buildingid;
+					obj.description = res.rows[i].description;
+
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+	
+	
+	
+	
+	
+	//update and delete (Savvas)
+	
+	
+	
+	
+	
+	
+	/**
+	*	Creates a new transaction
+	*	@param walletId 
+	*	@param amount 
+	*	@param nfcPaymentPointId 
+	*	@param transactionTime 
+	*	@param description 
+	*	@return { transactionId }
+	*/
+	async createTransaction(walletId, amount, nfcPaymentPointId, transactionTime, description) {
+		var c = [];
+		var v = [];
+
+		this.bigAppend(Object.keys({ walletId })[0], walletId, c, v);
+		this.bigAppend(Object.keys({ amount })[0], amount, c, v);
+		this.bigAppend(Object.keys({ nfcPaymentPointId })[0], nfcPaymentPointId, c, v);
+		this.bigAppend(Object.keys({ transactionTime })[0], transactionTime, c, v);
+		this.bigAppend(Object.keys({ description })[0], description, c, v);
+
+		var ret = null;
+		let res;
+		try {
+			res = await this.client.query(this.constructInsert("Transaction", "transactionId", c, v), v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added transaction", false, false);
+			ret.data.transactionId = res.rows[0].transactionId;
+			return ret;
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+
+	}
+	
+	
+
+	/**
+	*	Retrieves a transaction using transactionId
+	*	@param transactionId 
+	*	@return { transactionId, walletId, amount, nfcPaymentPointId, transactionTime, description }
+	*/
+	async getTransactionByTransactionId(transactionId) {
+		var query = 'SELECT * FROM Transaction WHERE transactionId = $1';
+
+		var ret = null;
+
+
+		let res;
+		try {
+			res = await this.client.query(query, [transactionId]);
+			if (res.rows.length == 0) {
+				ret = this.returnDatabaseError("no rows in Transaction with that matching transactionId");
+				return ret;
+			}
+			else {
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved Transaction", false, false);
+				ret.data.transactionId = res.rows[0].transactionid;
+				ret.data.walletId = res.rows[0].walletid;
+				ret.data.amount = res.rows[0].amount;
+				ret.data.nfcPaymentPointId = res.rows[0].nfcpaymentpointid;
+				ret.data.transactionTime = res.rows[0].transactiontime;
+				ret.data.description = res.rows[0].description;
+				return ret;
+			}
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+	
+	/**
+	*	Retrieves a set of transactions using walletId
+	*	@param walletId 
+	*	@return [ { transactionId, walletId, amount, nfcPaymentPointId, transactionTime, description } ]
+	*/
+	async getTransactionsByWalletId(walletId) {
+		var query = 'SELECT * FROM Transaction WHERE walletId = $1';
+
+		var ret = null;
+
+
+		let res;
+		try {
+			res = await this.client.query(query, [walletId]);
+			if (res.rows.length == 0) {
+				ret = this.returnDatabaseError("no rows in Transaction with that matching walletId");
+				return ret;
+			}
+			else {
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved transactions", false, true);
+				for (var i = 0; i < res.rows.length; i++) {
+					var obj = {};
+					
+					obj.transactionId = res.rows[i].transactionid;
+					obj.walletId = res.rows[i].walletid;
+					obj.amount = res.rows[i].amount;
+					obj.nfcPaymentPointId = res.rows[i].nfcpaymentpointid;
+					obj.transactionTime = res.rows[i].transactiontime;
+					obj.description = res.rows[i].description;
+
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+	
+	/**
+	*	Retrieves a set of transactions using nfcPaymentPointId
+	*	@param nfcPaymentPointId 
+	*	@return [ { transactionId, walletId, amount, nfcPaymentPointId, transactionTime, description } ]
+	*/
+	async getTransactionsByNfcPaymentPointId(nfcPaymentPointId) {
+		var query = 'SELECT * FROM Transaction WHERE nfcPaymentPointId = $1';
+
+		var ret = null;
+
+
+		let res;
+		try {
+			res = await this.client.query(query, [nfcPaymentPointId]);
+			if (res.rows.length == 0) {
+				ret = this.returnDatabaseError("no rows in Transaction with that matching nfcPaymentPointId");
+				return ret;
+			}
+			else {
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved transactions", false, true);
+				for (var i = 0; i < res.rows.length; i++) {
+					var obj = {};
+					
+					obj.transactionId = res.rows[i].transactionid;
+					obj.walletId = res.rows[i].walletid;
+					obj.amount = res.rows[i].amount;
+					obj.nfcPaymentPointId = res.rows[i].nfcpaymentpointid;
+					obj.transactionTime = res.rows[i].transactiontime;
+					obj.description = res.rows[i].description;
+
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+	
+	
 
 	//Jared Helpers
 	/**

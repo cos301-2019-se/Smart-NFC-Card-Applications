@@ -1,22 +1,4 @@
-/*
-$.post("/admin/editEmployee
-$.post("/admin/editPaymentPoint
-
-$.post("/admin/addEmployee
-$.post("/admin/addPaymentPoint
-
-$.post("/admin/getEmployeesByCompanyId
-$.post("/admin/getPaymentPointsByCompanyId
-
-
-$.post("/admin/getBuildingsByCompanyId
-
-
-$.post("/admin/getCompanyByCompanyId
-
-
-*/
-var paymentPointData; //array of employee objects
+var paymentPointData; //array of payment point objects
 var companyName; // array of company objects
 var buildingData; //array of buidlings corresponding to the company object
 var apiKey;
@@ -60,9 +42,9 @@ function populateTable() {
     tableBody.empty();
     for (var i = 0; i < paymentPointData.length; i++) {
         var paymentPoint = paymentPointData[i];
-        var ppId = paymentPoint.employeeId;
+        var ppId = paymentPoint.nfcPaymentPointId;
         var building = buildingData[paymentPoint.buildingId];
-        var desc = paymentPoint.firstName;
+        var desc = paymentPoint.description;
 
         tableBody.append(
             `<tr>
@@ -82,7 +64,7 @@ function populateTable() {
         row.children().each(function () {
             fields.push($(this).html());
         });
-        submissionObject = { employeeId: fields[0] };
+        submissionObject = { nfcPaymentPointId: fields[0] };
         setupEditModal();
         addValuesToModal(fields);
         $('#editPaymentPointModal').modal('show');
@@ -97,64 +79,27 @@ function setupEditModal() {
 
 function submitEditPaymentPoint() {
     $("#editPaymentPointWarning").hide();
-    $("#editEmployeePasswordWarning").hide();
     retrieveValuesFromModal();
-    if (submissionObject.employeeName.length === 0 || submissionObject.employeeSurname.length === 0 || submissionObject.username.length === 0 || submissionObject.employeeTitle.length === 0 || submissionObject.employeeCellphone === 0 || submissionObject.employeeEmail.length === 0) {
+    if (submissionObject.description.length === 0) {
         $("#editPaymentPointWarning").show();
     } else {
-        var passwordPromise = null;
-        if (checkEditPassFields) {
-            var password = $('#editModalPass').val().trim();
-            var confirmPassword = $('#editModalPassConfirm').val().trim();
-            if (password === confirmPassword) {
-                var passwordObject = {
-                    "employeeId": submissionObject.employeeId,
-                    "apiKey": apiKey,
-                    "password": password
-                }
-
-                passwordPromise = new Promise((resolve, reject) => {
-                    $.post("/admin/editEmployeePassword", JSON.stringify(passwordObject), (data) => {
-                        if (data.success) {
-                            console.log("successfully modified employee's password");
-                            resolve();
-                        } else {
-                            console.log("failed to modify employee" + data.message);
-                            reject();
-                        }
-                    });
-                })
-            } else {
-                $("#editEmployeePasswordWarning").html(`<strong>Error!</strong> Passwords do not match.`).show();
-                return; // do not continue with the posts
-            }
-
-        }
-        if (passwordPromise) {
-            passwordPromise.then(() => {
-                postEmployeeSubmission();
-            }).catch(() => {
-                $("#editEmployeePasswordWarning").html(`<strong>Error!</strong> Failed to update password.`).show();
-            })
-        } else {
-            postEmployeeSubmission();
-        }
+		postPaymentPointSubmission();
     }
 
 }
 
-function postEmployeeSubmission() {
+function postPaymentPointSubmission() {
     console.log(submissionObject);
     submissionObject.apiKey = apiKey;
-    $.post("/admin/editEmployee", JSON.stringify(submissionObject), (data) => {
+    $.post("/admin/editPaymentPoint", JSON.stringify(submissionObject), (data) => {
         if (data.success) {
-            console.log("successfully modified employee");
+            console.log("successfully modified payment point");
             $("#successContainer").empty().append(`
             <div class="alert alert-success hide" role="alert">
             <h4 class="alert-heading">Operation Successful!</h4>
-            Employee modified successfully.`);
+            Payment Point modified successfully.`);
 
-            /*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
+            /*Please <a href="./paymentpoints.html" class="alert-link">refresh</a> the page in
             order to view the updated information in the table.
             </div>
             `);*/
@@ -162,14 +107,14 @@ function postEmployeeSubmission() {
             //$('#editPaymentPointModal').modal('hide');
             fetchDataAndPopulateTable();
         } else {
-            console.log("failed to modify employee" + data.message);
+            console.log("failed to modify payment point" + data.message);
         }
     });
 }
 
 function retrieveValuesFromModal() {
     //prepare a potential submission object
-    submissionObject.employeeName = $('#editDescription').val().trim();
+    submissionObject.description = $('#editDescription').val().trim();
     submissionObject.buildingId = $('#buildingSelect').val().trim();
 }
 
@@ -224,15 +169,15 @@ function addPaymentPoint() {
     if (retrieveValuesFromAddPaymentPoint(newPaymentPointObj)) {
         console.log(newPaymentPointObj);
         newPaymentPointObj.apiKey = apiKey;
-        $.post("/admin/addEmployee", JSON.stringify(newPaymentPointObj), (data) => {
+        $.post("/admin/addPaymentPoint", JSON.stringify(newPaymentPointObj), (data) => {
             if (data.success) {
-                console.log("successfully added employee");
+                console.log("successfully added payment point");
                 $("#successContainerAddedPaymentPoint").empty().append(`
             <div class="alert alert-success hide" role="alert">
             <h4 class="alert-heading">Operation Successful!</h4>
-            Employee added successfully.`);
+            Payment Point added successfully.`);
 
-                /*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
+                /*Please <a href="./paymentpoints.html" class="alert-link">refresh</a> the page in
                 order to view the updated information in the table.
                 </div>
                 `);*/
@@ -240,7 +185,7 @@ function addPaymentPoint() {
                 //$('#addPaymentPointModal').modal('hide');
                 fetchDataAndPopulateTable();
             } else {
-                console.log("failed to add employee");
+                console.log("failed to add payment point");
                 console.log(data.message);
             }
         });
@@ -250,8 +195,8 @@ function addPaymentPoint() {
 }
 
 function retrieveValuesFromAddPaymentPoint(newPaymentPointObj) {
-    newPaymentPointObj.employeeName = $("#addDescription").val().trim();
-    if (isEmpty(newPaymentPointObj.employeeName)) return false;
+    newPaymentPointObj.description = $("#addDescription").val().trim();
+    if (isEmpty(newPaymentPointObj.description)) return false;
 
     newPaymentPointObj.buildingId = $('#buildingSelectAddPaymentPoint').val().trim();
     if ((newPaymentPointObj.buildingId) == "default") return false;
@@ -272,12 +217,12 @@ function isEmpty(field) {
 
 
 function fetchPaymentPointData(resolve, reject) {
-    $.post("/admin/getEmployeesByCompanyId", JSON.stringify({ "apiKey": apiKey, "companyId": companyId }), (data) => {
+    $.post("/admin/getPaymentPointsByCompanyId", JSON.stringify({ "apiKey": apiKey, "companyId": companyId }), (data) => {
         if (data.success) {
             paymentPointData = data.data;
             resolve();
         } else {
-            reject("Failed to retrieve employee information. Please try again later");
+            reject("Failed to retrieve payment point information. Please try again later");
         }
     });
 }

@@ -65,6 +65,11 @@ function employees()
 	window.location.replace("employees.html");
 }
 
+function paymentpoints()
+{
+	window.location.replace("paymentpoints.html");
+}
+
 function logout(){
 	localStorage.clear();
 	window.location.replace("login.html");

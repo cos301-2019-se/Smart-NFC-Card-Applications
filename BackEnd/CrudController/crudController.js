@@ -14,6 +14,7 @@
  *	2019/06/25	Savvas		1.2			Added all updates and deletes
  *	2019/07/08	Jared		2.0			Make async into sync for all
  *	2019/07/17	Savvas		2.1			Added necessary comments and removed unnecessary comments
+ *	2019/07/27	Savvas		2.2			Added Update and Deletes for NFC Payment Points and Transactions
  *
  *	Functional Description:		 This class is the interface used by the Logic Components of the Link System to 
  *                               interact with the database. This class facilitates communication with the database.
@@ -45,21 +46,21 @@ class CrudController {
 		this.apiKey = null;
 		this.isEmployee = true;
 
-		/*this.client = new Client({
-		  user: 'postgres',
-		  host: 'localhost',
-		  database: 'link',
-		  password: 'nbuser',
-		  port: 5432,
-		});*/
+		/*
+		this.client = new Client({
+			user: 'postgres',
+			host: 'localhost',
+			database: 'link',
+			password: 'nbuser',
+			port: 5432,
+		});
+		*/
 
 		this.client = new Client({
 			connectionString: process.env.DATABASE_URL
 		});
 
 		this.client.connect();
-
-
 	}
 
 	initialize(apiKey) {
@@ -1367,9 +1368,6 @@ class CrudController {
 		}
 	}
 
-	//UD
-
-
 
 	//Client
 
@@ -1465,8 +1463,6 @@ class CrudController {
 			return ret;
 		}
 	}
-
-	//CR
 
 	/**
 	* Update the details of the client with the given ID based on the input parameters.
@@ -1764,8 +1760,6 @@ class CrudController {
 		}
 	}
 
-
-	//CR
 
 	/**
 	* Update the details of the Temporary WiFi Access WiFi parameters with the given ID based on the input parameters.
@@ -2116,7 +2110,6 @@ class CrudController {
 		}
 	}
 
-	//CR
 	/**
 	* Update the details of the Visitor Package with the given ID based on the input parameters.
 	* Parameters passed as undefined are ignored in the update (i.e. they are not updated), 
@@ -2244,8 +2237,6 @@ class CrudController {
 		}
 	}
 
-
-	//CR
 
 	/**
     * Deletes a Temporary Physical Access entry given an ID
@@ -2527,7 +2518,6 @@ class CrudController {
 		}
 	}
 
-	//CR
 	/**
 	* Update the details of the Wallet with the given ID based on the input parameters.
 	* Parameters passed as undefined are ignored in the update (i.e. they are not updated), 
@@ -2592,11 +2582,11 @@ class CrudController {
 			return ret;
 		}
 	}
-	
-	
+
+
 	//new for payment!
-	
-	
+
+
 	/**
 	*	Creates a new nfcPaymentPoint
 	*	@param buildingId 
@@ -2625,8 +2615,8 @@ class CrudController {
 		}
 
 	}
-	
-	
+
+
 
 	/**
 	*	Retrieves a nfcPaymentPoint using nfcPaymentPointId
@@ -2661,7 +2651,7 @@ class CrudController {
 			return ret;
 		}
 	}
-	
+
 	/**
 	*	Retrieves a set of nfcPaymentPoints using buildingId
 	*	@param buildingId 
@@ -2684,7 +2674,7 @@ class CrudController {
 				ret = this.buildDefaultResponseObject(true, "Successfully retrieved nfcPaymentPoints", false, true);
 				for (var i = 0; i < res.rows.length; i++) {
 					var obj = {};
-					
+
 					obj.nfcPaymentPointId = res.rows[i].nfcpaymentpointid;
 					obj.buildingId = res.rows[i].buildingid;
 					obj.description = res.rows[i].description;
@@ -2701,18 +2691,74 @@ class CrudController {
 			return ret;
 		}
 	}
-	
-	
-	
-	
-	
-	//update and delete (Savvas)
-	
-	
-	
-	
-	
-	
+
+
+	/**
+	* Update the details of the NFC Payment Point with the given ID based on the input parameters.
+	* Parameters passed as undefined are ignored in the update (i.e. they are not updated), 
+	* for all other paramter values (including null) an update attempt will be made in the database
+	* @param nfcPaymentPointId
+	* @param buildingId
+	* @param description
+	* @return {success, message, data : null}
+	*/
+	async updateNfcPaymentPoint(nfcPaymentPointId, buildingId, description) {
+		if (!this.validateNumeric(nfcPaymentPointId)) {
+			return this.buildDefaultResponseObject(false, "Invalid NFC Payment Point ID provided", true);
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["buildingId", "description"], [buildingId, description], paramNames, paramValues);
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
+		}
+
+		var query = this.constructUpdate("NfcPaymentPoints", paramNames, "nfcPaymentPointId", nfcPaymentPointId);
+		var ret = null;
+		let res;
+		try {
+			res = await this.client.query(query, paramValues);
+			ret = this.buildDefaultResponseObject(true, "Successfully updated NFC Payment Point", true);
+			return ret;
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+
+	/**
+    * Deletes a NFC Payment Point given an ID
+    * @param nfcPaymentPointId
+	* @return {success, message, data : null}
+    */
+	async deleteNfcPaymentPoint(nfcPaymentPointId) {
+		if (!this.validateNumeric(nfcPaymentPointId)) {
+			return this.buildDefaultResponseObject(false, "Invalid NFC Payment Point ID provided", true);
+		}
+
+		var query = this.constructDelete("NfcPaymentPoints", "nfcPaymentPointId");
+		var ret = null;
+		let res;
+		try {
+			res = await this.client.query(query, [nfcPaymentPointId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted NFC Payment Point", true);
+			return ret;
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+
+
+
 	/**
 	*	Creates a new transaction
 	*	@param walletId 
@@ -2747,8 +2793,8 @@ class CrudController {
 		}
 
 	}
-	
-	
+
+
 
 	/**
 	*	Retrieves a transaction using transactionId
@@ -2786,7 +2832,7 @@ class CrudController {
 			return ret;
 		}
 	}
-	
+
 	/**
 	*	Retrieves a set of transactions using walletId
 	*	@param walletId 
@@ -2809,7 +2855,7 @@ class CrudController {
 				ret = this.buildDefaultResponseObject(true, "Successfully retrieved transactions", false, true);
 				for (var i = 0; i < res.rows.length; i++) {
 					var obj = {};
-					
+
 					obj.transactionId = res.rows[i].transactionid;
 					obj.walletId = res.rows[i].walletid;
 					obj.amount = res.rows[i].amount;
@@ -2829,7 +2875,7 @@ class CrudController {
 			return ret;
 		}
 	}
-	
+
 	/**
 	*	Retrieves a set of transactions using nfcPaymentPointId
 	*	@param nfcPaymentPointId 
@@ -2852,7 +2898,7 @@ class CrudController {
 				ret = this.buildDefaultResponseObject(true, "Successfully retrieved transactions", false, true);
 				for (var i = 0; i < res.rows.length; i++) {
 					var obj = {};
-					
+
 					obj.transactionId = res.rows[i].transactionid;
 					obj.walletId = res.rows[i].walletid;
 					obj.amount = res.rows[i].amount;
@@ -2872,8 +2918,75 @@ class CrudController {
 			return ret;
 		}
 	}
-	
-	
+
+	/**
+	* Update the details of the Transaction with the given ID based on the input parameters.
+	* Parameters passed as undefined are ignored in the update (i.e. they are not updated), 
+	* for all other paramter values (including null) an update attempt will be made in the database
+	* @param transactionId
+	* @param walletId
+	* @param amount
+	* @param nfcPaymentPointId
+	* @param transactionTime
+	* @param description
+	* @return {success, message, data : null}
+	*/
+	async updateTransaction(transactionId, walletId, amount, nfcPaymentPointId, transactionTime, description) {
+		if (!this.validateNumeric(transactionId)) {
+			return this.buildDefaultResponseObject(false, "Invalid Transaction ID provided", true);
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["walletId", "amount", "nfcPaymentPointId", "transactionTime", "description"], [walletId, amount, nfcPaymentPointId, transactionTime, description], paramNames, paramValues);
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
+		}
+
+		var query = this.constructUpdate("Transaction", paramNames, "transactionId", transactionId);
+		var ret = null;
+		let res;
+		try {
+			res = await this.client.query(query, paramValues);
+			ret = this.buildDefaultResponseObject(true, "Successfully updated Transaction", true);
+			return ret;
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+
+	/**
+    * Deletes a Transaction given an ID
+    * @param transactionId
+	* @return {success, message, data : null}
+    */
+	async deleteTransaction(transactionId) {
+		if (!this.validateNumeric(transactionId)) {
+			return this.buildDefaultResponseObject(false, "Invalid Transaction ID provided", true);
+		}
+
+		var query = this.constructDelete("Transaction", "transactionId");
+		var ret = null;
+		let res;
+		try {
+			res = await this.client.query(query, [transactionId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted Transaction", true);
+			return ret;
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+
+
 
 	//Jared Helpers
 	/**

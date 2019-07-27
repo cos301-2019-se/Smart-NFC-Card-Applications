@@ -2831,10 +2831,7 @@ class AdminLogic
                     if(payPointObj.success)
 					{
 
-                        let updatePayPointObj = await this.sharedLogic.crudController.updateNfcPaymentPoint
-						(this.body.nfcPaymentPointId, 
-						this.body.buildingId,
-						this.body.description);
+                        let updatePayPointObj = await this.sharedLogic.crudController.updateNfcPaymentPoint(this.body.nfcPaymentPointId, this.body.buildingId, this.body.description);
 						
 						/*//for now, while update and delete not in
 						let updatePayPointObj = {success: true, message: "Successfully updated", data: null};*/

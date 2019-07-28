@@ -140,4 +140,8 @@ describe('LoggedInService', () => {
     const service: LoggedInService = TestBed.get(LoggedInService);
     expect(service).toBeTruthy();
   });
+
+  afterAll(() => {    
+    RequestModuleService.demoMode = true;
+  });
 });

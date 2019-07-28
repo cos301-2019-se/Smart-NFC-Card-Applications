@@ -82,6 +82,10 @@ describe('RequestModuleService', () => {
     });
   });
 
+  afterAll(() => {    
+    RequestModuleService.demoMode = true;
+  });
+
   /*it('login should return data from back-end', () => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = false;

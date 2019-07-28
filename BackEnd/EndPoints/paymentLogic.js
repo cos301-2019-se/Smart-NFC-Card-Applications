@@ -120,6 +120,7 @@ class PaymentLogic {
      */
     async makePayment() {
 
+
         if (!this.body.walletId || !this.sharedLogic.validateNumeric(this.body.walletId))
             return this.sharedLogic.endServe(false, "No valid Wallet ID provided", null);
         if (!this.body.amount || !this.isRealNumber(this.body.amount))
@@ -129,6 +130,9 @@ class PaymentLogic {
         if (!this.body.macAddress || !this.validateMacAddress(this.body.macAddress))
             return this.sharedLogic.endServe(false, "No valid Mac Address provided", null);
 
+        if (this.demoMode) {
+            return this.sharedLogic.endServe(true, "Demo Transaction successful", { "transactionId": 0 });
+        }
 
         var description = "";  //description can be blank
         if (this.body.description)
@@ -140,7 +144,7 @@ class PaymentLogic {
 
         //make sure that caller is not adding money to wallet
         if (amount <= 0)
-            return this.sharedLogic.endServe(false, "Negative payments are not allowed", null);
+            return this.sharedLogic.endServe(false, "Negative payments or payments of zero credits are not allowed (payment amount must be positive)", null);
 
         //fetch the visitor package
         let visitorPackage = await this.sharedLogic.crudController.getVisitorPackageByLinkWalletId(walletId);

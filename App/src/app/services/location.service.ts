@@ -79,20 +79,19 @@ export class LocationService {
    * Function that gets your current position and gives you directions to the given latitude and longitude
    * @param latitude number latitude of the destination
    * @param longitude number longitude of the destination
-   * @param accept Function that should trigger if it can navigate you
-   * @param reject Function that should trigger if it cannot navigate you
    */
-  navigate(destination: LocationModel, accept: Function, reject: Function){
+  navigate(destination: LocationModel){
     let source: LocationModel;
-    this.getCurrentPosition()
+    return this.getCurrentPosition()
     .then(res => {
-      source = new LocationModel(res.coords.latitude, res.coords.longitude, "Current Location");
-      return this.getDirections(source, destination);
-    }).catch(err => reject(err))    
-    .then(
-      success => accept(),
-      error => reject(error)
-    ).catch(err => reject(err))
-    
+      if (res == null) throw "Location not enabled. Please enable it first.";
+      else {
+        source = new LocationModel(res.coords.latitude, res.coords.longitude, "Current Location");
+        return this.getDirections(source, destination);
+      }
+    })
+    .catch(err => {
+      throw err;
+    })    
   }
 }

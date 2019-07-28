@@ -144,11 +144,14 @@ export class ShareTabPage implements OnInit{
    * @param destination where to go to
    */
   navigate(destination){
-    this.showMessage(`Please wait while navigator is launched`, MessageType.info, 5000);
-    let dest = new LocationModel(destination.latitude, destination.longitude, destination.label);  
-    this.locationService.navigate(dest, () => {
-      this.showMessage(`Navigator launching`, MessageType.success, 5000);
-    }, (err) => {
+    this.showMessage('', MessageType.reset);
+    let dest = new LocationModel(destination.latitude, destination.longitude, destination.label);    
+    this.showMessage(`Please wait while navigator is launched.`, MessageType.info, 5000);
+    this.locationService.navigate(dest)
+    .then(() => {
+      this.showMessage(`Navigator launching.`, MessageType.success, 5000);
+    })
+    .catch( (err) => {
       this.showMessage(`Could not open launcher: ${err}`, MessageType.error, 5000);
     });
   }

@@ -16,7 +16,7 @@
 *	Assumptions:  That all the injectables are working
 *	Constraints: 	None
 */
-import { NgModule } from '@angular/core';
+import { NgModule, enableProdMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -38,6 +38,8 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
 import { Device } from '@ionic-native/device/ngx';
 import { IonicStorageModule } from '@ionic/storage';
+import { Toast } from '@ionic-native/toast/ngx';
+import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 
 import { LocalStorageService } from './services/local-storage.service';
 import { BusinessCardsService } from './services/business-cards.service';
@@ -74,6 +76,7 @@ import { DateService } from './services/date.service';
   providers: [
     SplashScreen,
     StatusBar,
+    Toast,
     AndroidPermissions,
     LocalStorageService,
     BusinessCardsService,
@@ -89,8 +92,10 @@ import { DateService } from './services/date.service';
     FilterService,
     LoggedInService,
     DateService,
+    Diagnostic,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
+enableProdMode();

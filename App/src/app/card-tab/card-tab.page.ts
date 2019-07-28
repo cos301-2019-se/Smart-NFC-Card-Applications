@@ -242,9 +242,11 @@ export class CardTabPage implements OnInit{
     this.showMessage('', MessageType.reset);
     let dest = new LocationModel(destination.latitude, destination.longitude, destination.label);    
     this.showMessage(`Please wait while navigator is launched.`, MessageType.info, 5000);
-    this.locationService.navigate(dest, () => {
+    this.locationService.navigate(dest)
+    .then(() => {
       this.showMessage(`Navigator launching.`, MessageType.success, 5000);
-    }, (err) => {
+    })
+    .catch( (err) => {
       this.showMessage(`Could not open launcher: ${err}`, MessageType.error, 5000);
     });
   }
@@ -257,5 +259,19 @@ export class CardTabPage implements OnInit{
    */
   showMessage(message: string, type: number, timeout: number = 5000) {
     this.eventEmitterService.messageEvent(message, type, timeout);
+  }
+  
+  /**
+   * Function that creates a link that can be clicked by adding http if needed
+   * @param link string website link with or without http(s)
+   * @return string link that can be clicked on
+   */
+  createClickableLink(link: string){
+    if (link.indexOf('http') == 0) {
+      return link;
+    }
+    else {
+      return `http://${link}`;
+    }
   }
 }

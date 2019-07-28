@@ -36,7 +36,7 @@ import { LocalStorageService } from './local-storage.service';
 })
 export class RequestModuleService {
 
-  demoMode: boolean = false;
+  static demoMode: boolean = false;
   apiKeyName: string = 'apiKey';
   apiKey: string = '';
 
@@ -79,7 +79,7 @@ export class RequestModuleService {
     "message": "Successfully retrieved employee details",
     "data":{
       "building": {
-        "BranchName": "Building Name",
+        "branchName": "Building Name",
         "latitude": -24.1234,
         "longitude": 27.891
       },
@@ -151,7 +151,7 @@ export class RequestModuleService {
    * @return Observable<Object> response containing json from back-end server
    */
   login(username: string, password: string) {
-    if(this.demoMode) {
+    if(RequestModuleService.demoMode) {
       this.apiKey = this.loginStub['data']['apiKey'];
       return new Observable<Object>(observer => {
         observer.next(this.loginStub);
@@ -186,7 +186,7 @@ export class RequestModuleService {
    * @return Observable<Object> response containing json from back-end server
    */
   checkLoggedIn() {
-    if(this.demoMode) {
+    if(RequestModuleService.demoMode) {
       if(this.loginStub['data']['apiKey'] == this.apiKey){
         return new Observable<Object>(observer => {
           observer.next(this.loginStub);
@@ -211,7 +211,7 @@ export class RequestModuleService {
    * @return Observable<Object> response containing json from back-end server
    */
   getBusinessCard(employeeId: number) {
-    if(this.demoMode) {
+    if(RequestModuleService.demoMode) {
       return new Observable<Object>(observer => {
         observer.next(this.businessCardStub);
         observer.complete();
@@ -236,7 +236,7 @@ export class RequestModuleService {
    * @return Observable<Object> response containing json from back-end server
    */
   addVisitorPackage(employeeId: number, startTime: string, endTime: string, macAddress: string, wifiParamsId: number, roomId: number, limit: number, spent: number = 0) {
-    if (this.demoMode) {
+    if (RequestModuleService.demoMode) {
       return new Observable<Object>(observer => {
         observer.next(this.visitorPackageStub);
         observer.complete();
@@ -262,7 +262,7 @@ export class RequestModuleService {
    * @return Observable<Object> response containing json from back-end server
    */
   updateVisitorPackage(packageId: number, employeeId: number, startTime: string, endTime: string, wifiParamsId: number, roomId: number, limit: number) {
-    if (this.demoMode) {
+    if (RequestModuleService.demoMode) {
       return new Observable<Object>(observer => {
         observer.next(this.visitorPackageStub);
         observer.complete();
@@ -299,7 +299,7 @@ export class RequestModuleService {
    * @return Observable<Object> response containing json from back-end server
    */
   getEmployeeDetails(employeeId: number){
-    if (this.demoMode) {
+    if (RequestModuleService.demoMode) {
       return new Observable<Object>(observer => {
         observer.next(this.employeeDetailsStub);
         observer.complete();

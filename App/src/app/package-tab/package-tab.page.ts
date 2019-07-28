@@ -164,9 +164,11 @@ export class PackageTabPage implements OnInit{
     this.showMessage('', MessageType.reset);
     let dest = new LocationModel(destination.latitude, destination.longitude, destination.label);    
     this.showMessage(`Please wait while navigator is launched.`, MessageType.info, 5000);
-    this.locationService.navigate(dest, () => {
+    this.locationService.navigate(dest)
+    .then(() => {
       this.showMessage(`Navigator launching.`, MessageType.success, 5000);
-    }, (err) => {
+    })
+    .catch( (err) => {
       this.showMessage(`Could not open launcher: ${err}`, MessageType.error, 5000);
     });
   }

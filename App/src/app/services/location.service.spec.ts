@@ -23,17 +23,28 @@ import { LocationService } from './location.service';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
 import { LocationModel } from '../models/location.model';
+import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 
 describe('LocationService', () => {
   beforeEach(() => TestBed.configureTestingModule({
     providers: [
       Geolocation,
-      LaunchNavigator
+      LaunchNavigator,
+      Diagnostic
     ]
   }));
 
   it('should be created', () => {
     const service: LocationService = TestBed.get(LocationService);
     expect(service).toBeTruthy();
+  });
+
+  it('navigate should return an error if geolocation is not enabled', (done) => {
+    const service: LocationService = TestBed.get(LocationService);
+    service.navigate(new LocationModel(0,0,''))
+    .catch(err => {
+      expect(err).toEqual("Location not enabled. Please enable it first.");
+      done();
+    })
   });
 });

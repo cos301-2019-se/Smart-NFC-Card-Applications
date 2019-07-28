@@ -10,18 +10,21 @@
 *	Date		    Author		Version		Changes
 *	-----------------------------------------------------------------------------------------
 *	2019/06/28	Wian		  1.0		    Original
+*	2019/07/28	Wian		  1.1		    Added double back press to exit app
 *
 *	Functional Description:   This class provides the component that manages tabs for the app
 *	Error Messages:   “Error”
 *	Assumptions:  That all the injectables are working
 *	Constraints: 	None
 */
-import { Component, ViewChild, OnInit } from '@angular/core';
-import { PopoverController, IonSearchbar } from '@ionic/angular';
+import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import { Toast } from '@ionic-native/toast/ngx';
+import { PopoverController, IonSearchbar, Platform, ToastController } from '@ionic/angular';
 import { PopoverMenuComponent } from '../popover-menu/popover-menu.component';
 import { EventEmitterService } from '../services/event-emitter.service';   
 import { FilterService } from '../services/filter.service';
 import { LoggedInService } from '../services/logged-in.service';
+import { Subscription } from 'rxjs';
 
 /**
 * Purpose:	This enum provides message types
@@ -37,14 +40,14 @@ export enum MessageType{
 * Purpose:	This class provides the component that manages tabs
 *	Usage:		This class is used show and change the selected tab
 *	@author:	Wian du Plooy
-*	@version:	1.0
+*	@version:	1.1
 */
 @Component({
   selector: 'app-tabs',
   templateUrl: 'tabs.page.html',
   styleUrls: ['tabs.page.scss']
 })
-export class TabsPage implements OnInit{
+export class TabsPage implements OnInit, OnDestroy{
 
   @ViewChild('search') searchbar : IonSearchbar;
 
@@ -55,6 +58,10 @@ export class TabsPage implements OnInit{
   errorMessage: string = null;
   successMessage: string = null;
   infoMessage: string = null;
+
+  doubleTapTimeframe: number = 3000;
+  backButtonPressCount: number = 0;
+  exitSubscription: Subscription;
 
   tabButtons: Object = {
     'manage-tab': [
@@ -81,18 +88,34 @@ export class TabsPage implements OnInit{
   activeTab: string = 'manage-tab'; 
 
   /**
-   * Constructor that takes all the injectables
+   * Constructor that takes all the injectables and registers back button event
+   * @param platform Platform Injectable
+   * @param toastController Toast Injectable
    * @param popoverController PopoverController Injectable
    * @param eventEmitterService EventEmitterService Injectable
    * @param filter FilterService injectable
    * @param loginService: LoggedInService
    */
   constructor(
+    private platform: Platform,
+    private toastController: Toast,
     private popoverController: PopoverController,    
     private eventEmitterService: EventEmitterService,
     private filter: FilterService,
     private loginService: LoggedInService
-  ){}
+  ){
+    this.backButtonPressCount = 0;
+    this.exitSubscription = this.platform.backButton.subscribe(() => {
+      this.backButtonPressCount++;
+      if (this.backButtonPressCount < 2) {
+        this.toastController.show(`Tap again to exit`, this.doubleTapTimeframe.toString(), 'center');
+        setTimeout(() => { this.backButtonPressCount = 0; }, this.doubleTapTimeframe);
+      }
+      else {
+        navigator['app'].exitApp();
+      }
+    });
+  }
 
   ngOnInit() {       
     this.eventEmitterService.messageSubscribe(
@@ -100,6 +123,13 @@ export class TabsPage implements OnInit{
           this.showMessage(message, type, timeout);
         })
     );  
+  }
+
+  /**
+   * Function that stops listening for the back button event when the app is being closed
+   */
+  ngOnDestroy(){
+    this.exitSubscription.unsubscribe();
   }
 
   /**

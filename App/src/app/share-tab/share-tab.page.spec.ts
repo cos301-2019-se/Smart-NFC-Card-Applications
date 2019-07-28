@@ -33,6 +33,7 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
 import { HttpClientModule } from '@angular/common/http';
 import { RequestModuleService } from '../services/request-module.service';
+import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 
 describe('ShareTab', () => {
   let component: ShareTabPage;
@@ -54,7 +55,8 @@ describe('ShareTab', () => {
         NFC, Ndef,
         Geolocation,
         LaunchNavigator,
-        RequestModuleService
+        RequestModuleService,
+        Diagnostic
       ]
     }).compileComponents();
   }));
@@ -67,5 +69,13 @@ describe('ShareTab', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('createClickableLink should append http:// to a link without it', () => {
+    expect(component.createClickableLink('cs.up.ac.za')).toEqual('http://cs.up.ac.za');
+  });
+
+  it('createClickableLink should just return a link that starts with http(s)://', () => {
+    expect(component.createClickableLink('https://absa.co.za')).toEqual('https://absa.co.za');
   });
 });

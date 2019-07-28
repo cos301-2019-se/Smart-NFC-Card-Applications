@@ -10,6 +10,7 @@
 *	Date		    Author		Version		Changes
 *	-----------------------------------------------------------------------------------------
 *	2019/06/26	Wian		  1.0		    Original
+*	2019/07/28	Wian		  1.1		    DateTime pickers now have more realistic min and max values
 *
 *	Functional Description:   This file provides the modal to create visitor packages
 *	Error Messages:   “Error”
@@ -43,7 +44,7 @@ enum messageType{
 * Purpose:	This class provides visitor package creation component
 *	Usage:		This class can be used to allow an employee to create a visitor package for a client
 *	@author:	Wian du Plooy
-*	@version:	1.0
+*	@version:	1.1
 */
 @Component({
   selector: 'app-create-visitor-package',
@@ -275,5 +276,20 @@ export class CreateVisitorPackagePage implements OnInit {
     .catch(() => {
       this.showMessage(`NFC seems to be off. Please try turing it on.`, messageType.error, 0);
     })
+  }
+
+  /**
+   * Function used to get min or max date for the date time pickers
+   * @param isMax boolean which if true, function returns max date, otherwise min date is returned
+   * @return string either today (min) or 2 years from today (max)
+   */
+  pickerDate(isMax: boolean){
+    let today: Date = new Date();
+    if (isMax) {
+      return new Date(today.setFullYear(today.getFullYear() + 2)).toISOString();
+    }
+    else {
+      return today.toISOString();
+    }
   }
 }

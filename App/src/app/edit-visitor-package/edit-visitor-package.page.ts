@@ -248,4 +248,19 @@ export class EditVisitorPackagePage implements OnInit {
     let endTimeString = this.dateService.databaseDate(endTime);
     return this.requestService.updateVisitorPackage(this.packageToUpdate.packageId, employeeId, startTimeString, endTimeString, wifiParamsId, roomId, limit);
   }
+
+  /**
+   * Function used to get min or max date for the date time pickers
+   * @param isMax boolean which if true, function returns max date, otherwise min date is returned
+   * @return string either today (min) or 2 years from today (max)
+   */
+  pickerDate(isMax: boolean){
+    let today: Date = new Date();
+    if (isMax) {
+      return new Date(today.setFullYear(today.getFullYear() + 2)).toISOString();
+    }
+    else {
+      return today.toISOString();
+    }
+  }
 }

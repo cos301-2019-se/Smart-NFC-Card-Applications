@@ -10,6 +10,7 @@
 *	Date		    Author		Version		Changes
 *	-----------------------------------------------------------------------------------------
 *	2019/07/10	Wian		  1.0		    Original
+*	2019/07/28	Wian		  1.1		    Fixed scenario where subject returned after response received
 *
 *	Functional Description:   This service is used to check if the user is logged in or not
 *	Error Messages:   “Error”
@@ -131,44 +132,46 @@ export class LoggedInService {
    */
   refreshAccountDetails(){
     let subject = new Subject<Object>();
-    this.req.getEmployeeDetails(this.account.employeeId).subscribe(response => {
-      if (response['success'] === true) {
-        let accountDetails = response['data'];
-        let buildingDetails = accountDetails['building'];
-        if (buildingDetails != undefined) {
-          this.account.building = new LocationModel(buildingDetails['latitude'], buildingDetails['longitude'], buildingDetails['branchName']); 
-        }
-        let roomDetail = accountDetails['rooms'];
-        this.account.rooms = [];
-        if (this.account.rooms != undefined) {
-          roomDetail.forEach(room => {
-            this.account.rooms.push(new RoomModel(room['roomId'], room['roomName']));
+    setTimeout(() => {
+      this.req.getEmployeeDetails(this.account.employeeId).subscribe(response => {
+        if (response['success'] === true) {
+          let accountDetails = response['data'];
+          let buildingDetails = accountDetails['building'];
+          if (buildingDetails != undefined) {
+            this.account.building = new LocationModel(buildingDetails['latitude'], buildingDetails['longitude'], buildingDetails['branchName']); 
+          }
+          let roomDetail = accountDetails['rooms'];
+          this.account.rooms = [];
+          if (this.account.rooms != undefined) {
+            roomDetail.forEach(room => {
+              this.account.rooms.push(new RoomModel(room['roomId'], room['roomName']));
+            });
+          }
+          let wifiDetails = accountDetails['wifi'];
+          this.account.wifi = new WifiDetailsModel(wifiDetails['wifiParamsId'], wifiDetails['ssid'], wifiDetails['networkType'], wifiDetails['password']);
+          this.req.getBusinessCard(this.account.employeeId).subscribe(response => {
+            if (response['success'] === true) {
+              let cardDetails = response['data'];
+              this.account.company = cardDetails['companyName'];
+              this.cardService.setOwnBusinessCard(cardDetails);
+              subject.next({success: true, message: 'Successfull refreshed account details.'});
+              subject.complete();
+            }
+            else {
+              subject.next({success: false, message: response['message']});
+              subject.complete();
+            }
           });
         }
-        let wifiDetails = accountDetails['wifi'];
-        this.account.wifi = new WifiDetailsModel(wifiDetails['wifiParamsId'], wifiDetails['ssid'], wifiDetails['networkType'], wifiDetails['password']);
-        this.req.getBusinessCard(this.account.employeeId).subscribe(response => {
-          if (response['success'] === true) {
-            let cardDetails = response['data'];
-            this.account.company = cardDetails['companyName'];
-            this.cardService.setOwnBusinessCard(cardDetails);
-            subject.next({success: true, message: 'Successfull refreshed account details.'});
-            subject.complete();
-          }
-          else {
-            subject.next({success: false, message: response['message']});
-            subject.complete();
-          }
-        });
-      }
-      else {
-        subject.next({success: false, message: response['message']});
+        else {
+          subject.next({success: false, message: response['message']});
+          subject.complete();
+        }
+      }, err => {
+        subject.next({success: false, message: 'Error refreshing account details.'});
         subject.complete();
-      }
-    }, err => {
-      subject.next({success: false, message: 'Error refreshing account details.'});
-      subject.complete();
-    });
+      });
+    },50);
     return subject.asObservable();
   }
 

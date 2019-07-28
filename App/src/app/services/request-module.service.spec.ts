@@ -59,19 +59,6 @@ describe('RequestModuleService', () => {
     });
   });
 
-  it('checkLoggedIn should return false if apiKey was different from the loginStub', (done) => {
-    const service: RequestModuleService = TestBed.get(RequestModuleService);
-    service.demoMode = true;
-    service.login("", "").subscribe(res => {
-      service.logout().subscribe(data => {
-        service.checkLoggedIn().subscribe(data => {
-          expect(data).toBe(service.logoutStub);
-          done();
-        });
-      });
-    });
-  });
-
   it('logout should return stub data while in demo mode', (done) => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
     service.demoMode = true;

@@ -36,7 +36,7 @@ import { LocalStorageService } from './local-storage.service';
 })
 export class RequestModuleService {
 
-  demoMode: boolean = false;
+  demoMode: boolean = true;
   apiKeyName: string = 'apiKey';
   apiKey: string = '';
 
@@ -79,7 +79,7 @@ export class RequestModuleService {
     "message": "Successfully retrieved employee details",
     "data":{
       "building": {
-        "BranchName": "Building Name",
+        "branchName": "Building Name",
         "latitude": -24.1234,
         "longitude": 27.891
       },

@@ -37,12 +37,12 @@ describe('RequestModuleService', () => {
 
   it('should be created', () => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
+    RequestModuleService.demoMode = true;
     expect(service).toBeTruthy();
   });
 
   it('login should return stub data while in demo mode', (done) => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
-    service.demoMode = true;
     service.login("","").subscribe(data => {
       expect(data).toBe(service.loginStub);
       done();
@@ -51,7 +51,6 @@ describe('RequestModuleService', () => {
 
   it('checkLoggedIn should return true if apiKey was the same as the loginStub', (done) => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
-    service.demoMode = true;
     service.apiKey = service.loginStub['data']['apiKey'];
     service.checkLoggedIn().subscribe(data => {
       expect(data).toBe(service.loginStub);
@@ -61,7 +60,6 @@ describe('RequestModuleService', () => {
 
   it('logout should return stub data while in demo mode', (done) => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
-    service.demoMode = true;
     service.logout().subscribe(data => {
       expect(data).toBe(service.logoutStub);
       done();
@@ -70,7 +68,6 @@ describe('RequestModuleService', () => {
 
   it('getBusinessCard should return stub data while in demo mode', (done) => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
-    service.demoMode = true;
     service.getBusinessCard(0).subscribe(data => {
       expect(data).toBe(service.businessCardStub);
       done();
@@ -79,7 +76,6 @@ describe('RequestModuleService', () => {
 
   it('addVisitorPackage should return stub data while in demo mode', (done) => {
     const service: RequestModuleService = TestBed.get(RequestModuleService);
-    service.demoMode = true;
     service.addVisitorPackage(0, '2019/07/01', '2019/07/01', 'ae87af78ef', 0, 0, 100).subscribe(data => {
       expect(data).toBe(service.visitorPackageStub);
       done();

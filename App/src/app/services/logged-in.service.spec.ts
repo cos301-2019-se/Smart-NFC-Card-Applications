@@ -40,7 +40,7 @@ describe('LoggedInService', () => {
         RequestModuleService
       ]
     });
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 2000;
+    RequestModuleService.demoMode = true;
   });
 
   it('should be created', () => {

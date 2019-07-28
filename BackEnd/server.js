@@ -65,6 +65,12 @@ function run(callback) {
 				adminLogic.handle();
 				break;
 
+			case "payment":
+				var PaymentLogic = require('./EndPoints/paymentLogic.js');
+				var paymentLogic = new PaymentLogic(req, res);
+				paymentLogic.handle();
+				break;
+				
 			case "/":
 				res.statusCode = 200;
 				res.setHeader('Content-Type', 'text/html');

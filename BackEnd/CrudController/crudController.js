@@ -30,7 +30,7 @@
 *               All functions of this class return Javascript objects containing "success", "message" and "data" fields. Note that if a function fails 
 *               this will be indicated with success being false and the data field will also be null
 *	@author:	Savvas Panagiotou
-*	@version:	2.1
+*	@version:	2.2
 */
 
 const { Pool, Client } = require('pg');
@@ -55,7 +55,7 @@ class CrudController {
 			port: 5432,
 		});
 		*/
-
+		
 		this.client = new Client({
 			connectionString: process.env.DATABASE_URL
 		});

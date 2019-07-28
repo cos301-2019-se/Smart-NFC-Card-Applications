@@ -21,6 +21,7 @@ import { Injectable } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LaunchNavigator, LaunchNavigatorOptions } from '@ionic-native/launch-navigator/ngx';
 import { LocationModel } from '../models/location.model';
+import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 
 /**
 * Purpose:	This class provides the location service injectable
@@ -40,7 +41,8 @@ export class LocationService {
    */
   constructor (
     private geolocation: Geolocation, 
-    private launchNavigator: LaunchNavigator
+    private launchNavigator: LaunchNavigator,
+    private diagnostic: Diagnostic
   ) { }
 
   /**
@@ -53,7 +55,7 @@ export class LocationService {
     let options: LaunchNavigatorOptions = {
       start: [source.getLatitude(), source.getLongitude()]
     };
-    return this.launchNavigator.navigate([destination.getLatitude(), destination.getLongitude()], options)
+    return this.launchNavigator.navigate([destination.getLatitude(), destination.getLongitude()], options);
   }
 
   /**
@@ -61,7 +63,16 @@ export class LocationService {
    * @return Promise<Geolocation> of the current position
    */
   getCurrentPosition(){
-    return this.geolocation.getCurrentPosition();
+    return this.diagnostic.isLocationEnabled()
+    .then(isAvailable => {
+      if (isAvailable){
+        return this.geolocation.getCurrentPosition();
+      }
+      else return null;
+    })
+    .catch(err => {
+      return null;
+    });
   }
 
   /**

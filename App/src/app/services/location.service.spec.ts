@@ -23,12 +23,14 @@ import { LocationService } from './location.service';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
 import { LocationModel } from '../models/location.model';
+import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 
 describe('LocationService', () => {
   beforeEach(() => TestBed.configureTestingModule({
     providers: [
       Geolocation,
-      LaunchNavigator
+      LaunchNavigator,
+      Diagnostic
     ]
   }));
 

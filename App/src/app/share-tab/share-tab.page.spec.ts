@@ -33,6 +33,7 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
 import { HttpClientModule } from '@angular/common/http';
 import { RequestModuleService } from '../services/request-module.service';
+import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 
 describe('ShareTab', () => {
   let component: ShareTabPage;
@@ -54,7 +55,8 @@ describe('ShareTab', () => {
         NFC, Ndef,
         Geolocation,
         LaunchNavigator,
-        RequestModuleService
+        RequestModuleService,
+        Diagnostic
       ]
     }).compileComponents();
   }));

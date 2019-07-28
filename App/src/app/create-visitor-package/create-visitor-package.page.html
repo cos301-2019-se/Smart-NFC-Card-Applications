@@ -28,11 +28,11 @@
   </ion-item>
   <ion-item lines="full"> 
     <ion-label>Start Date <ion-text color="danger">*</ion-text></ion-label>
-    <ion-datetime [(ngModel)]="startDate" display-format="YYYY/MM/DD" picker-format="YYYY MMM DD" placeholder='{{placeholderDate}}'></ion-datetime>
+    <ion-datetime [(ngModel)]="startDate" [min]="pickerDate(false)" [max]="pickerDate(true)" display-format="YYYY/MM/DD" picker-format="YYYY MMM DD" placeholder='{{placeholderDate}}'></ion-datetime>
   </ion-item>
   <ion-item lines="full"> 
     <ion-label>Start Time <ion-text color="danger">*</ion-text></ion-label>
-    <ion-datetime [(ngModel)]="startDate" display-format="H:mm" picker-format="H mm" placeholder='{{placeholderTime}}'></ion-datetime>
+    <ion-datetime [(ngModel)]="startDate" [min]="pickerDate(false)" [max]="pickerDate(true)" display-format="H:mm" picker-format="H mm" placeholder='{{placeholderTime}}'></ion-datetime>
   </ion-item>
   <ion-item lines="full">
     <ion-label>End Date <ion-text color="danger">*</ion-text></ion-label>

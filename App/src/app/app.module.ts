@@ -16,7 +16,7 @@
 *	Assumptions:  That all the injectables are working
 *	Constraints: 	None
 */
-import { NgModule } from '@angular/core';
+import { NgModule, enableProdMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 
@@ -96,3 +96,4 @@ import { DateService } from './services/date.service';
   bootstrap: [AppComponent]
 })
 export class AppModule {}
+enableProdMode();

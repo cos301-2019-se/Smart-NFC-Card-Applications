@@ -627,3 +627,9 @@ function logout(){
 	localStorage.clear();
 	window.location.replace("login.html");
 }
+
+function checkCompanies(){
+	if(localStorage.getItem("id")==1) {
+		$("#navBar").append('<li class="nav-item"><a class="nav-link" href="Companies.html">Companies</a></li>');
+	}
+}

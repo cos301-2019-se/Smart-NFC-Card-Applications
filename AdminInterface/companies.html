@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Companies</title>
+    <title>Employees</title>
     <link rel="icon" href="Image/favicon.ico">
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -17,13 +17,8 @@
                     //if the api key is invalid, go to login page
                     window.location.replace("login.html");
                 } else {
-				
-					//$(window).on('load', function(){
-						loadCompanies(function()
-						{
-							$("body").fadeIn(500);
-						});
-					//});
+                    // checkCompanies();
+                    $("body").fadeIn(1000);
                 }
             });
         } else {
@@ -39,12 +34,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
-<body style="display: none">
+<body style="display: none" onload="checkCompanies();">
 
 <!-- CONTENT OF PAGE GOES HERE -->
 <nav class="navbar navbar-expand-sm bg-light navbar-light fixed-top">
     <a class="navbar-brand font-weight-bold" href="home.html">Link</a>
-    <ul class="navbar-nav">
+    <ul class="navbar-nav" id="navBar">
         <li class="nav-item">
             <a class="nav-link" href="home.html">Home</a>
         </li>
@@ -52,11 +47,11 @@
             <a class="nav-link" href="buildings.html">Buildings</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link active" href="employees.html">Employees</a>
+            <a class="nav-link" href="employees.html">Employees</a>
         </li>
-		<li class="nav-item">
-			<a class="nav-link" href="paymentpoints.html">Payment Points</a>
-		</li>
+        <li class="nav-item">
+            <a class="nav-link" href="paymentpoints.html">Payment Points</a>
+        </li>
     </ul>
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">
@@ -71,6 +66,7 @@
 <h1 class="pb-1 text-center" style="margin-top:30px">Companies</h1>
 
 <div class="container col-md-11 border" style="padding-top:20px; padding-bottom:20px; margin-bottom:90px">
+    <div class="alert alert-warning alert-dismissible" id="mainErrorAlert" style="display:none"></div>
     <div class="text-center">
 
     </div>
@@ -86,20 +82,25 @@
             <tbody id="tableBody">
 
             </tbody>
-
         </table>
     </div>
     <div class="btn-toolbar justify-content-between" role="toolbar">
         <div class="input-group">
-            <button type="button" class="btn btn-success btn-md" onclick="initializeAddEmployee()" style="height:40px;margin-top:10px">
+            <button type="button" class="btn btn-success btn-md" onclick="initializeAddCompany()"
+                    style="height:40px;margin-top:10px">
                 Add Company <i class="fa fa-plus fa-lg"></i>
             </button>
         </div>
         <div class="btn-group" role="group">
-            <button id="btnBackHome" onclick="window.location.replace('home.html');" class="btn btn-default pull-right" style="margin-top:10px">Back to Home</button>
+            <button id="btnBackHome" onclick="window.location.replace('home.html');"
+                    class="btn btn-default pull-right" style="margin-top:10px">Back to Home</button>
         </div>
     </div>
-
+    <div class="custom-control custom-switch">
+        <input type="checkbox" class="custom-control-input" id="darkmode">
+        <label class="custom-control-label" for="darkmode" style="margin-top:10px">Toggle this switch for dark
+            mode</label>
+    </div>
 </div>
 
 
@@ -109,8 +110,8 @@
     </div>
 </footer>
 
-<div class="modal fade" id="editCompanyModal" tabindex="-1" role="dialog"
-     aria-labelledby="editCompanyModalLabel" aria-hidden="true">
+<div class="modal fade" id="editCompanyModal" tabindex="-1" role="dialog" aria-labelledby="editCompanyModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -122,40 +123,39 @@
             <div id="successContainer"></div>
             <div class="modal-body">
                 <form id="form" class="was-validated">
-                    <div class="input-group mb-3 collapse">
+                    <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text font-weight-bold">Company ID</span>
+                            <span class="input-group-text font-weight-bold">Company Name</span>
                         </div>
-                        <input type="text" class="form-control" id="editCompanyId" required>
+                        <input type="text" class="form-control" id="editName" placeholder="e.g Link" required>
                     </div>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend ">
-                            <span class="input-group-text font-weight-bold">Name</span>
-                        </div>
-                        <input type="text" class="form-control" id="editCompanyName" required>
-                    </div>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
                             <span class="input-group-text font-weight-bold">Website</span>
                         </div>
-                        <input type="text" class="form-control" id="editCompanyWebsite" required>
+                        <input type="text" class="form-control" id="editWebsite" placeholder="e.g www.link.co.za" required>
                     </div>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text font-weight-bold">Username</span>
                         </div>
-                        <input type="text" class="form-control" id="editCompanyUsername" required>
+                        <input type="text" class="form-control" id="editUsername" placeholder="e.g User" required>
                     </div>
-
                 </form>
-
+                <button type="button" id="btnExpandEditPassword" class="btn btn-link"
+                        onclick="expandEditPassword()">Edit
+                    Password</button>
+                <div id="editPasswordContainer"></div>
                 <div class="alert alert-danger collapse" id="editCompanyWarning">
                     <strong>Error!</strong> Please fill in all the fields.
+                </div>
+                <div class="alert alert-danger collapse" id="editCompanyPasswordWarning">
+                    <strong>Error!</strong> Passwords do not match.
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                <button type="button" id="btnSubmit" class="btn btn-success" onclick="submitEditEmployee()">Edit
+                <button type="button" id="btnSubmit" class="btn btn-success" onclick="submitEditCompany()">Edit
                     Company</button>
             </div>
         </div>
@@ -164,78 +164,61 @@
 
 
 
-<div class="modal fade" id="addEmployeeModal" tabindex="-1" role="dialog"
-     aria-labelledby="addEmployeeModalLabel" aria-hidden="true">
+<div class="modal fade" id="addCompanyModal" tabindex="-1" role="dialog" aria-labelledby="addCompanyModalLabel"
+     aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Add an Employee</h5>
+                <h5 class="modal-title">Add a Company</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div id="successContainerAddedEmployee"></div>
+            <div id="successContainerCompany"></div>
             <div class="modal-body">
                 <form class="was-validated">
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text font-weight-bold">First Name</span>
+                            <span class="input-group-text font-weight-bold">Name</span>
                         </div>
-                        <input type="text" class="form-control" id="addFirstName" required>
+                        <input type="text" class="form-control" id="addName" placeholder="e.g Link" required>
                     </div>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend ">
-                            <span class="input-group-text font-weight-bold">Surname</span>
+                            <span class="input-group-text font-weight-bold">Website</span>
                         </div>
-                        <input type="text" class="form-control" id="addSurname" required>
+                        <input type="text" class="form-control" id="addWebsite" placeholder="e.g www.link.co.za" required>
                     </div>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text font-weight-bold">Title</span>
+                            <span class="input-group-text font-weight-bold">Username</span>
                         </div>
-                        <input type="text" class="form-control" id="addTitle" required>
-                    </div>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text font-weight-bold">Cellphone</span>
-                        </div>
-                        <input type="text" class="form-control" id="addCellphone" required>
-                    </div>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text font-weight-bold">Email</span>
-                        </div>
-                        <input type="text" class="form-control" id="addEmail" required>
+                        <input type="text" class="form-control" id="addUsername" placeholder="e.g user"
+                               required>
                     </div>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text font-weight-bold">Create Password</span>
                         </div>
-                        <input type="password" class="form-control password" id="addPassword" required>
+                        <input type="password" class="form-control password" id="addPassword" placeholder="e.g Pass"
+                               required>
                     </div>
 
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <span class="input-group-text font-weight-bold">Confirm Password</span>
                         </div>
-                        <input type="password" class="form-control password" id="addPasswordConfirm" required>
+                        <input type="password" class="form-control password" id="addPasswordConfirm"
+                               placeholder="e.g Pass" required>
                     </div>
                 </form>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text font-weight-bold">Building</span>
-                    </div>
-                    <select id="buildingSelectAddEmployee" class="custom-select">
-                    </select>
-                </div>
-
-                <div class="alert alert-danger collapse" id="editEmployeeWarning">
+                <div class="alert alert-danger collapse" id="addCompanyWarning">
                     <strong>Error!</strong> Please fill in all the fields.
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                <button type="button" id="btnAddEmployee" class="btn btn-success" onclick="addEmployee()">Add
+                <button type="button" id="btnAddCompany" class="btn btn-success" onclick="addCompany()">Add
                     Company</button>
             </div>
         </div>

@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-toolbar slot="top">
+    <ion-buttons slot='start'>
+        <ion-button (click)="closeModal()">
+          <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+        </ion-button>
+    </ion-buttons>
+    <ion-title> Edit Package </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-progress-bar *ngIf='isBusy' type="indeterminate"></ion-progress-bar>  
+  <ion-item *ngIf='successMessage' color='success'>
+    <ion-label text-wrap>
+      {{ successMessage }}
+    </ion-label>
+  </ion-item>
+  <ion-item *ngIf='infoMessage' color='secondary'>
+    <ion-label text-wrap>
+      {{ infoMessage }}
+    </ion-label>
+  </ion-item>
+  <ion-item *ngIf='errorMessage' color='danger'>
+    <ion-label text-wrap>
+      {{ errorMessage }}
+    </ion-label>
+  </ion-item>
+
+  <ion-item lines="full"> 
+    <ion-label>Start Date <ion-text color="danger">*</ion-text></ion-label>
+    <ion-datetime [(ngModel)]="startDate" display-format="YYYY/MM/DD" picker-format="YYYY MMM DD" placeholder='{{placeholderDate}}'></ion-datetime>
+  </ion-item>
+  <ion-item lines="full"> 
+    <ion-label>Start Time <ion-text color="danger">*</ion-text></ion-label>
+    <ion-datetime [(ngModel)]="startDate" display-format="H:mm" picker-format="H mm" placeholder='{{placeholderTime}}'></ion-datetime>
+  </ion-item>
+  <ion-item lines="full">
+    <ion-label>End Date <ion-text color="danger">*</ion-text></ion-label>
+    <ion-datetime [(ngModel)]="endDate" display-format="YYYY/MM/DD" picker-format="YYYY MMM DD" placeholder='{{placeholderDate}}'></ion-datetime>
+  </ion-item>
+  <ion-item lines="full">
+    <ion-label>End Time <ion-text color="danger">*</ion-text></ion-label>
+    <ion-datetime [(ngModel)]="endDate" display-format="H:mm" picker-format="H mm" placeholder='{{placeholderTime}}'></ion-datetime>
+  </ion-item>
+  <ion-item lines="full"> 
+    <ion-label>Physical Access <ion-text color="danger">*</ion-text></ion-label>
+    <ion-select [(ngModel)]="roomIdString">
+      <ion-select-option *ngFor="let room of rooms" [value]='room.id' [selected]='room.id == roomIdString'>{{ room.name }}</ion-select-option>
+    </ion-select>
+  </ion-item>
+  <ion-item lines="full">
+    <ion-label>Give WiFi Access</ion-label>
+    <ion-checkbox [(ngModel)]="giveWiFi"></ion-checkbox>
+  </ion-item>
+  <ion-item lines="full">
+    <ion-label>Spending Limit</ion-label>
+    <ion-input [(ngModel)]="limit" type="number" inputmode='numeric' placeholder='100.00'></ion-input>
+  </ion-item>
+  <br>
+  <ion-button expand="block" fill="outline" (click)='onSubmit()'>Update Package</ion-button>
+</ion-content>

@@ -1,0 +1,18 @@
+ion-input{
+    text-align: right;
+}
+
+ion-toolbar {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14);
+    border: none;
+}
+
+ion-title {
+    color: var(--ion-color-primary-contrast);
+}
+
+ion-button {
+    --box-shadow: none;
+}

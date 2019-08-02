@@ -9,7 +9,7 @@
     <ion-input type='password' [(ngModel)]='password'></ion-input>
   </ion-item>
   <br>
-  <ion-button expand="block" fill="outline" (click)='login()'>Login</ion-button>
+  <ion-button expand="block" fill="outline" (click)='login()' [disabled]='isBusy'>Login</ion-button>
 </ion-content>
 
 <ion-content *ngIf='loggedIn' padding>  

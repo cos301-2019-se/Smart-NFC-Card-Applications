@@ -27,6 +27,7 @@ import { LocationModel } from '../models/location.model';
 import { EventEmitterService } from '../services/event-emitter.service';   
 import { MessageType } from '../tabs/tabs.page';
 import { LoggedInService } from '../services/logged-in.service';
+import { RequestModuleService } from '../services/request-module.service';
 
 /**
 * Purpose:	This class provides the component that allows sharing of cards
@@ -51,6 +52,7 @@ export class ShareTabPage implements OnInit{
    * @param nfcService NfcControllerService injectable
    * @param locationService LocationService injectable
    * @param eventEmitterService EventEmitterService injectable
+   * @param loginService LoggedInService injectable
    * @param req RequestModuleService injectable
    */
   constructor(
@@ -58,7 +60,8 @@ export class ShareTabPage implements OnInit{
     private nfcService: NfcControllerService,
     private locationService: LocationService,
     private eventEmitterService: EventEmitterService,
-    private loginService: LoggedInService
+    private loginService: LoggedInService,
+    private req: RequestModuleService
   ) { }
 
   ngOnInit() {    
@@ -116,7 +119,7 @@ export class ShareTabPage implements OnInit{
     })
     .catch((err) => {
       // If it was unsuccessfull, display an error message to the user
-      this.showMessage(`Error: ${err} - Try turning on 'Android Beam'`, MessageType.error, 5000);
+      this.showMessage(`NFC and/or Android Beam seems to be off. Please try turing it on.`, MessageType.error, 5000);
     })
     .finally(() => {
       // Whether it failed or succeeded, turn of the sharing
@@ -180,6 +183,7 @@ export class ShareTabPage implements OnInit{
       else {
         this.showMessage(`Could not refresh: ${res['message']}`, MessageType.error)
       }
+      this.req.dismissLoading();
     })
   }
   

@@ -57,7 +57,6 @@ export class EditVisitorPackagePage implements OnInit {
   placeholderDate: string;
   placeholderTime: string;
 
-  isBusy: boolean = false;  
   successMessage: string;
   infoMessage: string;
   errorMessage: string;
@@ -197,9 +196,8 @@ export class EditVisitorPackagePage implements OnInit {
       this.showMessage("Physical Access required (eg. Lobby).", messageType.error, 5000);
       return;
     }
-    this.isBusy = true;
     this.updateVisitorPackageInDB(employeeId, startTime, endTime, wifiParamsId, roomId, limit).subscribe(res => {
-      this.isBusy = false;
+      this.requestService.dismissLoading();
       if (res['success'] === true) {
         let ssid = null;
         let password = null;

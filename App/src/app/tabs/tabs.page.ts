@@ -19,7 +19,7 @@
 */
 import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Toast } from '@ionic-native/toast/ngx';
-import { PopoverController, IonSearchbar, Platform, ToastController } from '@ionic/angular';
+import { PopoverController, IonSearchbar, Platform, ToastController, LoadingController } from '@ionic/angular';
 import { PopoverMenuComponent } from '../popover-menu/popover-menu.component';
 import { EventEmitterService } from '../services/event-emitter.service';   
 import { FilterService } from '../services/filter.service';

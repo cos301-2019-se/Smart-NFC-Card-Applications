@@ -12,6 +12,7 @@
 *	2019/05/19	Wian		  1.0		    Original
 *	2019/06/27	Wian		  1.1		    Added Functions for Creating Visitor Packages
 *	2019/07/09	Wian		  1.2		    Service now automatcially adds api key to the json body using appendApiKey()
+*	2019/08/02	Wian		  1.3		    Added loading controller for when a request is pending
 *
 *	Functional Description:   This class provides a request service to the application that
 *                           is used to make http requests to the back-end
@@ -24,6 +25,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LocalStorageService } from './local-storage.service';
+import { LoadingController } from '@ionic/angular';
 
 /**
 * Purpose:	This class provides the injectable service
@@ -39,6 +41,7 @@ export class RequestModuleService {
   static demoMode: boolean = false;
   apiKeyName: string = 'apiKey';
   apiKey: string = '';
+  loadingModal: HTMLIonLoadingElement;  
 
   baseUrl: string = "https://smart-nfc-application.herokuapp.com";
   loginStub: JSON = JSON.parse(`{
@@ -103,10 +106,12 @@ export class RequestModuleService {
    * Constructor that takes all injectables
    * @param http HttpClient injectable
    * @param storage LocalStorageService injectable
+   * @param loadingController: LoadingController
    */
   constructor(
     private storage: LocalStorageService,
-    private http: HttpClient
+    private http: HttpClient,
+    private loadingController: LoadingController
   ) { }
 
   /**
@@ -115,6 +120,7 @@ export class RequestModuleService {
    * @return Observable response from get request
    */
   private get(url: string) {
+    this.presentLoading();
     return this.http.get(url);
   }
 
@@ -125,6 +131,18 @@ export class RequestModuleService {
    * @return Observable response from post request
    */
   private post(url: string, body?: JSON) {
+    this.presentLoading();
+    body = this.appendApiKey(body);
+    return this.http.post(url, body);
+  }
+
+  /**
+   * Makes a post request using http, without opening loading model
+   * @param url string where to post to
+   * @param body JSON data to send
+   * @return Observable response from post request
+   */
+  private postNoWait(url: string, body?: JSON) {
     body = this.appendApiKey(body);
     return this.http.post(url, body);
   }
@@ -317,5 +335,28 @@ export class RequestModuleService {
    */
   setApiKey(apiKey: string){
     this.apiKey = apiKey;
+  }
+
+  /**
+   * Function that opens loading modal to prevent user from clicking buttons
+   */
+  private async presentLoading() {
+    if (this.loadingModal == null) {
+      this.loadingModal = await this.loadingController.create({
+        message: 'Please wait',
+        spinner: 'bubbles'
+      });
+      await this.loadingModal.present();
+    }
+  }
+
+  /**
+   * Function that closes the loading modal - should be called by functions calling request functions
+   */
+  dismissLoading(){
+    if (this.loadingModal) {
+      this.loadingModal.dismiss();
+      this.loadingModal = null;
+    }
   }
 }

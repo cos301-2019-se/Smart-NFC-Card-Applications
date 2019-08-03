@@ -51,9 +51,8 @@ export class ManageTabPage implements OnInit {
 
   username: string = '';
   password: string = '';
-  title: string = 'Login';
   loggedIn: boolean = false;
-  isBusy: boolean = false;
+
   messageTimeout: number = 4000;
   packages: VisitorPackage[] = [];
   detailToggles = [];
@@ -126,7 +125,6 @@ export class ManageTabPage implements OnInit {
    */
   login(){
     this.resetMessages();
-    this.isBusy = true;
     this.loginService.login(this.username, this.password).subscribe(res => {
       if (res['success'] === true) {
         this.loggedIn = true;
@@ -138,8 +136,7 @@ export class ManageTabPage implements OnInit {
         this.loggedIn = false;
         this.showMessage(res['message'], MessageType.error, this.messageTimeout);
       }
-      this.updateTitle();
-      this.isBusy = false;
+      this.req.dismissLoading();
     });
   }
 
@@ -148,7 +145,6 @@ export class ManageTabPage implements OnInit {
    */
   logout(){
     this.resetMessages();
-    this.isBusy = true;
     this.loginService.logout().subscribe(res => {
       if (res['success'] === true) {
         this.loggedIn = false;
@@ -157,8 +153,7 @@ export class ManageTabPage implements OnInit {
       else {
         this.showMessage(res['message'], MessageType.error, this.messageTimeout);
       }
-      this.updateTitle();
-      this.isBusy = false;
+      this.req.dismissLoading();
     });
   }
 
@@ -167,18 +162,6 @@ export class ManageTabPage implements OnInit {
    */
   private checkLoggedIn() {
     this.loggedIn = this.loginService.isLoggedIn();
-  }
-
-  /**
-   * Function that checks what the title of the component should be
-   */
-  private updateTitle() {
-    if(this.loginService.isLoggedIn() === true) {
-      this.title = 'Menu';
-    }
-    else {
-      this.title = 'Login';
-    }
   }
 
   /**
@@ -410,6 +393,7 @@ export class ManageTabPage implements OnInit {
       else {
         this.showMessage(res['message'], MessageType.error);
       }
+      this.req.dismissLoading();
     });
   }
 }

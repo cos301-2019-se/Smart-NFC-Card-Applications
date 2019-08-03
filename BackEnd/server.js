@@ -70,6 +70,12 @@ function run(callback) {
 				var paymentLogic = new PaymentLogic(req, res);
 				paymentLogic.handle();
 				break;
+
+			case "access":
+				var AccessLogic = require('./EndPoints/accessLogic.js');
+				var accessLogic = new AccessLogic(req, res);
+				accessLogic.handle();
+				break;
 				
 			case "/":
 				res.statusCode = 200;

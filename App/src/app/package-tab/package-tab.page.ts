@@ -181,10 +181,10 @@ export class PackageTabPage implements OnInit{
     this.showMessage(`Hold the phone against the receiving phone.`, MessageType.info, 0);
     this.nfcService.SendData(this.device.uuid, this.device.uuid)
     .then(() => {
-      this.showMessage(`Shared Device ID.`, MessageType.success, 5000);
+      this.showMessage(`Device linked to package.`, MessageType.success, 5000);
     })
     .catch((err) => {
-      this.showMessage(`Error: ${err} - Try turning on 'Android Beam'`, MessageType.error, 0);
+      this.showMessage(`NFC and/or Android Beam seems to be off. Please try turing it on.`, MessageType.error, 5000);
     })
     .finally(() => {
       this.nfcService.Finish();
@@ -213,7 +213,7 @@ export class PackageTabPage implements OnInit{
       });
     })
     .catch(() => {
-      this.showMessage(`NFC seems to be off. Please try turing it on.`, MessageType.error, 0);
+      this.showMessage(`NFC seems to be off. Please try turing it on.`, MessageType.error, 5000);
     })
   }
 

@@ -57,7 +57,6 @@ export class CreateVisitorPackagePage implements OnInit {
   placeholderDate: string;
   placeholderTime: string;
 
-  isBusy: boolean = false;  
   successMessage: string;
   infoMessage: string;
   errorMessage: string;
@@ -190,9 +189,8 @@ export class CreateVisitorPackagePage implements OnInit {
       this.showMessage("Physical Access required (eg. Lobby).", messageType.error, 5000);
       return;
     }
-    this.isBusy = true;
     this.addVisitorPackageToDB(employeeId, startTime, endTime, macAddress, wifiParamsId, roomId, limit).subscribe(res => {
-      this.isBusy = false;
+      this.requestService.dismissLoading();
       if (res['success'] === true) {
         let id: number = res['data']['visitorPackageId'];
         if (!this.giveWiFi) {

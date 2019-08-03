@@ -1,1 +1,22 @@
+ion-toolbar {
+    --background: var(--ion-color-primary);
+    --color: var(--ion-color-primary-contrast);
+}
 
+ion-title {
+    color: var(--ion-color-primary-contrast);
+}
+
+ion-tab-button {
+    font-size: 1em;
+    background-color: transparent;
+    color: var(--ion-color-primary-light);
+}
+
+ion-input{
+    text-align: right;
+}
+
+.messageArea {
+    --background: var(--ion-color-primary-contrast);
+}

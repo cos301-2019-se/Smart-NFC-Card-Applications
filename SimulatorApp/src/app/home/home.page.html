@@ -1,14 +1,48 @@
-<ion-header>
-  <ion-toolbar>
+
+  <ion-toolbar slot="top">
     <ion-title>
-      Ionic Blank
+      {{ mode }}
     </ion-title>
   </ion-toolbar>
-</ion-header>
+
+  <ion-toolbar *ngIf='infoMessage || successMessage || errorMessage' class="messageArea" slot="top">
+    <ion-item color='secondary' *ngIf='infoMessage !== null'> {{ infoMessage }} </ion-item>
+    <ion-item color='success' *ngIf='successMessage !== null'> {{ successMessage }} </ion-item>
+    <ion-item color='danger' *ngIf='errorMessage !== null'> {{ errorMessage }} </ion-item>
+  </ion-toolbar>
 
 <ion-content>
   <div class="ion-padding">
-    The world is your oyster.
-    <p>If you get lost, the <a target="_blank" rel="noopener" href="https://ionicframework.com/docs/">docs</a> will be your guide.</p>
+    <ion-list>
+      <ion-item lines="full"> 
+        <ion-label>Company</ion-label>
+        <ion-select [(ngModel)]="selectedCompany" placeholder='Select one...' (ionChange)='changedCompany()'>
+          <ion-select-option *ngFor="let company of companies" [value]='company.getId()'>{{ company.getName() }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item lines="full"> 
+        <ion-label>Building</ion-label>
+        <ion-select [(ngModel)]="selectedBuilding" placeholder='Select one...' (ionChange)='changedBuilding()'>
+          <ion-select-option *ngFor="let building of buildings" [value]='building.getId()'>{{ building.getName() }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item lines="full"> 
+        <ion-label>Room</ion-label>
+        <ion-select [(ngModel)]="selectedRoom" placeholder='Select one...'>
+          <ion-select-option *ngFor="let room of rooms" [value]='room.getId()'>{{ room.getName() }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item lines="full"> 
+        <ion-label>Pay Point</ion-label>
+        <ion-select [(ngModel)]="selectedPayPoint" placeholder='Select one...'>
+          <ion-select-option *ngFor="let payPoint of payPoints" [value]='payPoint.getId()'>{{ payPoint.getName() }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-list>
+
+    <br>
+    <ion-button expand="block" fill="outline" (click)='actAsAccessPoint()'>Act as Access Point</ion-button>
+    <br>
+    <ion-button expand="block" fill="outline" (click)='actAsPayPoint()'>Act as Payment Point</ion-button>
   </div>
 </ion-content>

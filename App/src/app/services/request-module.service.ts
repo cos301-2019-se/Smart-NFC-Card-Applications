@@ -343,7 +343,7 @@ export class RequestModuleService {
   private async presentLoading() {
     if (this.loadingModal == null) {
       this.loadingModal = await this.loadingController.create({
-        message: 'Busy',
+        message: 'Please wait',
         spinner: 'bubbles'
       });
       await this.loadingModal.present();

@@ -11,6 +11,7 @@
  *	-----------------------------------------------------------------------------------------
  *	2019/05/19	Tjaart		1.0		    Original
  *  2019/06/24  Tjaart      2.0         Added functions for demo 3
+ *  2019/08/04  Tjaart      2.1         Extended the addTpaRoom function
  *
  *	Functional Description:	This class handles the functionality that will be requested by the
  *                          application to the backend system. It handles functionality like
@@ -375,20 +376,23 @@ class AppLogic{
      *                  clientId: int ID of client
      *                  macAddress: string Mac Address of client device
      *               }
-     *
-     *  @TODO complete
      */
-    getClient(clientId){
+    async getClient(clientId){
         let data = {};
-        if(this.demoMode){
+        if(me.demoMode){
             data.clientId = 0;
             data.macAddress = "0";
         }
         else{
-            me.sharedLogic.crudController.getClientByClientId(clientId, function (ret) {
+            let ret = await me.sharedLogic.crudController.getClientByClientId(clientId);
+
+            if(ret.success){
                 data.clientId = ret.data.clientId;
                 data.macAddress = ret.data.macAddress;
-            });
+            }
+            else{
+                me.sharedLogic.endServe(ret.success, ret.message, ret.data);
+            }
         }
         return data;
     }
@@ -429,7 +433,7 @@ class AppLogic{
     async addTempWifi(wifiAccessParamsId){
         let data = {};
 
-        if(this.demoMode){
+        if(me.demoMode){
             data.wifiTempAccessId = 0;
         }
         else{
@@ -485,21 +489,26 @@ class AppLogic{
      *                  wifiTempAccessId: ID of temporary wifi access
      *                  wifiAccessParamsId: ID of WiFi access point
      *               }
-     *
-     *  @TODO complete
      */
-    getTempWifi(wifiTempAccessId){
+    async getTempWifi(wifiTempAccessId){
         let data = {};
-        if(this.demoMode){
+
+        if(me.demoMode){
             data.wifiTempAccessId = 0;
             data.wifiAccessParamsId = 0;
         }
         else{
-            me.sharedLogic.crudController.getTempWifiAccessByTempWifiAccessId(wifiTempAccessId, function (ret) {
+            let ret = await me.sharedLogic.crudController.getTempWifiAccessByTempWifiAccessId(wifiTempAccessId);
+
+            if(ret.success){
                 data.wifiTempAccessId = ret.data.tempWifiAccessId;
                 data.wifiAccessParamsId = ret.data.wifiParamsId;
-            });
+            }
+            else{
+                me.sharedLogic.endServe(ret.success, ret.message, ret.data);
+            }
         }
+
         return data;
     }
 
@@ -597,23 +606,27 @@ class AppLogic{
      *                  limit: float Limit of the wallet
      *                  spent: float Amount spent on the wallet
      *               }
-     *
-     *  @TODO complete
      */
-    getWallet(walletId){
+    async getWallet(walletId){
         let data = {};
-        if(this.demoMode){
+        if(me.demoMode){
             data.walletId = 0;
             data.limit = 0;
             data.spent = 0;
         }
         else{
-            me.sharedLogic.crudController.getWalletByLinkWalletId(walletId, function (ret) {
+            let ret = await me.sharedLogic.crudController.getWalletByLinkWalletId(walletId)
+
+            if(ret.success){
                 data.walletId = ret.data.linkWalletId;
                 data.limit = ret.data.maxLimit;
                 data.spent = ret.data.spent;
-            });
+            }
+            else{
+                me.sharedLogic.endServe(ret.success, ret.message, ret.data);
+            }
         }
+
         return data;
     }
 
@@ -651,7 +664,7 @@ class AppLogic{
     async addTpa(){
         let data = {};
 
-        if(this.demoMode){
+        if(me.demoMode){
             data.tpaId = 0;
         }
         else{
@@ -676,19 +689,24 @@ class AppLogic{
      *  @return JSON {
      *                  tpaId: int ID of TPA
      *               }
-     *
-     *  @TODO complete
      */
-    getTpa(tpaId){
+    async getTpa(tpaId){
         let data = {};
-        if(this.demoMode){
+
+        if(me.demoMode){
             data.tpaId = 0;
         }
         else{
-            me.sharedLogic.crudController.getTPAByTpaId(tpaId, function (ret) {
+            let ret = await me.sharedLogic.crudController.getTPAByTpaId(tpaId);
+
+            if(ret.success){
                 data.tpaId = ret.data.tpaId;
-            });
+            }
+            else{
+                me.sharedLogic.endServe(ret.success, ret.message, ret.data);
+            }
         }
+
         return data;
     }
 
@@ -729,17 +747,35 @@ class AppLogic{
     async addTpaRoom(tpaId, roomId){
         let data = {};
 
-        if(this.demoMode){
+        if(me.demoMode){
             data.tpa_roomId = 0;
         }
         else{
-            let ret = await me.sharedLogic.crudController.createTPAxRoom(tpaId, roomId);
+            let roomData = await me.sharedLogic.crudController.getRoomByRoomId(roomId);
 
-            if(ret.success){
-                data.tpa_roomId = ret.data.tpa_roomId;
+            if(roomData.success){
+                let parentList = roomData.data.parentRoomList.split(',');
+
+                for(let i=0; i<parentList.length; i++){
+                    let ret = await me.sharedLogic.crudController.createTPAxRoom(tpaId, parentList[i]);
+                    if(ret.success){
+                        data.tpa_roomId = ret.data.tpa_roomId;
+                    }
+                    else{
+                        me.sharedLogic.endServe(ret.success, ret.message, ret.data);
+                    }
+                }
+
+                let ret = await me.sharedLogic.crudController.createTPAxRoom(tpaId, roomId);
+                if(ret.success){
+                    data.tpa_roomId = ret.data.tpaxroomId;
+                }
+                else{
+                    me.sharedLogic.endServe(ret.success, ret.message, ret.data);
+                }
             }
             else{
-                me.sharedLogic.endServe(ret.success, ret.message, ret.data);
+                me.sharedLogic.endServe(roomData.success, roomData.message, roomData.data);
             }
         }
 
@@ -765,14 +801,31 @@ class AppLogic{
             data.tpa_roomId = tpaId + "_" + roomId;
         }
         else{
-            let ret = await me.sharedLogic.crudController.updateTPAxRoom(tpaIdCurrent, roomIdCurrent, tpaId, roomId);
 
-            if(ret.success){
-                data.tpa_roomId = tpaId + "_" + roomId;
+            // delete current rooms
+            let roomData = await me.sharedLogic.crudController.getRoomByRoomId(roomIdCurrent);
+
+            if(roomData.success){
+                let parentList = roomData.data.parentRoomList.split(',');
+
+                for(let i=0; i<parentList.length; i++){
+                    let ret = await me.sharedLogic.crudController.deleteTPAxRoom(tpaIdCurrent, parentList[i]);
+                    if(!ret.success){
+                        me.sharedLogic.endServe(ret.success, ret.message, ret.data);
+                    }
+                }
+
+                let ret = await me.sharedLogic.crudController.deleteTPAxRoom(tpaIdCurrent, roomIdCurrent);
+                if(!ret.success){
+                    me.sharedLogic.endServe(ret.success, ret.message, ret.data);
+                }
             }
             else{
-                me.sharedLogic.endServe(ret.success, ret.message, ret.data);
+                me.sharedLogic.endServe(roomData.success, roomData.message, roomData.data);
             }
+
+            // make new rooms
+            data = await me.addTpaRoom(tpaId, roomId);
         }
 
         return data;
@@ -784,21 +837,26 @@ class AppLogic{
      *  @param tpaId int ID of TPA
      *
      *  @return JSON {
-     *
+     *                  // return
      *               }
-     *
-     *  @TODO complete
      */
-    getTpaRoom(tpaId){
+    async getTpaRoom(tpaId){
         let data = {};
-        if(this.demoMode){
-            data;
+
+        if(me.demoMode){
+            //data;
         }
         else{
-            me.sharedLogic.crudController.updateTpaRoom(tpaIdCurrent, roomIdCurrent, tpaId, roomId,function (ret) {
-                data = ret.data;
-            });
+            let ret = await me.sharedLogic.crudController.getTPAxRoomsByTpaId(tpaId);
+
+            if(ret.success){
+                // return
+            }
+            else{
+                me.sharedLogic.endServe(ret.success, ret.message, ret.data);
+            }
         }
+
         return data;
     }
 
@@ -842,8 +900,6 @@ class AppLogic{
      *  @return JSON {
      *                  visitorPackageId: int ID of visitor package created
      *               }
-     *
-     *  @TODO check if client already exists, if it does return the id
      */
     async addVisitorPackage(){
         let success;

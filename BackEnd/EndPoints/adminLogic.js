@@ -1890,7 +1890,7 @@ class AdminLogic
                     let employeeObj = await this.sharedLogic.crudController.getEmployeeByEmployeeId(this.body.employeeId);
 
                     if(employeeObj.success){
-
+                        let oldEmail = employeeObj.data.email;
                         let updatePasswordObj = await this.sharedLogic.crudController.updatePassword(employeeObj.data.passwordId, this.body.username,undefined, undefined, undefined, undefined);
                         if(updatePasswordObj.success){
 
@@ -1898,6 +1898,8 @@ class AdminLogic
                                                                                 this.body.employeeCellphone, this.body.employeeEmail, undefined, this.body.buildingId,
                                                                                 undefined);
                             if(updateEmployeeObj.success){
+                                let emailMessage = "Your Link User Details have been changed. \n\nIf this was not done by you please contact your company representative to change your details.\n\nKind Regards\nLink Development Team";
+                                this.sharedLogic.sendEmail(employeeObj.data.email, "Link Details Changed", emailMessage);
                                 success = updateEmployeeObj.success;
                                 message = "Employee Edited!";
                                 data.employeeId = this.body.employeeId;
@@ -2470,6 +2472,8 @@ class AdminLogic
                         let salt = this.sharedLogic.genSalt();
                         let passwordObj = await this.sharedLogic.crudController.updatePassword(employeeObj.data.passwordId, undefined, this.sharedLogic.passwordHash(this.body.password,salt), salt, undefined,undefined );
                         if(passwordObj.success){
+                            // let emailMessage = "Your Link Password has been changed. \n\nIf this was not done by you please contact your company representative to change your details. \n\nKind Regards\nLink Development Team";
+                            // this.sharedLogic.sendEmail(employeeObj.data.email, "Link Password Change", emailMessage);
                             this.sharedLogic.endServe(passwordObj.success, passwordObj.message, {});
                         }
                         else{

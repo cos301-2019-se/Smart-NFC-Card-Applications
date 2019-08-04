@@ -179,7 +179,7 @@ class AccessLogic {
                         return this.sharedLogic.endServe(false, clientDetails.message, null);
 
                     //check mac address
-                    if (clientDetails.data.macAddress.toUpperCase() !== macAddress.toUpperCase())
+                    if (clientDetails.data.macAddress.toUpperCase() !== this.body.macAddress.toUpperCase())
                         return this.sharedLogic.endServe(false, "Mac Address of device does not match the client of the wallet", null);
 
                     let accessDetails = await this.sharedLogic.crudController.getTPAxRoomsByTpaId(visitorPackage.data.tpaId);
@@ -225,6 +225,7 @@ class AccessLogic {
 
     /**
      * Function used by access simulator to get all companies, buildings rooms
+     * NB THIS FUNCTION IS ONLY FOR DEMONSTATION OF ACCESS CONTROL PURPOSES
      */
     async getAllCompanyBuildingRooms(){
         let dataArray = [];

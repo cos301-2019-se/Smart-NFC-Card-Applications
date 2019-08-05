@@ -115,7 +115,7 @@ class PaymentLogic {
      * wallet at a specified NFC paypoint
      * THE FOLLOWING ARE POST PARAMETERS FOR THIS ENDPOINT
      * @param nfcPaymentPointId int The ID of the NFC payment point to pay
-     * @param walletId int The ID of the wallet to pay from
+     * @param visitorPackageId int The ID of the visitor package to pay from
      * @param amount float A (positive) amount to pay at the specified pay point
      * @param macAddress Macaddress with case-insensitive format aa-bb-cc-dd-ee-ff or aa.bb.cc.dd.ee.ff
      * @param description string Optionally blank description of the transaction
@@ -123,8 +123,8 @@ class PaymentLogic {
      */
     async makePayment() {
 
-        if (!this.body.walletId || !this.sharedLogic.validateNumeric(this.body.walletId))
-            return this.sharedLogic.endServe(false, "No valid Wallet ID provided", null);
+        if (!this.body.visitorPackageId || !this.sharedLogic.validateNumeric(this.body.visitorPackageId))
+            return this.sharedLogic.endServe(false, "No valid Visitor Package ID provided", null);
         if (!this.body.amount || !this.isRealNumber(this.body.amount))
             return this.sharedLogic.endServe(false, "No valid transction amount provided", null);
         if (!this.body.nfcPaymentPointId || !this.sharedLogic.validateNumeric(this.body.nfcPaymentPointId))
@@ -139,7 +139,7 @@ class PaymentLogic {
         var description = "";  //description can be blank
         if (this.body.description)
             description = this.body.description;
-        var walletId = this.body.walletId;
+        var visitorPackageId = this.body.visitorPackageId;
         var amount = this.body.amount;
         var nfcPaymentPointId = this.body.nfcPaymentPointId;
         var macAddress = this.body.macAddress;
@@ -149,9 +149,14 @@ class PaymentLogic {
             return this.sharedLogic.endServe(false, "Negative payments or payments of zero credits are not allowed (payment amount must be positive)", null);
 
         //fetch the visitor package
-        let visitorPackage = await this.sharedLogic.crudController.getVisitorPackageByLinkWalletId(walletId);
+        let visitorPackage = await this.sharedLogic.crudController.getVisitorPackageByVisitorPackageId(visitorPackageId);
         if (!visitorPackage.success)
             return this.sharedLogic.endServe(false, visitorPackage.message, null);
+
+        if (!visitorPackage.data.linkWalletId || !this.sharedLogic.validateNumeric(visitorPackage.data.linkWalletId))
+            return this.sharedLogic.endServe(false, "No valid Wallet linked to this visitor package", null);
+
+        var walletId = visitorPackage.data.linkWalletId; // wallet ID retrieved from visitor package
 
         if (this.isVisitorPackageExpired(visitorPackage.data.endTime))
             return this.sharedLogic.endServe(false, "Visitor Package has expired", null);

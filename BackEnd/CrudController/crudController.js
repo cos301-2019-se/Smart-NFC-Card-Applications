@@ -45,7 +45,7 @@ class CrudController {
 		this.demoMode = true;
 		this.apiKey = null;
 		this.isEmployee = true;
-
+		
 		/*
 		this.client = new Client({
 			user: 'postgres',

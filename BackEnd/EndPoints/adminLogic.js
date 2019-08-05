@@ -1890,7 +1890,7 @@ class AdminLogic
                     let employeeObj = await this.sharedLogic.crudController.getEmployeeByEmployeeId(this.body.employeeId);
 
                     if(employeeObj.success){
-
+                        let oldEmail = employeeObj.data.email;
                         let updatePasswordObj = await this.sharedLogic.crudController.updatePassword(employeeObj.data.passwordId, this.body.username,undefined, undefined, undefined, undefined);
                         if(updatePasswordObj.success){
 
@@ -1898,6 +1898,8 @@ class AdminLogic
                                                                                 this.body.employeeCellphone, this.body.employeeEmail, undefined, this.body.buildingId,
                                                                                 undefined);
                             if(updateEmployeeObj.success){
+                                let emailMessage = "Your Link User details have been changed.\n\n If this was not done by you, please contact your company representative. \n\nKind Regards\nLink Development Team";
+                                this.sharedLogic.sendEmail(oldEmail,"Link User Details Changed", emailMessage);
                                 success = updateEmployeeObj.success;
                                 message = "Employee Edited!";
                                 data.employeeId = this.body.employeeId;

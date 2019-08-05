@@ -20,19 +20,19 @@
           <ion-select-option *ngFor="let company of companies" [value]='company.getId()'>{{ company.getName() }}</ion-select-option>
         </ion-select>
       </ion-item>
-      <ion-item lines="full"> 
+      <ion-item *ngIf="buildings.length > 0" lines="full"> 
         <ion-label>Building</ion-label>
         <ion-select [(ngModel)]="selectedBuilding" placeholder='Select one...' (ionChange)='changedBuilding()'>
           <ion-select-option *ngFor="let building of buildings" [value]='building.getId()'>{{ building.getName() }}</ion-select-option>
         </ion-select>
       </ion-item>
-      <ion-item lines="full"> 
+      <ion-item *ngIf="rooms.length > 0" lines="full"> 
         <ion-label>Room</ion-label>
         <ion-select [(ngModel)]="selectedRoom" placeholder='Select one...'>
           <ion-select-option *ngFor="let room of rooms" [value]='room.getId()'>{{ room.getName() }}</ion-select-option>
         </ion-select>
       </ion-item>
-      <ion-item lines="full"> 
+      <ion-item *ngIf="payPoints.length > 0" lines="full"> 
         <ion-label>Pay Point</ion-label>
         <ion-select [(ngModel)]="selectedPayPoint" placeholder='Select one...'>
           <ion-select-option *ngFor="let payPoint of payPoints" [value]='payPoint.getId()'>{{ payPoint.getName() }}</ion-select-option>

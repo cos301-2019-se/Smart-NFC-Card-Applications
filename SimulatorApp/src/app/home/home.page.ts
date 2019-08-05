@@ -51,33 +51,70 @@ export class HomePage {
   private successMessage: string = null;
   private errorMessage: string = null;
 
+  /**
+   * Function that takes all the injectables and makes the needed request to fetch all the required data
+   * @param reqService RequestModuleService injectable
+   * @param nfcService NfcControllerService injectable
+   */
   constructor(
     private reqService: RequestModuleService,
     private nfcService: NfcControllerService
   ) { 
-    let payPoint1: PayPointModel = new PayPointModel(0, 'Steers');
-    let payPoint2: PayPointModel = new PayPointModel(1, 'KFC');
-    let payPoint3: PayPointModel = new PayPointModel(2, 'McDonalds');
 
-    let room1: RoomModel = new RoomModel(0, 'New York');
-    let room2: RoomModel = new RoomModel(1, 'Houston');
-    let room3: RoomModel = new RoomModel(2, 'New York');
+    reqService.getAllAccessPoints().subscribe(res => {
+      if (res['success'] === true) {
+        let data = res['data'];
+        data.forEach(company => {
 
-    let building1: BuildingModel = new BuildingModel(0, 'EPI-USE Offices');
-    building1.addRoom(room1);
-    building1.addRoom(room2);
-    building1.addRoom(room3);
-    building1.addPayPoint(payPoint1);
-    building1.addPayPoint(payPoint2);
-    building1.addPayPoint(payPoint3);
+          let buildings = company['buildings'];
+          let newBuildings: BuildingModel[] = [];
+          buildings.forEach(building => {
+            let newBuilding = new BuildingModel(building['buildingId'], building['buildingName']);
+            newBuildings.push(newBuilding);
 
-    let buildings1: BuildingModel[] = [];
-    buildings1.push(building1);
+            let rooms = building['rooms'];
+            rooms.forEach(room => {
+              let newRoom = new RoomModel(room['roomId'], room['roomName']);
+              newBuilding.addRoom(newRoom);
+            });
 
-    let company1: CompanyModel = new CompanyModel(0, 'EPI-USE', buildings1);
-    this.companies.push(company1);
+          });
+          let newCompany = new CompanyModel(company['companyId'], company['companyName'], newBuildings);
+          this.companies.push(newCompany)
+        });
+
+        reqService.getAllPaymentPoints().subscribe(res => {
+          if (res['success'] === true) {
+            let data = res['data'];
+            data.forEach(company => {
+    
+              let buildings = company['buildings'];
+              buildings.forEach(building => {
+                let newBuilding = this.getBuildingById(building['buildingId'], this.getCompanyById(company['companyId']).getBuildings());
+    
+                let paymentPoints = building['paymentPoints'];
+                paymentPoints.forEach(paymentPoint => {
+                  let newPaymentPoints = new PayPointModel(paymentPoint['nfcPaymentPointId'], paymentPoint['description']);
+                  newBuilding.addPayPoint(newPaymentPoints);
+                });
+    
+              });
+            });
+          }
+          else {
+            this.showMessage(`Could not get all payment points: ${res['message']}`, MessageType.error);
+          }
+        });
+      }
+      else {
+        this.showMessage(`Could not get all access points: ${res['message']}`, MessageType.error);
+      }
+    });
   }
 
+  /**
+   * Function that is used to set the device as an Access point simulator
+   */
   actAsAccessPoint(){
     if (this.selectedRoom < 0) {
       this.showMessage('Select a room first', MessageType.info);
@@ -86,6 +123,9 @@ export class HomePage {
     this.mode = `Access Point`;
   }
 
+  /**
+   * Function that is used to set the device as an Payment point simulator
+   */
   actAsPayPoint() {
     if (this.selectedPayPoint < 0) {
       this.showMessage('Select a pay point first', MessageType.info);
@@ -94,41 +134,85 @@ export class HomePage {
     this.mode = `Pay Point`;
   }
 
+  /**
+   * Function that gets called when the company selection is changed - reset all things beneath it
+   */
   changedCompany() {
     this.selectedBuilding = -1;
     this.selectedRoom = -1;
     this.selectedPayPoint = -1;
 
-    this.buildings = null;
-    this.rooms = null;
-    this.payPoints = null;
+    this.buildings = [];
+    this.rooms = [];
+    this.payPoints = [];
 
-    this.buildings = this.getCompanyById(this.selectedCompany).getBuildings();
+    if (this.selectedCompany > -1) {
+      this.buildings = this.getCompanyById(this.selectedCompany).getBuildings();    
+    }
+    this.mode = `No mode selected`;
   }
 
+  /**
+   * Function that gets called when the building selection is changed - reset all things beneath it
+   */
   changedBuilding() {
     this.selectedRoom = -1;
     this.selectedPayPoint = -1;
 
-    this.rooms = null;
-    this.payPoints = null;
+    this.rooms = [];
+    this.payPoints = [];
 
-    this.rooms = this.getBuildingById(this.selectedBuilding).getRooms();
-    this.payPoints = this.getBuildingById(this.selectedBuilding).getPayPoints();
+    if (this.selectedBuilding > -1) {
+      this.rooms = this.getBuildingById(this.selectedBuilding).getRooms();
+      this.payPoints = this.getBuildingById(this.selectedBuilding).getPayPoints();    
+    }
+    this.mode = `No mode selected`;
   }
 
-  private getCompanyById(id: number){
-    return this.companies.find(company => {
-      return company.getId() == id;
-    });
+  /**
+   * Function that gets the company in the list of companies associated with a particular id
+   * @param id number unique identifier of the company
+   * @param companies Optional CompanyModel[] to look through
+   * @return CompanyModel linked to id
+   */
+  private getCompanyById(id: number, companies?: CompanyModel[]){
+    if (companies !== null && companies !== undefined) {
+      return companies.find(company => {
+        return company.getId() == id;
+      });
+    }
+    else {
+      return this.companies.find(company => {
+        return company.getId() == id;
+      });
+    }
   }
 
-  private getBuildingById(id: number){
-    return this.buildings.find(building => {
-      return building.getId() == id;
-    });
+  /**
+   * Function that gets the building in the list of buildings associated with a particular id
+   * @param id number unique identifier of the building
+   * @param buildings Optional BuildingModel[] to look through
+   * @return BuildingModel linked to id
+   */
+  private getBuildingById(id: number, buildings?: BuildingModel[]){
+    if (buildings !== null && buildings !== undefined) {
+      return buildings.find(building => {
+        return building.getId() == id;
+      });
+    }
+    else {
+      return this.buildings.find(building => {
+        return building.getId() == id;
+      });
+    }
   }
 
+  /**
+   * Function that displays a message to the user
+   * @param message string to display to the user
+   * @param type MessageType to display
+   * @param timeout number of miliseconds before it disappears (0 = never)
+   */
   private showMessage(message: string, type: number, timeout: number = 2500) {
     this.successMessage = null;
     this.infoMessage = null;

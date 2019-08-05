@@ -34,8 +34,88 @@ import { LoadingController } from '@ionic/angular';
 })
 export class RequestModuleService {
 
+  static demoMode: boolean = true;
+
   loadingModal: HTMLIonLoadingElement; 
   baseUrl: string = "https://smart-nfc-application.herokuapp.com";
+
+  accessPointsStub: JSON = JSON.parse(`{
+    "success": true,
+    "message": "All Data retrieved",
+    "data": [
+        {
+            "companyName": "Us",
+            "companyId": 2,
+            "buildings": []
+        },
+        {
+            "companyName": "Link",
+            "companyId": 1,
+            "buildings": [
+                {
+                    "buildingId": 1,
+                    "buildingName": "Pretoria Head Office",
+                    "rooms": [
+                        {
+                            "roomId": 1,
+                            "roomName": "Lobby"
+                        },
+                        {
+                            "roomId": 2,
+                            "roomName": "Houston"
+                        },
+                        {
+                            "roomId": 3,
+                            "roomName": "Canteen"
+                        }
+                    ]
+                },
+                {
+                    "buildingId": 2,
+                    "buildingName": "Johannesburg Office",
+                    "rooms": []
+                }
+            ]
+        }
+    ]
+  }`);  
+
+  payPointsStub: JSON = JSON.parse(`{
+    "success": true,
+    "message": "All Data retrieved",
+    "data": [
+        {
+            "companyName": "Us",
+            "companyId": 2,
+            "buildings": []
+        },
+        {
+            "companyName": "Link",
+            "companyId": 1,
+            "buildings": [
+                {
+                    "buildingId": 1,
+                    "buildingName": "Pretoria Head Office",
+                    "paymentPoints": []
+                },
+                {
+                    "buildingId": 2,
+                    "buildingName": "Johannesburg Office",
+                    "paymentPoints": [
+                        {
+                            "nfcPaymentPointId": 1,
+                            "description": "Kauai"
+                        },
+                        {
+                            "nfcPaymentPointId": 2,
+                            "description": "Steers"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+  }`);
 
   /**
    * Constructor that takes all injectables
@@ -76,6 +156,38 @@ export class RequestModuleService {
    */
   private postNoWait(url: string, body?: JSON) {
     return this.http.post(url, body);
+  }
+
+  /**
+   * Function that gets all the data regarding the access points
+   * @return Observable<Object> response containing json from back-end server 
+   */
+  getAllAccessPoints(){
+    if(RequestModuleService.demoMode) {
+      return new Observable<Object>(observer => {
+        observer.next(this.accessPointsStub);
+        observer.complete();
+      });
+    }
+    else {
+      return this.post(`${this.baseUrl}/app/getAllAccessPoints`);
+    }
+  }
+
+  /**
+   * Function that gets all the data regarding the payment points
+   * @return Observable<Object> response containing json from back-end server 
+   */
+  getAllPaymentPoints(){
+    if(RequestModuleService.demoMode) {
+      return new Observable<Object>(observer => {
+        observer.next(this.payPointsStub);
+        observer.complete();
+      });
+    }
+    else {
+      return this.post(`${this.baseUrl}/app/getAllPaymentPoints`);
+    }
   }
 
   /**

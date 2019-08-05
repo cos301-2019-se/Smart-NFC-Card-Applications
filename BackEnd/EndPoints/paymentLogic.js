@@ -100,6 +100,9 @@ class PaymentLogic {
             case "makePayment":
                 this.makePayment();
                 break;
+            case "getAllCompanyBuildingPaymentPoints":
+                this.getAllCompanyBuildingPaymentPoints();
+                break;
             default:
                 this.sharedLogic.endServe(false, "Invalid Endpoint", null);
         }
@@ -112,17 +115,16 @@ class PaymentLogic {
      * wallet at a specified NFC paypoint
      * THE FOLLOWING ARE POST PARAMETERS FOR THIS ENDPOINT
      * @param nfcPaymentPointId int The ID of the NFC payment point to pay
-     * @param walletId int The ID of the wallet to pay from
+     * @param visitorPackageId int The ID of the visitor package to pay from
      * @param amount float A (positive) amount to pay at the specified pay point
-     * @param macAddress 
+     * @param macAddress Macaddress with case-insensitive format aa-bb-cc-dd-ee-ff or aa.bb.cc.dd.ee.ff
      * @param description string Optionally blank description of the transaction
      * @return {success, message, data : {transactionId}}
      */
     async makePayment() {
 
-
-        if (!this.body.walletId || !this.sharedLogic.validateNumeric(this.body.walletId))
-            return this.sharedLogic.endServe(false, "No valid Wallet ID provided", null);
+        if (!this.body.visitorPackageId || !this.sharedLogic.validateNumeric(this.body.visitorPackageId))
+            return this.sharedLogic.endServe(false, "No valid Visitor Package ID provided", null);
         if (!this.body.amount || !this.isRealNumber(this.body.amount))
             return this.sharedLogic.endServe(false, "No valid transction amount provided", null);
         if (!this.body.nfcPaymentPointId || !this.sharedLogic.validateNumeric(this.body.nfcPaymentPointId))
@@ -137,7 +139,7 @@ class PaymentLogic {
         var description = "";  //description can be blank
         if (this.body.description)
             description = this.body.description;
-        var walletId = this.body.walletId;
+        var visitorPackageId = this.body.visitorPackageId;
         var amount = this.body.amount;
         var nfcPaymentPointId = this.body.nfcPaymentPointId;
         var macAddress = this.body.macAddress;
@@ -147,9 +149,14 @@ class PaymentLogic {
             return this.sharedLogic.endServe(false, "Negative payments or payments of zero credits are not allowed (payment amount must be positive)", null);
 
         //fetch the visitor package
-        let visitorPackage = await this.sharedLogic.crudController.getVisitorPackageByLinkWalletId(walletId);
+        let visitorPackage = await this.sharedLogic.crudController.getVisitorPackageByVisitorPackageId(visitorPackageId);
         if (!visitorPackage.success)
             return this.sharedLogic.endServe(false, visitorPackage.message, null);
+
+        if (!visitorPackage.data.linkWalletId || !this.sharedLogic.validateNumeric(visitorPackage.data.linkWalletId))
+            return this.sharedLogic.endServe(false, "No valid Wallet linked to this visitor package", null);
+
+        var walletId = visitorPackage.data.linkWalletId; // wallet ID retrieved from visitor package
 
         if (this.isVisitorPackageExpired(visitorPackage.data.endTime))
             return this.sharedLogic.endServe(false, "Visitor Package has expired", null);
@@ -214,6 +221,49 @@ class PaymentLogic {
                 return this.sharedLogic.endServe(false, "Failed to update the wallet after transaction was added - ERROR: Transaction persists but wallet is not updated", null);
             }
         }
+    }
+
+    /**
+     * Function used by access simulator to get all companies, buildings and payment points
+     * ONLY USED FOR DEMONSTATION PURPOSES OF PAYMENT POINTS
+     */
+    async getAllCompanyBuildingPaymentPoints() {
+        let dataArray = [];
+        let companies = await this.sharedLogic.crudController.getAllCompanies();
+        if (!companies)
+            return this.sharedLogic.endServe(companies.success, companies.message, null);
+        companies = companies.data;
+        //get all companies
+        for (let countCompanies = 0; countCompanies < companies.length; countCompanies++) {
+            dataArray.push({});
+            dataArray[countCompanies].companyName = companies[countCompanies].companyName;
+            dataArray[countCompanies].companyId = companies[countCompanies].companyId;
+            dataArray[countCompanies].buildings = [];
+
+            //get all buildings
+            let buildings = await this.sharedLogic.crudController.getBuildingsByCompanyId(companies[countCompanies].companyId);
+            if (buildings.success) {
+                buildings = buildings.data;
+                for (let countBuildings = 0; countBuildings < buildings.length; countBuildings++) {
+                    dataArray[countCompanies].buildings.push({});
+                    dataArray[countCompanies].buildings[countBuildings].buildingId = buildings[countBuildings].buildingId;
+                    dataArray[countCompanies].buildings[countBuildings].buildingName = buildings[countBuildings].branchName;
+                    dataArray[countCompanies].buildings[countBuildings].paymentPoints = [];
+
+                    //get all paymentPoints
+                    let paymentPoints = await this.sharedLogic.crudController.getNfcPaymentPointsByBuildingId(buildings[countBuildings].buildingId);
+                    if (paymentPoints.success) {
+                        paymentPoints = paymentPoints.data;
+                        for (let countPaymentPoints = 0; countPaymentPoints < paymentPoints.length; countPaymentPoints++) {
+                            dataArray[countCompanies].buildings[countBuildings].paymentPoints.push({});
+                            dataArray[countCompanies].buildings[countBuildings].paymentPoints[countPaymentPoints].nfcPaymentPointId = paymentPoints[countPaymentPoints].nfcPaymentPointId;
+                            dataArray[countCompanies].buildings[countBuildings].paymentPoints[countPaymentPoints].description = paymentPoints[countPaymentPoints].description;
+                        }
+                    }
+                }
+            }
+        }
+        this.sharedLogic.endServe(true, "All Data retrieved", dataArray);
     }
 
     isVisitorPackageExpired(date) {

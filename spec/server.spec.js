@@ -3217,7 +3217,7 @@ describe('Server.js Unit Testing', function () {
         beforeAll(function (done) {
             var jsonDataObj = {
                 nfcPaymentPointId: 2,
-                walletId: 2,
+                visitorPackageId: 1,
                 amount: 9.5,
                 macAddress: "AA-BB-CC-DD-EE-FF",
                 description: "My payment!",
@@ -3267,7 +3267,7 @@ describe('Server.js Unit Testing', function () {
         beforeAll(function (done) {
             var jsonDataObj = {
                 nfcPaymentPointId: 2,
-                walletId: 2,
+                visitorPackageId: 1,
                 amount: 9.5,
                 macAddress: "AA.522-CC-DD-EE-FF",
                 description: "My payment!"
@@ -3312,7 +3312,7 @@ describe('Server.js Unit Testing', function () {
         beforeAll(function (done) {
             var jsonDataObj = {
                 nfcPaymentPointId: 2,
-                walletId: 2,
+                visitorPackageId: 1,
                 amount: -500,
                 macAddress: "AA-bb-CC-DD-EE-FF",
                 description: "My payment!"
@@ -3351,9 +3351,8 @@ describe('Server.js Unit Testing', function () {
             });
     });
 
-    //invalid mac address unit test for make payment
 
-
+    
 	/*
     // Unit Tests for CrudController
     describe("Crud Controller - getEmployee correct ID", function () {

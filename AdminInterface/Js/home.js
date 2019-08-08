@@ -17,7 +17,9 @@ function loadHomeContents(callback)
 			var currentTime = new Date();
 			var m = (currentTime.getMonth() + 1);
 			m = m < 10? "0" + m : m;
-			var day = currentTime.getFullYear() + "-" + m + "-" + currentTime.getDate();
+			var d = currentTime.getDate();
+			d = d < 10? "0" + d : d;
+			var day = currentTime.getFullYear() + "-" + m + "-" + d;
 			
 			var twelve = new Date(day + "T10:00:00Z");
 			var six = new Date(day + "T16:00:00Z");

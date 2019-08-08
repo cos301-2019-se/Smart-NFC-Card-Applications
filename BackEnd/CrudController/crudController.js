@@ -59,7 +59,7 @@ class CrudController {
 		this.client = new Client({
 			connectionString: process.env.DATABASE_URL
 		});
-
+		
 		this.client.connect();
 	}
 

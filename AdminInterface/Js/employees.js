@@ -54,14 +54,12 @@ function populateTable() {
 
         tableBody.append(
             `<tr>
-            <td>${empId}</td>
             <td>${fName}</td>
             <td>${sName}</td>
             <td>${username}</td>
             <td>${title}</td>
             <td>${cell}</td>
             <td>${email}</td>
-            <td>${company}</td>
             <td>${building}</td>
             <td><button type="button" class="btn btn-primary editButton">Edit</button></td>
             </tr>`

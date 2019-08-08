@@ -54,6 +54,7 @@ function populateTable() {
 
         tableBody.append(
             `<tr>
+            <td>${empId}</td>
             <td>${fName}</td>
             <td>${sName}</td>
             <td>${username}</td>
@@ -181,7 +182,7 @@ function addValuesToModal(fields) {
     $('#editTitle').val(fields[4]);
     $('#editCellphone').val(fields[5]);
     $('#editEmail').val(fields[6]);
-    var currentBuildingId = findBuildingIdFromBuildingName(fields[8]);
+    var currentBuildingId = findBuildingIdFromBuildingName(fields[7]);
     var selector = $('#buildingSelect');
     selector.empty();
     for (var id in buildingData) {

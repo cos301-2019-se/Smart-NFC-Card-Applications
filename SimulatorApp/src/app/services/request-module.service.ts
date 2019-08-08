@@ -34,7 +34,7 @@ import { LoadingController } from '@ionic/angular';
 })
 export class RequestModuleService {
 
-  static demoMode: boolean = true;
+  static demoMode: boolean = false;
 
   loadingModal: HTMLIonLoadingElement; 
   baseUrl: string = "https://smart-nfc-application.herokuapp.com";
@@ -170,7 +170,7 @@ export class RequestModuleService {
       });
     }
     else {
-      return this.post(`${this.baseUrl}/app/getAllAccessPoints`);
+      return this.post(`${this.baseUrl}/access/getAllCompanyBuildingRooms`, JSON.parse('{}'));
     }
   }
 
@@ -186,7 +186,7 @@ export class RequestModuleService {
       });
     }
     else {
-      return this.post(`${this.baseUrl}/app/getAllPaymentPoints`);
+      return this.post(`${this.baseUrl}/payment/getAllCompanyBuildingPaymentPoints`, JSON.parse('{}'));
     }
   }
 

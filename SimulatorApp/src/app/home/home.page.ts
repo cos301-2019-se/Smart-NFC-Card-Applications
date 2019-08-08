@@ -66,6 +66,26 @@ export class HomePage {
     private nfcService: NfcControllerService
   ) { 
     this.refreshData();
+    this.listen();
+  }
+
+  /**
+   * Function that listens for NFC devices
+   */
+  listen() {
+    this.nfcService.IsEnabled()
+    .then(() => {
+      this.showMessage(`Hold the phone against the sharing device.`, MessageType.info, 0);
+      this.nfcService.ReceiveData().subscribe(data => {
+        let payload = this.nfcService.BytesToString(data.tag.ndefMessage[0].payload);      
+        this.nfcService.Finish();
+        let json = JSON.parse(payload.slice(3));
+        this.showMessage(json, MessageType.success, 5000);        
+      });
+    })
+    .catch(() => {
+      this.showMessage(`NFC seems to be off. Please try turing it on.`, MessageType.error, 0);
+    })
   }
 
   /**

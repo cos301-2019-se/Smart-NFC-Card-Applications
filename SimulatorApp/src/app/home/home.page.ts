@@ -25,6 +25,10 @@ import { PayPointModel } from '../models/pay-point.model';
 import { RequestModuleService } from '../services/request-module.service';
 import { NfcControllerService } from '../services/nfc-controller.service';
 
+export enum ModeType{
+  accessPoint, payPoint, none
+}
+
 export enum MessageType{
     success, info, error, reset
 }
@@ -36,17 +40,18 @@ export enum MessageType{
 })
 export class HomePage {
 
-  private companies: CompanyModel[] = [];
-  private buildings: BuildingModel[] = [];
-  private rooms: RoomModel[] = [];
-  private payPoints: PayPointModel[] = [];
+  private companies: CompanyModel[];
+  private buildings: BuildingModel[];
+  private rooms: RoomModel[];
+  private payPoints: PayPointModel[];
+  private selectedCompany: number;
+  private selectedBuilding: number;
+  private selectedRoom: number;
+  private selectedPayPoint: number;
 
-  private selectedCompany: number = -1;
-  private selectedBuilding: number = -1;
-  private selectedRoom: number = -1;
-  private selectedPayPoint: number = -1;
+  private modeDetail: string;
+  private modeType: ModeType;
 
-  private mode: string = 'No mode selected';
   private infoMessage: string = null;
   private successMessage: string = null;
   private errorMessage: string = null;
@@ -60,8 +65,26 @@ export class HomePage {
     private reqService: RequestModuleService,
     private nfcService: NfcControllerService
   ) { 
+    this.refreshData();
+  }
 
-    reqService.getAllAccessPoints().subscribe(res => {
+  /**
+   * Function that reloads all the data from the service
+   */
+  refreshData(){
+    this.changeMode(ModeType.none);
+
+    this.companies = [];
+    this.buildings = [];
+    this.rooms = [];
+    this.payPoints = [];
+  
+    this.selectedCompany = -1;
+    this.selectedBuilding = -1;
+    this.selectedRoom = -1;
+    this.selectedPayPoint = -1;
+
+    this.reqService.getAllAccessPoints().subscribe(res => {
       if (res['success'] === true) {
         let data = res['data'];
         data.forEach(company => {
@@ -83,7 +106,7 @@ export class HomePage {
           this.companies.push(newCompany)
         });
 
-        reqService.getAllPaymentPoints().subscribe(res => {
+        this.reqService.getAllPaymentPoints().subscribe(res => {
           if (res['success'] === true) {
             let data = res['data'];
             data.forEach(company => {
@@ -100,16 +123,39 @@ export class HomePage {
     
               });
             });
+            this.showMessage(`Loaded Data`, MessageType.success);
+            this.reqService.dismissLoading();
           }
           else {
             this.showMessage(`Could not get all payment points: ${res['message']}`, MessageType.error);
+            this.reqService.dismissLoading();
           }
         });
       }
       else {
         this.showMessage(`Could not get all access points: ${res['message']}`, MessageType.error);
-      }
+        this.reqService.dismissLoading();
+      }      
     });
+  }
+
+  /**
+   * Function that changes the mode the app is in
+   * @param mode ModeType which mode to switch to
+   */
+  changeMode(mode: ModeType){
+    this.modeType = mode;
+    switch (mode){
+      case ModeType.accessPoint:
+        this.modeDetail = `Access Point`;
+        break;
+      case ModeType.payPoint:
+        this.modeDetail = `Pay Point`;
+        break;
+      case ModeType.none:
+        this.modeDetail = `No mode selected`;
+        break;
+    }
   }
 
   /**
@@ -120,7 +166,7 @@ export class HomePage {
       this.showMessage('Select a room first', MessageType.info);
       return;
     }
-    this.mode = `Access Point`;
+    this.changeMode(ModeType.accessPoint);
   }
 
   /**
@@ -131,7 +177,7 @@ export class HomePage {
       this.showMessage('Select a pay point first', MessageType.info);
       return;
     }
-    this.mode = `Pay Point`;
+    this.changeMode(ModeType.payPoint);
   }
 
   /**
@@ -149,7 +195,7 @@ export class HomePage {
     if (this.selectedCompany > -1) {
       this.buildings = this.getCompanyById(this.selectedCompany).getBuildings();    
     }
-    this.mode = `No mode selected`;
+    this.changeMode(ModeType.none);
   }
 
   /**
@@ -166,7 +212,7 @@ export class HomePage {
       this.rooms = this.getBuildingById(this.selectedBuilding).getRooms();
       this.payPoints = this.getBuildingById(this.selectedBuilding).getPayPoints();    
     }
-    this.mode = `No mode selected`;
+    this.changeMode(ModeType.none);
   }
 
   /**

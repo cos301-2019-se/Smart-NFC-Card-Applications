@@ -4,7 +4,7 @@
     <ion-searchbar #search *ngIf='showSearchBar' [(ngModel)]="searchFilter" (ionChange)="updateSearch()" (ionCancel)="toggleSearchBar()" showCancelButton="always"></ion-searchbar>
     <ion-buttons slot='primary'>
         <ion-button (click)='openMenu($event)'>
-          <ion-icon slot="icon-only" name="menu"></ion-icon>
+          <ion-icon slot="icon-only" name="more"></ion-icon>
         </ion-button>
     </ion-buttons>
     <ion-buttons *ngIf='!showSearchBar' slot='secondary'>

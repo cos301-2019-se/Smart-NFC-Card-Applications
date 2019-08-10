@@ -12,6 +12,7 @@
 *	2019/05/19	Wian		  1.0		    Original
 *	2019/06/25	Wian		  1.1		    Added changes to allow navigation on tap of location
 *	2019/06/28	Wian		  1.2		    Added functionality to add visitor packages
+*	2019/08/10	Wian		  1.3		    Added functionality to gain access and pay using NFC
 *
 *	Functional Description:   This file provides the component that allows viewing shared cards
 *	Error Messages:   “Error”
@@ -37,7 +38,7 @@ import { AlertController } from '@ionic/angular';
 * Purpose:	This class provides the component that allows viewing of shared cards as well as adding new ones
 *	Usage:		This component can be used to view and add business cards to a locally stored list
 *	@author:	Wian du Plooy
-*	@version:	1.2
+*	@version:	1.3
 */
 @Component({
   selector: 'app-package-tab',
@@ -309,7 +310,14 @@ export class PackageTabPage implements OnInit{
    * @param packageId number Id of visitor package to check
    */
   unlock(packageId: number){
-    this.showMessage('Unlock feature coming soon.', MessageType.error);
+    this.showMessage('Hold the phone against the NFC device.', MessageType.info);
+    this.nfcService.SendData(packageId, JSON.parse(`{"packageId: ${packageId}}`))
+    .catch((err) => {
+      this.showMessage(`NFC and/or Android Beam seems to be off. Please try turing it on.`, MessageType.error, 5000);
+    })
+    .finally(() => {
+      this.nfcService.Finish();
+    });
   }
 
   /**
@@ -317,6 +325,17 @@ export class PackageTabPage implements OnInit{
    * @param packageId number Id of visitor package to check
    */
   pay(packageId: number){
-    this.showMessage('Payment feature coming soon.', MessageType.error);
+    this.showMessage('Hold the phone against the NFC device.', MessageType.info);
+    this.nfcService.SendData(packageId, JSON.parse(`{"packageId: ${packageId}}`))
+    .catch((err) => {
+      this.showMessage(`NFC and/or Android Beam seems to be off. Please try turing it on.`, MessageType.error, 5000);
+    })
+    .finally(() => {
+      this.nfcService.Finish();
+      setTimeout(() => {
+        // Refresh the visitor package after a while to get amount spent
+        this.refreshVisitorPackage(packageId);
+      }, 5000);
+    });
   }
 }

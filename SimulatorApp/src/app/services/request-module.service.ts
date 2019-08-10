@@ -10,6 +10,7 @@
 *	Date		    Author		Version		Changes
 *	-----------------------------------------------------------------------------------------
 *	2019/08/03	Wian		  1.0		    Original
+*	2019/08/10	Wian		  1.1 	    Added requests for access and payments
 *
 *	Functional Description:   This class provides a request service to the application that
 *                           is used to make http requests to the back-end
@@ -34,7 +35,7 @@ import { LoadingController } from '@ionic/angular';
 })
 export class RequestModuleService {
 
-  static demoMode: boolean = false;
+  static demoMode: boolean = true;
 
   loadingModal: HTMLIonLoadingElement; 
   baseUrl: string = "https://smart-nfc-application.herokuapp.com";
@@ -117,6 +118,12 @@ export class RequestModuleService {
     ]
   }`);
 
+  grantAccessStub: JSON = JSON.parse(`{
+    "success": true,
+    "message": "Access Granted.",
+    "data": {}
+  }`);
+
   /**
    * Constructor that takes all injectables
    * @param http HttpClient injectable
@@ -187,6 +194,40 @@ export class RequestModuleService {
     }
     else {
       return this.post(`${this.baseUrl}/payment/getAllCompanyBuildingPaymentPoints`, JSON.parse('{}'));
+    }
+  }
+
+  /**
+   * Function that sees if the device should receive access
+   * @param body JSON containing info about device trying to gain access
+   * @return Observable<Object> response containing json from back-end server 
+   */
+  attemptAccess(body: JSON){
+    if(RequestModuleService.demoMode) {
+      return new Observable<Object>(observer => {
+        observer.next(this.grantAccessStub);
+        observer.complete();
+      });
+    }
+    else {
+      return this.post(`${this.baseUrl}/access/getAccess`, body);
+    }
+  }
+
+  /**
+   * Function that tries to make a payment
+   * @param body JSON containing info about device trying to make a payment
+   * @return Observable<Object> response containing json from back-end server 
+   */
+  makePayment(body: JSON){
+    if(RequestModuleService.demoMode) {
+      return new Observable<Object>(observer => {
+        observer.next('');
+        observer.complete();
+      });
+    }
+    else {
+      return this.post(`${this.baseUrl}/payment/makePayment`, body);
     }
   }
 

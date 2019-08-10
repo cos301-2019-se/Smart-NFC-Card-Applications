@@ -10,6 +10,7 @@
 *	Date		    Author		Version		Changes
 *	-----------------------------------------------------------------------------------------
 *	2019/08/03	Wian		  1.0		    Original
+*	2019/08/10	Wian		  1.1		    Added NFC functionality to handle requests
 *
 *	Functional Description:   This page is used as the interface for the simulator app
 *	Error Messages:   “Error”
@@ -48,6 +49,7 @@ export class HomePage {
   private selectedBuilding: number;
   private selectedRoom: number;
   private selectedPayPoint: number;
+  private paymentAmount: number;
 
   private modeDetail: string;
   private modeType: ModeType;
@@ -75,17 +77,67 @@ export class HomePage {
   listen() {
     this.nfcService.IsEnabled()
     .then(() => {
-      this.showMessage(`Hold the phone against the sharing device.`, MessageType.info, 0);
       this.nfcService.ReceiveData().subscribe(data => {
         let payload = this.nfcService.BytesToString(data.tag.ndefMessage[0].payload);      
         this.nfcService.Finish();
-        let json = JSON.parse(payload.slice(3));
-        this.showMessage(json, MessageType.success, 5000);        
+        try {
+          let json = JSON.parse(payload.slice(3)); 
+          this.handleNFCData(json);
+        } catch (error) {
+          this.showMessage(`Data received not in json format: ${error}`, MessageType.error, 0);
+        }
       });
     })
     .catch(() => {
       this.showMessage(`NFC seems to be off. Please try turing it on.`, MessageType.error, 0);
     })
+  }
+
+  /**
+   * Function that handles incoming NFC shared data
+   * @param data string received from device
+   */
+  handleNFCData(data: string){
+    switch (this.modeType) {
+      case ModeType.none:
+        this.showMessage(`App not in any mode - didn't handle data.`, MessageType.info, 5000);
+        break;
+      case ModeType.accessPoint:
+        this.handleAccessPoint(data);
+        break;
+      case ModeType.payPoint:
+        this.handlePayPoint(data);
+        break;
+    }       
+  }
+
+  /**
+   * Function that handles incoming NFC shared data for access points
+   * @param data string received from device
+   */
+  handleAccessPoint(data: string) {
+    this.showMessage(data, MessageType.success, 5000);
+    try {
+      let json = JSON.parse(data); 
+      this.reqService.attemptAccess(json).subscribe(res => {
+        if (res['success'] === true) {
+          this.showMessage(`Access Granted`, MessageType.success, 0);
+        }
+        else {
+          this.showMessage(`Access Denied: ${res['message']}`, MessageType.error, 0);
+        }
+      });
+    } catch (error) {
+      this.showMessage(`Data received not in json format: ${error}`, MessageType.error, 0);
+    }
+  }
+
+  /**
+   * Function that handles incoming NFC shared data for payment points
+   * @param data string received from device
+   */
+  handlePayPoint(data: string) {
+    this.showMessage(data, MessageType.success, 5000);
   }
 
   /**
@@ -195,6 +247,10 @@ export class HomePage {
   actAsPayPoint() {
     if (this.selectedPayPoint < 0) {
       this.showMessage('Select a pay point first', MessageType.info);
+      return;
+    }
+    if (this.paymentAmount === undefined || this.paymentAmount === null || this.paymentAmount < 0) {
+      this.showMessage('Enter a non negative amount first', MessageType.info);
       return;
     }
     this.changeMode(ModeType.payPoint);

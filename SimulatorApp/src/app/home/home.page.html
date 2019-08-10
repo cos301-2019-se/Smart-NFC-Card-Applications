@@ -16,38 +16,52 @@
     <ion-item color='danger' *ngIf='errorMessage !== null'> {{ errorMessage }} </ion-item>
   </ion-toolbar>
 
-<ion-content>
-  <div class="ion-padding">
-    <ion-list>
-      <ion-item lines="full"> 
-        <ion-label>Company</ion-label>
-        <ion-select [(ngModel)]="selectedCompany" placeholder='Select one...' (ionChange)='changedCompany()'>
-          <ion-select-option *ngFor="let company of companies" [value]='company.getId()'>{{ company.getName() }}</ion-select-option>
-        </ion-select>
-      </ion-item>
-      <ion-item *ngIf="buildings.length > 0" lines="full"> 
-        <ion-label>Building</ion-label>
-        <ion-select [(ngModel)]="selectedBuilding" placeholder='Select one...' (ionChange)='changedBuilding()'>
-          <ion-select-option *ngFor="let building of buildings" [value]='building.getId()'>{{ building.getName() }}</ion-select-option>
-        </ion-select>
-      </ion-item>
-      <ion-item *ngIf="rooms.length > 0" lines="full"> 
-        <ion-label>Room</ion-label>
-        <ion-select [(ngModel)]="selectedRoom" placeholder='Select one...'>
-          <ion-select-option *ngFor="let room of rooms" [value]='room.getId()'>{{ room.getName() }}</ion-select-option>
-        </ion-select>
-      </ion-item>
-      <ion-item *ngIf="payPoints.length > 0" lines="full"> 
-        <ion-label>Pay Point</ion-label>
-        <ion-select [(ngModel)]="selectedPayPoint" placeholder='Select one...'>
-          <ion-select-option *ngFor="let payPoint of payPoints" [value]='payPoint.getId()'>{{ payPoint.getName() }}</ion-select-option>
-        </ion-select>
-      </ion-item>
-    </ion-list>
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-card-content>
+      <ion-list>
+        <ion-item lines="full"> 
+          <ion-label>Company</ion-label>
+          <ion-select [(ngModel)]="selectedCompany" placeholder='Select one...' (ionChange)='changedCompany()'>
+            <ion-select-option *ngFor="let company of companies" [value]='company.getId()'>{{ company.getName() }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item *ngIf="buildings.length > 0" lines="full"> 
+          <ion-label>Building</ion-label>
+          <ion-select [(ngModel)]="selectedBuilding" placeholder='Select one...' (ionChange)='changedBuilding()'>
+            <ion-select-option *ngFor="let building of buildings" [value]='building.getId()'>{{ building.getName() }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item *ngIf="rooms.length > 0" lines="full"> 
+          <ion-label>Room</ion-label>
+          <ion-select [(ngModel)]="selectedRoom" placeholder='Select one...'>
+            <ion-select-option *ngFor="let room of rooms" [value]='room.getId()'>{{ room.getName() }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item *ngIf="payPoints.length > 0" lines="full"> 
+          <ion-label>Pay Point</ion-label>
+          <ion-select [(ngModel)]="selectedPayPoint" placeholder='Select one...'>
+            <ion-select-option *ngFor="let payPoint of payPoints" [value]='payPoint.getId()'>{{ payPoint.getName() }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
 
-    <br>
-    <ion-button expand="block" fill="outline" (click)='actAsAccessPoint()'>Act as Access Point</ion-button>
-    <br>
-    <ion-button expand="block" fill="outline" (click)='actAsPayPoint()'>Act as Payment Point</ion-button>
-  </div>
+  <ion-card>
+    <ion-card-content>
+      <ion-button expand="block" fill="outline" (click)='actAsAccessPoint()'>Act as Access Point</ion-button>
+    </ion-card-content>
+  </ion-card>
+  
+  <ion-card>
+    <ion-card-content>
+      <ion-item>
+        <ion-label>Amount of Transaction</ion-label>
+        <ion-input type="number" [(ngModel)]="paymentAmount" placeholder="10.50"></ion-input>
+      </ion-item>
+      <br>
+      <ion-button expand="block" fill="outline" (click)='actAsPayPoint()'>Act as Payment Point</ion-button>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

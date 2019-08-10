@@ -138,6 +138,19 @@ export class HomePage {
    */
   handlePayPoint(data: string) {
     this.showMessage(data, MessageType.success, 5000);
+    try {
+      let json = JSON.parse(data); 
+      this.reqService.makePayment(json).subscribe(res => {
+        if (res['success'] === true) {
+          this.showMessage(`Payment Made`, MessageType.success, 0);
+        }
+        else {
+          this.showMessage(`Payment Failed: ${res['message']}`, MessageType.error, 0);
+        }
+      });
+    } catch (error) {
+      this.showMessage(`Data received not in json format: ${error}`, MessageType.error, 0);
+    }
   }
 
   /**

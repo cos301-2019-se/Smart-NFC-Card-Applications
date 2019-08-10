@@ -167,7 +167,11 @@ class AdminLogic
             case "getPaymentPointsByCompanyId":
                 this.getPaymentPointsByCompanyId();
                 break;
-			
+
+            //Reporting
+            case "getAllTransactionsByCompanyId":
+                this.getAllTransactionsByCompanyId();
+                break;
 
             default:
                 this.sharedLogic.endServe(false, "Invalid Endpoint", null);
@@ -2976,6 +2980,31 @@ class AdminLogic
             this.sharedLogic.endServe(success, message, data);
         }
     }
+
+    /**
+     *  Fetchec all transactions for the specified company within the optional date range.
+     *  If no date is provided then all transactions will be retrieved 
+     *  @param companyId int The company ID for which the transaction data will be retrieved
+     *  @param startDate string The Stringified start date time in ISO format e.g. 2016-06-27T14:48:00.000Z
+     *  @param endDate string Stringified end date time in ISO format e.g. 2016-06-27T14:48:00.000Z
+     *  @return [ {employeeName, employeeSurname, employeeEmail, amountSpent, paymentDesc, paymentPointDesc, transactiontime  } ]
+     */
+    async getAllTransactionsByCompanyId(){
+        if(!this.body.companyId || !this.sharedLogic.validateNumeric(this.body.companyId))
+            return this.sharedLogic.endServe(false, "No valid companyId provided", null);
+
+        let startDate, endDate;
+        if(this.body.startDate)
+            startDate = new Date(this.body.startDate);
+        if(this.body.endDate)
+            endDate = new Date(this.body.endDate);
+
+        let result = await this.sharedLogic.crudController.getAllTransactionsByCompanyId(this.body.companyId, startDate, endDate);
+        return this.sharedLogic.endServe(result.success, result.message, result.data);
+    }
+
+
+
 }
 
 module.exports = AdminLogic;

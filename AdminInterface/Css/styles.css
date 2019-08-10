@@ -2,3 +2,13 @@ body
 { 
 	padding-top:50px; 
 }
+
+
+.searchButtons{
+	margin: 5px;
+}
+
+#datePicker{
+	background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%;
+	text-align: center;
+}

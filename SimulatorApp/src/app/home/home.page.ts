@@ -132,6 +132,7 @@ export class HomePage {
    * @param data JSON received from device
    */
   handleAccessPoint(data: JSON) {
+    data["roomId"] = this.selectedRoom;
     try {
       this.reqService.attemptAccess(data).subscribe(res => {
         if (res['success'] === true) {

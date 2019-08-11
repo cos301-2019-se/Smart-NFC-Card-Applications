@@ -169,7 +169,7 @@ class AccessLogic {
                         return this.sharedLogic.endServe(false, visitorPackage.message, null);
                     }
 
-                    if (this.isVisitorPackageExpired(visitorPackage.data.endTime)){
+                    if (this.isVisitorPackageExpired(visitorPackage.data.startTime, visitorPackage.data.endTime)){
                         return this.sharedLogic.endServe(false, "Visitor Package has expired", null);
                     }
 
@@ -267,13 +267,14 @@ class AccessLogic {
 
     }
 
-    isVisitorPackageExpired(date) {
-        var endDate = new Date(date);
+    isVisitorPackageExpired(sDate,eDate) {
+        var startDate = new Date(sDate);
+        var endDate = new Date(eDate);
         var currentDate = new Date();
-        if (currentDate < endDate) {
-            return false;
+        if (currentDate > endDate || currentDate < startDate) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     validateMacAddress(mac) {

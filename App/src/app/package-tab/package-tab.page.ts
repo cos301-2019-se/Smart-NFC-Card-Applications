@@ -25,7 +25,6 @@ import { NfcControllerService } from '../services/nfc-controller.service';
 import { LocationService } from '../services/location.service';
 import { WifiService } from '../services/wifi.service';
 import { LocationModel } from '../models/location.model';
-import { Device } from '@ionic-native/device/ngx';
 import { VisitorPackage } from '../models/visitor-package.model';
 import { VisitorPackagesService } from '../services/visitor-packages.service';
 import { EventEmitterService } from '../services/event-emitter.service';   
@@ -33,6 +32,7 @@ import { FilterService } from '../services/filter.service';
 import { DateService } from '../services/date.service';
 import { MessageType } from '../tabs/tabs.page';
 import { AlertController } from '@ionic/angular';
+import { UniqueIdService } from '../services/unique-id.service';
 
 /**
 * Purpose:	This class provides the component that allows viewing of shared cards as well as adding new ones
@@ -54,21 +54,24 @@ export class PackageTabPage implements OnInit{
    * Constructor that takes all injectables
    * @param nfcService NfcControllerService injectable
    * @param locationService LocationService injectable
-   * @param device Device injectable
    * @param packageService VisitorPackagesService injectable
    * @param wifiService WifiService injectable
+   * @param eventEmitterService EventEmitterService injectable
+   * @param filterService FilterService injectable
    * @param dateService DateService injectable
+   * @param alertController AlertController injectable
+   * @param uidService UniqueIdService injectable
    */
   constructor(
     private nfcService: NfcControllerService,
     private locationService: LocationService,
-    private device: Device,
     private packageService: VisitorPackagesService,
     private wifiService: WifiService,
     private eventEmitterService: EventEmitterService,
     private filterService: FilterService,
     private dateService: DateService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private uidService: UniqueIdService
   ) { }
 
   ngOnInit() {    
@@ -180,7 +183,8 @@ export class PackageTabPage implements OnInit{
   public shareId(){
     this.showMessage('', MessageType.reset);
     this.showMessage(`Hold the phone against the receiving phone.`, MessageType.info, 0);
-    this.nfcService.SendData(this.device.uuid, this.device.uuid)
+    let uid = this.uidService.getUniqueId();
+    this.nfcService.SendData(uid, uid)
     .then(() => {
       this.showMessage(`Device linked to package.`, MessageType.success, 5000);
     })

@@ -9,8 +9,8 @@
           <ion-card-header (click)='toggleDetails(package.packageId)'>
             <ion-card-title>
               <ion-icon *ngIf='checkInEffect(package.startDate, package.endDate)' color='success' name="calendar"></ion-icon> {{ package.companyName }}
-              <ion-icon class="icon" name="trash" (click)='$event.stopPropagation(); removeVisitorPackage(package.packageId)'></ion-icon>
-              <ion-icon class="icon" name="refresh" (click)='$event.stopPropagation(); refreshVisitorPackage(package.packageId)'></ion-icon>
+              <ion-icon *ngIf='detailToggles != [] && detailToggles[package.packageId]' class="icon" name="trash" (click)='$event.stopPropagation(); removeVisitorPackage(package.packageId)'></ion-icon>
+              <ion-icon *ngIf='detailToggles != [] && detailToggles[package.packageId]' class="icon" name="refresh" (click)='$event.stopPropagation(); refreshVisitorPackage(package.packageId)'></ion-icon>
               <ion-icon class="icon" name="unlock" (click)='$event.stopPropagation(); unlock(package.packageId)'></ion-icon>
               <ion-icon class="icon" name="card" (click)='$event.stopPropagation(); pay(package.packageId)'></ion-icon>
             </ion-card-title>

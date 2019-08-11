@@ -266,9 +266,9 @@ export class CreateVisitorPackagePage implements OnInit {
       this.nfcService.ReceiveData().subscribe(data => {
         let payload = this.nfcService.BytesToString(data.tag.ndefMessage[0].payload)     
         this.nfcService.Finish();
-        let uuid = payload.slice(3);
+        let uid = payload.slice(3);
         this.showMessage(`Visitor Device Selected.`, messageType.success, 2000);
-        this.macAddress = uuid;
+        this.macAddress = uid;
       });
     })
     .catch(() => {

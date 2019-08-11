@@ -34,6 +34,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css">
     <!-- Date Picker -->
     <link rel="stylesheet" href="/Css/daterangepicker.css">
+    <style>
+        #employeeSearchField {
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
 
 
 </head>
@@ -72,31 +78,94 @@
 
     <h1 class="pb-1 text-center" style="margin-top:30px">Transactions</h1>
 
+
     <div class="container col-md-4 col-10">
 
         <div id="searchContainer">
+            <div id="alertContainerTop"> </div>
+
             <div class="col-12  text-center">
-                <a href="#" class="btn btn-primary searchButtons" style="width: 100%">Search All Transactions <i
-                        class="fas fa-search"></i></a>
-                <a href="#" class="btn btn-primary searchButtons" data-toggle="collapse" data-target="#collapseExample"
-                    aria-expanded="false" aria-controls="collapseExample" style="width: 100%">Advanced Search <i
+                <a href="#" class="btn btn-primary searchButtons" id="searchAllBtn"
+                    onclick="clickedSearchAllTransactions();" style="width: 100%">Search All
+                    Transactions <i class="fas fa-search"></i></a>
+                <a href="#" onclick="clickedAdvancedSearch();" class="btn btn-primary searchButtons"
+                    data-toggle="collapse" data-target="#collapseAdvancedSearch" aria-expanded="false"
+                    aria-controls="collapseAdvancedSearch" style="width: 100%">Advanced Search <i
                         class="fas fa-cogs"></i></a>
             </div>
-            <div class="collapse" id="collapseExample">
+            <div class="collapse" id="collapseAdvancedSearch">
                 <div class="container border">
+                    <div id="alertContainer">
 
+                    </div>
                     <label>Select a Date Range:</label>
                     <div id="datePicker">
                         <i class="fa fa-calendar"></i>&nbsp;
                         <span></span> <i class="fa fa-caret-down"></i>
                     </div>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="employeeSwitch">
+                        <label class="custom-control-label" for="employeeSwitch" style="margin-top:10px">Search for a
+                            Specific Employee</label>
+                    </div>
+                    <input type="text" class="form-control hide" style="width: 100%" id="employeeSearchField"
+                        placeholder="Employee Username e.g. mail@link.com" required>
 
-                    <button type="button" id="btnSubmitCustomSearch" class="btn btn-success searchButtons text-center">Search</button>
+                    <button type="button" id="btnSubmitCustomSearch"
+                        class="btn btn-success searchButtons text-center">Search</button>
 
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="container col-md-11 border" style="padding-top:20px; padding-bottom:20px; margin-bottom:90px"
+        id="fullTableContainer">
+        <div class="alert alert-warning alert-dismissible" id="mainErrorAlert" style="display:none"></div>
+        <div class="text-center">
+        </div>
+        <div class="container col-md-4 col-10">
+            <ul class="list-group" id="searchQueryList">
+            </ul>
+        </div>
+        <div class="table-responsive" style="padding-bottom:10px">
+            <table class="table table-striped table-bordered" id="table" style="font-size:13px">
+                <thead>
+                    <th>Employee Name</th>
+                    <th>Employee Surname</th>
+                    <th>Employee Email</th>
+                    <th>Amount Spent</th>
+                    <th>Date Time</th>
+                    <th>Payment Description</th>
+                    <th>Payment Point Description</th>
+                </thead>
+                <tbody id="tableBody">
+
+                </tbody>
+            </table>
+        </div>
+        <div class="btn-toolbar justify-content-between" role="toolbar">
+            <div class="input-group">
+                <button type="button" class="btn btn-primary btn-md searchButtons" onclick="researchClicked();"
+                    style="height:40px;margin-top:10px">
+                    Search Again <i class="fas fa-sync-alt"></i>
+                </button>
+                <button type="button" class="btn btn-danger btn-md searchButtons" onclick="downloadPdf();"
+                    style="height:40px;margin-top:10px">
+                    Download PDF <i class="far fa-file-pdf"></i>
+                </button>
+                <button type="button" class="btn btn-success btn-md searchButtons" onclick="downloadCsv();"
+                    style="height:40px;margin-top:10px">
+                    Download CSV <i class="fas fa-file-csv"></i>
+                </button>
+            </div>
+            <div class="btn-group" role="group">
+                <button id="btnBackHome" onclick="window.location.replace('home.html');"
+                    class="btn btn-default pull-right" style="margin-top:10px">Back to Home</button>
+            </div>
+        </div>
+    </div>
+
 
     <footer id="sticky-footer" class="py-4 bg-light text-black-100" style="bottom: 0px; position: fixed; width: 100%;">
         <div class="container text-center">

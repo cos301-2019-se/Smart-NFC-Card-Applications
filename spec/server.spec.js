@@ -3351,8 +3351,74 @@ describe('Server.js Unit Testing', function () {
             });
     });
 
+    //Get all transactions demo mode test
+    describe("POST " + endpoint + "/admin/getAllTransactionsByCompanyId", function () {
+        let data = new Object();
+        beforeAll(function (done) {
+            var jsonDataObj = {
+                "companyId": 3,
+                "apiKey": "apikey",
+                "endDate": "2019-07-21 22:00:00",
+                "employeeUsername": "test",
+                "demoMode": true
 
-    
+            }; // fill in data to send to endpoint
+            Request.post({
+                url: endpoint + "/admin/getAllTransactionsByCompanyId",
+                body: jsonDataObj,
+                json: true
+            }, function (error, response, body) {
+                data.status = response.statusCode;
+                data.contentType = response.headers['content-type'];
+                data.body = response.body;
+                done();
+            });
+        });
+
+        it('should return with statusCode 200', function () {
+            expect(data.status).toEqual(200);
+        });
+
+        it('should set content type = application/json', function () {
+            expect(data.contentType).toEqual('application/json');
+        });
+
+        it(`should return a json object: {
+            "success": true,
+            "message": "Demo Mode Transactions Fetched",
+            "data": [
+                {
+                    "employeeName": "DemoName",
+                    "employeeSurname": "DemoSurname",
+                    "employeeEmail": "demo@gmail.com",
+                    "amountSpent": 50,
+                    "paymentDesc": "",
+                    "paymentPointDesc": "New desc",
+                    "transactiontime": "2019-07-21T19:15:18.028Z"
+                }
+            ]
+        }`
+            , function () {
+                expect(data.body).toEqual({
+                    "success": true,
+                    "message": "Demo Mode Transactions Fetched",
+                    "data": [
+                        {
+                            "employeeName": "DemoName",
+                            "employeeSurname": "DemoSurname",
+                            "employeeEmail": "demo@gmail.com",
+                            "amountSpent": 50,
+                            "paymentDesc": "",
+                            "paymentPointDesc": "New desc",
+                            "transactiontime": "2019-07-21T19:15:18.028Z"
+                        }
+                    ]
+                });
+            });
+    });
+
+
+
 	/*
     // Unit Tests for CrudController
     describe("Crud Controller - getEmployee correct ID", function () {

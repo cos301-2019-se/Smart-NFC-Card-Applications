@@ -46,6 +46,7 @@ class CrudController {
 		this.apiKey = null;
 		this.isEmployee = true;
 
+		/*
 		this.client = new Client({
 			user: 'postgres',
 			host: 'localhost',
@@ -53,12 +54,11 @@ class CrudController {
 			password: 'nbuser',
 			port: 5432,
 		});
+		*/
 
-		/*
 		this.client = new Client({
 			connectionString: process.env.DATABASE_URL
 		});
-		*/
 
 		this.client.connect();
 	}
@@ -2988,13 +2988,14 @@ class CrudController {
 
 	/**
 	*	Retrieves a set of transactions (with reporting information) for the specified company. 
-	*	By default all transactions are returned unless date time constraints are provided
+	*	By default all transactions are returned unless date time constraints are provided or an employee username is specified
 	*	@param companyId
 	*	@param startDate Date Object (optional) Starting date to retrieve transactions for
 	*	@param endDate Date Object (optional) Ending date to retrieve transactions for
+	*	@param employeeUsername string (optional) Username of the employee
 	*	@return [ {employeeName, employeeSurname, employeeEmail, amountSpent, paymentDesc, paymentPointDesc, transactiontime  } ]
 	*/
-	async getAllTransactionsByCompanyId(companyId, startDate, endDate) {
+	async getAllTransactionsByCompanyId(companyId, startDate, endDate, employeeUsername) {
 		if (!this.validateNumeric(companyId)) {
 			return this.buildDefaultResponseObject(false, "Invalid Company ID provided", true);
 		}
@@ -3037,16 +3038,26 @@ class CrudController {
 			whereStatement += " AND transactiontime <= $2";
 			paramsArray.push(endDate);
 		}
+		let fromStatement = `FROM ((((company c INNER JOIN employee e ON c.companyId = e.companyId)
+								INNER JOIN visitorpackage v ON e.employeeId = v.employeeId)
+								INNER JOIN transaction t ON v.linkwalletid = t.walletId)
+								INNER JOIN nfcpaymentpoints n ON t.nfcpaymentpointid = n.nfcpaymentpointid)`;
+		if (employeeUsername) {
+			//extra joins required to narrow down by employee
+			fromStatement = `FROM (((((company c INNER JOIN employee e ON c.companyId = e.companyId)
+								INNER JOIN visitorpackage v ON e.employeeId = v.employeeId)
+			 					INNER JOIN password p ON e.passwordId = p.passwordId )
+								INNER JOIN transaction t ON v.linkwalletid = t.walletId)
+								INNER JOIN nfcpaymentpoints n ON t.nfcpaymentpointid = n.nfcpaymentpointid)`
+			paramsArray.push(employeeUsername);
+			whereStatement += " AND username = $" + (paramsArray.length);
+		}
 
 		let query = `SELECT firstname AS "employeeName", surname AS "employeeSurname", email AS "employeeEmail", amount AS "amountSpent",
 						t.description AS "paymentDesc", n.description AS "paymentPointDesc", transactiontime AS "transactiontime"
-					FROM ((((company c INNER JOIN employee e ON c.companyId = e.companyId)
-						INNER JOIN visitorpackage v ON e.employeeId = v.employeeId)
-						INNER JOIN transaction t ON v.linkwalletid = t.walletId)
-						 INNER JOIN nfcpaymentpoints n ON t.nfcpaymentpointid = n.nfcpaymentpointid)
+					${fromStatement}
 					${whereStatement}
 					ORDER BY transactiontime DESC;`;
-
 		var ret = null;
 		let res;
 		try {

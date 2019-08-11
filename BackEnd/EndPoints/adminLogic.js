@@ -2982,16 +2982,33 @@ class AdminLogic
     }
 
     /**
-     *  Fetchec all transactions for the specified company within the optional date range.
+     *  Fetches all transactions for the specified company within the optional date range.
      *  If no date is provided then all transactions will be retrieved 
      *  @param companyId int The company ID for which the transaction data will be retrieved
-     *  @param startDate string The Stringified start date time in ISO format e.g. 2016-06-27T14:48:00.000Z
-     *  @param endDate string Stringified end date time in ISO format e.g. 2016-06-27T14:48:00.000Z
+     *  @param startDate string (optional) The Stringified start date time in ISO format e.g. 2016-06-27T14:48:00.000Z
+     *  @param endDate string (optional) Stringified end date time in ISO format e.g. 2016-06-27T14:48:00.000Z
+	 *  @param employeeUsername string (optional) Username of the employee
      *  @return [ {employeeName, employeeSurname, employeeEmail, amountSpent, paymentDesc, paymentPointDesc, transactiontime  } ]
      */
     async getAllTransactionsByCompanyId(){
         if(!this.body.companyId || !this.sharedLogic.validateNumeric(this.body.companyId))
             return this.sharedLogic.endServe(false, "No valid companyId provided", null);
+
+        if(this.body.employeeUsername && !this.sharedLogic.validateNonEmpty(this.body.employeeUsername))
+            return this.sharedLogic.endServe(false, "Invalid employee username provided", null);
+
+        if(this.body.demoMode){
+            return this.sharedLogic.endServe(true, "Demo Mode Transactions Fetched", [{
+                "employeeName": "DemoName",
+                "employeeSurname": "DemoSurname",
+                "employeeEmail": "demo@gmail.com",
+                "amountSpent": 50,
+                "paymentDesc": "",
+                "paymentPointDesc": "New desc",
+                "transactiontime": "2019-07-21T19:15:18.028Z"
+            }]);
+        }
+
 
         let startDate, endDate;
         if(this.body.startDate)
@@ -2999,7 +3016,7 @@ class AdminLogic
         if(this.body.endDate)
             endDate = new Date(this.body.endDate);
 
-        let result = await this.sharedLogic.crudController.getAllTransactionsByCompanyId(this.body.companyId, startDate, endDate);
+        let result = await this.sharedLogic.crudController.getAllTransactionsByCompanyId(this.body.companyId, startDate, endDate, this.body.employeeUsername);
         return this.sharedLogic.endServe(result.success, result.message, result.data);
     }
 

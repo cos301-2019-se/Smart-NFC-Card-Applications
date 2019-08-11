@@ -45,7 +45,7 @@ class CrudController {
 		this.demoMode = true;
 		this.apiKey = null;
 		this.isEmployee = true;
-		
+
 		/*
 		this.client = new Client({
 			user: 'postgres',
@@ -59,7 +59,7 @@ class CrudController {
 		this.client = new Client({
 			connectionString: process.env.DATABASE_URL
 		});
-		
+
 		this.client.connect();
 	}
 
@@ -2986,6 +2986,114 @@ class CrudController {
 		}
 	}
 
+	/**
+	*	Retrieves a set of transactions (with reporting information) for the specified company. 
+	*	By default all transactions are returned unless date time constraints are provided or an employee username is specified
+	*	@param companyId
+	*	@param startDate Date Object (optional) Starting date to retrieve transactions for
+	*	@param endDate Date Object (optional) Ending date to retrieve transactions for
+	*	@param employeeUsername string (optional) Username of the employee
+	*	@return [ {employeeName, employeeSurname, employeeEmail, amountSpent, paymentDesc, paymentPointDesc, transactiontime  } ]
+	*/
+	async getAllTransactionsByCompanyId(companyId, startDate, endDate, employeeUsername) {
+		if (!this.validateNumeric(companyId)) {
+			return this.buildDefaultResponseObject(false, "Invalid Company ID provided", true);
+		}
+
+		let hasStart = false;
+		let hasEnd = false;
+		if (startDate) {
+			if (this.isValidDate(startDate))
+				hasStart = true;
+			else
+				return this.buildDefaultResponseObject(false, "Invalid Start Date provided", true);
+		}
+
+		if (endDate) {
+			if (this.isValidDate(endDate))
+				hasEnd = true;
+			else
+				return this.buildDefaultResponseObject(false, "Invalid End Date provided", true);
+		}
+
+		let whereStatement = "WHERE c.companyId = $1";
+		let paramsArray = [companyId];
+		if (hasStart) {
+			if (hasEnd) {
+				//have start and end date
+				if (startDate <= endDate) {
+					whereStatement += " AND transactiontime >= $2 AND transactiontime <= $3";
+					paramsArray.push(startDate);
+					paramsArray.push(endDate);
+				} else {
+					return this.buildDefaultResponseObject(false, "Start date is greater than end date", true);
+				}
+			} else {
+				//just have a start date
+				whereStatement += " AND transactiontime >= $2";
+				paramsArray.push(startDate);
+			}
+		} else if (hasEnd) {
+			//just have an end date
+			whereStatement += " AND transactiontime <= $2";
+			paramsArray.push(endDate);
+		}
+		let fromStatement = `FROM ((((company c INNER JOIN employee e ON c.companyId = e.companyId)
+								INNER JOIN visitorpackage v ON e.employeeId = v.employeeId)
+								INNER JOIN transaction t ON v.linkwalletid = t.walletId)
+								INNER JOIN nfcpaymentpoints n ON t.nfcpaymentpointid = n.nfcpaymentpointid)`;
+		if (employeeUsername) {
+			//extra joins required to narrow down by employee
+			fromStatement = `FROM (((((company c INNER JOIN employee e ON c.companyId = e.companyId)
+								INNER JOIN visitorpackage v ON e.employeeId = v.employeeId)
+			 					INNER JOIN password p ON e.passwordId = p.passwordId )
+								INNER JOIN transaction t ON v.linkwalletid = t.walletId)
+								INNER JOIN nfcpaymentpoints n ON t.nfcpaymentpointid = n.nfcpaymentpointid)`
+			paramsArray.push(employeeUsername);
+			whereStatement += " AND username = $" + (paramsArray.length);
+		}
+
+		let query = `SELECT firstname AS "employeeName", surname AS "employeeSurname", email AS "employeeEmail", amount AS "amountSpent",
+						t.description AS "paymentDesc", n.description AS "paymentPointDesc", transactiontime AS "transactiontime"
+					${fromStatement}
+					${whereStatement}
+					ORDER BY transactiontime DESC;`;
+		var ret = null;
+		let res;
+		try {
+			res = await this.client.query(query, paramsArray);
+			if (res.rows.length == 0) {
+				ret = this.returnDatabaseError("no transactions found");
+				return ret;
+			}
+			else {
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved transactions", false, true);
+				for (var i = 0; i < res.rows.length; i++) {
+					var obj = {};
+
+					obj.employeeName = res.rows[i].employeeName;
+					obj.employeeSurname = res.rows[i].employeeSurname;
+					obj.employeeEmail = res.rows[i].employeeEmail;
+					obj.amountSpent = res.rows[i].amountSpent;
+					obj.paymentDesc = res.rows[i].paymentDesc;
+					obj.paymentPointDesc = res.rows[i].paymentPointDesc;
+					obj.transactiontime = res.rows[i].transactiontime;
+
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+
+	}
+
+
 
 
 	//Jared Helpers
@@ -3197,6 +3305,14 @@ class CrudController {
 		else {
 			return false
 		}
+	}
+	/**
+	 * Checks if the parameter is a valid date
+	 * @param date The parameter that will be checked for being a date
+	 * @return boolean Will return true if the parameter is a date, false otherwise
+	 */
+	isValidDate(date) {
+		return date instanceof Date && !isNaN(date);
 	}
 }
 

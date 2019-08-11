@@ -361,7 +361,6 @@ function fetchCompanyName(resolve, reject) {
 }
 
 function displayError(message) {
-    console.log("AWE")
     $('#mainErrorAlert').html(` 
     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
     <strong>Error!</strong> ${message}`).show();

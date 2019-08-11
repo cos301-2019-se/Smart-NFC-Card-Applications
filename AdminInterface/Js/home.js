@@ -72,6 +72,10 @@ function paymentpoints()
 	window.location.replace("paymentpoints.html");
 }
 
+function transactions(){
+	window.location.replace("transactions.html");
+}
+
 function logout(){
 	localStorage.clear();
 	window.location.replace("login.html");

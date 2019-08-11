@@ -137,15 +137,18 @@ export class HomePage {
         if (res['success'] === true) {
           this.Display(true);
           this.showMessage(`Access Granted`, MessageType.success, 0);
+          this.reqService.dismissLoading();
         }
         else {
           this.Display(false);
           this.showMessage(`Access Denied: ${res['message']}`, MessageType.error, 0);
+          this.reqService.dismissLoading();
         }
       });
     } catch (error) {
       this.Display(null);
       this.showMessage(`Data received not in json format: ${error}`, MessageType.error, 0);
+      this.reqService.dismissLoading();
     }
   }
 
@@ -161,15 +164,18 @@ export class HomePage {
         if (res['success'] === true) {
           this.Display(true);
           this.showMessage(`Payment Made`, MessageType.success, 0);
+          this.reqService.dismissLoading();
         }
         else {
           this.Display(false);
           this.showMessage(`Payment Failed: ${res['message']}`, MessageType.error, 0);
+          this.reqService.dismissLoading();
         }
       });
     } catch (error) {
       this.Display(null);
       this.showMessage(`Data received not in json format: ${error}`, MessageType.error, 0);
+      this.reqService.dismissLoading();
     }
   }
 

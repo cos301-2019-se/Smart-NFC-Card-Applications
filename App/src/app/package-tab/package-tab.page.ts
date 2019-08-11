@@ -316,8 +316,8 @@ export class PackageTabPage implements OnInit{
   unlock(packageId: number){
     this.showMessage('Hold the phone against the NFC device.', MessageType.info);
     this.nfcService.SendData(packageId, `{
-      "packageId": ${packageId},
-      "uuid": "${this.uidService.getUniqueId()}"
+      "visitorPackageId": ${packageId},
+      "macAddress": "${this.uidService.getUniqueId()}"
     }`)
     .catch((err) => {
       this.showMessage(`NFC and/or Android Beam seems to be off. Please try turing it on.`, MessageType.error, 5000);
@@ -334,8 +334,8 @@ export class PackageTabPage implements OnInit{
   pay(packageId: number){
     this.showMessage('Hold the phone against the NFC device.', MessageType.info);
     this.nfcService.SendData(packageId, `{
-      "packageId": ${packageId},
-      "uuid": "${this.uidService.getUniqueId()}"
+      "visitorPackageId": ${packageId},
+      "macAddress": "${this.uidService.getUniqueId()}"
     }`)
     .catch((err) => {
       this.showMessage(`NFC and/or Android Beam seems to be off. Please try turing it on.`, MessageType.error, 5000);

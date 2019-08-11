@@ -159,7 +159,7 @@ export class HomePage {
    */
   handlePayPoint(data: JSON) {
     data["amount"] = this.paymentAmount;
-    data["nfcPaymentPointId "] = this.selectedPayPoint;
+    data["nfcPaymentPointId"] = this.selectedPayPoint;
     try {
       this.reqService.makePayment(data).subscribe(res => {
         if (res['success'] === true) {

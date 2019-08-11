@@ -158,7 +158,7 @@ class PaymentLogic {
 
         var walletId = visitorPackage.data.linkWalletId; // wallet ID retrieved from visitor package
 
-        if (this.isVisitorPackageExpired(visitorPackage.data.endTime))
+        if (this.isVisitorPackageExpired(visitorPackage.data.startTime, visitorPackage.data.endTime))
             return this.sharedLogic.endServe(false, "Visitor Package has expired", null);
 
         //now that it is certain the package is not expired, proceed to validate the package
@@ -266,13 +266,14 @@ class PaymentLogic {
         this.sharedLogic.endServe(true, "All Data retrieved", dataArray);
     }
 
-    isVisitorPackageExpired(date) {
-        var endDate = new Date(date);
+    isVisitorPackageExpired(sDate,eDate) {
+        var startDate = new Date(sDate);
+        var endDate = new Date(eDate);
         var currentDate = new Date();
-        if (currentDate < endDate) {
-            return false;
+        if (currentDate > endDate || currentDate < startDate) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     isRealNumber(num) {

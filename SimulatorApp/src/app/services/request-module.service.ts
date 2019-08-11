@@ -35,7 +35,7 @@ import { LoadingController } from '@ionic/angular';
 })
 export class RequestModuleService {
 
-  static demoMode: boolean = true;
+  static demoMode: boolean = false;
 
   loadingModal: HTMLIonLoadingElement; 
   baseUrl: string = "https://smart-nfc-application.herokuapp.com";
@@ -121,6 +121,12 @@ export class RequestModuleService {
   grantAccessStub: JSON = JSON.parse(`{
     "success": true,
     "message": "Access Granted.",
+    "data": {}
+  }`);
+
+  makePaymentStub: JSON = JSON.parse(`{
+    "success": false,
+    "message": "Insufficient funds.",
     "data": {}
   }`);
 
@@ -222,7 +228,7 @@ export class RequestModuleService {
   makePayment(body: JSON){
     if(RequestModuleService.demoMode) {
       return new Observable<Object>(observer => {
-        observer.next('');
+        observer.next(this.makePaymentStub);
         observer.complete();
       });
     }

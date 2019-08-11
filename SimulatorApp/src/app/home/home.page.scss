@@ -18,5 +18,17 @@ ion-input{
 }
 
 .messageArea {
+    background-color: var(--ion-color-primary-contrast);
+}
+
+.success{
+    --background: var(--ion-color-success);
+}
+
+.error{
+    --background: var(--ion-color-danger);
+}
+
+.default{
     --background: var(--ion-color-primary-contrast);
 }

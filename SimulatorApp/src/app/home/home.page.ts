@@ -25,6 +25,7 @@ import { RoomModel } from '../models/room.model';
 import { PayPointModel } from '../models/pay-point.model';
 import { RequestModuleService } from '../services/request-module.service';
 import { NfcControllerService } from '../services/nfc-controller.service';
+import { Color } from '@ionic/core';
 
 export enum ModeType{
   accessPoint, payPoint, none
@@ -53,6 +54,8 @@ export class HomePage {
 
   private modeDetail: string;
   private modeType: ModeType;
+
+  private success?: Boolean = null;
 
   private infoMessage: string = null;
   private successMessage: string = null;
@@ -85,6 +88,7 @@ export class HomePage {
           this.handleNFCData(json);
         } catch (error) {
           this.showMessage(`Data received not in json format: ${error}`, MessageType.error, 0);
+          this.listen();
         }
       });
     })
@@ -95,9 +99,9 @@ export class HomePage {
 
   /**
    * Function that handles incoming NFC shared data
-   * @param data string received from device
+   * @param data JSON received from device
    */
-  handleNFCData(data: string){
+  handleNFCData(data: JSON){
     switch (this.modeType) {
       case ModeType.none:
         this.showMessage(`App not in any mode - didn't handle data.`, MessageType.info, 5000);
@@ -108,47 +112,63 @@ export class HomePage {
       case ModeType.payPoint:
         this.handlePayPoint(data);
         break;
-    }       
+    }    
+    this.listen();   
+  }
+  
+  /**
+   * Function that changes the display based on whether or not a request was successful
+   * @param success Boolean
+   */
+  Display(success?: Boolean){
+    this.success = success;   
+    if (success === null) {  
+      this.showMessage(``, MessageType.reset);
+    }
   }
 
   /**
    * Function that handles incoming NFC shared data for access points
-   * @param data string received from device
+   * @param data JSON received from device
    */
-  handleAccessPoint(data: string) {
-    this.showMessage(data, MessageType.success, 5000);
+  handleAccessPoint(data: JSON) {
     try {
-      let json = JSON.parse(data); 
-      this.reqService.attemptAccess(json).subscribe(res => {
+      this.reqService.attemptAccess(data).subscribe(res => {
         if (res['success'] === true) {
+          this.Display(true);
           this.showMessage(`Access Granted`, MessageType.success, 0);
         }
         else {
+          this.Display(false);
           this.showMessage(`Access Denied: ${res['message']}`, MessageType.error, 0);
         }
       });
     } catch (error) {
+      this.Display(null);
       this.showMessage(`Data received not in json format: ${error}`, MessageType.error, 0);
     }
   }
 
   /**
    * Function that handles incoming NFC shared data for payment points
-   * @param data string received from device
+   * @param data JSON received from device
    */
-  handlePayPoint(data: string) {
-    this.showMessage(data, MessageType.success, 5000);
+  handlePayPoint(data: JSON) {
+    data["amount"] = this.paymentAmount;
+    data["nfcPaymentPointId "] = this.selectedPayPoint;
     try {
-      let json = JSON.parse(data); 
-      this.reqService.makePayment(json).subscribe(res => {
+      this.reqService.makePayment(data).subscribe(res => {
         if (res['success'] === true) {
+          this.Display(true);
           this.showMessage(`Payment Made`, MessageType.success, 0);
         }
         else {
+          this.Display(false);
           this.showMessage(`Payment Failed: ${res['message']}`, MessageType.error, 0);
         }
       });
     } catch (error) {
+      this.Display(null);
       this.showMessage(`Data received not in json format: ${error}`, MessageType.error, 0);
     }
   }
@@ -229,6 +249,7 @@ export class HomePage {
    * @param mode ModeType which mode to switch to
    */
   changeMode(mode: ModeType){
+    this.Display(null);
     this.modeType = mode;
     switch (mode){
       case ModeType.accessPoint:

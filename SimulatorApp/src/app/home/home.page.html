@@ -16,8 +16,8 @@
     <ion-item color='danger' *ngIf='errorMessage !== null'> {{ errorMessage }} </ion-item>
   </ion-toolbar>
 
-<ion-content class="ion-padding">
-  <ion-card>
+<ion-content class="ion-padding" [ngClass]="{'default': success === null, 'error': success === false, 'success': success === true}">
+  <ion-card color="light">
     <ion-card-content>
       <ion-list>
         <ion-item lines="full"> 
@@ -48,13 +48,13 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card>
+  <ion-card color="light">
     <ion-card-content>
       <ion-button expand="block" fill="outline" (click)='actAsAccessPoint()'>Act as Access Point</ion-button>
     </ion-card-content>
   </ion-card>
   
-  <ion-card>
+  <ion-card color="light">
     <ion-card-content>
       <ion-item>
         <ion-label>Amount of Transaction</ion-label>

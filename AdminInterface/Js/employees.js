@@ -40,6 +40,7 @@ function populateTable() {
     if (!employeeData || !companyName || !buildingData)
         return;
     tableBody.empty();
+    $('#table').DataTable().clear().destroy();
     for (var i = 0; i < employeeData.length; i++) {
         var employee = employeeData[i];
         var empId = employee.employeeId;

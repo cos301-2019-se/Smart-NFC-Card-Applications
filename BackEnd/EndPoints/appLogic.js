@@ -86,9 +86,6 @@ class AppLogic{
             case "getVisitorPackages":
                 this.getVisitorPackages();  // TODO complete
                 break;
-            case "deleteVisitorPackage":
-                this.deleteVisitorPackage();// TODO complete
-                break;
 
             default:
                 this.sharedLogic.endServe(false, "Invalid Endpoint", null);
@@ -229,8 +226,6 @@ class AppLogic{
      *                                  password: string Password of wifi access param
      *                             }
      *               }
-     *
-     * @TODO Return mock data
      */
     async getEmployeeDetails(){
         let success;
@@ -1309,9 +1304,8 @@ class AppLogic{
      *  Function to retrieve a visitor package
      *
      *  @param visitorPackageId int ID of visitor package
-     * 
+     *
      *  @return JSON {
-     *                  employeeId: int ID of employee responsible
      *                  companyName: string Name of company
      *                  latitude: string Latitude of building
      *                  longitude: string Longitude of building
@@ -1320,14 +1314,11 @@ class AppLogic{
      *                  networkType: string Type of wifi access param
      *                  password: string Password of wifi access param
      *                  roomName: string Name of the room
-     *                  parentRoomList: string List of parent rooms to the room
      *                  startTime: date Start date of the visitor package
      *                  endTime: date End date of the visitor package
      *                  limit: double Limit for the client
      *                  spent: amount the client spent
      *               }
-     * 
-     *  @TODO Test
      */
     async getVisitorPackage(){
         let success;
@@ -1340,7 +1331,7 @@ class AppLogic{
         if(this.body.visitorPackageId === undefined){
             presentParams = true;
             presentReturn += "visitorPackageId, ";
-        }   
+        }
 
         if(!presentParams){
             let invalidParams = false;
@@ -1353,8 +1344,6 @@ class AppLogic{
 
             if(!invalidParams) {
                 if(this.demoMode){
-                    success = true;
-                    message = "Retrieved Visitor Package - MOCK";
                     data.companyName = "Vast Expanse";
                     data.latitude = "2000";
                     data.longitude = "2000";
@@ -1362,74 +1351,16 @@ class AppLogic{
                     data.ssid = "Vast Expanse";
                     data.networkType = "WPA";
                     data.password = "test";
-                    data.roomName = "room1";              
+                    data.roomName = "room1";
                     data.startTime = "10:00";
                     data.endTime = "10:00";
                     data.limit = "100.00";
                     data.spent = "50.00";
-                    this.sharedLogic.endServe(success, message, data);
+                    this.sharedLogic.endServe(true, "Retrieved Visitor Package - MOCK", data);
                 }
                 else{
-                    let visitorPackageData = await this.sharedLogic.crudController.getVisitorPackageByVisitorPackageId(this.body.visitorPackage);
-
-                    if(visitorPackageData.success){
-
-                        let employeeData = await this.sharedLogic.crudController.getEmployeeByEmployeeId(visitorPackageData.data.employeeId);
-
-                        if(employeeData.success){
-                            let companyData = await this.sharedLogic.crudController.getCompanyByCompanyId(employeeDetails.data.companyId);
-
-                            if(companyData.success){
-                                data.companyName = companyData.data.companyName;
-                            }
-                            else{
-                                this.sharedLogic.endServe(companyData.success, companyData.message, companyData.data);
-                            }
-
-                            let buildingData = await this.sharedLogic.crudController.getBuildingByBuildingId(employeeData.data.buildingId);
-
-                            if(buildingData.success){
-                                let wifiData = await this.sharedLogic.crudController.getWiFiParamsByWifiParamsId(buildingData.data.wifiParamsId);
-
-                                if(wifiData.success){
-                                    data.ssid = wifiData.data.ssid;
-                                    data.networkType = wifiData.data.networkType;
-                                    data.password = wifiData.data.password;
-                                }
-                                else{
-                                    this.sharedLogic.endServe(companyData.success, companyData.message, companyData.data);
-                                }
-
-                                data.branchName = buildingData.data.branchName;
-                                data.latitude = buildingData.data.latitude;
-                                data.longitude = buildingData.data.longitude;
-                            }
-                            else{
-                                this.sharedLogic.endServe(buildingData.success, buildingData.message, buildingData.data);
-                            }
-                        }
-                        else{
-                            this.sharedLogic.endServe(employeeData.success, employeeData.message, employeeData.data);
-                        }
-
-                        let roomData = await this.sharedLogic.crudController.getRoomByRoomId(visitorPackageData.data.roomId);
-
-                        if(roomData.success){
-                            data.roomName = roomData.data.roomName;
-                        }
-                        else{
-                            this.sharedLogic.endServe(employeeData.success, employeeData.message, employeeData.data);
-                        }
-
-                        data.startTime = visitorPackageData.data.startTime;
-                        data.endTime = visitorPackageData.data.endTime;
-                        data.limit = visitorPackageData.data.limit;
-                        data.spent = visitorPackageData.data.spent;
-                        this.sharedLogic.endServe(true, "Retrieved Visitor Package", data);
-                    }
-                    else{
-                        this.sharedLogic.endServe(visitorPackageData.success, visitorPackageData.message, visitorPackageData.data);
-                    }
+                    data = await this.visitorPackage(this.body.visitorPackageId);
+                    this.sharedLogic.endServe(true, "Retrieved Visitor Package", data);
                 }
             }
             else{
@@ -1454,27 +1385,219 @@ class AppLogic{
      *
      *  @param employeeId int ID of the employee
      *
-     *  @return JSON array
-     *
-     *  @TODO Test
+     *  @return JSON [
+     *                  {
+     *                      companyName: string Name of company
+     *                      latitude: string Latitude of building
+     *                      longitude: string Longitude of building
+     *                      branchName: string Name of building
+     *                      ssid: string SSID of wifi access param
+     *                      networkType: string Type of wifi access param
+     *                      password: string Password of wifi access param
+     *                      roomName: string Name of the room
+     *                      startTime: date Start date of the visitor package
+     *                      endTime: date End date of the visitor package
+     *                      limit: double Limit for the client
+     *                      spent: amount the client spent
+     *                  }, ..
+     *              ]
      */
-    getVisitorPackages(){
+    async getVisitorPackages(){
+        let success;
+        let message;
+        let data = {};
 
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.employeeId === undefined){
+            presentParams = true;
+            presentReturn += "employeeId, ";
+        }
+
+        if(!presentParams){
+            let invalidParams = false;
+            let invalidReturn = "";
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeId)){
+                invalidParams = true;
+                invalidReturn += "employeeId, ";
+            }
+
+            if(!invalidParams) {
+                if(this.demoMode){
+                    let arr = [];
+
+                    let data1 = {};
+                    data1.companyName = "Vast Expanse";
+                    data1.latitude = "2000";
+                    data1.longitude = "2000";
+                    data1.branchName = "Pretoria";
+                    data1.ssid = "Vast Expanse";
+                    data1.networkType = "WPA";
+                    data1.password = "test";
+                    data1.roomName = "room1";
+                    data1.startTime = "10:00";
+                    data1.endTime = "10:00";
+                    data1.limit = "100.00";
+                    data1.spent = "50.00";
+
+                    let data2 = {};
+                    data2.companyName = "Vast Expanse";
+                    data2.latitude = "2000";
+                    data2.longitude = "2000";
+                    data2.branchName = "Pretoria";
+                    data2.ssid = "Vast Expanse";
+                    data2.networkType = "WPA";
+                    data2.password = "test";
+                    data2.roomName = "room1";
+                    data2.startTime = "10:00";
+                    data2.endTime = "10:00";
+                    data2.limit = "100.00";
+                    data2.spent = "50.00";
+
+                    arr.push(data1);
+                    arr.push(data2);
+
+                    data = arr;
+
+                    this.sharedLogic.endServe(true, "Retrieved Visitor Packages - MOCK", data);
+                }
+                else{
+                    let visitorPackages = await this.sharedLogic.crudController.getVisitorPackagesByEmployeeId(this.body.employeeId);
+
+                    if(visitorPackages.success){
+                        let arr = [];
+                        for(let i=0; i<visitorPackages.data.length; i++){
+                            let p = await this.visitorPackage(visitorPackages.data[i].visitorPackageId);
+                            arr.push(p);
+                        }
+                        data = arr;
+                        this.sharedLogic.endServe(true, "Retrieved Visitor Packages", data);
+                    }
+                    else{
+                        this.sharedLogic.endServe(visitorPackages.success, visitorPackages.message, visitorPackages.data);
+                    }
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: " + invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                this.sharedLogic.endServe(success, message, data);
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: " + presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+            this.sharedLogic.endServe(success, message, data);
+        }
     }
 
     /**
-     *  Function to delete a visitor package
+     *  Function to retrieve a visitor package
      *
      *  @param visitorPackageId int ID of visitor package
-     *
+     * 
      *  @return JSON {
-     *
+     *                  visitorPackageId: int ID of visitorPackage
+     *                  companyName: string Name of company
+     *                  latitude: string Latitude of building
+     *                  longitude: string Longitude of building
+     *                  branchName: string Name of building
+     *                  ssid: string SSID of wifi access param
+     *                  networkType: string Type of wifi access param
+     *                  password: string Password of wifi access param
+     *                  roomName: string Name of the room
+     *                  startTime: date Start date of the visitor package
+     *                  endTime: date End date of the visitor package
+     *                  limit: double Limit for the client
+     *                  spent: amount the client spent
      *               }
-     *
-     *  @TODO Test
      */
-    deleteVisitorPackage(){
+    async visitorPackage(visitorPackageId){
+        let data = {};
 
+        let visitorPackageData = await this.sharedLogic.crudController.getVisitorPackageByVisitorPackageId(visitorPackageId);
+
+        if(visitorPackageData.success){
+            data.visitorPackageId = visitorPackageId;
+
+            let employeeData = await this.sharedLogic.crudController.getEmployeeByEmployeeId(visitorPackageData.data.employeeId);
+
+            if(employeeData.success){
+                let companyData = await this.sharedLogic.crudController.getCompanyByCompanyId(employeeData.data.companyId);
+
+                if(companyData.success){
+                    data.companyName = companyData.data.companyName;
+                }
+                else{
+                    this.sharedLogic.endServe(companyData.success, companyData.message, companyData.data);
+                }
+
+                let buildingData = await this.sharedLogic.crudController.getBuildingByBuildingId(employeeData.data.buildingId);
+
+                if(buildingData.success){
+                    let wifiData = await this.sharedLogic.crudController.getWiFiParamsByWifiParamsId(buildingData.data.wifiParamsId);
+
+                    if(wifiData.success){
+                        data.ssid = wifiData.data.ssid;
+                        data.networkType = wifiData.data.networkType;
+                        data.password = wifiData.data.password;
+                    }
+                    else{
+                        this.sharedLogic.endServe(wifiData.success, wifiData.message, wifiData.data);
+                    }
+
+                    data.branchName = buildingData.data.branchName;
+                    data.latitude = buildingData.data.latitude;
+                    data.longitude = buildingData.data.longitude;
+                }
+                else{
+                    this.sharedLogic.endServe(buildingData.success, buildingData.message, buildingData.data);
+                }
+            }
+            else{
+                this.sharedLogic.endServe(employeeData.success, employeeData.message, employeeData.data);
+            }
+
+            let tpaRoomData = await this.sharedLogic.crudController.getTPAxRoomsByTpaId(visitorPackageData.data.tpaId);
+
+            if(tpaRoomData.success){
+                let roomData =  await this.sharedLogic.crudController.getRoomByRoomId(tpaRoomData.data[tpaRoomData.data.length-1].roomId);
+
+                if(roomData.success){
+                    data.roomName = roomData.data.roomName;
+                }
+                else{
+                    this.sharedLogic.endServe(roomData.success, roomData.message, roomData.data);
+                }
+            }
+            else{
+                this.sharedLogic.endServe(tpaRoomData.success, tpaRoomData.message, tpaRoomData.data);
+            }
+
+            let walletData = await this.sharedLogic.crudController.getWalletByLinkWalletId(visitorPackageData.data.linkWalletId);
+
+            if(walletData.success){
+                data.limit = walletData.data.maxLimit;
+                data.spent = walletData.data.spent;
+            }
+            else{
+                this.sharedLogic.endServe(tpaRoomData.success, tpaRoomData.message, tpaRoomData.data);
+            }
+
+            data.startTime = visitorPackageData.data.startTime;
+            data.endTime = visitorPackageData.data.endTime;
+        }
+        else {
+            this.sharedLogic.endServe(visitorPackageData.success, visitorPackageData.message, visitorPackageData.data);
+        }
+
+        return data;
     }
 }
 

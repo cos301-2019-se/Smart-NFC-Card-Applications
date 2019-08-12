@@ -3269,7 +3269,6 @@ describe('Server.js Unit Testing', function () {
                 nfcPaymentPointId: 2,
                 visitorPackageId: 1,
                 amount: 9.5,
-                macAddress: "AA.522-CC-DD-EE-FF",
                 description: "My payment!"
             }; // fill in data to send to endpoint
             Request.post({

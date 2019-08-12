@@ -129,7 +129,7 @@ class PaymentLogic {
             return this.sharedLogic.endServe(false, "No valid transction amount provided", null);
         if (!this.body.nfcPaymentPointId || !this.sharedLogic.validateNumeric(this.body.nfcPaymentPointId))
             return this.sharedLogic.endServe(false, "No valid NFC Payment Point ID provided", null);
-        if (!this.body.macAddress || !this.validateMacAddress(this.body.macAddress))
+        if (!this.body.macAddress || !this.sharedLogic.validateNonEmpty(this.body.macAddress))
             return this.sharedLogic.endServe(false, "No valid Mac Address provided", null);
 
         if (this.demoMode) {

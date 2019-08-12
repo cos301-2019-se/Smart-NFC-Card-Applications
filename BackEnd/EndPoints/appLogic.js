@@ -81,10 +81,10 @@ class AppLogic{
                 this.editVisitorPackage();
                 break;
             case "getVisitorPackage":
-                this.getVisitorPackage();   // TODO complete
+                this.getVisitorPackage();
                 break;
             case "getVisitorPackages":
-                this.getVisitorPackages();  // TODO complete
+                this.getVisitorPackages();
                 break;
 
             default:
@@ -1306,6 +1306,7 @@ class AppLogic{
      *  @param visitorPackageId int ID of visitor package
      *
      *  @return JSON {
+     *                  visitorPackageId: int ID of the visitor package
      *                  companyName: string Name of company
      *                  latitude: string Latitude of building
      *                  longitude: string Longitude of building
@@ -1387,6 +1388,7 @@ class AppLogic{
      *
      *  @return JSON [
      *                  {
+     *                      visitorPackageId: int ID of the visitor package
      *                      companyName: string Name of company
      *                      latitude: string Latitude of building
      *                      longitude: string Longitude of building

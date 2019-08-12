@@ -40,6 +40,7 @@ function populateTable() {
     if (!paymentPointData || !companyName || !buildingData)
         return;
     tableBody.empty();
+    $('#table').DataTable().clear().destroy();
     for (var i = 0; i < paymentPointData.length; i++) {
         var paymentPoint = paymentPointData[i];
         var ppId = paymentPoint.nfcPaymentPointId;

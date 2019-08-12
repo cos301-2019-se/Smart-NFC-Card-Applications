@@ -38,8 +38,8 @@ $(document).ready(function () {
         $('#btnSubmitCustomSearch').click(function () {
             let startDate = new Date(start);
             let endDate = new Date(end);
-            startDate.setUTCHours(0, 0, 0, 0);
-            endDate.setUTCHours(23, 59, 59, 999);
+            startDate.setHours(0,0,0,0);
+            endDate.setHours(23, 59, 59, 999);
 
             let postObj = { "apiKey": apiKey, "companyId": companyId, "startDate": startDate.toISOString(), "endDate": endDate.toISOString() }
 
@@ -84,6 +84,7 @@ $(document).ready(function () {
 function populateTable(transactionArr) {
     var tableBody = $('#tableBody');
     tableBody.empty();
+    $('#table').DataTable().clear().destroy();
     for (var i = 0; i < transactionArr.length; i++) {
         var transaction = transactionArr[i];
         var empName = transaction.employeeName;
@@ -149,6 +150,7 @@ function researchClicked() {
     $('#alertContainer').html('');
     $('#alertContainerTop').html('');
     $('#employeeSearchField').removeClass("is-invalid");
+    $('#tableBody').empty();
 }
 
 function downloadCsv() {

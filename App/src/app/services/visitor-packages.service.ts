@@ -147,6 +147,72 @@ export class VisitorPackagesService {
       this.setSharedVisitorPackages(packages);
     });
   }
+
+  /**
+   * Function that removes all the shared visitor packages
+   * @param employeeId number id of the employee's packages to load
+   * @return Observable<Object> { success: boolean, message: string}
+   */
+  loadAllSharedPackages(employeeId: number) {
+    let subject = new Subject<Object>();
+    setTimeout(() => {
+      this.req.getAllEmployeeVisitorPackage(employeeId).subscribe(res => {
+        console.log(res);
+        if (res['success'] === true) {
+          let data = res['data'];
+          data.forEach(obj => {
+            let visitorPackageId: number = obj['visitorPackageId'];
+            let companyName: string = obj['companyName'];
+            let latitude: number = obj['latitude'];
+            let longitude: number = obj['longitude'];
+            let branchName: string = obj['branchName'];
+            let ssid: string = obj['ssid'];
+            let networkType: string = obj['networkType'];
+            let password: string = obj['password'];
+            let roomName: string = obj['roomName'];
+            let startTime: Date = obj['startTime'];
+            let endTime: Date = obj['endTime'];
+            let limit: number = obj['limit'];
+            let spent: number = obj['spent'];
+    
+            if (visitorPackageId == undefined || companyName == undefined || latitude == undefined || longitude == undefined || branchName == undefined ||
+              ssid == undefined || networkType == undefined || password == undefined || roomName == undefined || startTime == undefined ||
+              endTime == undefined || limit == undefined || spent == undefined) {
+                subject.next({success: false, message: `Not all needed data received.`});
+                subject.complete();
+                this.req.dismissLoading();
+                return;
+            }
+            else {
+              let visitorPackage = this.createVisitorPackage(visitorPackageId, companyName, startTime, endTime, roomName, 
+                new LocationModel(latitude, longitude, branchName), ssid, password, networkType, limit, spent);
+              this.addSharedVisitorPackage(visitorPackage);
+            }
+          });
+          this.req.dismissLoading();
+        }
+        else {
+          subject.next({success: false, message: `Something went wrong: ${res['message']}.`});
+          subject.complete();
+          this.req.dismissLoading();
+        }
+      }, err => {
+        console.log(err);
+        subject.next({success: false, message: `Something went wrong.`});
+        subject.complete();
+        this.req.dismissLoading();
+      });
+    }, 50);
+    return subject.asObservable();
+  }
+
+  /**
+   * Function that removes all the shared visitor packages
+   * @return Promise returns promise from removing all visitor packages
+   */
+  removeAllSharedPackages() {
+    return this.setVisitorPackages([]);
+  }
   
   /**
    * Function that adds a visitor package to the list of saved packages

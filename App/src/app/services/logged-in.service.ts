@@ -27,6 +27,7 @@ import { AccountModel } from '../models/account.model';
 import { LocationModel } from '../models/location.model';
 import { RoomModel } from '../models/room.model';
 import { WifiDetailsModel } from '../models/wifi-details.model';
+import { VisitorPackagesService } from './visitor-packages.service';
 
 /**
 * Purpose:	This class provides the logged in service injectable
@@ -49,11 +50,13 @@ export class LoggedInService {
    * @param cardService BusinessCardsService injectable
    * @param req RequestModuleService injectable
    * @param storage LocalStorageService injectable
+   * @param packageService VisitorPackagesService injectable
    */
   constructor(
     private cardService: BusinessCardsService,
     private req: RequestModuleService,
-    private storage: LocalStorageService
+    private storage: LocalStorageService,
+    private packageService: VisitorPackagesService
   ) { }
 
   /**
@@ -154,8 +157,17 @@ export class LoggedInService {
               let cardDetails = response['data'];
               this.account.company = cardDetails['companyName'];
               this.cardService.setOwnBusinessCard(cardDetails);
-              subject.next({success: true, message: 'Successfull refreshed account details.'});
-              subject.complete();
+                            
+              this.packageService.loadAllSharedPackages(this.account.employeeId).subscribe(res => {
+                if (res['success'] === true) {
+                  subject.next({success: true, message: 'Successfull refreshed account details.'});
+                  subject.complete();
+                }
+                else {
+                  subject.next({success: false, message: response['message']});
+                  subject.complete();
+                }
+              });
             }
             else {
               subject.next({success: false, message: response['message']});
@@ -187,6 +199,7 @@ export class LoggedInService {
           this.setLoggedIn(false);
           this.req.setApiKey('');
           this.account = new AccountModel();
+          this.packageService.removeAllSharedPackages();
           subject.next({success: true, message: res['message']});
           subject.complete();
         }

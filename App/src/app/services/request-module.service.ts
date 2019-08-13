@@ -330,6 +330,24 @@ export class RequestModuleService {
   }
 
   /**
+   * Function to get all visitor packages of an employee from the database
+   * @param employeeId number Id of employee's packages to fetch
+   * @return Observable<Object> response containing json from back-end server
+   */
+  getAllEmployeeVisitorPackage(employeeId: number){
+    if (RequestModuleService.demoMode) {
+      return new Observable<Object>(observer => {
+        observer.next(this.visitorPackageStub);
+        observer.complete();
+      });
+    }
+    else {
+      let json: JSON = JSON.parse(`{"employeeId": ${employeeId}}`);
+      return this.post(`${this.baseUrl}/app/getVisitorPackages`, json);
+    }
+  }
+
+  /**
    * Function that gets details of the employee to populate an account object
    * @param employeeId number id of the employee
    * @return Observable<Object> response containing json from back-end server

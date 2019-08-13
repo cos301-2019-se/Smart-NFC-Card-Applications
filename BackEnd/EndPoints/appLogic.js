@@ -294,22 +294,18 @@ class AppLogic{
                                     this.sharedLogic.endServe(success, message, data);
                                 }
                                 else{
-                                    console.log(4);
                                     this.sharedLogic.endServe(wifi.success, wifi.message, wifi.data);
                                 }
                             }
                             else{
-                                console.log(3);
                                 this.sharedLogic.endServe(rooms.success, rooms.message, rooms.data);
                             }
                         }
                         else{
-                            console.log(2);
                             this.sharedLogic.endServe(building.success, building.message, building.data);
                         }
                     }
                     else{
-                        console.log(1);
                         this.sharedLogic.endServe(employee.success, employee.message, employee.data);
                     }
                 }
@@ -1478,7 +1474,7 @@ class AppLogic{
                         this.sharedLogic.endServe(true, "Retrieved Visitor Packages", data);
                     }
                     else{
-                        this.sharedLogic.endServe(visitorPackages.success, visitorPackages.message, visitorPackages.data);
+                        this.sharedLogic.endServe(true, "Retrieved Visitor Packages", []);
                     }
                 }
             }
@@ -1566,30 +1562,34 @@ class AppLogic{
                 this.sharedLogic.endServe(employeeData.success, employeeData.message, employeeData.data);
             }
 
-            let tpaRoomData = await this.sharedLogic.crudController.getTPAxRoomsByTpaId(visitorPackageData.data.tpaId);
+            if(visitorPackageData.data.tpaId != null){
+                let tpaRoomData = await this.sharedLogic.crudController.getTPAxRoomsByTpaId(visitorPackageData.data.tpaId);
 
-            if(tpaRoomData.success){
-                let roomData =  await this.sharedLogic.crudController.getRoomByRoomId(tpaRoomData.data[tpaRoomData.data.length-1].roomId);
+                if(tpaRoomData.success){
+                    let roomData =  await this.sharedLogic.crudController.getRoomByRoomId(tpaRoomData.data[tpaRoomData.data.length-1].roomId);
 
-                if(roomData.success){
-                    data.roomName = roomData.data.roomName;
+                    if(roomData.success){
+                        data.roomName = roomData.data.roomName;
+                    }
+                    else{
+                        this.sharedLogic.endServe(roomData.success, roomData.message, roomData.data);
+                    }
                 }
                 else{
-                    this.sharedLogic.endServe(roomData.success, roomData.message, roomData.data);
+                    this.sharedLogic.endServe(tpaRoomData.success, tpaRoomData.message, tpaRoomData.data);
                 }
             }
-            else{
-                this.sharedLogic.endServe(tpaRoomData.success, tpaRoomData.message, tpaRoomData.data);
-            }
 
-            let walletData = await this.sharedLogic.crudController.getWalletByLinkWalletId(visitorPackageData.data.linkWalletId);
+            if(visitorPackageData.data.linkWalletId != null){
+                let walletData = await this.sharedLogic.crudController.getWalletByLinkWalletId(visitorPackageData.data.linkWalletId);
 
-            if(walletData.success){
-                data.limit = walletData.data.maxLimit;
-                data.spent = walletData.data.spent;
-            }
-            else{
-                this.sharedLogic.endServe(tpaRoomData.success, tpaRoomData.message, tpaRoomData.data);
+                if(walletData.success){
+                    data.limit = walletData.data.maxLimit;
+                    data.spent = walletData.data.spent;
+                }
+                else{
+                    this.sharedLogic.endServe(walletData.success, walletData.message, walletData.data);
+                }
             }
 
             data.startTime = visitorPackageData.data.startTime;

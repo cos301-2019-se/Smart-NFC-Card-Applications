@@ -1468,7 +1468,9 @@ class AppLogic{
                         let arr = [];
                         for(let i=0; i<visitorPackages.data.length; i++){
                             let p = await this.visitorPackage(visitorPackages.data[i].visitorPackageId);
-                            arr.push(p);
+                            if(!this.isEmpty(p)) {
+                                arr.push(p);
+                            }
                         }
                         data = arr;
                         this.sharedLogic.endServe(true, "Retrieved Visitor Packages", data);
@@ -1522,84 +1524,116 @@ class AppLogic{
         let visitorPackageData = await this.sharedLogic.crudController.getVisitorPackageByVisitorPackageId(visitorPackageId);
 
         if(visitorPackageData.success){
-            data.visitorPackageId = visitorPackageId;
 
-            let employeeData = await this.sharedLogic.crudController.getEmployeeByEmployeeId(visitorPackageData.data.employeeId);
+            if(this.isVisitorPackageActive(visitorPackageData.data.endTime)){
+                data.visitorPackageId = visitorPackageId;
 
-            if(employeeData.success){
-                let companyData = await this.sharedLogic.crudController.getCompanyByCompanyId(employeeData.data.companyId);
+                let employeeData = await this.sharedLogic.crudController.getEmployeeByEmployeeId(visitorPackageData.data.employeeId);
 
-                if(companyData.success){
-                    data.companyName = companyData.data.companyName;
-                }
-                else{
-                    this.sharedLogic.endServe(companyData.success, companyData.message, companyData.data);
-                }
+                if(employeeData.success){
+                    let companyData = await this.sharedLogic.crudController.getCompanyByCompanyId(employeeData.data.companyId);
 
-                let buildingData = await this.sharedLogic.crudController.getBuildingByBuildingId(employeeData.data.buildingId);
-
-                if(buildingData.success){
-                    let wifiData = await this.sharedLogic.crudController.getWiFiParamsByWifiParamsId(buildingData.data.wifiParamsId);
-
-                    if(wifiData.success){
-                        data.ssid = wifiData.data.ssid;
-                        data.networkType = wifiData.data.networkType;
-                        data.password = wifiData.data.password;
+                    if(companyData.success){
+                        data.companyName = companyData.data.companyName;
                     }
                     else{
-                        this.sharedLogic.endServe(wifiData.success, wifiData.message, wifiData.data);
+                        this.sharedLogic.endServe(companyData.success, companyData.message, companyData.data);
                     }
 
-                    data.branchName = buildingData.data.branchName;
-                    data.latitude = buildingData.data.latitude;
-                    data.longitude = buildingData.data.longitude;
-                }
-                else{
-                    this.sharedLogic.endServe(buildingData.success, buildingData.message, buildingData.data);
-                }
-            }
-            else{
-                this.sharedLogic.endServe(employeeData.success, employeeData.message, employeeData.data);
-            }
+                    let buildingData = await this.sharedLogic.crudController.getBuildingByBuildingId(employeeData.data.buildingId);
 
-            if(visitorPackageData.data.tpaId != null){
-                let tpaRoomData = await this.sharedLogic.crudController.getTPAxRoomsByTpaId(visitorPackageData.data.tpaId);
+                    if(buildingData.success){
+                        let wifiData = await this.sharedLogic.crudController.getWiFiParamsByWifiParamsId(buildingData.data.wifiParamsId);
 
-                if(tpaRoomData.success){
-                    let roomData =  await this.sharedLogic.crudController.getRoomByRoomId(tpaRoomData.data[tpaRoomData.data.length-1].roomId);
+                        if(wifiData.success){
+                            data.ssid = wifiData.data.ssid;
+                            data.networkType = wifiData.data.networkType;
+                            data.password = wifiData.data.password;
+                        }
+                        else{
+                            this.sharedLogic.endServe(wifiData.success, wifiData.message, wifiData.data);
+                        }
 
-                    if(roomData.success){
-                        data.roomName = roomData.data.roomName;
+                        data.branchName = buildingData.data.branchName;
+                        data.latitude = buildingData.data.latitude;
+                        data.longitude = buildingData.data.longitude;
                     }
                     else{
-                        this.sharedLogic.endServe(roomData.success, roomData.message, roomData.data);
+                        this.sharedLogic.endServe(buildingData.success, buildingData.message, buildingData.data);
                     }
                 }
                 else{
-                    this.sharedLogic.endServe(tpaRoomData.success, tpaRoomData.message, tpaRoomData.data);
+                    this.sharedLogic.endServe(employeeData.success, employeeData.message, employeeData.data);
                 }
+
+                if(visitorPackageData.data.tpaId != null){
+                    let tpaRoomData = await this.sharedLogic.crudController.getTPAxRoomsByTpaId(visitorPackageData.data.tpaId);
+
+                    if(tpaRoomData.success){
+                        let roomData =  await this.sharedLogic.crudController.getRoomByRoomId(tpaRoomData.data[tpaRoomData.data.length-1].roomId);
+
+                        if(roomData.success){
+                            data.roomName = roomData.data.roomName;
+                        }
+                        else{
+                            this.sharedLogic.endServe(roomData.success, roomData.message, roomData.data);
+                        }
+                    }
+                    else{
+                        this.sharedLogic.endServe(tpaRoomData.success, tpaRoomData.message, tpaRoomData.data);
+                    }
+                }
+
+                if(visitorPackageData.data.linkWalletId != null){
+                    let walletData = await this.sharedLogic.crudController.getWalletByLinkWalletId(visitorPackageData.data.linkWalletId);
+
+                    if(walletData.success){
+                        data.limit = walletData.data.maxLimit;
+                        data.spent = walletData.data.spent;
+                    }
+                    else{
+                        this.sharedLogic.endServe(walletData.success, walletData.message, walletData.data);
+                    }
+                }
+
+                data.startTime = visitorPackageData.data.startTime;
+                data.endTime = visitorPackageData.data.endTime;
             }
-
-            if(visitorPackageData.data.linkWalletId != null){
-                let walletData = await this.sharedLogic.crudController.getWalletByLinkWalletId(visitorPackageData.data.linkWalletId);
-
-                if(walletData.success){
-                    data.limit = walletData.data.maxLimit;
-                    data.spent = walletData.data.spent;
-                }
-                else{
-                    this.sharedLogic.endServe(walletData.success, walletData.message, walletData.data);
-                }
-            }
-
-            data.startTime = visitorPackageData.data.startTime;
-            data.endTime = visitorPackageData.data.endTime;
         }
         else {
             this.sharedLogic.endServe(visitorPackageData.success, visitorPackageData.message, visitorPackageData.data);
         }
 
         return data;
+    }
+
+    /**
+     * Function to check if the visitor package is active or not
+     *
+     * @param eDate date End date of the visitor package
+     * @return {boolean}
+     */
+    isVisitorPackageActive(eDate) {
+        let endDate = new Date(eDate);
+        let currentDate = new Date();
+        if (currentDate > endDate) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Function to check if an object is empty or not
+     *
+     * @param obj
+     * @return {boolean}
+     */
+    isEmpty(obj) {
+        for(let key in obj) {
+            if(obj.hasOwnProperty(key))
+                return false;
+        }
+        return true;
     }
 }
 

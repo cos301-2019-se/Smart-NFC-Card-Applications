@@ -493,6 +493,222 @@ describe('Server.js Unit Testing', function () {
             });
     });
 
+    describe("POST " + endpoint + "/app/editVisitorPackage", function () {
+        let data = {};
+        beforeAll(function (done) {
+            var jsonDataObj = {
+                demoMode: true,
+                apiKey: "12lbUqdlBJXqsgYL8)Tfl!LZx6jzvf5wP^",
+                visitorPackageId: 0,
+                employeeId: 0,
+                startTime: "2019-07-02 10:26:54.123",
+                endTime: "2019-07-03 10:26:54.123",
+                wifiAccessParamsId: 0,
+                roomId: 0,
+                limit: 100
+            };
+            Request.post({
+                url: endpoint + "/app/editVisitorPackage",
+                body: jsonDataObj,
+                json: true
+            }, function (error, response, body) {
+                data.status = response.statusCode;
+                data.contentType = response.headers['content-type'];
+                data.body = response.body;
+                done();
+            });
+        });
+
+        it('should return with statusCode 200', function () {
+            expect(data.status).toEqual(200);
+        });
+
+        it('should set content type = application/json', function () {
+            expect(data.contentType).toEqual('application/json');
+        });
+
+        it('should return a json object = \n\t{\n\t' +
+            '    "success": true,\n\t' +
+            '    "message": "Edited Visitor Package - MOCK",\n\t' +
+            '    "data": {\n\t' +
+            '       "visitorPackageId": 0\n\t' +
+            '    }\n\t' +
+            '}', function () {
+            expect(data.body).toEqual({
+                "success": true,
+                "message": "Edited Visitor Package - MOCK",
+                "data": {
+                    "visitorPackageId": 0
+                }
+            });
+        });
+    });
+
+    describe("POST " + endpoint + "/app/getVisitorPackage", function () {
+        let data = {};
+        beforeAll(function (done) {
+            var jsonDataObj = {
+                apiKey : "vk7cc65uhtd55zf3q551o3idf0y4ezljp8owsnr9jbogp6cl1ekcxui6p26eupmrnsip5o3bepkndv43th57lydhcrcjh23oov5oe9y1p7np6tpu93nc7kvf3r97sxbil0k05lq59cqz145gqwmn8zbmr0xqa3g38tyoz9e11x55d3kbzubyl1la96cwp1vd47cm7yyi",
+                demoMode: true,
+                visitorPackageId: 0
+            };
+            Request.post({
+                url: endpoint + "/app/getVisitorPackage",
+                body: jsonDataObj,
+                json: true
+            }, function (error, response, body) {
+                data.status = response.statusCode;
+                data.contentType = response.headers['content-type'];
+                data.body = response.body;
+                done();
+            });
+        });
+
+        it('should return with statusCode 200', function () {
+            expect(data.status).toEqual(200);
+        });
+
+        it('should set content type = application/json', function () {
+            expect(data.contentType).toEqual('application/json');
+        });
+
+        it('should return a json object = \n\t{\n\t' +
+            '    "success": true,\n\t' +
+            '    "message": "Retrieved Visitor Package - MOCK",\n\t' +
+            '    "data": {\n\t' +
+            '       "companyName": "Vast Expanse",\n\t' +
+            '       "latitude": "2000",\n\t' +
+            '       "longitude": "2000",\n\t' +
+            '       "branchName": "Pretoria",\n\t' +
+            '       "ssid": "Vast Expanse",\n\t' +
+            '       "networkType": "WPA",\n\t' +
+            '       "password": "test",\n\t' +
+            '       "roomName": "room1",\n\t' +
+            '       "startTime": "10:00",\n\t' +
+            '       "endTime": "10:00",\n\t' +
+            '       "limit": "100.00",\n\t' +
+            '       "spent": "50.00"\n\t' +
+            '}', function () {
+            expect(data.body).toEqual({
+                "success": true,
+                "message": "Retrieved Visitor Package - MOCK",
+                "data": {
+                    "companyName": "Vast Expanse",
+                    "latitude": "2000",
+                    "longitude": "2000",
+                    "branchName": "Pretoria",
+                    "ssid": "Vast Expanse",
+                    "networkType": "WPA",
+                    "password": "test",
+                    "roomName": "room1",
+                    "startTime": "10:00",
+                    "endTime": "10:00",
+                    "limit": "100.00",
+                    "spent": "50.00"
+                }
+            });
+        });
+    });
+
+    describe("POST " + endpoint + "/app/getVisitorPackages", function () {
+        let data = {};
+        beforeAll(function (done) {
+            var jsonDataObj = {
+                apiKey : "vk7cc65uhtd55zf3q551o3idf0y4ezljp8owsnr9jbogp6cl1ekcxui6p26eupmrnsip5o3bepkndv43th57lydhcrcjh23oov5oe9y1p7np6tpu93nc7kvf3r97sxbil0k05lq59cqz145gqwmn8zbmr0xqa3g38tyoz9e11x55d3kbzubyl1la96cwp1vd47cm7yyi",
+                demoMode: true,
+                employeeId: 0
+            };
+            Request.post({
+                url: endpoint + "/app/getVisitorPackages",
+                body: jsonDataObj,
+                json: true
+            }, function (error, response, body) {
+                data.status = response.statusCode;
+                data.contentType = response.headers['content-type'];
+                data.body = response.body;
+                done();
+            });
+        });
+
+        it('should return with statusCode 200', function () {
+            expect(data.status).toEqual(200);
+        });
+
+        it('should set content type = application/json', function () {
+            expect(data.contentType).toEqual('application/json');
+        });
+
+        it('should return a json object = \n\t{\n\t' +
+            '    "success": true,\n\t' +
+            '    "message": "Retrieved Visitor Packages - MOCK",\n\t' +
+            '    "data": [\n\t' +
+            '       {\n\t' +
+            '           "companyName": "Vast Expanse",\n\t' +
+            '           "latitude": "2000",\n\t' +
+            '           "longitude": "2000",\n\t' +
+            '           "branchName": "Pretoria",\n\t' +
+            '           "ssid": "Vast Expanse",\n\t' +
+            '           "networkType": "WPA",\n\t' +
+            '           "password": "test",\n\t' +
+            '           "roomName": "room1",\n\t' +
+            '           "startTime": "10:00",\n\t' +
+            '           "endTime": "10:00",\n\t' +
+            '           "limit": "100.00",\n\t' +
+            '           "spent": "50.00"\n\t' +
+            '       },\n\t' +
+            '       {\n\t' +
+            '           "companyName": "Vast Expanse",\n\t' +
+            '           "latitude": "2000",\n\t' +
+            '           "longitude": "2000",\n\t' +
+            '           "branchName": "Pretoria",\n\t' +
+            '           "ssid": "Vast Expanse",\n\t' +
+            '           "networkType": "WPA",\n\t' +
+            '           "password": "test",\n\t' +
+            '           "roomName": "room1",\n\t' +
+            '           "startTime": "10:00",\n\t' +
+            '           "endTime": "10:00",\n\t' +
+            '           "limit": "100.00",\n\t' +
+            '           "spent": "50.00"\n\t' +
+            '       }\n\t' +
+            '   ]\n\t' +
+            '}', function () {
+            expect(data.body).toEqual({
+                "success": true,
+                "message": "Retrieved Visitor Packages - MOCK",
+                "data": [
+                    {
+                        "companyName": "Vast Expanse",
+                        "latitude": "2000",
+                        "longitude": "2000",
+                        "branchName": "Pretoria",
+                        "ssid": "Vast Expanse",
+                        "networkType": "WPA",
+                        "password": "test",
+                        "roomName": "room1",
+                        "startTime": "10:00",
+                        "endTime": "10:00",
+                        "limit": "100.00",
+                        "spent": "50.00"
+                    },
+                    {
+                        "companyName": "Vast Expanse",
+                        "latitude": "2000",
+                        "longitude": "2000",
+                        "branchName": "Pretoria",
+                        "ssid": "Vast Expanse",
+                        "networkType": "WPA",
+                        "password": "test",
+                        "roomName": "room1",
+                        "startTime": "10:00",
+                        "endTime": "10:00",
+                        "limit": "100.00",
+                        "spent": "50.00"
+                    }
+                ]
+            });
+        });
+    });
+
     //Duncan
     describe("POST " + endpoint + "/admin/addCompany", function () {
         let data = new Object();

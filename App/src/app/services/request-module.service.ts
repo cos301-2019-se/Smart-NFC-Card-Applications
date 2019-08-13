@@ -312,6 +312,24 @@ export class RequestModuleService {
   }
 
   /**
+   * Function to get a specific visitor package from the database
+   * @param packageId number Id of package to fetch
+   * @return Observable<Object> response containing json from back-end server
+   */
+  getVisitorPackage(packageId: number){
+    if (RequestModuleService.demoMode) {
+      return new Observable<Object>(observer => {
+        observer.next(this.visitorPackageStub);
+        observer.complete();
+      });
+    }
+    else {
+      let json: JSON = JSON.parse(`{"visitorPackageId": ${packageId}}`);
+      return this.post(`${this.baseUrl}/app/visitorPackage`, json);
+    }
+  }
+
+  /**
    * Function that gets details of the employee to populate an account object
    * @param employeeId number id of the employee
    * @return Observable<Object> response containing json from back-end server

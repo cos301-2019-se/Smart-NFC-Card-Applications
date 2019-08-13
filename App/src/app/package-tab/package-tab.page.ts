@@ -71,7 +71,7 @@ export class PackageTabPage implements OnInit{
     private filterService: FilterService,
     private dateService: DateService,
     private alertController: AlertController,
-    private uidService: UniqueIdService
+    private uidService: UniqueIdService,
   ) { }
 
   ngOnInit() {    
@@ -306,7 +306,15 @@ export class PackageTabPage implements OnInit{
    * @param packageId number Id of visitor package to refresh
    */
   refreshVisitorPackage(packageId: number){
-    this.showMessage('Refresh feature coming soon.', MessageType.error);
+    this.packageService.refreshVisitorPackage(packageId).subscribe(res => {
+      if (res['success'] === true) {
+        this.loadPackages();
+        this.showMessage(`Successfully refreshed package`, MessageType.success);
+      }
+      else {
+        this.showMessage(`Could not refresh package: ${res['message']}`, MessageType.error);
+      }
+    });
   }
 
   /**

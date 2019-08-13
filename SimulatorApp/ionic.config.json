@@ -1,0 +1,7 @@
+{
+  "name": "SimulatorApp",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}

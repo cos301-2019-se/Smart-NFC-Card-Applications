@@ -50,7 +50,9 @@ export class HomePage {
   private selectedBuilding: number;
   private selectedRoom: number;
   private selectedPayPoint: number;
+
   private paymentAmount: number;
+  private paymentDescription: string;
 
   private modeDetail: string;
   private modeType: ModeType;
@@ -159,6 +161,7 @@ export class HomePage {
    */
   handlePayPoint(data: JSON) {
     data["amount"] = this.paymentAmount;
+    data["description"] = this.paymentDescription;
     data["nfcPaymentPointId"] = this.selectedPayPoint;
     try {
       this.reqService.makePayment(data).subscribe(res => {
@@ -177,7 +180,9 @@ export class HomePage {
       this.Display(null);
       this.showMessage(`Data received not in json format: ${error}`, MessageType.error, 0);
       this.reqService.dismissLoading();
-    }
+    }    
+    this.paymentAmount = null;
+    this.paymentDescription = null;
   }
 
   /**
@@ -257,6 +262,8 @@ export class HomePage {
    */
   changeMode(mode: ModeType){
     this.Display(null);
+    this.paymentAmount = null;
+    this.paymentDescription = null;
     this.modeType = mode;
     switch (mode){
       case ModeType.accessPoint:
@@ -304,6 +311,9 @@ export class HomePage {
     this.selectedBuilding = -1;
     this.selectedRoom = -1;
     this.selectedPayPoint = -1;
+    
+    this.paymentAmount = null;
+    this.paymentDescription = null;
 
     this.buildings = [];
     this.rooms = [];
@@ -321,6 +331,9 @@ export class HomePage {
   changedBuilding() {
     this.selectedRoom = -1;
     this.selectedPayPoint = -1;
+    
+    this.paymentAmount = null;
+    this.paymentDescription = null;
 
     this.rooms = [];
     this.payPoints = [];

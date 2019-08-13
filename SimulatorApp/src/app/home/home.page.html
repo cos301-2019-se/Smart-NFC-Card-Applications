@@ -57,8 +57,12 @@
   <ion-card color="light">
     <ion-card-content>
       <ion-item>
-        <ion-label>Amount of Transaction</ion-label>
+        <ion-label>Amount</ion-label>
         <ion-input type="number" [(ngModel)]="paymentAmount" placeholder="10.50"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Description</ion-label>
+        <ion-input type="text" [(ngModel)]="paymentDescription" placeholder="Slap Chips"></ion-input>
       </ion-item>
       <br>
       <ion-button expand="block" fill="outline" (click)='actAsPayPoint()'>Act as Payment Point</ion-button>

@@ -157,27 +157,25 @@ export class VisitorPackagesService {
     let subject = new Subject<Object>();
     setTimeout(() => {
       this.req.getAllEmployeeVisitorPackage(employeeId).subscribe(res => {
-        console.log(res);
         if (res['success'] === true) {
           let data = res['data'];
+          let packages: VisitorPackage[] = [];
           data.forEach(obj => {
             let visitorPackageId: number = obj['visitorPackageId'];
             let companyName: string = obj['companyName'];
             let latitude: number = obj['latitude'];
             let longitude: number = obj['longitude'];
             let branchName: string = obj['branchName'];
-            let ssid: string = obj['ssid'];
-            let networkType: string = obj['networkType'];
-            let password: string = obj['password'];
+            let ssid: string = obj['ssid'] || null;
             let roomName: string = obj['roomName'];
-            let startTime: Date = obj['startTime'];
-            let endTime: Date = obj['endTime'];
-            let limit: number = obj['limit'];
-            let spent: number = obj['spent'];
+            let networkType: string = obj['networkType'] || null;
+            let password: string = obj['password'] || null;
+            let startTime: Date = obj['startTime'] || null;
+            let endTime: Date = obj['endTime'] || null;
+            let limit: number = obj['limit'] || null;
+            let spent: number = obj['spent'] || null;
     
-            if (visitorPackageId == undefined || companyName == undefined || latitude == undefined || longitude == undefined || branchName == undefined ||
-              ssid == undefined || networkType == undefined || password == undefined || roomName == undefined || startTime == undefined ||
-              endTime == undefined || limit == undefined || spent == undefined) {
+            if (visitorPackageId == undefined || companyName == undefined || latitude == undefined || longitude == undefined || branchName == undefined || roomName == undefined) {
                 subject.next({success: false, message: `Not all needed data received.`});
                 subject.complete();
                 this.req.dismissLoading();
@@ -186,9 +184,12 @@ export class VisitorPackagesService {
             else {
               let visitorPackage = this.createVisitorPackage(visitorPackageId, companyName, startTime, endTime, roomName, 
                 new LocationModel(latitude, longitude, branchName), ssid, password, networkType, limit, spent);
-              this.addSharedVisitorPackage(visitorPackage);
+                packages.push(visitorPackage);
             }
-          });
+          });   
+          this.setSharedVisitorPackages(packages);       
+          subject.next({success: true, message: `Got all Employee Visitor Packages.`});
+          subject.complete();
           this.req.dismissLoading();
         }
         else {
@@ -211,7 +212,7 @@ export class VisitorPackagesService {
    * @return Promise returns promise from removing all visitor packages
    */
   removeAllSharedPackages() {
-    return this.setVisitorPackages([]);
+    return this.setSharedVisitorPackages([]);
   }
   
   /**
@@ -261,18 +262,16 @@ export class VisitorPackagesService {
           let latitude: number = data['latitude'];
           let longitude: number = data['longitude'];
           let branchName: string = data['branchName'];
-          let ssid: string = data['ssid'];
-          let networkType: string = data['networkType'];
-          let password: string = data['password'];
+          let ssid: string = data['ssid'] || null;
           let roomName: string = data['roomName'];
-          let startTime: Date = data['startTime'];
-          let endTime: Date = data['endTime'];
-          let limit: number = data['limit'];
-          let spent: number = data['spent'];
+          let networkType: string = data['networkType'] || null;
+          let password: string = data['password'] || null;
+          let startTime: Date = data['startTime'] || null;
+          let endTime: Date = data['endTime'] || null;
+          let limit: number = data['limit'] || null;
+          let spent: number = data['spent'] || null;
   
-          if (visitorPackageId == undefined || companyName == undefined || latitude == undefined || longitude == undefined || branchName == undefined ||
-            ssid == undefined || networkType == undefined || password == undefined || roomName == undefined || startTime == undefined ||
-            endTime == undefined || limit == undefined || spent == undefined) {
+          if (visitorPackageId == undefined || companyName == undefined || latitude == undefined || longitude == undefined || branchName == undefined || roomName == undefined) {
               subject.next({success: false, message: `Not all needed data received.`});
               subject.complete();
               this.req.dismissLoading();

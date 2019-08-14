@@ -88,6 +88,7 @@ export class LoggedInService {
    */
   login(username: string, password: string){
     let subject = new Subject<Object>();
+    this.packageService.removeAllSharedPackages();
     if(username.trim() == "" || password.trim() == "") {
       return new Observable<Object>(observer => {
         observer.next({success: false, message: "Please enter a username and password."});
@@ -173,6 +174,9 @@ export class LoggedInService {
               subject.next({success: false, message: response['message']});
               subject.complete();
             }
+          }, err => {
+            subject.next({success: false, message: 'Error refreshing account details.'});
+            subject.complete();
           });
         }
         else {

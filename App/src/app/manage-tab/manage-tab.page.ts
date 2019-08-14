@@ -95,7 +95,6 @@ export class ManageTabPage implements OnInit {
           this.menuEvent(functionName);
         })
     );    
-    this.loadPackages();
   }
 
   /**
@@ -136,6 +135,7 @@ export class ManageTabPage implements OnInit {
         this.loggedIn = false;
         this.showMessage(res['message'], MessageType.error, this.messageTimeout);
       }
+      this.loadPackages();
       this.req.dismissLoading();
     });
   }
@@ -153,6 +153,7 @@ export class ManageTabPage implements OnInit {
       else {
         this.showMessage(res['message'], MessageType.error, this.messageTimeout);
       }
+      this.loadPackages();
       this.req.dismissLoading();
     });
   }
@@ -396,6 +397,7 @@ export class ManageTabPage implements OnInit {
       else {
         this.showMessage(res['message'], MessageType.error);
       }
+      this.loadPackages();
       this.req.dismissLoading();
     });
   }

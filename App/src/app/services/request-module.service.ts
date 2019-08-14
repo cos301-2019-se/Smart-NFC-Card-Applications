@@ -325,7 +325,7 @@ export class RequestModuleService {
     }
     else {
       let json: JSON = JSON.parse(`{"visitorPackageId": ${packageId}}`);
-      return this.post(`${this.baseUrl}/app/visitorPackage`, json);
+      return this.post(`${this.baseUrl}/app/getVisitorPackage`, json);
     }
   }
 

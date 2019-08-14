@@ -1522,7 +1522,6 @@ class AppLogic{
         let data = {};
 
         let visitorPackageData = await this.sharedLogic.crudController.getVisitorPackageByVisitorPackageId(visitorPackageId);
-        console.log(visitorPackageData);
 
         if(visitorPackageData.success){
 

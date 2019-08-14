@@ -116,14 +116,24 @@ export class PackageTabPage implements OnInit{
    */
   loadPackages(){
     // Get cards
-    this.packageService.getVisitorPackages().then((val) => {      
-      this.packages = val;
-      // If it is null, set it as an empty array
-      if (this.packages == null) {
+    this.packageService.getVisitorPackages().then((val) => {   
+      let currDate = new Date();
+      if (val !== null) {
+        // Delete expired packages
+        val = val.filter(elem => {
+          return (new Date(elem.endDate)) > currDate;
+        })
+        this.packageService.setSharedVisitorPackages(val).then(() => {   
+          this.packages = val;
+          this.setupToggles();
+        });  
+      }
+      else {   
+        // If no packages has been saved previously     
         this.packages = []
         this.packageService.setVisitorPackages([]);
+        this.setupToggles();
       }
-      this.setupToggles();
     });
   }
 

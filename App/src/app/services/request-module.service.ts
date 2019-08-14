@@ -77,6 +77,11 @@ export class RequestModuleService {
         "visitorPackageId": 0
     }
   }`);
+  employeePackagesStub: JSON = JSON.parse(`{
+    "success": true,
+    "message": "Retrieved visitor packages",
+    "data": []
+  }`);
   employeeDetailsStub: JSON = JSON.parse(`{
     "success": true,
     "message": "Successfully retrieved employee details",
@@ -337,7 +342,7 @@ export class RequestModuleService {
   getAllEmployeeVisitorPackage(employeeId: number){
     if (RequestModuleService.demoMode) {
       return new Observable<Object>(observer => {
-        observer.next(this.visitorPackageStub);
+        observer.next(this.employeePackagesStub);
         observer.complete();
       });
     }

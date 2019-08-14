@@ -160,33 +160,35 @@ export class VisitorPackagesService {
         if (res['success'] === true) {
           let data = res['data'];
           let packages: VisitorPackage[] = [];
-          data.forEach(obj => {
-            let visitorPackageId: number = obj['visitorPackageId'];
-            let companyName: string = obj['companyName'];
-            let latitude: number = obj['latitude'];
-            let longitude: number = obj['longitude'];
-            let branchName: string = obj['branchName'];
-            let ssid: string = obj['ssid'] || null;
-            let roomName: string = obj['roomName'];
-            let networkType: string = obj['networkType'] || null;
-            let password: string = obj['password'] || null;
-            let startTime: Date = obj['startTime'] || null;
-            let endTime: Date = obj['endTime'] || null;
-            let limit: number = obj['limit'] || null;
-            let spent: number = obj['spent'] || null;
-    
-            if (visitorPackageId == undefined || companyName == undefined || latitude == undefined || longitude == undefined || branchName == undefined || roomName == undefined) {
-                subject.next({success: false, message: `Not all needed data received.`});
-                subject.complete();
-                this.req.dismissLoading();
-                return;
-            }
-            else {
-              let visitorPackage = this.createVisitorPackage(visitorPackageId, companyName, startTime, endTime, roomName, 
-                new LocationModel(latitude, longitude, branchName), ssid, password, networkType, limit, spent);
-                packages.push(visitorPackage);
-            }
-          });   
+          if (data !== null && data != undefined) {
+            data.forEach(obj => {
+              let visitorPackageId: number = obj['visitorPackageId'];
+              let companyName: string = obj['companyName'];
+              let latitude: number = obj['latitude'];
+              let longitude: number = obj['longitude'];
+              let branchName: string = obj['branchName'];
+              let ssid: string = obj['ssid'] || null;
+              let roomName: string = obj['roomName'];
+              let networkType: string = obj['networkType'] || null;
+              let password: string = obj['password'] || null;
+              let startTime: Date = obj['startTime'] || null;
+              let endTime: Date = obj['endTime'] || null;
+              let limit: number = obj['limit'] || null;
+              let spent: number = obj['spent'] || null;
+      
+              if (visitorPackageId == undefined || companyName == undefined || latitude == undefined || longitude == undefined || branchName == undefined || roomName == undefined) {
+                  subject.next({success: false, message: `Not all needed data received.`});
+                  subject.complete();
+                  this.req.dismissLoading();
+                  return;
+              }
+              else {
+                let visitorPackage = this.createVisitorPackage(visitorPackageId, companyName, startTime, endTime, roomName, 
+                  new LocationModel(latitude, longitude, branchName), ssid, password, networkType, limit, spent);
+                  packages.push(visitorPackage);
+              }
+            });  
+          } 
           this.setSharedVisitorPackages(packages);       
           subject.next({success: true, message: `Got all Employee Visitor Packages.`});
           subject.complete();

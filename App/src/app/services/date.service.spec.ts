@@ -51,7 +51,7 @@ describe('DateService', () => {
 
   it('databaseDate should format a date for sending it to the database', () => {
     const service: DateService = TestBed.get(DateService);
-    expect(service.databaseDate(testDate)).toBe('2019/07/11 16:20');
+    expect(service.databaseDate(testDate)).toBe('Thu Jul 11 2019 16:20:00 GMT+0200 (South Africa Standard Time)');
   });
 
 });

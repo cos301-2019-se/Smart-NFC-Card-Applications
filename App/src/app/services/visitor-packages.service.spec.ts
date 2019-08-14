@@ -23,13 +23,19 @@ import { VisitorPackagesService } from './visitor-packages.service';
 import { IonicStorageModule } from '@ionic/storage';
 import { VisitorPackage } from '../models/visitor-package.model';
 import { LocationModel } from '../models/location.model';
+import { RequestModuleService } from './request-module.service';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('VisitorPackagesService', () => {
 
   beforeEach(() => TestBed.configureTestingModule({
     imports: [
-      IonicStorageModule.forRoot()
+      IonicStorageModule.forRoot(),
+      HttpClientModule
     ],
+    providers: [
+      RequestModuleService
+    ]
   }));
 
   it('should be created', () => {

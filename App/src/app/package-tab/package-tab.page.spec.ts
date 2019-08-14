@@ -35,6 +35,10 @@ import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
 import { Device } from '@ionic-native/device/ngx';
 import { SharedModule } from '../shared.module';
 import { Diagnostic } from '@ionic-native/diagnostic/ngx';
+import { RequestModuleService } from '../services/request-module.service';
+import { HttpClientModule } from '@angular/common/http';
+import { UniqueIdService } from '../services/unique-id.service';
+import { Uid } from '@ionic-native/uid/ngx';
 
 describe('PackageTabPage', () => {
   let component: PackageTabPage;
@@ -45,6 +49,7 @@ describe('PackageTabPage', () => {
       declarations: [PackageTabPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [
+        HttpClientModule,
         IonicStorageModule.forRoot(),
         SharedModule       
       ],
@@ -58,7 +63,10 @@ describe('PackageTabPage', () => {
         Geolocation,
         LaunchNavigator,
         Device,
-        Diagnostic
+        Diagnostic,
+        RequestModuleService,
+        UniqueIdService,
+        Uid
       ]
     }).compileComponents();
   }));

@@ -1522,6 +1522,7 @@ class AppLogic{
         let data = {};
 
         let visitorPackageData = await this.sharedLogic.crudController.getVisitorPackageByVisitorPackageId(visitorPackageId);
+        console.log(visitorPackageData);
 
         if(visitorPackageData.success){
 
@@ -1546,9 +1547,12 @@ class AppLogic{
                         let wifiData = await this.sharedLogic.crudController.getWiFiParamsByWifiParamsId(buildingData.data.wifiParamsId);
 
                         if(wifiData.success){
-                            data.ssid = wifiData.data.ssid;
-                            data.networkType = wifiData.data.networkType;
-                            data.password = wifiData.data.password;
+
+                            if(visitorPackageData.data.tempWifiAccessId != null){
+                                data.ssid = wifiData.data.ssid;
+                                data.networkType = wifiData.data.networkType;
+                                data.password = wifiData.data.password;
+                            }
                         }
                         else{
                             this.sharedLogic.endServe(wifiData.success, wifiData.message, wifiData.data);

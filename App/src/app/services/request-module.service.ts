@@ -77,6 +77,11 @@ export class RequestModuleService {
         "visitorPackageId": 0
     }
   }`);
+  employeePackagesStub: JSON = JSON.parse(`{
+    "success": true,
+    "message": "Retrieved visitor packages",
+    "data": []
+  }`);
   employeeDetailsStub: JSON = JSON.parse(`{
     "success": true,
     "message": "Successfully retrieved employee details",
@@ -309,6 +314,42 @@ export class RequestModuleService {
       let json: JSON = JSON.parse(`{"packageId": ${packageId}}`);
       return this.post(`${this.baseUrl}/app/deleteVisitorPackage`, json);
     }*/
+  }
+
+  /**
+   * Function to get a specific visitor package from the database
+   * @param packageId number Id of package to fetch
+   * @return Observable<Object> response containing json from back-end server
+   */
+  getVisitorPackage(packageId: number){
+    if (RequestModuleService.demoMode) {
+      return new Observable<Object>(observer => {
+        observer.next(this.visitorPackageStub);
+        observer.complete();
+      });
+    }
+    else {
+      let json: JSON = JSON.parse(`{"visitorPackageId": ${packageId}}`);
+      return this.post(`${this.baseUrl}/app/getVisitorPackage`, json);
+    }
+  }
+
+  /**
+   * Function to get all visitor packages of an employee from the database
+   * @param employeeId number Id of employee's packages to fetch
+   * @return Observable<Object> response containing json from back-end server
+   */
+  getAllEmployeeVisitorPackage(employeeId: number){
+    if (RequestModuleService.demoMode) {
+      return new Observable<Object>(observer => {
+        observer.next(this.employeePackagesStub);
+        observer.complete();
+      });
+    }
+    else {
+      let json: JSON = JSON.parse(`{"employeeId": ${employeeId}}`);
+      return this.post(`${this.baseUrl}/app/getVisitorPackages`, json);
+    }
   }
 
   /**

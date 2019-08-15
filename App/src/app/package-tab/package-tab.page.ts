@@ -12,6 +12,7 @@
 *	2019/05/19	Wian		  1.0		    Original
 *	2019/06/25	Wian		  1.1		    Added changes to allow navigation on tap of location
 *	2019/06/28	Wian		  1.2		    Added functionality to add visitor packages
+*	2019/08/10	Wian		  1.3		    Added functionality to gain access and pay using NFC
 *
 *	Functional Description:   This file provides the component that allows viewing shared cards
 *	Error Messages:   “Error”
@@ -24,7 +25,6 @@ import { NfcControllerService } from '../services/nfc-controller.service';
 import { LocationService } from '../services/location.service';
 import { WifiService } from '../services/wifi.service';
 import { LocationModel } from '../models/location.model';
-import { Device } from '@ionic-native/device/ngx';
 import { VisitorPackage } from '../models/visitor-package.model';
 import { VisitorPackagesService } from '../services/visitor-packages.service';
 import { EventEmitterService } from '../services/event-emitter.service';   
@@ -32,12 +32,13 @@ import { FilterService } from '../services/filter.service';
 import { DateService } from '../services/date.service';
 import { MessageType } from '../tabs/tabs.page';
 import { AlertController } from '@ionic/angular';
+import { UniqueIdService } from '../services/unique-id.service';
 
 /**
 * Purpose:	This class provides the component that allows viewing of shared cards as well as adding new ones
 *	Usage:		This component can be used to view and add business cards to a locally stored list
 *	@author:	Wian du Plooy
-*	@version:	1.2
+*	@version:	1.3
 */
 @Component({
   selector: 'app-package-tab',
@@ -53,21 +54,24 @@ export class PackageTabPage implements OnInit{
    * Constructor that takes all injectables
    * @param nfcService NfcControllerService injectable
    * @param locationService LocationService injectable
-   * @param device Device injectable
    * @param packageService VisitorPackagesService injectable
    * @param wifiService WifiService injectable
+   * @param eventEmitterService EventEmitterService injectable
+   * @param filterService FilterService injectable
    * @param dateService DateService injectable
+   * @param alertController AlertController injectable
+   * @param uidService UniqueIdService injectable
    */
   constructor(
     private nfcService: NfcControllerService,
     private locationService: LocationService,
-    private device: Device,
     private packageService: VisitorPackagesService,
     private wifiService: WifiService,
     private eventEmitterService: EventEmitterService,
     private filterService: FilterService,
     private dateService: DateService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private uidService: UniqueIdService,
   ) { }
 
   ngOnInit() {    
@@ -112,14 +116,24 @@ export class PackageTabPage implements OnInit{
    */
   loadPackages(){
     // Get cards
-    this.packageService.getVisitorPackages().then((val) => {      
-      this.packages = val;
-      // If it is null, set it as an empty array
-      if (this.packages == null) {
+    this.packageService.getVisitorPackages().then((val) => {   
+      let currDate = new Date();
+      if (val !== null) {
+        // Delete expired packages
+        val = val.filter(elem => {
+          return (new Date(elem.endDate)) > currDate;
+        })
+        this.packageService.setSharedVisitorPackages(val).then(() => {   
+          this.packages = val;
+          this.setupToggles();
+        });  
+      }
+      else {   
+        // If no packages has been saved previously     
         this.packages = []
         this.packageService.setVisitorPackages([]);
+        this.setupToggles();
       }
-      this.setupToggles();
     });
   }
 
@@ -179,7 +193,8 @@ export class PackageTabPage implements OnInit{
   public shareId(){
     this.showMessage('', MessageType.reset);
     this.showMessage(`Hold the phone against the receiving phone.`, MessageType.info, 0);
-    this.nfcService.SendData(this.device.uuid, this.device.uuid)
+    let uid = this.uidService.getUniqueId();
+    this.nfcService.SendData(uid, uid)
     .then(() => {
       this.showMessage(`Device linked to package.`, MessageType.success, 5000);
     })
@@ -301,7 +316,15 @@ export class PackageTabPage implements OnInit{
    * @param packageId number Id of visitor package to refresh
    */
   refreshVisitorPackage(packageId: number){
-    this.showMessage('Refresh feature coming soon.', MessageType.error);
+    this.packageService.refreshVisitorPackage(packageId).subscribe(res => {
+      if (res['success'] === true) {
+        this.loadPackages();
+        this.showMessage(`Successfully refreshed package`, MessageType.success);
+      }
+      else {
+        this.showMessage(`Could not refresh package: ${res['message']}`, MessageType.error);
+      }
+    });
   }
 
   /**
@@ -309,7 +332,17 @@ export class PackageTabPage implements OnInit{
    * @param packageId number Id of visitor package to check
    */
   unlock(packageId: number){
-    this.showMessage('Unlock feature coming soon.', MessageType.error);
+    this.showMessage('Hold the phone against the NFC device.', MessageType.info);
+    this.nfcService.SendData(packageId, `{
+      "visitorPackageId": ${packageId},
+      "macAddress": "${this.uidService.getUniqueId()}"
+    }`)
+    .catch((err) => {
+      this.showMessage(`NFC and/or Android Beam seems to be off. Please try turing it on.`, MessageType.error, 5000);
+    })
+    .finally(() => {
+      this.nfcService.Finish();
+    });
   }
 
   /**
@@ -317,6 +350,20 @@ export class PackageTabPage implements OnInit{
    * @param packageId number Id of visitor package to check
    */
   pay(packageId: number){
-    this.showMessage('Payment feature coming soon.', MessageType.error);
+    this.showMessage('Hold the phone against the NFC device.', MessageType.info);
+    this.nfcService.SendData(packageId, `{
+      "visitorPackageId": ${packageId},
+      "macAddress": "${this.uidService.getUniqueId()}"
+    }`)
+    .catch((err) => {
+      this.showMessage(`NFC and/or Android Beam seems to be off. Please try turing it on.`, MessageType.error, 5000);
+    })
+    .finally(() => {
+      this.nfcService.Finish();
+      setTimeout(() => {
+        // Refresh the visitor package after a while to get amount spent
+        this.refreshVisitorPackage(packageId);
+      }, 5000);
+    });
   }
 }

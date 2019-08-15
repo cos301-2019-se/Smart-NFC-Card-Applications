@@ -228,6 +228,9 @@ export class EditVisitorPackagePage implements OnInit {
       else {
         this.showMessage(`Could not update package: ${res['message']}`, messageType.error);
       }
+    }, err => {
+      console.log(err);
+      this.showMessage(`Error adding to DB: Ensure that you have a stable internet connection`, messageType.error);
     });
   }
 

@@ -48,7 +48,9 @@ import { LocationService } from './services/location.service';
 import { EventEmitterService } from './services/event-emitter.service';
 import { FilterService } from './services/filter.service';
 import { LoggedInService } from './services/logged-in.service';
+import { UniqueIdService } from './services/unique-id.service';
 import { DateService } from './services/date.service';
+import { Uid } from '@ionic-native/uid/ngx';
 
 /**
 * Purpose:	This class provides the module for the app
@@ -93,6 +95,8 @@ import { DateService } from './services/date.service';
     LoggedInService,
     DateService,
     Diagnostic,
+    Uid,
+    UniqueIdService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

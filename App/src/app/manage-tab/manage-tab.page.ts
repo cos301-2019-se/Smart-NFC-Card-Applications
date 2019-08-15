@@ -95,7 +95,6 @@ export class ManageTabPage implements OnInit {
           this.menuEvent(functionName);
         })
     );    
-    this.loadPackages();
   }
 
   /**
@@ -136,6 +135,7 @@ export class ManageTabPage implements OnInit {
         this.loggedIn = false;
         this.showMessage(res['message'], MessageType.error, this.messageTimeout);
       }
+      this.loadPackages();
       this.req.dismissLoading();
     });
   }
@@ -153,6 +153,7 @@ export class ManageTabPage implements OnInit {
       else {
         this.showMessage(res['message'], MessageType.error, this.messageTimeout);
       }
+      this.loadPackages();
       this.req.dismissLoading();
     });
   }
@@ -345,7 +346,10 @@ export class ManageTabPage implements OnInit {
               else {
                 this.showMessage(`Could not delete package: ${json['message']}`, MessageType.error)
               }
-            })
+            }, err => {
+              console.log(err);
+              this.showMessage(`Error adding to DB: Ensure that you have a stable internet connection`, MessageType.error);
+            });
           }
         }
       ]
@@ -393,6 +397,7 @@ export class ManageTabPage implements OnInit {
       else {
         this.showMessage(res['message'], MessageType.error);
       }
+      this.loadPackages();
       this.req.dismissLoading();
     });
   }

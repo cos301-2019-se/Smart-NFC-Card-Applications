@@ -29,16 +29,19 @@ import { RoomModel } from '../models/room.model';
 import { WifiDetailsModel } from '../models/wifi-details.model';
 
 describe('LoggedInService', () => {
-  beforeEach(() => TestBed.configureTestingModule({
-    imports: [
-      HttpClientModule,
-      IonicStorageModule.forRoot()
-    ],
-    providers: [
-      LocalStorageService,
-      RequestModuleService
-    ]
-  }));
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [
+        HttpClientModule,
+        IonicStorageModule.forRoot()
+      ],
+      providers: [
+        LocalStorageService,
+        RequestModuleService
+      ]
+    });
+    RequestModuleService.demoMode = true;
+  });
 
   it('should be created', () => {
     const service: LoggedInService = TestBed.get(LoggedInService);
@@ -92,7 +95,7 @@ describe('LoggedInService', () => {
     const service: LoggedInService = TestBed.get(LoggedInService);
     expect(service.getBuildingLoc()).toBe(null);
     service.login('admin','password').subscribe(res => {
-      expect(service.getBuildingLoc()).toEqual(new LocationModel(24.1234,27.891,'Building Name'));
+      expect(service.getBuildingLoc()).toEqual(new LocationModel(-24.1234,27.891,'Building Name'));
       done();
     });
   });
@@ -136,5 +139,9 @@ describe('LoggedInService', () => {
   it('Logout should set loggedIn status to false and make account details null', () => {
     const service: LoggedInService = TestBed.get(LoggedInService);
     expect(service).toBeTruthy();
+  });
+
+  afterAll(() => {    
+    RequestModuleService.demoMode = true;
   });
 });

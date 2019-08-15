@@ -40,6 +40,7 @@ function populateTable() {
     if (!employeeData || !companyName || !buildingData)
         return;
     tableBody.empty();
+    $('#table').DataTable().clear().destroy();
     for (var i = 0; i < employeeData.length; i++) {
         var employee = employeeData[i];
         var empId = employee.employeeId;
@@ -61,7 +62,6 @@ function populateTable() {
             <td>${title}</td>
             <td>${cell}</td>
             <td>${email}</td>
-            <td>${company}</td>
             <td>${building}</td>
             <td><button type="button" class="btn btn-primary editButton">Edit</button></td>
             </tr>`
@@ -183,7 +183,7 @@ function addValuesToModal(fields) {
     $('#editTitle').val(fields[4]);
     $('#editCellphone').val(fields[5]);
     $('#editEmail').val(fields[6]);
-    var currentBuildingId = findBuildingIdFromBuildingName(fields[8]);
+    var currentBuildingId = findBuildingIdFromBuildingName(fields[7]);
     var selector = $('#buildingSelect');
     selector.empty();
     for (var id in buildingData) {
@@ -362,7 +362,6 @@ function fetchCompanyName(resolve, reject) {
 }
 
 function displayError(message) {
-    console.log("AWE")
     $('#mainErrorAlert').html(` 
     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
     <strong>Error!</strong> ${message}`).show();
@@ -371,4 +370,10 @@ function displayError(message) {
 function logout() {
     localStorage.clear();
     window.location.replace("login.html");
+}
+
+function checkCompanies(){
+    if(localStorage.getItem("id")==1) {
+        $("#navBar").append('<li class="nav-item"><a class="nav-link" href="companies.html">Companies</a></li>');
+    }
 }

@@ -1,7 +1,7 @@
 <ion-content padding>
     
     <ion-item color='secondary' *ngIf='!card'>
-      <ion-label text-wrap> Your business card hasn't been loaded yet. Log in to load business card. </ion-label>
+      <ion-label text-wrap> Your business card hasn't been loaded yet. Log in to load business card, or tap Refresh in the menu if you are logged in. </ion-label>
     </ion-item>
 
     <ion-card *ngIf='card'>
@@ -19,7 +19,7 @@
             <ion-label><ion-icon name="mail"></ion-icon>&nbsp;<a href="mailto:{{card.email}}">{{ card.email }}</a></ion-label>
         </ion-item>
         <ion-item>
-          <ion-label><ion-icon name="globe"></ion-icon>&nbsp;<a href="{{card.website}}">{{ card.website }}</a></ion-label>
+          <ion-label><ion-icon name="globe"></ion-icon>&nbsp;<a href="createClickableLink({{card.website}})">{{ card.website }}</a></ion-label>
         </ion-item>
         <ion-item>
           <ion-label><ion-icon name="pin"></ion-icon>&nbsp;<a (click)="navigate(card.location)">{{ card.location.label }}</a></ion-label>

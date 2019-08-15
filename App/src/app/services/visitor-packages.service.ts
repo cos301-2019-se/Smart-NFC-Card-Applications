@@ -10,6 +10,7 @@
 *	Date		    Author		Version		Changes
 *	-----------------------------------------------------------------------------------------
 *	2019/06/28	Wian		  1.0		    Original
+*	2019/08/13	Wian		  1.1		    Added refreshing functions
 *
 *	Functional Description:   This class provides the visitor packages service to other components
 *	Error Messages:   “Error”
@@ -21,20 +22,28 @@ import { Injectable } from '@angular/core';
 import { LocalStorageService } from './local-storage.service';
 import { VisitorPackage } from '../models/visitor-package.model';
 import { LocationModel } from '../models/location.model';
+import { RequestModuleService } from './request-module.service';
+import { Subject } from 'rxjs';
 
 /**
 * Purpose:	This class provides the visitor packages service injectable
 *	Usage:		This class can be used to setting and getting visitor packages
 *	@author:	Wian du Plooy
-*	@version:	1.0
+*	@version:	1.1
 */
 @Injectable({
   providedIn: 'root'
 })
 export class VisitorPackagesService {
 
+  /**
+   * Constructor for the service
+   * @param storage LocalStorageService injectable
+   * @param req RequestModuleService injectable
+   */
   constructor(
-    private storage: LocalStorageService
+    private storage: LocalStorageService,
+    private req: RequestModuleService
   ) { }
 
   packageListKey: string = "visitor-packages";
@@ -104,7 +113,7 @@ export class VisitorPackagesService {
 
   /**
    * Function that returns the list of shared visitor packages
-   * @retun Promise<any> returns promise from loading from storage
+   * @return Promise<any> returns promise from loading from storage
    */
   getSharedVisitorPackages() {
     return this.storage.Load(this.sharedListKey).then((packages) => {  
@@ -119,7 +128,7 @@ export class VisitorPackagesService {
   /**
    * Function that sets all the shared visitor packages at once - used for reordering
    * @param packages VisitorPackage[] cards to save to storage
-   * @retun Promise<any> returns promise from saving to storage
+   * @return Promise<any> returns promise from saving to storage
    */
   setSharedVisitorPackages(packages: VisitorPackage[]) {
     return this.storage.Save(this.sharedListKey, packages);
@@ -128,7 +137,7 @@ export class VisitorPackagesService {
   /**
    * Function that removes a shared visitor package by id
    * @param packageId number id of package to remove
-   * @retun Promise returns promise from removing visitor package
+   * @return Promise returns promise from removing visitor package
    */
   removeSharedVisitorPackage(packageId: number) {
     return this.getSharedVisitorPackages().then((packages) => {
@@ -137,6 +146,75 @@ export class VisitorPackagesService {
       })
       this.setSharedVisitorPackages(packages);
     });
+  }
+
+  /**
+   * Function that removes all the shared visitor packages
+   * @param employeeId number id of the employee's packages to load
+   * @return Observable<Object> { success: boolean, message: string}
+   */
+  loadAllSharedPackages(employeeId: number) {
+    let subject = new Subject<Object>();
+    setTimeout(() => {
+      this.req.getAllEmployeeVisitorPackage(employeeId).subscribe(res => {
+        if (res['success'] === true) {
+          let data = res['data'];
+          let packages: VisitorPackage[] = [];
+          if (data !== null && data != undefined) {
+            data.forEach(obj => {
+              let visitorPackageId: number = obj['visitorPackageId'];
+              let companyName: string = obj['companyName'];
+              let latitude: number = obj['latitude'];
+              let longitude: number = obj['longitude'];
+              let branchName: string = obj['branchName'];
+              let ssid: string = obj['ssid'] || null;
+              let roomName: string = obj['roomName'];
+              let networkType: string = obj['networkType'] || null;
+              let password: string = obj['password'] || null;
+              let startTime: Date = obj['startTime'] || null;
+              let endTime: Date = obj['endTime'] || null;
+              let limit: number = obj['limit'] || null;
+              let spent: number = obj['spent'] || null;
+      
+              if (visitorPackageId == undefined || companyName == undefined || latitude == undefined || longitude == undefined || branchName == undefined || roomName == undefined) {
+                  subject.next({success: false, message: `Not all needed data received.`});
+                  subject.complete();
+                  this.req.dismissLoading();
+                  return;
+              }
+              else {
+                let visitorPackage = this.createVisitorPackage(visitorPackageId, companyName, startTime, endTime, roomName, 
+                  new LocationModel(latitude, longitude, branchName), ssid, password, networkType, limit, spent);
+                  packages.push(visitorPackage);
+              }
+            });  
+          } 
+          this.setSharedVisitorPackages(packages);       
+          subject.next({success: true, message: `Got all Employee Visitor Packages.`});
+          subject.complete();
+          this.req.dismissLoading();
+        }
+        else {
+          subject.next({success: false, message: `Something went wrong: ${res['message']}.`});
+          subject.complete();
+          this.req.dismissLoading();
+        }
+      }, err => {
+        console.log(err);
+        subject.next({success: false, message: `Something went wrong.`});
+        subject.complete();
+        this.req.dismissLoading();
+      });
+    }, 50);
+    return subject.asObservable();
+  }
+
+  /**
+   * Function that removes all the shared visitor packages
+   * @return Promise returns promise from removing all visitor packages
+   */
+  removeAllSharedPackages() {
+    return this.setSharedVisitorPackages([]);
   }
   
   /**
@@ -158,7 +236,7 @@ export class VisitorPackagesService {
 
   /**
    * Function that returns the list of saved visitor packages
-   * @retun Promise<any> returns promise from loading from storage
+   * @return Promise<any> returns promise from loading from storage
    */
   getVisitorPackages() {
     return this.storage.Load(this.packageListKey).then((packages) => {    
@@ -171,9 +249,64 @@ export class VisitorPackagesService {
   }
 
   /**
+   * Function that gets a visitor package from the DB and adds it back into the list
+   * @param packageId number package to refresh
+   * @return Observable<Object> { success: boolean, message: string}
+   */
+  refreshVisitorPackage(packageId: number) {
+    let subject = new Subject<Object>();
+    setTimeout(() => {
+      this.req.getVisitorPackage(packageId).subscribe(res => {
+        if (res['success'] === true) {
+          let data = res['data'];
+          let visitorPackageId: number = data['visitorPackageId'];
+          let companyName: string = data['companyName'];
+          let latitude: number = data['latitude'];
+          let longitude: number = data['longitude'];
+          let branchName: string = data['branchName'];
+          let ssid: string = data['ssid'] || null;
+          let roomName: string = data['roomName'];
+          let networkType: string = data['networkType'] || null;
+          let password: string = data['password'] || null;
+          let startTime: Date = data['startTime'] || null;
+          let endTime: Date = data['endTime'] || null;
+          let limit: number = data['limit'] || null;
+          let spent: number = data['spent'] || null;
+  
+          if (visitorPackageId == undefined || companyName == undefined || latitude == undefined || longitude == undefined || branchName == undefined || roomName == undefined) {
+              subject.next({success: false, message: `Not all needed data received.`});
+              subject.complete();
+              this.req.dismissLoading();
+          }
+          else {
+            let visitorPackage = this.createVisitorPackage(visitorPackageId, companyName, startTime, endTime, roomName, 
+              new LocationModel(latitude, longitude, branchName), ssid, password, networkType, limit, spent);
+            this.addVisitorPackage(visitorPackage).then(() => {
+              subject.next({success: true, message: `Package refreshed.`});
+              subject.complete();
+              this.req.dismissLoading();
+            })
+            .catch(() => {
+              subject.next({success: false, message: `Could not save the updated package.`});
+              subject.complete();
+              this.req.dismissLoading();
+            });
+          }
+        }
+        else {
+          subject.next({success: false, message: `Something went wrong: ${res['message']}.`});
+          subject.complete();
+          this.req.dismissLoading();
+        }
+      });
+    }, 50);
+    return subject.asObservable();
+  }
+
+  /**
    * Function that sets all the visitor packages at once - used for reordering
    * @param packages VisitorPackage[] cards to save to storage
-   * @retun Promise<any> returns promise from saving to storage
+   * @return Promise<any> returns promise from saving to storage
    */
   setVisitorPackages(packages: VisitorPackage[]) {
     return this.storage.Save(this.packageListKey, packages);
@@ -182,7 +315,7 @@ export class VisitorPackagesService {
   /**
    * Function that removes a visitor package by id
    * @param packageId number id of package to remove
-   * @retun Promise returns promise from removing visitor package
+   * @return Promise returns promise from removing visitor package
    */
   removeVisitorPackage(packageId: number) {
     return this.getVisitorPackages().then((packages) => {

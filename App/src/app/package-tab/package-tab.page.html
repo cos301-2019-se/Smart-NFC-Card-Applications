@@ -1,7 +1,7 @@
 <ion-content padding >
     
     <ion-item color='secondary' *ngIf='packages.length == 0'>
-      <ion-label text-wrap> No visitor packages have been shared with you yet. </ion-label>
+      <ion-label text-wrap> No visitor packages have been shared with you yet, or the packages has been deleted/expired. </ion-label>
     </ion-item>
 
     <ion-list>
@@ -9,10 +9,10 @@
           <ion-card-header (click)='toggleDetails(package.packageId)'>
             <ion-card-title>
               <ion-icon *ngIf='checkInEffect(package.startDate, package.endDate)' color='success' name="calendar"></ion-icon> {{ package.companyName }}
-              <ion-icon class="icon" name="trash" (click)='$event.stopPropagation(); removeVisitorPackage(package.packageId)'></ion-icon>
-              <ion-icon class="icon" name="refresh" (click)='$event.stopPropagation(); refreshVisitorPackage(package.packageId)'></ion-icon>
-              <ion-icon class="icon" name="unlock" (click)='$event.stopPropagation(); unlock(package.packageId)'></ion-icon>
-              <ion-icon class="icon" name="card" (click)='$event.stopPropagation(); pay(package.packageId)'></ion-icon>
+              <ion-icon *ngIf='detailToggles != [] && detailToggles[package.packageId]' class="icon" name="trash" (click)='$event.stopPropagation(); removeVisitorPackage(package.packageId)'></ion-icon>
+              <ion-icon *ngIf='detailToggles != [] && detailToggles[package.packageId]' class="icon" name="refresh" (click)='$event.stopPropagation(); refreshVisitorPackage(package.packageId)'></ion-icon>
+              <ion-icon *ngIf='checkInEffect(package.startDate, package.endDate)' class="icon" name="unlock" (click)='$event.stopPropagation(); unlock(package.packageId)'></ion-icon>
+              <ion-icon *ngIf='package.spendingLimit !== null && checkInEffect(package.startDate, package.endDate)' class="icon" name="card" (click)='$event.stopPropagation(); pay(package.packageId)'></ion-icon>
             </ion-card-title>
             <ion-card-subtitle *ngIf='detailToggles == [] || !detailToggles[package.packageId]'>{{ displayDate(package.startDate) }} to {{ displayDate(package.endDate) }}</ion-card-subtitle>
           </ion-card-header>     
@@ -32,7 +32,7 @@
             <ion-item *ngIf='package.spendingLimit !== null'>
               <ion-label><ion-icon name="card"></ion-icon> Virtual Wallet: {{ package.amountSpent }} / {{ package.spendingLimit }}</ion-label>
             </ion-item>
-            <ion-item *ngIf='package.wifiSsid !== null'>
+            <ion-item *ngIf='package.wifiSsid !== null && checkInEffect(package.startDate, package.endDate)'>
               <ion-button expand="block" fill="outline" (click)='connectToWiFi(package.wifiSsid, package.wifiPassword, package.wifiType)'>Connect To WiFi</ion-button>
             </ion-item>
           </ion-card-content>

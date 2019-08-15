@@ -156,6 +156,22 @@ class AdminLogic
             case "editWifiParam":
                 this.editWifiParam();
                 break;
+			
+			//Payment Points
+			case "addPaymentPoint":
+                this.addPaymentPoint();
+                break;
+            case "editPaymentPoint":
+                this.editPaymentPoint();
+                break;
+            case "getPaymentPointsByCompanyId":
+                this.getPaymentPointsByCompanyId();
+                break;
+
+            //Reporting
+            case "getAllTransactionsByCompanyId":
+                this.getAllTransactionsByCompanyId();
+                break;
 
             default:
                 this.sharedLogic.endServe(false, "Invalid Endpoint", null);
@@ -1878,7 +1894,7 @@ class AdminLogic
                     let employeeObj = await this.sharedLogic.crudController.getEmployeeByEmployeeId(this.body.employeeId);
 
                     if(employeeObj.success){
-
+                        let oldEmail = employeeObj.data.email;
                         let updatePasswordObj = await this.sharedLogic.crudController.updatePassword(employeeObj.data.passwordId, this.body.username,undefined, undefined, undefined, undefined);
                         if(updatePasswordObj.success){
 
@@ -1886,6 +1902,8 @@ class AdminLogic
                                                                                 this.body.employeeCellphone, this.body.employeeEmail, undefined, this.body.buildingId,
                                                                                 undefined);
                             if(updateEmployeeObj.success){
+                                let emailMessage = "Your Link User details have been changed.\n\n If this was not done by you, please contact your company representative. \n\nKind Regards\nLink Development Team";
+                                this.sharedLogic.sendEmail(oldEmail,"Link User Details Changed", emailMessage);
                                 success = updateEmployeeObj.success;
                                 message = "Employee Edited!";
                                 data.employeeId = this.body.employeeId;
@@ -2662,6 +2680,348 @@ class AdminLogic
             this.sharedLogic.endServe(success, message, data);
         }
     }
+	
+	
+	/**
+     * Function that is called to create a payment point, will use SharedLogic's crudController in order
+     * to complete the operation. It will create a Payment Point belonging to the Building ID passed in through
+     * the parameter
+     *
+     * @param   description string The description of that payment point
+     * @param   buildingId int The building that the payment point is in
+     *
+     * @return JSON {
+     *                  nfcPaymentPointId : int The ID of the employee being added
+     *              }
+     */
+    async addPaymentPoint(){
+        let data = new Object();
+        let message;
+        let success;
+
+        //check if parameters are present
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.description === undefined){
+            presentParams = true;
+            presentReturn += "description, ";
+        }
+		if(this.body.buildingId === undefined){
+            presentParams = true;
+            presentReturn += "buildingId, ";
+        }
+		
+        //if parameters are present, validate if correct format
+        if(!presentParams){
+            let invalidParams = false;
+            let invalidReturn = "";
+			
+            if(!this.sharedLogic.validateNonEmpty(this.body.description) || !this.sharedLogic.validateAlpha(this.body.description)){
+                invalidParams = true;
+                invalidReturn += "description, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.buildingId) || !this.sharedLogic.validateNumeric(this.body.buildingId)){
+                invalidParams = true;
+                invalidReturn += "buildingId, ";
+            }
+			
+            //if valid parameters then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.nfcPaymentPointId = 0;
+                    message = "Payment Point Added! - Mock";
+                    success = true;
+                    this.sharedLogic.endServe(success, message, data);
+                }
+                else{
+                    //return data from crudController
+
+                    let payPointObj = await this.sharedLogic.crudController.createNfcPaymentPoint(this.body.buildingId, this.body.description);
+					
+					if(payPointObj.success)
+					{
+                        success = payPointObj.success;
+                        message = "Payment Point Added!";
+                        data = payPointObj.data;
+                        this.sharedLogic.endServe(success, message, data);
+                    }
+                    else
+					{
+                        this.sharedLogic.endServe(payPointObj.success, payPointObj.message, null);
+                    }
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                this.sharedLogic.endServe(success, message, data);
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+            this.sharedLogic.endServe(success, message, data);
+        }
+    }
+	
+	
+	/**
+     * Function used to change a payment points details
+     *
+     * @param nfcPaymentPointId int The ID of the payment point to be changed
+     * @param description string The description of the payment point
+     * @param buildingId int The building that the payment point is in
+     *
+     * @return JSON {
+     *                  nfcPaymentPointId : int The ID of the payment point modified
+     *              }
+     */
+    async editPaymentPoint(){
+        let message;
+        let data = new Object();
+        let success;
+
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.nfcPaymentPointId === undefined){
+            presentParams = true;
+            presentReturn += "nfcPaymentPointId, ";
+        }
+        if(this.body.description === undefined){
+            presentParams = true;
+            presentReturn += "description, ";
+        }
+        if(this.body.buildingId === undefined){
+            presentParams = true;
+            presentReturn += "buildingId, ";
+        }
+
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+			
+            let invalidParams = false;
+            let invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.nfcPaymentPointId) || !this.sharedLogic.validateNumeric(this.body.nfcPaymentPointId)){
+                invalidParams = true;
+                invalidReturn += "nfcPaymentPointId, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.description) || !this.sharedLogic.validateAlpha(this.body.description)){
+                invalidParams = true;
+                invalidReturn += "description, ";
+            }
+            if(!this.sharedLogic.validateNonEmpty(this.body.buildingId) || !this.sharedLogic.validateNumeric(this.body.buildingId)){
+                invalidParams = true;
+                invalidReturn += "buildingId, ";
+            }
+			
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.nfcPaymentPointId = this.body.nfcPaymentPointId;
+                    message = "Payment Point edited! - Mock";
+                    success = true;
+                    this.sharedLogic.endServe(success, message, data);
+                }
+                else{
+                    //return data from crudController
+                    let payPointObj = await this.sharedLogic.crudController.getNfcPaymentPointByNfcPaymentPointId(this.body.nfcPaymentPointId);
+
+                    if(payPointObj.success)
+					{
+
+                        let updatePayPointObj = await this.sharedLogic.crudController.updateNfcPaymentPoint(this.body.nfcPaymentPointId, this.body.buildingId, this.body.description);
+						
+						/*//for now, while update and delete not in
+						let updatePayPointObj = {success: true, message: "Successfully updated", data: null};*/
+						
+                        if(updatePayPointObj.success)
+						{
+                            success = updatePayPointObj.success;
+                            message = "Payment Point Edited!";
+                            data.nfcPaymentPointId = this.body.nfcPaymentPointId;
+                            this.sharedLogic.endServe(success, message, data);
+                        }
+                        else
+						{
+                            this.sharedLogic.endServe(updatePayPointObj.success, updatePayPointObj.message, null);
+                        }
+                    }
+                    else
+					{
+                        this.sharedLogic.endServe(payPointObj.success, payPointObj.message, null);
+                    }
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                this.sharedLogic.endServe(success, message, data);
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+            this.sharedLogic.endServe(success, message, data);
+        }
+    }
+	
+	
+	
+	/**
+     * This function will be used to return an array of payment points
+     *
+     * @param companyId int The company ID used to get the Payment Point objects
+     *
+     * @return an Array of JSON {
+     *                 nfcPaymentPointId int The ID belonging to that payment point
+     *                 buildingId int the Building ID where the payment point is in
+     *                 description string the description of the payment point
+     *              }
+     */
+    async getPaymentPointsByCompanyId(){
+        let message;
+        let data = new Object();
+        let success;
+
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.companyId === undefined){
+            presentParams = true;
+            presentReturn += "companyId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            let invalidParams = false;
+            let invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.companyId) || !this.sharedLogic.validateNumeric(this.body.companyId)){
+                invalidParams = true;
+                invalidReturn += "companyId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    success = true;
+                    message = "Payment Points Retrieved!- Mock";
+                    data = [];
+                    data.push({
+                        nfcPaymentPointId:0,
+                        buildingId:0,
+                        description:"Place"
+                    });
+                    data.push({
+                        nfcPaymentPointId:1,
+                        buildingId:0,
+                        description:"Shop"
+                    });
+                    this.sharedLogic.endServe(success, message, data);
+                }
+                else{
+					//return data from crudController
+					
+					let buildArr = await this.sharedLogic.crudController.getBuildingsByCompanyId(this.body.companyId);
+					
+					if(buildArr.success)
+					{
+						//there are buildings
+						buildArr = buildArr.data;
+						let payPointArr = [];
+						
+						for(var i = 0; i < buildArr.length; i++)
+						{
+							let thisBuild = buildArr[i];
+							thisBuild = thisBuild.buildingId;
+							
+							let thisPayPointArr = await this.sharedLogic.crudController.getNfcPaymentPointsByBuildingId(thisBuild);
+							
+							if(thisPayPointArr.success === true)
+							{
+								thisPayPointArr = thisPayPointArr.data;
+								payPointArr = payPointArr.concat(thisPayPointArr);
+							}
+							
+						}
+						
+                        this.sharedLogic.endServe(true, "Payment points retrieved!", payPointArr);
+                    }
+                    else
+					{
+                        this.sharedLogic.endServe(buildArr.success, buildArr.message, null);
+                    }
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                this.sharedLogic.endServe(success, message, data);
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+            this.sharedLogic.endServe(success, message, data);
+        }
+    }
+
+    /**
+     *  Fetches all transactions for the specified company within the optional date range.
+     *  If no date is provided then all transactions will be retrieved 
+     *  @param companyId int The company ID for which the transaction data will be retrieved
+     *  @param startDate string (optional) The Stringified start date time in ISO format e.g. 2016-06-27T14:48:00.000Z
+     *  @param endDate string (optional) Stringified end date time in ISO format e.g. 2016-06-27T14:48:00.000Z
+	 *  @param employeeUsername string (optional) Username of the employee
+     *  @return [ {employeeName, employeeSurname, employeeEmail, amountSpent, paymentDesc, paymentPointDesc, transactiontime  } ]
+     */
+    async getAllTransactionsByCompanyId(){
+        if(!this.body.companyId || !this.sharedLogic.validateNumeric(this.body.companyId))
+            return this.sharedLogic.endServe(false, "No valid companyId provided", null);
+
+        if(this.body.employeeUsername && !this.sharedLogic.validateNonEmpty(this.body.employeeUsername))
+            return this.sharedLogic.endServe(false, "Invalid employee username provided", null);
+
+        if(this.body.demoMode){
+            return this.sharedLogic.endServe(true, "Demo Mode Transactions Fetched", [{
+                "employeeName": "DemoName",
+                "employeeSurname": "DemoSurname",
+                "employeeEmail": "demo@gmail.com",
+                "amountSpent": 50,
+                "paymentDesc": "",
+                "paymentPointDesc": "New desc",
+                "transactiontime": "2019-07-21T19:15:18.028Z"
+            }]);
+        }
+
+
+        let startDate, endDate;
+        if(this.body.startDate)
+            startDate = new Date(this.body.startDate);
+        if(this.body.endDate)
+            endDate = new Date(this.body.endDate);
+
+        let result = await this.sharedLogic.crudController.getAllTransactionsByCompanyId(this.body.companyId, startDate, endDate, this.body.employeeUsername);
+        return this.sharedLogic.endServe(result.success, result.message, result.data);
+    }
+
+
+
 }
 
 module.exports = AdminLogic;

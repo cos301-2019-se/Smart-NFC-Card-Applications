@@ -51,9 +51,8 @@ export class ManageTabPage implements OnInit {
 
   username: string = '';
   password: string = '';
-  title: string = 'Login';
   loggedIn: boolean = false;
-  isBusy: boolean = false;
+
   messageTimeout: number = 4000;
   packages: VisitorPackage[] = [];
   detailToggles = [];
@@ -96,7 +95,6 @@ export class ManageTabPage implements OnInit {
           this.menuEvent(functionName);
         })
     );    
-    this.loadPackages();
   }
 
   /**
@@ -126,7 +124,6 @@ export class ManageTabPage implements OnInit {
    */
   login(){
     this.resetMessages();
-    this.isBusy = true;
     this.loginService.login(this.username, this.password).subscribe(res => {
       if (res['success'] === true) {
         this.loggedIn = true;
@@ -138,8 +135,8 @@ export class ManageTabPage implements OnInit {
         this.loggedIn = false;
         this.showMessage(res['message'], MessageType.error, this.messageTimeout);
       }
-      this.updateTitle();
-      this.isBusy = false;
+      this.loadPackages();
+      this.req.dismissLoading();
     });
   }
 
@@ -148,7 +145,6 @@ export class ManageTabPage implements OnInit {
    */
   logout(){
     this.resetMessages();
-    this.isBusy = true;
     this.loginService.logout().subscribe(res => {
       if (res['success'] === true) {
         this.loggedIn = false;
@@ -157,8 +153,8 @@ export class ManageTabPage implements OnInit {
       else {
         this.showMessage(res['message'], MessageType.error, this.messageTimeout);
       }
-      this.updateTitle();
-      this.isBusy = false;
+      this.loadPackages();
+      this.req.dismissLoading();
     });
   }
 
@@ -167,18 +163,6 @@ export class ManageTabPage implements OnInit {
    */
   private checkLoggedIn() {
     this.loggedIn = this.loginService.isLoggedIn();
-  }
-
-  /**
-   * Function that checks what the title of the component should be
-   */
-  private updateTitle() {
-    if(this.loginService.isLoggedIn() === true) {
-      this.title = 'Menu';
-    }
-    else {
-      this.title = 'Login';
-    }
   }
 
   /**
@@ -362,7 +346,10 @@ export class ManageTabPage implements OnInit {
               else {
                 this.showMessage(`Could not delete package: ${json['message']}`, MessageType.error)
               }
-            })
+            }, err => {
+              console.log(err);
+              this.showMessage(`Error adding to DB: Ensure that you have a stable internet connection`, MessageType.error);
+            });
           }
         }
       ]
@@ -410,6 +397,8 @@ export class ManageTabPage implements OnInit {
       else {
         this.showMessage(res['message'], MessageType.error);
       }
+      this.loadPackages();
+      this.req.dismissLoading();
     });
   }
 }

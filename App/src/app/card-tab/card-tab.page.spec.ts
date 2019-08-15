@@ -33,6 +33,7 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
 import { Device } from '@ionic-native/device/ngx';
 import { SharedModule } from '../shared.module';
+import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 
 describe('CardTabPage', () => {
   let component: CardTabPage;
@@ -55,7 +56,8 @@ describe('CardTabPage', () => {
         LocationService,
         Geolocation,
         LaunchNavigator,
-        Device
+        Device,
+        Diagnostic
       ]
     }).compileComponents();
   }));

@@ -1,5 +1,4 @@
 <ion-content *ngIf='!loggedIn' padding>
-  <ion-progress-bar *ngIf='isBusy' type="indeterminate"></ion-progress-bar>  
   <ion-item>
     <ion-label position="floating">Username/Email</ion-label>
     <ion-input [(ngModel)]='username'></ion-input>
@@ -13,10 +12,9 @@
 </ion-content>
 
 <ion-content *ngIf='loggedIn' padding>  
-  <ion-progress-bar *ngIf='isBusy' type="indeterminate"></ion-progress-bar>  
     
   <ion-item color='secondary' *ngIf='packages.length == 0'>
-    <ion-label text-wrap> You have not shared visitor packages with anyone yet. </ion-label>
+    <ion-label text-wrap> You have not shared visitor packages with anyone yet, or the packages has been deleted/expired. </ion-label>
   </ion-item>
 
   <ion-list>

@@ -14,6 +14,7 @@
  *	2019/06/25	Savvas		1.2			Added all updates and deletes
  *	2019/07/08	Jared		2.0			Make async into sync for all
  *	2019/07/17	Savvas		2.1			Added necessary comments and removed unnecessary comments
+ *	2019/07/27	Savvas		2.2			Added Update and Deletes for NFC Payment Points and Transactions
  *
  *	Functional Description:		 This class is the interface used by the Logic Components of the Link System to 
  *                               interact with the database. This class facilitates communication with the database.
@@ -29,7 +30,7 @@
 *               All functions of this class return Javascript objects containing "success", "message" and "data" fields. Note that if a function fails 
 *               this will be indicated with success being false and the data field will also be null
 *	@author:	Savvas Panagiotou
-*	@version:	2.1
+*	@version:	2.2
 */
 
 const { Pool, Client } = require('pg');
@@ -45,21 +46,21 @@ class CrudController {
 		this.apiKey = null;
 		this.isEmployee = true;
 
-		/*this.client = new Client({
-		  user: 'postgres',
-		  host: 'localhost',
-		  database: 'link',
-		  password: 'nbuser',
-		  port: 5432,
-		});*/
-
+		/*
+		this.client = new Client({
+			user: 'postgres',
+			host: 'localhost',
+			database: 'link',
+			password: 'nbuser',
+			port: 5432,
+		});
+		*/	
+			
 		this.client = new Client({
 			connectionString: process.env.DATABASE_URL
 		});
 
 		this.client.connect();
-
-
 	}
 
 	initialize(apiKey) {
@@ -1367,9 +1368,6 @@ class CrudController {
 		}
 	}
 
-	//UD
-
-
 
 	//Client
 
@@ -1465,8 +1463,6 @@ class CrudController {
 			return ret;
 		}
 	}
-
-	//CR
 
 	/**
 	* Update the details of the client with the given ID based on the input parameters.
@@ -1764,8 +1760,6 @@ class CrudController {
 		}
 	}
 
-
-	//CR
 
 	/**
 	* Update the details of the Temporary WiFi Access WiFi parameters with the given ID based on the input parameters.
@@ -2116,7 +2110,6 @@ class CrudController {
 		}
 	}
 
-	//CR
 	/**
 	* Update the details of the Visitor Package with the given ID based on the input parameters.
 	* Parameters passed as undefined are ignored in the update (i.e. they are not updated), 
@@ -2244,8 +2237,6 @@ class CrudController {
 		}
 	}
 
-
-	//CR
 
 	/**
     * Deletes a Temporary Physical Access entry given an ID
@@ -2527,7 +2518,6 @@ class CrudController {
 		}
 	}
 
-	//CR
 	/**
 	* Update the details of the Wallet with the given ID based on the input parameters.
 	* Parameters passed as undefined are ignored in the update (i.e. they are not updated), 
@@ -2592,6 +2582,519 @@ class CrudController {
 			return ret;
 		}
 	}
+
+
+	//new for payment!
+
+
+	/**
+	*	Creates a new nfcPaymentPoint
+	*	@param buildingId 
+	*	@param description 
+	*	@return { nfcPaymentPointId }
+	*/
+	async createNfcPaymentPoint(buildingId, description) {
+		var c = [];
+		var v = [];
+
+		this.bigAppend(Object.keys({ buildingId })[0], buildingId, c, v);
+		this.bigAppend(Object.keys({ description })[0], description, c, v);
+
+		var ret = null;
+		let res;
+		try {
+			res = await this.client.query(this.constructInsert("NfcPaymentPoints", "nfcPaymentPointId", c, v), v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added nfcpaymentpoint", false, false);
+			ret.data.nfcPaymentPointId = res.rows[0].nfcpaymentpointid;
+			return ret;
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+
+	}
+
+
+
+	/**
+	*	Retrieves a nfcPaymentPoint using nfcPaymentPointId
+	*	@param nfcPaymentPointId 
+	*	@return { nfcPaymentPointId, buildingId, description }
+	*/
+	async getNfcPaymentPointByNfcPaymentPointId(nfcPaymentPointId) {
+		var query = 'SELECT * FROM NfcPaymentPoints WHERE nfcPaymentPointId = $1';
+
+		var ret = null;
+
+
+		let res;
+		try {
+			res = await this.client.query(query, [nfcPaymentPointId]);
+			if (res.rows.length == 0) {
+				ret = this.returnDatabaseError("no rows in NfcPaymentPoints with that matching nfcPaymentPointId");
+				return ret;
+			}
+			else {
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved nfcPaymentPoint", false, false);
+				ret.data.nfcPaymentPointId = res.rows[0].nfcpaymentpointid;
+				ret.data.buildingId = res.rows[0].buildingid;
+				ret.data.description = res.rows[0].description;
+				return ret;
+			}
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+
+	/**
+	*	Retrieves a set of nfcPaymentPoints using buildingId
+	*	@param buildingId 
+	*	@return [ { nfcPaymentPointId, buildingId, description } ]
+	*/
+	async getNfcPaymentPointsByBuildingId(buildingId) {
+		var query = 'SELECT * FROM NfcPaymentPoints WHERE buildingId = $1';
+
+		var ret = null;
+
+
+		let res;
+		try {
+			res = await this.client.query(query, [buildingId]);
+			if (res.rows.length == 0) {
+				ret = this.returnDatabaseError("no rows in NfcPaymentPoints with that matching buildingId");
+				return ret;
+			}
+			else {
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved nfcPaymentPoints", false, true);
+				for (var i = 0; i < res.rows.length; i++) {
+					var obj = {};
+
+					obj.nfcPaymentPointId = res.rows[i].nfcpaymentpointid;
+					obj.buildingId = res.rows[i].buildingid;
+					obj.description = res.rows[i].description;
+
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+
+
+	/**
+	* Update the details of the NFC Payment Point with the given ID based on the input parameters.
+	* Parameters passed as undefined are ignored in the update (i.e. they are not updated), 
+	* for all other paramter values (including null) an update attempt will be made in the database
+	* @param nfcPaymentPointId
+	* @param buildingId
+	* @param description
+	* @return {success, message, data : null}
+	*/
+	async updateNfcPaymentPoint(nfcPaymentPointId, buildingId, description) {
+		if (!this.validateNumeric(nfcPaymentPointId)) {
+			return this.buildDefaultResponseObject(false, "Invalid NFC Payment Point ID provided", true);
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["buildingId", "description"], [buildingId, description], paramNames, paramValues);
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
+		}
+
+		var query = this.constructUpdate("NfcPaymentPoints", paramNames, "nfcPaymentPointId", nfcPaymentPointId);
+		var ret = null;
+		let res;
+		try {
+			res = await this.client.query(query, paramValues);
+			ret = this.buildDefaultResponseObject(true, "Successfully updated NFC Payment Point", true);
+			return ret;
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+
+	/**
+    * Deletes a NFC Payment Point given an ID
+    * @param nfcPaymentPointId
+	* @return {success, message, data : null}
+    */
+	async deleteNfcPaymentPoint(nfcPaymentPointId) {
+		if (!this.validateNumeric(nfcPaymentPointId)) {
+			return this.buildDefaultResponseObject(false, "Invalid NFC Payment Point ID provided", true);
+		}
+
+		var query = this.constructDelete("NfcPaymentPoints", "nfcPaymentPointId");
+		var ret = null;
+		let res;
+		try {
+			res = await this.client.query(query, [nfcPaymentPointId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted NFC Payment Point", true);
+			return ret;
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+
+
+
+	/**
+	*	Creates a new transaction
+	*	@param walletId 
+	*	@param amount 
+	*	@param nfcPaymentPointId 
+	*	@param transactionTime 
+	*	@param description 
+	*	@return { transactionId }
+	*/
+	async createTransaction(walletId, amount, nfcPaymentPointId, transactionTime, description) {
+		var c = [];
+		var v = [];
+
+		this.bigAppend(Object.keys({ walletId })[0], walletId, c, v);
+		this.bigAppend(Object.keys({ amount })[0], amount, c, v);
+		this.bigAppend(Object.keys({ nfcPaymentPointId })[0], nfcPaymentPointId, c, v);
+		this.bigAppend(Object.keys({ transactionTime })[0], transactionTime, c, v);
+		this.bigAppend(Object.keys({ description })[0], description, c, v);
+
+		var ret = null;
+		let res;
+		try {
+			res = await this.client.query(this.constructInsert("Transaction", "transactionId", c, v), v);
+			ret = this.buildDefaultResponseObject(true, "Successfully added transaction", false, false);
+			ret.data.transactionId = res.rows[0].transactionid;
+			return ret;
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+
+	}
+
+
+
+	/**
+	*	Retrieves a transaction using transactionId
+	*	@param transactionId 
+	*	@return { transactionId, walletId, amount, nfcPaymentPointId, transactionTime, description }
+	*/
+	async getTransactionByTransactionId(transactionId) {
+		var query = 'SELECT * FROM Transaction WHERE transactionId = $1';
+
+		var ret = null;
+
+
+		let res;
+		try {
+			res = await this.client.query(query, [transactionId]);
+			if (res.rows.length == 0) {
+				ret = this.returnDatabaseError("no rows in Transaction with that matching transactionId");
+				return ret;
+			}
+			else {
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved Transaction", false, false);
+				ret.data.transactionId = res.rows[0].transactionid;
+				ret.data.walletId = res.rows[0].walletid;
+				ret.data.amount = res.rows[0].amount;
+				ret.data.nfcPaymentPointId = res.rows[0].nfcpaymentpointid;
+				ret.data.transactionTime = res.rows[0].transactiontime;
+				ret.data.description = res.rows[0].description;
+				return ret;
+			}
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+
+	/**
+	*	Retrieves a set of transactions using walletId
+	*	@param walletId 
+	*	@return [ { transactionId, walletId, amount, nfcPaymentPointId, transactionTime, description } ]
+	*/
+	async getTransactionsByWalletId(walletId) {
+		var query = 'SELECT * FROM Transaction WHERE walletId = $1';
+
+		var ret = null;
+
+
+		let res;
+		try {
+			res = await this.client.query(query, [walletId]);
+			if (res.rows.length == 0) {
+				ret = this.returnDatabaseError("no rows in Transaction with that matching walletId");
+				return ret;
+			}
+			else {
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved transactions", false, true);
+				for (var i = 0; i < res.rows.length; i++) {
+					var obj = {};
+
+					obj.transactionId = res.rows[i].transactionid;
+					obj.walletId = res.rows[i].walletid;
+					obj.amount = res.rows[i].amount;
+					obj.nfcPaymentPointId = res.rows[i].nfcpaymentpointid;
+					obj.transactionTime = res.rows[i].transactiontime;
+					obj.description = res.rows[i].description;
+
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+
+	/**
+	*	Retrieves a set of transactions using nfcPaymentPointId
+	*	@param nfcPaymentPointId 
+	*	@return [ { transactionId, walletId, amount, nfcPaymentPointId, transactionTime, description } ]
+	*/
+	async getTransactionsByNfcPaymentPointId(nfcPaymentPointId) {
+		var query = 'SELECT * FROM Transaction WHERE nfcPaymentPointId = $1';
+
+		var ret = null;
+
+
+		let res;
+		try {
+			res = await this.client.query(query, [nfcPaymentPointId]);
+			if (res.rows.length == 0) {
+				ret = this.returnDatabaseError("no rows in Transaction with that matching nfcPaymentPointId");
+				return ret;
+			}
+			else {
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved transactions", false, true);
+				for (var i = 0; i < res.rows.length; i++) {
+					var obj = {};
+
+					obj.transactionId = res.rows[i].transactionid;
+					obj.walletId = res.rows[i].walletid;
+					obj.amount = res.rows[i].amount;
+					obj.nfcPaymentPointId = res.rows[i].nfcpaymentpointid;
+					obj.transactionTime = res.rows[i].transactiontime;
+					obj.description = res.rows[i].description;
+
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+
+	/**
+	* Update the details of the Transaction with the given ID based on the input parameters.
+	* Parameters passed as undefined are ignored in the update (i.e. they are not updated), 
+	* for all other paramter values (including null) an update attempt will be made in the database
+	* @param transactionId
+	* @param walletId
+	* @param amount
+	* @param nfcPaymentPointId
+	* @param transactionTime
+	* @param description
+	* @return {success, message, data : null}
+	*/
+	async updateTransaction(transactionId, walletId, amount, nfcPaymentPointId, transactionTime, description) {
+		if (!this.validateNumeric(transactionId)) {
+			return this.buildDefaultResponseObject(false, "Invalid Transaction ID provided", true);
+		}
+
+		var paramNames = [];
+		var paramValues = [];
+
+		this.setValidParams(["walletId", "amount", "nfcPaymentPointId", "transactionTime", "description"], [walletId, amount, nfcPaymentPointId, transactionTime, description], paramNames, paramValues);
+
+		if (paramValues.length !== paramNames.length || paramNames.length === 0) {
+			return this.buildDefaultResponseObject(false, "No valid parameters provided for update", true);
+		}
+
+		var query = this.constructUpdate("Transaction", paramNames, "transactionId", transactionId);
+		var ret = null;
+		let res;
+		try {
+			res = await this.client.query(query, paramValues);
+			ret = this.buildDefaultResponseObject(true, "Successfully updated Transaction", true);
+			return ret;
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+
+	/**
+    * Deletes a Transaction given an ID
+    * @param transactionId
+	* @return {success, message, data : null}
+    */
+	async deleteTransaction(transactionId) {
+		if (!this.validateNumeric(transactionId)) {
+			return this.buildDefaultResponseObject(false, "Invalid Transaction ID provided", true);
+		}
+
+		var query = this.constructDelete("Transaction", "transactionId");
+		var ret = null;
+		let res;
+		try {
+			res = await this.client.query(query, [transactionId]);
+			ret = this.buildDefaultResponseObject(true, "Successfully deleted Transaction", true);
+			return ret;
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+	}
+
+	/**
+	*	Retrieves a set of transactions (with reporting information) for the specified company. 
+	*	By default all transactions are returned unless date time constraints are provided or an employee username is specified
+	*	@param companyId
+	*	@param startDate Date Object (optional) Starting date to retrieve transactions for
+	*	@param endDate Date Object (optional) Ending date to retrieve transactions for
+	*	@param employeeUsername string (optional) Username of the employee
+	*	@return [ {employeeName, employeeSurname, employeeEmail, amountSpent, paymentDesc, paymentPointDesc, transactiontime  } ]
+	*/
+	async getAllTransactionsByCompanyId(companyId, startDate, endDate, employeeUsername) {
+		if (!this.validateNumeric(companyId)) {
+			return this.buildDefaultResponseObject(false, "Invalid Company ID provided", true);
+		}
+
+		let hasStart = false;
+		let hasEnd = false;
+		if (startDate) {
+			if (this.isValidDate(startDate))
+				hasStart = true;
+			else
+				return this.buildDefaultResponseObject(false, "Invalid Start Date provided", true);
+		}
+
+		if (endDate) {
+			if (this.isValidDate(endDate))
+				hasEnd = true;
+			else
+				return this.buildDefaultResponseObject(false, "Invalid End Date provided", true);
+		}
+
+		let whereStatement = "WHERE c.companyId = $1";
+		let paramsArray = [companyId];
+		if (hasStart) {
+			if (hasEnd) {
+				//have start and end date
+				if (startDate <= endDate) {
+					whereStatement += " AND transactiontime >= $2 AND transactiontime <= $3";
+					paramsArray.push(startDate);
+					paramsArray.push(endDate);
+				} else {
+					return this.buildDefaultResponseObject(false, "Start date is greater than end date", true);
+				}
+			} else {
+				//just have a start date
+				whereStatement += " AND transactiontime >= $2";
+				paramsArray.push(startDate);
+			}
+		} else if (hasEnd) {
+			//just have an end date
+			whereStatement += " AND transactiontime <= $2";
+			paramsArray.push(endDate);
+		}
+		let fromStatement = `FROM ((((company c INNER JOIN employee e ON c.companyId = e.companyId)
+								INNER JOIN visitorpackage v ON e.employeeId = v.employeeId)
+								INNER JOIN transaction t ON v.linkwalletid = t.walletId)
+								INNER JOIN nfcpaymentpoints n ON t.nfcpaymentpointid = n.nfcpaymentpointid)`;
+		if (employeeUsername) {
+			//extra joins required to narrow down by employee
+			fromStatement = `FROM (((((company c INNER JOIN employee e ON c.companyId = e.companyId)
+								INNER JOIN visitorpackage v ON e.employeeId = v.employeeId)
+			 					INNER JOIN password p ON e.passwordId = p.passwordId )
+								INNER JOIN transaction t ON v.linkwalletid = t.walletId)
+								INNER JOIN nfcpaymentpoints n ON t.nfcpaymentpointid = n.nfcpaymentpointid)`
+			paramsArray.push(employeeUsername);
+			whereStatement += " AND username = $" + (paramsArray.length);
+		}
+
+		let query = `SELECT firstname AS "employeeName", surname AS "employeeSurname", email AS "employeeEmail", amount AS "amountSpent",
+						t.description AS "paymentDesc", n.description AS "paymentPointDesc", transactiontime AS "transactiontime"
+					${fromStatement}
+					${whereStatement}
+					ORDER BY transactiontime DESC;`;
+		var ret = null;
+		let res;
+		try {
+			res = await this.client.query(query, paramsArray);
+			if (res.rows.length == 0) {
+				ret = this.returnDatabaseError("no transactions found");
+				return ret;
+			}
+			else {
+				ret = this.buildDefaultResponseObject(true, "Successfully retrieved transactions", false, true);
+				for (var i = 0; i < res.rows.length; i++) {
+					var obj = {};
+
+					obj.employeeName = res.rows[i].employeeName;
+					obj.employeeSurname = res.rows[i].employeeSurname;
+					obj.employeeEmail = res.rows[i].employeeEmail;
+					obj.amountSpent = res.rows[i].amountSpent;
+					obj.paymentDesc = res.rows[i].paymentDesc;
+					obj.paymentPointDesc = res.rows[i].paymentPointDesc;
+					obj.transactiontime = res.rows[i].transactiontime;
+
+					ret.data.push(obj);
+				}
+				return ret;
+			}
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			ret = this.returnDatabaseError(err);
+			return ret;
+		}
+
+	}
+
+
+
 
 	//Jared Helpers
 	/**
@@ -2802,6 +3305,14 @@ class CrudController {
 		else {
 			return false
 		}
+	}
+	/**
+	 * Checks if the parameter is a valid date
+	 * @param date The parameter that will be checked for being a date
+	 * @return boolean Will return true if the parameter is a date, false otherwise
+	 */
+	isValidDate(date) {
+		return date instanceof Date && !isNaN(date);
 	}
 }
 

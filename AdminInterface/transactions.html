@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Transactions</title>
+    <link rel="icon" href="Image/favicon.ico">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script>
+        // localStorage.clear(); // -----> uncomment this in order to see the login page again (the api key will be used otherwise)
+        var tmpKey = localStorage.getItem("apiKey");
+        if (tmpKey) {
+            $.post("/admin/login", JSON.stringify({ "apiKey": tmpKey }), (data) => {
+                if (data.success !== true) {
+                    //if the api key is invalid, go to login page
+                    window.location.replace("login.html");
+                } else {
+                    $("body").fadeIn(1000);
+                }
+            });
+        } else {
+            window.location.replace("login.html");
+        }
+
+    </script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="Css/styles.css">
+    <!-- Data Table imports -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.css" />
+    <!-- Fontawesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css">
+    <!-- Date Picker -->
+    <link rel="stylesheet" href="/Css/daterangepicker.css">
+    <style>
+        #employeeSearchField {
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+
+
+</head>
+
+<body style="display: none" onload="checkCompanies();">
+
+    <!-- CONTENT OF PAGE GOES HERE -->
+    <nav class="navbar navbar-expand-sm bg-light navbar-light fixed-top">
+        <a class="navbar-brand font-weight-bold" href="home.html">Link</a>
+        <ul class="navbar-nav" id="navBar">
+            <li class="nav-item">
+                <a class="nav-link" href="home.html">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="buildings.html">Buildings</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="employees.html">Employees</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="paymentpoints.html">Payment Points</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="transactions.html">Transactions</a>
+            </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="company.html">Profile</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="" onclick="logout();">Logout</a>
+            </li>
+        </ul>
+    </nav>
+
+    <h1 class="pb-1 text-center" style="margin-top:30px">Transactions</h1>
+
+
+    <div class="container col-md-4 col-10">
+
+        <div id="searchContainer">
+            <div id="alertContainerTop"> </div>
+
+            <div class="col-12  text-center">
+                <a href="#" class="btn btn-primary searchButtons" id="searchAllBtn"
+                    onclick="clickedSearchAllTransactions();" style="width: 100%">Search All
+                    Transactions <i class="fas fa-search"></i></a>
+                <a href="#" onclick="clickedAdvancedSearch();" class="btn btn-primary searchButtons"
+                    data-toggle="collapse" data-target="#collapseAdvancedSearch" aria-expanded="false"
+                    aria-controls="collapseAdvancedSearch" style="width: 100%">Advanced Search <i
+                        class="fas fa-cogs"></i></a>
+            </div>
+            <div class="collapse" id="collapseAdvancedSearch">
+                <div class="container border">
+                    <div id="alertContainer">
+
+                    </div>
+                    <label>Select a Date Range:</label>
+                    <div id="datePicker">
+                        <i class="fa fa-calendar"></i>&nbsp;
+                        <span></span> <i class="fa fa-caret-down"></i>
+                    </div>
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="employeeSwitch">
+                        <label class="custom-control-label" for="employeeSwitch" style="margin-top:10px">Search for a
+                            Specific Employee</label>
+                    </div>
+                    <input type="text" class="form-control hide" style="width: 100%" id="employeeSearchField"
+                        placeholder="Employee Username e.g. mail@link.com" required>
+
+                    <button type="button" id="btnSubmitCustomSearch"
+                        class="btn btn-success searchButtons text-center">Search</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container col-md-11 border" style="padding-top:20px; padding-bottom:20px; margin-bottom:90px; display: none"
+        id="fullTableContainer">
+        <div class="alert alert-warning alert-dismissible" id="mainErrorAlert" style="display:none"></div>
+        <div class="text-center">
+        </div>
+        <div class="container col-md-4 col-10">
+            <ul class="list-group" id="searchQueryList">
+            </ul>
+        </div>
+        <div class="table-responsive" style="padding-bottom:10px">
+            <table class="table table-striped table-bordered" id="table" style="font-size:13px">
+                <thead>
+                    <th>Employee Name</th>
+                    <th>Employee Surname</th>
+                    <th>Employee Email</th>
+                    <th>Amount Spent</th>
+                    <th>Date Time</th>
+                    <th>Payment Description</th>
+                    <th>Payment Point Description</th>
+                </thead>
+                <tbody id="tableBody">
+
+                </tbody>
+            </table>
+        </div>
+        <div class="btn-toolbar justify-content-between" role="toolbar">
+            <div class="input-group">
+                <button type="button" class="btn btn-primary btn-md searchButtons" onclick="researchClicked();"
+                    style="height:40px;margin-top:10px">
+                    Search Again <i class="fas fa-sync-alt"></i>
+                </button>
+                <button type="button" class="btn btn-danger btn-md searchButtons" onclick="downloadPdf();"
+                    style="height:40px;margin-top:10px">
+                    Download PDF <i class="far fa-file-pdf"></i>
+                </button>
+                <button type="button" class="btn btn-success btn-md searchButtons" onclick="downloadCsv();"
+                    style="height:40px;margin-top:10px">
+                    Download CSV <i class="fas fa-file-csv"></i>
+                </button>
+            </div>
+            <div class="btn-group" role="group">
+                <button id="btnBackHome" onclick="window.location.replace('home.html');"
+                    class="btn btn-default pull-right" style="margin-top:10px">Back to Home</button>
+            </div>
+        </div>
+    </div>
+
+
+    <footer id="sticky-footer" class="py-4 bg-light text-black-100" style="bottom: 0px; position: fixed; width: 100%;">
+        <div class="container text-center">
+            <small>Link (c) University of Pretoria, 2019.</small>
+        </div>
+    </footer>
+
+    <!-- Scripts loaded at end of page -->
+    <script type="text/javascript" src="Js/transactions.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <!-- Data Tables Javascript -->
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.js"></script>
+    <!-- Date Picker -->
+    <script src="/Js/moment.min.js"></script>
+    <script src="/Js/daterangepicker.js"></script>
+</body>
+
+</html>

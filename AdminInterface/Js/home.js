@@ -17,7 +17,9 @@ function loadHomeContents(callback)
 			var currentTime = new Date();
 			var m = (currentTime.getMonth() + 1);
 			m = m < 10? "0" + m : m;
-			var day = currentTime.getFullYear() + "-" + m + "-" + currentTime.getDate();
+			var d = currentTime.getDate();
+			d = d < 10? "0" + d : d;
+			var day = currentTime.getFullYear() + "-" + m + "-" + d;
 			
 			var twelve = new Date(day + "T10:00:00Z");
 			var six = new Date(day + "T16:00:00Z");
@@ -65,7 +67,22 @@ function employees()
 	window.location.replace("employees.html");
 }
 
+function paymentpoints()
+{
+	window.location.replace("paymentpoints.html");
+}
+
+function transactions(){
+	window.location.replace("transactions.html");
+}
+
 function logout(){
 	localStorage.clear();
 	window.location.replace("login.html");
+}
+
+function checkCompanies(){
+	if(localStorage.getItem("id")==1) {
+		$("#navBar").append('<li class="nav-item"><a class="nav-link" href="companies.html">Companies</a></li>');
+	}
 }

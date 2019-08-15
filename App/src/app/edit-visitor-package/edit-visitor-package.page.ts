@@ -57,7 +57,6 @@ export class EditVisitorPackagePage implements OnInit {
   placeholderDate: string;
   placeholderTime: string;
 
-  isBusy: boolean = false;  
   successMessage: string;
   infoMessage: string;
   errorMessage: string;
@@ -197,9 +196,8 @@ export class EditVisitorPackagePage implements OnInit {
       this.showMessage("Physical Access required (eg. Lobby).", messageType.error, 5000);
       return;
     }
-    this.isBusy = true;
     this.updateVisitorPackageInDB(employeeId, startTime, endTime, wifiParamsId, roomId, limit).subscribe(res => {
-      this.isBusy = false;
+      this.requestService.dismissLoading();
       if (res['success'] === true) {
         let ssid = null;
         let password = null;
@@ -230,6 +228,9 @@ export class EditVisitorPackagePage implements OnInit {
       else {
         this.showMessage(`Could not update package: ${res['message']}`, messageType.error);
       }
+    }, err => {
+      console.log(err);
+      this.showMessage(`Error adding to DB: Ensure that you have a stable internet connection`, messageType.error);
     });
   }
 
@@ -247,5 +248,20 @@ export class EditVisitorPackagePage implements OnInit {
     let startTimeString = this.dateService.databaseDate(startTime);
     let endTimeString = this.dateService.databaseDate(endTime);
     return this.requestService.updateVisitorPackage(this.packageToUpdate.packageId, employeeId, startTimeString, endTimeString, wifiParamsId, roomId, limit);
+  }
+
+  /**
+   * Function used to get min or max date for the date time pickers
+   * @param isMax boolean which if true, function returns max date, otherwise min date is returned
+   * @return string either today (min) or 2 years from today (max)
+   */
+  pickerDate(isMax: boolean){
+    let today: Date = new Date();
+    if (isMax) {
+      return new Date(today.setFullYear(today.getFullYear() + 2)).toISOString();
+    }
+    else {
+      return today.toISOString();
+    }
   }
 }

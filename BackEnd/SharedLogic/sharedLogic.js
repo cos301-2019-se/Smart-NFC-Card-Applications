@@ -23,6 +23,7 @@
 
 var CrudController = require('./../CrudController/crudController.js');
 var crypto = require('crypto');
+var nodemailer = require('nodemailer');
 
 /**
  * 	Purpose:    This class provides shared and common functionality to the (Other)Logic classes
@@ -314,6 +315,8 @@ class SharedLogic {
 							//search for the employeeId in the employee table
 							var employeeDetails = await this.crudController.getEmployeeByPasswordId(passwordDetails.passwordId);
 							if (employeeDetails.success) {
+								let emailMessage = "A user has logged into your Link profile.\n\n If this was not done by you, please contact your company representative. \n\nKind Regards\nLink Development Team";
+								this.sendEmail(employeeDetails.data.email,"Link Login", emailMessage);
 								apiKeyAndId = { correct: true, apiKey: passwordDetails.apiKey, id: employeeDetails.data.employeeId };
 							} else {
 								apiKeyAndId = { correct: false };
@@ -572,6 +575,34 @@ class SharedLogic {
 		return dateTime;
 	}
 
+	/**
+	 *  This function is used to send emails
+	 *	@param sendTo string the email address to be sent to
+	 *	@param subject string the subject of the email
+	 *	@param body string the body of the email
+	 */
+	sendEmail(sentTo, subject, body){
+		var transporter = nodemailer.createTransport({
+			service: 'gmail',
+			auth: {
+				user: 'team.vast.expanse@gmail.com',
+				pass: 'nWOz5Z8Lk6HnhC2'
+			}
+		});
+		var mailOptions = {
+			from: 'team.vast.expanse@gmail.com',
+			to: sentTo,
+			subject: subject,
+			text: body
+		};
+		transporter.sendMail(mailOptions, function(error, info){
+			if (error) {
+				// console.log(error);
+			} else {
+				// console.log('Email sent: ' + info.response);
+			}
+		});
+	}
 
 }
 

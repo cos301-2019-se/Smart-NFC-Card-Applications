@@ -28,3 +28,11 @@ ion-tab-button {
 .messageArea {
     --background: var(--ion-color-primary-contrast);
 }
+
+.progressBarToolbar {
+    --background: var(--ion-color-primary-contrast) !important;
+}
+
+.progressBar {
+    --background: var(--ion-color-primary-contrast) !important;
+}

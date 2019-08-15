@@ -26,6 +26,7 @@ import { LocalStorageService } from '../services/local-storage.service';
 import { IonicStorageModule } from '@ionic/storage';
 import { RequestModuleService } from '../services/request-module.service';
 import { HttpClientModule } from '@angular/common/http';
+import { Toast } from '@ionic-native/toast/ngx';
 
 describe('TabsPage', () => {
   let component: TabsPage;
@@ -41,7 +42,8 @@ describe('TabsPage', () => {
         PopoverController,
         LocalStorageService,
         RequestModuleService,
-        AngularDelegate
+        AngularDelegate,
+        Toast
       ],
       declarations: [TabsPage],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],

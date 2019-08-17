@@ -177,12 +177,14 @@ class ClientLogic {
                     this.sharedLogic.endServe(true, "Retrieved Visitor Package - MOCK", data);
                 }
                 else{
-                    if(await this.validateMacAddress(this.body.macAddress, this.body.visitorPackageId)) {
+                    let valid = await this.validateMacAddress(this.body.macAddress, this.body.visitorPackageId);
+
+                    if(valid){
                         data = await this.visitorPackage(this.body.visitorPackageId);
                         this.sharedLogic.endServe(true, "Retrieved Visitor Package", data);
                     }
                     else{
-                        this.sharedLogic.endServe(false, "Invalid Mac Address", {});
+                        this.sharedLogic.endServe(true, "Invalid Mac Address", {});
                     }
                 }
             }
@@ -242,9 +244,6 @@ class ClientLogic {
                     if(companyData.success){
                         data.companyName = companyData.data.companyName;
                     }
-                    else{
-                        this.sharedLogic.endServe(companyData.success, companyData.message, companyData.data);
-                    }
 
                     let buildingData = await this.sharedLogic.crudController.getBuildingByBuildingId(employeeData.data.buildingId);
 
@@ -259,20 +258,11 @@ class ClientLogic {
                                 data.password = wifiData.data.password;
                             }
                         }
-                        else{
-                            this.sharedLogic.endServe(wifiData.success, wifiData.message, wifiData.data);
-                        }
 
                         data.branchName = buildingData.data.branchName;
                         data.latitude = buildingData.data.latitude;
                         data.longitude = buildingData.data.longitude;
                     }
-                    else{
-                        this.sharedLogic.endServe(buildingData.success, buildingData.message, buildingData.data);
-                    }
-                }
-                else{
-                    this.sharedLogic.endServe(employeeData.success, employeeData.message, employeeData.data);
                 }
 
                 if(visitorPackageData.data.tpaId != null){
@@ -284,12 +274,6 @@ class ClientLogic {
                         if(roomData.success){
                             data.roomName = roomData.data.roomName;
                         }
-                        else{
-                            this.sharedLogic.endServe(roomData.success, roomData.message, roomData.data);
-                        }
-                    }
-                    else{
-                        this.sharedLogic.endServe(tpaRoomData.success, tpaRoomData.message, tpaRoomData.data);
                     }
                 }
 
@@ -300,19 +284,12 @@ class ClientLogic {
                         data.limit = walletData.data.maxLimit;
                         data.spent = walletData.data.spent;
                     }
-                    else{
-                        this.sharedLogic.endServe(walletData.success, walletData.message, walletData.data);
-                    }
                 }
 
                 data.startTime = visitorPackageData.data.startTime;
                 data.endTime = visitorPackageData.data.endTime;
             }
         }
-        else {
-            this.sharedLogic.endServe(visitorPackageData.success, visitorPackageData.message, visitorPackageData.data);
-        }
-
         return data;
     }
 
@@ -346,22 +323,10 @@ class ClientLogic {
                 let clientIdData = await this.sharedLogic.crudController.getClientByClientId(visitorPackageData.data.clientId);
 
                 if(clientIdData.success){
-                    if(clientMacData.data.clientId === clientIdData.data.clientId && clientMacData.data.macAddress === clientIdData.data.macAddress){
-                        return true;
-                    }
-                }
-                else{
-                    this.sharedLogic.endServe(clientIdData.success, clientIdData.message, clientIdData.data);
+                    return clientMacData.data.clientId === clientIdData.data.clientId && clientMacData.data.macAddress === clientIdData.data.macAddress;
                 }
             }
-            else{
-                this.sharedLogic.endServe(visitorPackageData.success, visitorPackageData.message, visitorPackageData.data);
-            }
         }
-        else{
-            this.sharedLogic.endServe(clientMacData.success, clientMacData.message, clientMacData.data);
-        }
-        return false;
     }
 }
 

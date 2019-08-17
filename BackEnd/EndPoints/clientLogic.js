@@ -99,7 +99,7 @@ class ClientLogic {
 
             // Visitor Package
             case "getVisitorPackage":
-                this.makePayment();
+                this.getVisitorPackage();
                 break;
 
             default:
@@ -136,6 +136,11 @@ class ClientLogic {
         let presentParams = false;
         let presentReturn = "";
 
+        if(this.body.macAddress === undefined){
+            presentParams = true;
+            presentReturn += "macAddress, ";
+        }
+
         if(this.body.visitorPackageId === undefined){
             presentParams = true;
             presentReturn += "visitorPackageId, ";
@@ -144,6 +149,11 @@ class ClientLogic {
         if(!presentParams){
             let invalidParams = false;
             let invalidReturn = "";
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.macAddress)){
+                invalidParams = true;
+                invalidReturn += "macAddress, ";
+            }
 
             if(!this.sharedLogic.validateNonEmpty(this.body.visitorPackageId)){
                 invalidParams = true;
@@ -167,8 +177,13 @@ class ClientLogic {
                     this.sharedLogic.endServe(true, "Retrieved Visitor Package - MOCK", data);
                 }
                 else{
-                    data = await this.visitorPackage(this.body.visitorPackageId);
-                    this.sharedLogic.endServe(true, "Retrieved Visitor Package", data);
+                    if(await this.validateMacAddress(this.body.macAddress, this.body.visitorPackageId)) {
+                        data = await this.visitorPackage(this.body.visitorPackageId);
+                        this.sharedLogic.endServe(true, "Retrieved Visitor Package", data);
+                    }
+                    else{
+                        this.sharedLogic.endServe(false, "Invalid Mac Address", {});
+                    }
                 }
             }
             else{
@@ -317,22 +332,34 @@ class ClientLogic {
     }
 
     /**
-     * Function to check if an object is empty or not
-     *
-     * @param obj
-     * @return {boolean}
+     * Function to see if the visitor package and mac address are linked
+     * @param macAddress
+     * @param visitorPackageId
      */
-    isEmpty(obj) {
-        for(let key in obj) {
-            if(obj.hasOwnProperty(key))
-                return false;
-        }
-        return true;
-    }
+    async validateMacAddress(macAddress, visitorPackageId) {
+        let clientMacData = await this.sharedLogic.crudController.getClientByMacAddress(macAddress);
 
-    validateMacAddress(mac) {
-        if (/^[0-9a-f]{1,2}([\.:-])(?:[0-9a-f]{1,2}\1){4}[0-9a-f]{1,2}$/i.test(mac)) {
-            return true;
+        if(clientMacData.success){
+            let visitorPackageData = await this.sharedLogic.crudController.getVisitorPackageByVisitorPackageId(visitorPackageId);
+
+            if(visitorPackageData.success){
+                let clientIdData = await this.sharedLogic.crudController.getClientByClientId(visitorPackageData.data.clientId);
+
+                if(clientIdData.success){
+                    if(clientMacData.data.clientId === clientIdData.data.clientId && clientMacData.data.macAddress === clientIdData.data.macAddress){
+                        return true;
+                    }
+                }
+                else{
+                    this.sharedLogic.endServe(clientIdData.success, clientIdData.message, clientIdData.data);
+                }
+            }
+            else{
+                this.sharedLogic.endServe(visitorPackageData.success, visitorPackageData.message, visitorPackageData.data);
+            }
+        }
+        else{
+            this.sharedLogic.endServe(clientMacData.success, clientMacData.message, clientMacData.data);
         }
         return false;
     }

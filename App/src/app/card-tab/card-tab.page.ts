@@ -58,7 +58,7 @@ export class CardTabPage implements OnInit{
     private nfcService: NfcControllerService,
     private locationService: LocationService,
     private eventEmitterService: EventEmitterService,
-    private filterService: FilterService,
+    public filterService: FilterService,
     private alertController: AlertController
   ) { }
 

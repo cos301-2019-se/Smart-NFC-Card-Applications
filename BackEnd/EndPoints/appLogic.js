@@ -1357,12 +1357,7 @@ class AppLogic{
                 }
                 else{
                     data = await this.visitorPackage(this.body.visitorPackageId);
-                    if(!this.isEmpty(data)){
-                        this.sharedLogic.endServe(true, "Retrieved Visitor Package", data);
-                    }
-                    else {
-                        this.sharedLogic.endServe(true, "Retrieved Visitor Package", data);
-                    }
+                    this.sharedLogic.endServe(true, "Retrieved Visitor Package", data);
                 }
             }
             else{

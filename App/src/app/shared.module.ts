@@ -19,6 +19,8 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from '@angular/common';
 import { FilterPipe } from './services/filter.pipe';
+import { Uid } from '@ionic-native/uid/ngx';
+import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 
 /**
 *   Purpose:	This class provides the shared module for the app
@@ -35,6 +37,10 @@ import { FilterPipe } from './services/filter.pipe';
     ],
     imports: [
         CommonModule
+    ],
+    providers: [
+        Uid,
+        AndroidPermissions
     ]
 })
 export class SharedModule{}

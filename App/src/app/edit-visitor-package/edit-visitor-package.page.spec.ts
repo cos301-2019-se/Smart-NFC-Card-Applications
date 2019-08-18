@@ -27,6 +27,8 @@ import { RequestModuleService } from '../services/request-module.service';
 import { NFC, Ndef } from '@ionic-native/nfc/ngx';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { IonicStorageModule } from '@ionic/storage';
+import { Uid } from '@ionic-native/uid/ngx';
+import { SharedModule } from '../shared.module';
 
 export class NavParamsMock {
   static returnParam = null;
@@ -50,7 +52,8 @@ describe('EditVisitorPackagePage', () => {
       declarations: [ EditVisitorPackagePage ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [
-        IonicStorageModule.forRoot()
+        IonicStorageModule.forRoot(),
+        SharedModule
       ],
       providers: [
         ModalController, AngularDelegate,
@@ -58,6 +61,7 @@ describe('EditVisitorPackagePage', () => {
         HttpClient, HttpHandler,
         NFC, Ndef,
         AndroidPermissions,
+        Uid,
         {provide: NavParams, useClass: NavParamsMock},
       ]
     })

@@ -47,6 +47,8 @@ import { UniqueIdService } from '../services/unique-id.service';
 })
 export class PackageTabPage implements OnInit{
   packages: VisitorPackage[] = [];
+  activePackages: VisitorPackage[] = [];
+  inactivePackages: VisitorPackage[] = [];
   detailToggles = [];
   check;
 
@@ -68,7 +70,7 @@ export class PackageTabPage implements OnInit{
     private packageService: VisitorPackagesService,
     private wifiService: WifiService,
     private eventEmitterService: EventEmitterService,
-    private filterService: FilterService,
+    public filterService: FilterService,
     private dateService: DateService,
     private alertController: AlertController,
     private uidService: UniqueIdService,
@@ -80,6 +82,7 @@ export class PackageTabPage implements OnInit{
           this.menuEvent(functionName);
         })
     );  
+    this.loadPackages();
   }
 
   /**
@@ -87,7 +90,6 @@ export class PackageTabPage implements OnInit{
    */
   ionViewDidEnter() {
     this.showMessage('', MessageType.reset);
-    // Gets the business cards
     this.loadPackages();
   }
 
@@ -126,11 +128,21 @@ export class PackageTabPage implements OnInit{
         this.packageService.setSharedVisitorPackages(val).then(() => {   
           this.packages = val;
           this.setupToggles();
+        }).then(() => {
+          // Populate active and inactive packages
+          this.activePackages = this.packages.filter(elem => {
+            return this.checkInEffect(elem.startDate, elem.endDate);
+          });
+          this.inactivePackages = this.packages.filter(elem => {
+            return !this.checkInEffect(elem.startDate, elem.endDate);
+          })
         });  
       }
       else {   
         // If no packages has been saved previously     
-        this.packages = []
+        this.packages = [];
+        this.activePackages = [];
+        this.inactivePackages = [];
         this.packageService.setVisitorPackages([]);
         this.setupToggles();
       }

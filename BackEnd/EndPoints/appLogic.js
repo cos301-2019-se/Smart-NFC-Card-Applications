@@ -1536,9 +1536,6 @@ class AppLogic{
                     if(companyData.success){
                         data.companyName = companyData.data.companyName;
                     }
-                    else{
-                        this.sharedLogic.endServe(companyData.success, companyData.message, companyData.data);
-                    }
 
                     let buildingData = await this.sharedLogic.crudController.getBuildingByBuildingId(employeeData.data.buildingId);
 
@@ -1553,20 +1550,11 @@ class AppLogic{
                                 data.password = wifiData.data.password;
                             }
                         }
-                        else{
-                            this.sharedLogic.endServe(wifiData.success, wifiData.message, wifiData.data);
-                        }
 
                         data.branchName = buildingData.data.branchName;
                         data.latitude = buildingData.data.latitude;
                         data.longitude = buildingData.data.longitude;
                     }
-                    else{
-                        this.sharedLogic.endServe(buildingData.success, buildingData.message, buildingData.data);
-                    }
-                }
-                else{
-                    this.sharedLogic.endServe(employeeData.success, employeeData.message, employeeData.data);
                 }
 
                 if(visitorPackageData.data.tpaId != null){
@@ -1578,12 +1566,6 @@ class AppLogic{
                         if(roomData.success){
                             data.roomName = roomData.data.roomName;
                         }
-                        else{
-                            this.sharedLogic.endServe(roomData.success, roomData.message, roomData.data);
-                        }
-                    }
-                    else{
-                        this.sharedLogic.endServe(tpaRoomData.success, tpaRoomData.message, tpaRoomData.data);
                     }
                 }
 
@@ -1594,17 +1576,11 @@ class AppLogic{
                         data.limit = walletData.data.maxLimit;
                         data.spent = walletData.data.spent;
                     }
-                    else{
-                        this.sharedLogic.endServe(walletData.success, walletData.message, walletData.data);
-                    }
                 }
 
                 data.startTime = visitorPackageData.data.startTime;
                 data.endTime = visitorPackageData.data.endTime;
             }
-        }
-        else {
-            this.sharedLogic.endServe(visitorPackageData.success, visitorPackageData.message, visitorPackageData.data);
         }
 
         return data;

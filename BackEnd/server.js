@@ -59,6 +59,12 @@ function run(callback) {
 				appLogic.handle();
 				break;
 
+			case "client":
+				var ClientLogic = require('./EndPoints/clientLogic.js');
+				var clientLogic = new ClientLogic(req, res);
+				clientLogic.handle();
+				break;
+
 			case "admin":
 				var AdminLogic = require('./EndPoints/adminLogic.js');
 				var adminLogic = new AdminLogic(req, res);

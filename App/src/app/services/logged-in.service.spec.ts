@@ -27,13 +27,15 @@ import { HttpClientModule } from '@angular/common/http';
 import { LocationModel } from '../models/location.model';
 import { RoomModel } from '../models/room.model';
 import { WifiDetailsModel } from '../models/wifi-details.model';
+import { SharedModule } from '../shared.module';
 
 describe('LoggedInService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         HttpClientModule,
-        IonicStorageModule.forRoot()
+        IonicStorageModule.forRoot(),
+        SharedModule
       ],
       providers: [
         LocalStorageService,

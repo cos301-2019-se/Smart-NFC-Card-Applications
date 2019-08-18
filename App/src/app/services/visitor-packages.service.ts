@@ -298,6 +298,10 @@ export class VisitorPackagesService {
           subject.complete();
           this.req.dismissLoading();
         }
+      }, err => {
+        subject.next({success: false, message: `Something went wrong: Ensure that you have an internet connection.`});
+        subject.complete();
+        this.req.dismissLoading();
       });
     }, 50);
     return subject.asObservable();

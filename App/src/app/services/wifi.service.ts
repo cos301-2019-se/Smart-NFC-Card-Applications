@@ -44,11 +44,10 @@ export class WifiService {
   async connectToWifi(ssid: string, password: string, algorithm: string){
     if (this.hotspot == null || this.hotspot == undefined) {
       return new Promise(() => {
-        console.log('WiFi Service Down');
+        return false;
       });
     }
     algorithm = algorithm == "WPA2"? "WPA" : algorithm;
-    console.log(ssid, password, algorithm);
     return await this.hotspot.connect(ssid, null, password, algorithm, false)
   }
 
@@ -58,9 +57,7 @@ export class WifiService {
    */
   isOn(){
     if (this.hotspot == null || this.hotspot == undefined) {
-      return new Promise(() => {
-        console.log('WiFi Service Down');
-      });
+      return false;
     }
     return this.hotspot.isWifiEnabled();
   }
@@ -71,7 +68,6 @@ export class WifiService {
    */
   setWifiStatus(enabled: boolean){
     if (this.hotspot == null || this.hotspot == undefined) {
-      console.log('WiFi Service Down');
       return;
     }
     this.hotspot.setWifiEnabled(enabled);

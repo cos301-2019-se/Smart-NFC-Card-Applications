@@ -34,6 +34,7 @@ import { LaunchNavigator } from '@ionic-native/launch-navigator/ngx';
 import { HttpClientModule } from '@angular/common/http';
 import { RequestModuleService } from '../services/request-module.service';
 import { Diagnostic } from '@ionic-native/diagnostic/ngx';
+import { SharedModule } from '../shared.module';
 
 describe('ShareTab', () => {
   let component: ShareTabPage;
@@ -45,7 +46,8 @@ describe('ShareTab', () => {
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [
         IonicStorageModule.forRoot(),
-        HttpClientModule
+        HttpClientModule,
+        SharedModule
       ],
       providers: [
         AndroidPermissions,

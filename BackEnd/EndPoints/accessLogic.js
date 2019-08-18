@@ -26,8 +26,9 @@
  */
 
 let SharedLogic = require('./../SharedLogic/sharedLogic.js');
+let ParentLogic = require('./parentLogic');
 
-class AccessLogic {
+class AccessLogic extends  ParentLogic{
     /**
      *  Constructor for the class that sets up certain properties as well as instantiate
      *  a new sharedLogic object.
@@ -36,11 +37,7 @@ class AccessLogic {
      *  @param res JSON Response sent back to the application
      */
     constructor(req, res) {
-        this.req = req;
-        this.res = res;
-        this.sharedLogic = new SharedLogic(this);
-        this.body = "{}";
-        this.endpoint = "";
+        super(req,res);
     }
 
     /**

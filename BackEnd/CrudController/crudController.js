@@ -45,8 +45,35 @@ class CrudController {
 		this.demoMode = true;
 		this.apiKey = null;
 		this.isEmployee = true;
+		this.myPasswordId = null;
+		this.myViewRandom = null;
+		this.mva = [];
+		
+		this.tableNameArray = [
+		"building",
+		"client",
+		"company",
+		"employee",
+		"nfcaccesspoints",
+		"nfcpaymentpoints",
+		"password",
+		"room",
+		"tempwifiaccess",
+		"tpa",
+		"tpaxroom",
+		"transaction",
+		"visitorpackage",
+		"wallet",
+		"wifiparams"
+		];
+		
+		for(var i = 0; i < this.tableNameArray.length; i++)
+		{
+			let thisTable = this.tableNameArray[i];
+			this.mva[thisTable] = thisTable;
+		}
 
-		/*
+		
 		this.client = new Client({
 			user: 'postgres',
 			host: 'localhost',
@@ -54,17 +81,23 @@ class CrudController {
 			password: 'nbuser',
 			port: 5432,
 		});
-		*/
-
+		
+		/*
 		this.client = new Client({
 			connectionString: process.env.DATABASE_URL
-		});
+		});*/
 
 		this.client.connect();
 	}
 
-	initialize(apiKey) {
+	async initialize(apiKey, demoMode) {
 		///////////////////////////////////////////////////////////// TODO
+		console.log(apiKey);
+		console.log(demoMode);
+	}
+	
+	async deInitialize() {
+		return "Yes";
 	}
 
 	/**

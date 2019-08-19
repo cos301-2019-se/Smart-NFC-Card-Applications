@@ -42,6 +42,7 @@ class CrudController {
      * Default constructor 
      */
 	constructor() {
+		
 		this.demoMode = true;
 		this.apiKey = null;
 		this.isEmployee = true;
@@ -73,8 +74,8 @@ class CrudController {
 			this.mva[thisTable] = thisTable;
 		}
 
-		/*
-		this.client = new Client({
+		
+		/*this.client = new Client({
 			user: 'postgres',
 			host: 'localhost',
 			database: 'link',
@@ -82,15 +83,18 @@ class CrudController {
 			port: 5432,
 		});*/
 		
-		
 		this.client = new Client({
 			connectionString: process.env.DATABASE_URL
 		});
 
 		this.client.connect();
+
+		
 	}
 
-	async initialize(apiKey) {		
+	async initialize(apiKey, demoMode) {		
+		
+		this.demoMode = demoMode;
 		
 		var passwordResult = await this.getPasswordByApiKey(apiKey);
 		
@@ -289,19 +293,29 @@ class CrudController {
 	
 	async deInitialize() {
 		
-		for(var i = 0; i < this.tableNameArray.length; i++)
+		if(this.demoMode)
 		{
-			let thisTable = this.tableNameArray[i];
 			
-			try
+		}
+		else
+		{
+			for(var i = 0; i < this.tableNameArray.length; i++)
 			{
-				var viewRes = await this.client.query("DROP VIEW IF EXISTS " + this.mva[thisTable], []);
-			}
-			catch(err)
-			{
+				let thisTable = this.tableNameArray[i];
 				
+				try
+				{
+					var viewRes = await this.client.query("DROP VIEW IF EXISTS " + this.mva[thisTable], []);
+				}
+				catch(err)
+				{
+					
+				}
 			}
 		}
+			
+		
+		
 		
 		return "Yes";
 	}

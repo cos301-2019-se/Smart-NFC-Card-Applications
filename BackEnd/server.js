@@ -53,7 +53,7 @@ function run(callback) {
 				break;
 
 			case "app":
-				console.log("url:" + req.url);
+				//console.log("url:" + req.url);
 				var AppLogic = require('./EndPoints/appLogic.js');
 				var appLogic = new AppLogic(req, res);
 				appLogic.handle();
@@ -66,7 +66,7 @@ function run(callback) {
 				break;
 
 			case "admin":
-				console.log("url:" + req.url);
+				//console.log("url:" + req.url);
 				var AdminLogic = require('./EndPoints/adminLogic.js');
 				var adminLogic = new AdminLogic(req, res);
 				adminLogic.handle();

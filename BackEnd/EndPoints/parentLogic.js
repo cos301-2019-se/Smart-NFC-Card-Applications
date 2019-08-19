@@ -53,8 +53,8 @@ class parentLogic {
     /**
      * abstract class to be implemented in classes which require apikeys to be entered
      */
-    serve(){ // abstract class that has to be implemented in child classes
-        this.serve();
-    }
+    // serve(){ // abstract class that has to be implemented in child classes
+    //     console.log("In parentLogic - serve, this should never happen")
+    // }
 }
 module.exports = parentLogic;

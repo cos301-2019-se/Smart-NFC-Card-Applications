@@ -231,8 +231,7 @@ class SharedLogic {
 			var validApiKey = await this.validAPITokenOnDB(this.from.body.apiKey)
 			if (validApiKey) 
 			{
-				var viewRes = await this.crudController.initialize(this.from.body.apiKey, this.from.body.demoMode);
-				
+				var viewRes = await this.crudController.initialize(this.from.body.apiKey);
 				this.from.serve();
 			}
 			else 
@@ -331,7 +330,7 @@ class SharedLogic {
 	async endServe(success, message, data) {
 		
 		var viewRes = await this.crudController.deInitialize();
-		console.log(viewRes);
+		//console.log(viewRes);
 		this.crudController.client.end();
 		
 		var responseObject = new Object();
@@ -346,6 +345,8 @@ class SharedLogic {
 			responseObject.data = {};
 			json = JSON.stringify(responseObject);
 		}
+		
+		console.log("finished " + this.from.req.url);
 
 		this.from.res.statusCode = 200;
 		this.from.res.setHeader('Content-Type', 'application/json');

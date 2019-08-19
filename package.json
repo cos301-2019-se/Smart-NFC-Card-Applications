@@ -18,8 +18,10 @@
   },
   "homepage": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications#readme",
   "devDependencies": {
+    "base64-stream": "^1.0.0",
     "jasmine": "^3.4.0",
     "jasmine-console-reporter": "^3.1.0",
+    "pdfkit": "^0.10.0",
     "request": "^2.88.0"
   },
   "dependencies": {

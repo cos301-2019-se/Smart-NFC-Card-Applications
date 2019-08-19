@@ -12,6 +12,7 @@
  *	2019/05/19	Duncan		1.0		Original
  *  2019/05/22  Tjaart      1.1     Fixed require filename - sharedLogic.js
  *  2019/06/24  Duncan      2.0     Started functions for demo 3
+ *  2019/08/19  Tjaart      3.0     Added reporting function
  *
  *	Functional Description:		 This class is used by our Link Admin Application in order
  *	                            to facilitate all operations needed for the correct operation
@@ -24,6 +25,7 @@
 
 let SharedLogic = require('./../SharedLogic/sharedLogic.js');
 let ParentLogic = require('./parentLogic');
+
 /**
  * 	Purpose:	This class is to allow the admin application of Link to complete its needed operations
  *	Usage:		The class will be used by having /admin/functionName at the end of the http request where
@@ -157,6 +159,10 @@ class AdminLogic extends ParentLogic {
             //Reporting
             case "getAllTransactionsByCompanyId":
                 this.getAllTransactionsByCompanyId();
+                break;
+
+            case "generateReport":
+                this.generateReport();
                 break;
 
             default:
@@ -3006,7 +3012,71 @@ class AdminLogic extends ParentLogic {
         return this.sharedLogic.endServe(result.success, result.message, result.data);
     }
 
+    /**
+     * Function that generates a report based on the given data passed through from the website
+     *
+     * @param data JSON {
+     *                      apiKey: int API key
+     *                      companyID: int ID of the company
+     *                      [startTime: date Start time of the query]
+     *                      [endTime: date End time of the query]
+     *                  }
+     *
+     * @return PDF
+     */
+    async generateReport(){
+        let data = {};
 
+        let companyData = await this.sharedLogic.crudController.getCompanyByCompanyId(this.body.companyId);
+
+        if(companyData.success){
+
+            // require dependencies
+            const PDFDocument = require('pdfkit');
+            const {Base64Encode}  = require('base64-stream');
+
+            // create a document the same way as above
+            const doc = new PDFDocument;
+            let ret = '';
+            const stream = doc.pipe(new Base64Encode());
+
+            // Header
+            let headerData = companyData.data.companyName;
+            doc.fontSize(20);
+            doc.text(headerData, {
+                    width: 410,
+                    align: 'center'
+                }
+            );
+
+            doc.moveDown();
+            doc.fontSize(15);
+            if(this.body.startTime !== undefined && this.body.endTime !== undefined){
+                let startTime = this.body.startTime;
+                let endTime = this.body.endTime;
+                doc.text("Displaying all transactions for the dates " + startTime + " - " + endTime);
+            }
+            else{
+                doc.text("Displaying all transactions!"
+                );
+            }
+
+            // doc.image('AdminInterface/Image/linkLogo.jpeg', 0, 15, {width: 300});
+
+            doc.end();
+            stream.on('data', function(chunk) {
+                ret += chunk;
+            });
+            stream.on('end', function () {
+                data.base64 = ret;
+            });
+
+            this.sharedLogic.endServe(true, "Generated Report", data);
+        }
+        else{
+            this.sharedLogic.endServe(companyData.success, companyData.message, companyData.data);
+        }
+    }
 
 }
 

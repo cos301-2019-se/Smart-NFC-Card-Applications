@@ -159,6 +159,21 @@ function downloadCsv() {
 
 function downloadPdf() {
     console.log("download pdf clicked!");
+
+    // Add data that will be sent to generate the report
+    let postObj = {
+        "apiKey": apiKey,
+        "companyId": companyId,
+    };
+
+    $.post("/admin/generateReport", JSON.stringify(postObj), (data) => {
+        if (data.success) {
+            let pdfWindow = window.open("")
+            pdfWindow.document.write("<iframe width='100%' height='100%' src='data:application/pdf;base64, " + encodeURI(data.data.base64)+"'></iframe>")
+        } else {
+            displayError("alertContainerTop", "Failed to find results for that query!");
+        }
+    });
 }
 
 function displayError(containerId, message) {

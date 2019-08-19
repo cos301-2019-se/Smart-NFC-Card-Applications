@@ -730,15 +730,18 @@ class AppLogic extends ParentLogic{
             let roomData = await this.sharedLogic.crudController.getRoomByRoomId(roomId);
 
             if(roomData.success){
-                let parentList = roomData.data.parentRoomList.split(',');
 
-                for(let i=0; i<parentList.length; i++){
-                    let ret = await this.sharedLogic.crudController.createTPAxRoom(tpaId, parentList[i]);
-                    if(ret.success){
-                        data.tpa_roomId = ret.data.tpa_roomId;
-                    }
-                    else{
-                        this.sharedLogic.endServe(ret.success, ret.message, ret.data);
+                if(roomData.data.parentRoomList !== "NULL"){
+                    let parentList = roomData.data.parentRoomList.split(',');
+
+                    for(let i=0; i<parentList.length; i++){
+                        let ret = await this.sharedLogic.crudController.createTPAxRoom(tpaId, parentList[i]);
+                        if(ret.success){
+                            data.tpa_roomId = ret.data.tpaxroomId;
+                        }
+                        else{
+                            this.sharedLogic.endServe(ret.success, ret.message, ret.data);
+                        }
                     }
                 }
 
@@ -782,12 +785,15 @@ class AppLogic extends ParentLogic{
             let roomData = await this.sharedLogic.crudController.getRoomByRoomId(roomIdCurrent);
 
             if(roomData.success){
-                let parentList = roomData.data.parentRoomList.split(',');
 
-                for(let i=0; i<parentList.length; i++){
-                    let ret = await this.sharedLogic.crudController.deleteTPAxRoom(tpaIdCurrent, parentList[i]);
-                    if(!ret.success){
-                        this.sharedLogic.endServe(ret.success, ret.message, ret.data);
+                if(roomData.data.parentRoomList !== "NULL"){
+                    let parentList = roomData.data.parentRoomList.split(',');
+
+                    for(let i=0; i<parentList.length; i++){
+                        let ret = await this.sharedLogic.crudController.deleteTPAxRoom(tpaIdCurrent, parentList[i]);
+                        if(!ret.success){
+                            this.sharedLogic.endServe(ret.success, ret.message, ret.data);
+                        }
                     }
                 }
 
@@ -1216,7 +1222,7 @@ class AppLogic extends ParentLogic{
                                     }
                                     else{
                                         let ret = await this.sharedLogic.crudController.getTPAxRoomsByTpaId(visitorPackage.data.tpaId);
-                                        tpa_room = await this.editTpaRoom(ret.data[0].tpaId, ret.data[0].roomId, ret.data[0].tpaId, this.body.roomId);
+                                        tpa_room = await this.editTpaRoom(ret.data[ret.data.length-1].tpaId, ret.data[ret.data.length-1].roomId, ret.data[0].tpaId, this.body.roomId);
                                     }
                                 }
                                 else if(this.body.roomId === null && visitorPackage.data.tpaId !== null){

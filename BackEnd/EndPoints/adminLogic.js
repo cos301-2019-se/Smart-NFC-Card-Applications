@@ -23,7 +23,7 @@
  */
 
 let SharedLogic = require('./../SharedLogic/sharedLogic.js');
-
+let ParentLogic = require('./parentLogic');
 /**
  * 	Purpose:	This class is to allow the admin application of Link to complete its needed operations
  *	Usage:		The class will be used by having /admin/functionName at the end of the http request where
@@ -31,8 +31,7 @@ let SharedLogic = require('./../SharedLogic/sharedLogic.js');
  *	@author:	Duncan Vodden
  *	@version:	1.0
  */
-class AdminLogic
-{
+class AdminLogic extends ParentLogic {
     /**
      *  Constructor for the class that sets up certain properties as well as instantiate
      *  a new sharedLogic object.
@@ -41,20 +40,7 @@ class AdminLogic
      *  @param res JSON Response sent back to the application
      */
     constructor(req, res){
-        this.req = req;
-        this.res = res;
-        this.sharedLogic = new SharedLogic(this);
-        this.body = "{}";
-        this.endpoint = "";
-    }
-
-    /**
-     *  Function that is called by server.js and extracts the post body, parse it
-     *  into json object and validate the api key/ login , sets up the endpoint and
-     *  afterwards calls the serve function.
-     */
-    handle(){
-        this.sharedLogic.initialHandle();
+        super(req,res);
     }
 
     /**

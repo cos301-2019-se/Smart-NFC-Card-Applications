@@ -3035,38 +3035,46 @@ class AdminLogic extends ParentLogic {
             const PDFDocument = require('../HelperClasses/pdfkit-tables');
             const {Base64Encode}  = require('base64-stream');
 
-            // create a document the same way as above
+            //dynamic data
+            let dynamData = {};
+            dynamData.companyName = companyData.data.companyName;
+            dynamData.type = this.body.type;
+            if(this.body.type === 'custom'){
+                dynamData.startDate = this.body.fields.startDate;
+                dynamData.endDate = this.body.fields.endDate;
+            }
+
+            // create pdf document
             const doc = new PDFDocument({
-                margin: 10
-            });
+                margin: 20
+            },
+                dynamData
+            );
+
+            // base64 string that will be returned
             let ret = '';
             const stream = doc.pipe(new Base64Encode());
 
             // Header
-            let headerData = companyData.data.companyName;
             doc.fontSize(20);
-            doc.text(headerData, {
+            doc.text(dynamData.companyName, {
                     align: 'center'
                 }
             );
-
             doc.moveDown();
             doc.fontSize(15);
-            if(this.body.type === 'all'){
+            if(dynamData.type === 'all'){
                 doc.text("All Transactions", {
                     align: 'center'
                 });
             }
-            else if(this.body.type === 'custom'){
-                let startTime = this.body.fields.startDate;
-                let endTime = this.body.fields.endDate;
-                doc.text("All Transactions From " + startTime + " To " + endTime, {
+            else if(dynamData.type === 'custom'){
+                doc.text("All Transactions From " + dynamData.startDate + " To " + dynamData.endDate, {
                     align: 'center'
                 });
             }
 
-            doc.moveDown();
-
+            // Body
             let arr = [];
             for(let i=0; i<this.body.transactions.length; i++){
                 arr.push(Object.values(this.body.transactions[i]));
@@ -3076,6 +3084,7 @@ class AdminLogic extends ParentLogic {
                 rows: arr
             };
 
+            doc.moveDown();
             doc.table(table0, {
                     prepareHeader: () => doc.font('Helvetica-Bold').fontSize(12),
                     prepareRow: () => doc.font('Helvetica').fontSize(10),
@@ -3083,6 +3092,7 @@ class AdminLogic extends ParentLogic {
             );
 
             doc.end();
+
             stream.on('data', function(chunk) {
                 ret += chunk;
             });

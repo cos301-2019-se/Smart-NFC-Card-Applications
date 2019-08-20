@@ -2,8 +2,9 @@ const PDFDocument = require('pdfkit');
 
 class PDFDocumentWithTables extends PDFDocument{
 
-    constructor(options){
+    constructor(options, data){
         super(options);
+        this.data = data;
     }
 
     table(table, arg0, arg1, arg2){
@@ -48,7 +49,7 @@ class PDFDocumentWithTables extends PDFDocument{
         let rowBottomY = 0;
 
         this.on('pageAdded', () => {
-            startY = this.page.margins.top;
+            startY = this.options.margin.top;
             rowBottomY = 0;
         });
 
@@ -83,8 +84,59 @@ class PDFDocumentWithTables extends PDFDocument{
             // For safety, consider 3 rows margin instead of just one
             if (startY + 3 * rowHeight < maxY)
                 startY = rowBottomY + rowSpacing;
-            else
-                this.addPage();
+            else{
+                this.addPage({
+                    margin: 20
+                });
+
+                // Header
+                this.fontSize(20);
+                this.text(this.data.companyName, {
+                        align: 'center'
+                    }
+                );
+                this.moveDown();
+                this.fontSize(15);
+                if(this.data.type === 'all'){
+                    this.text("All Transactions", {
+                        align: 'center'
+                    });
+                }
+                else if(this.data.type === 'custom'){
+                    this.text("All Transactions From " + this.data.startDate + " To " + this.data.endDate, {
+                        align: 'center'
+                    });
+                }
+
+                this.moveDown();
+                startY = this.y;
+
+                // Allow the user to override style for headers
+                prepareHeader();
+
+                // Check to have enough room for header and first rows
+                if (startY + 3 * computeRowHeight(table.headers) > maxY)
+                    this.addPage();
+
+                // Print all headers
+                table.headers.forEach((header, i) => {
+                    this.text(header, startX + i * columnContainerWidth, startY, {
+                        width: columnWidth,
+                        align: 'left'
+                    });
+                });
+
+                // Refresh the y coordinate of the bottom of the headers row
+                rowBottomY = Math.max(startY + computeRowHeight(table.headers), rowBottomY);
+
+                // Separation line between headers and rows
+                this.moveTo(startX, rowBottomY - rowSpacing * 0.5)
+                    .lineTo(startX + usableWidth, rowBottomY - rowSpacing * 0.5)
+                    .lineWidth(2)
+                    .stroke();
+
+                startY = rowBottomY + rowSpacing;
+            }
 
             // Allow the user to override style for rows
             prepareRow(row, i);

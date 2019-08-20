@@ -179,12 +179,30 @@ function researchClicked() {
 }
 
 function downloadCsv() {
-    console.log("download csv clicked!");
+    const headers = ['Employee Name', 'Employee Surname', 'Employee Email', 'Amount Spent', 'Date Time', 'Payment Description', 'Payment Point Description'];
+    const rows = [];
+
+    rows.push(headers);
+    for(let i=0; i<globalTransactionsObject.length; i++){
+        rows.push(Object.values(globalTransactionsObject[i]));
+    }
+
+    let dataURI = "data:text/csv;charset=utf-8,";
+
+    rows.forEach(function(rowArray) {
+        let row = rowArray.join(",");
+        dataURI += row + "\r\n";
+    });
+
+    let date = new Date();
+    let link = document.createElement('a');
+    link.download = `Report_${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}.csv`;
+    link.href= dataURI;
+    link.textContent = 'Download CSV';
+    link.click();
 }
 
 function downloadPdf() {
-    console.log("download pdf clicked!");
-
     // Add data that will be sent to generate the report
     let postObj = {
         "apiKey": apiKey,
@@ -198,7 +216,6 @@ function downloadPdf() {
         postObj.type = 'all';
     }
     postObj.transactions = globalTransactionsObject;
-    console.log(postObj);
 
     $.post("/admin/generatePdf", JSON.stringify(postObj), (data) => {
         if (data.success) {

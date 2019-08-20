@@ -125,7 +125,7 @@ export class PackageTabPage implements OnInit{
         val = val.filter(elem => {
           return (new Date(elem.endDate)) > currDate;
         })
-        this.packageService.setSharedVisitorPackages(val).then(() => {   
+        this.packageService.setVisitorPackages(val).then(() => {   
           this.packages = val;
           this.setupToggles();
         }).then(() => {

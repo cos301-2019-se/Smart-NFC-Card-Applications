@@ -2,6 +2,9 @@ var apiKey;
 var companyId;
 var start;
 var end;
+var tableIsCustom;
+var customFields;
+var globalTransactionsObject;
 $(document).ready(function () {
     companyId = localStorage.getItem("id");
     apiKey = localStorage.getItem("apiKey");
@@ -38,7 +41,7 @@ $(document).ready(function () {
         $('#btnSubmitCustomSearch').click(function () {
             let startDate = new Date(start);
             let endDate = new Date(end);
-            startDate.setHours(0,0,0,0);
+            startDate.setHours(0, 0, 0, 0);
             endDate.setHours(23, 59, 59, 999);
 
             let postObj = { "apiKey": apiKey, "companyId": companyId, "startDate": startDate.toISOString(), "endDate": endDate.toISOString() }
@@ -57,15 +60,21 @@ $(document).ready(function () {
 
             $.post("/admin/getAllTransactionsByCompanyId", JSON.stringify(postObj), (data) => {
                 if (data.success) {
+                    tableIsCustom = true;
                     populateTable(data.data);
-                    let localEndDate = endDate;
-                    localEndDate.setUTCHours(0, 0, 0, 0);
+                    customFields = {
+                        'startDate': moment(startDate).format('YYYY-MM-DD'),
+                        'endDate' : moment(endDate).format('YYYY-MM-DD')
+                    }
+
                     let employeeString = "";
-                    if (employeeUsername)
+                    if (employeeUsername){
                         employeeString = `<li class="list-group-item">Employee Username: ${employeeUsername}</li>`;
+                        customFields.employeeUsername = employeeUsername;
+                    }
                     let results = `<li class="list-group-item list-group-item-primary">Showing Results for:</li>
-                                    <li class="list-group-item">From date: ${startDate.toLocaleDateString()}</li>
-                                    <li class="list-group-item">To date: ${localEndDate.toLocaleDateString()}</li>
+                                    <li class="list-group-item">From date: ${customFields.startDate}</li>
+                                    <li class="list-group-item">To date: ${customFields.endDate}</li>
                                     ${employeeString}`;
                     $('#searchQueryList').show().html(results);
                 } else {
@@ -85,18 +94,29 @@ function populateTable(transactionArr) {
     var tableBody = $('#tableBody');
     tableBody.empty();
     $('#table').DataTable().clear().destroy();
+    globalTransactionsObject = [];
     for (var i = 0; i < transactionArr.length; i++) {
         var transaction = transactionArr[i];
         var empName = transaction.employeeName;
         var empSurname = transaction.employeeSurname;
         var empEmail = transaction.employeeEmail;
         var amount = transaction.amountSpent;
-        var dateTime = new Date(transaction.transactiontime);
+        var dateTime = moment(new Date(transaction.transactiontime)).format('YYYY-MM-DD HH:mm');
         if (!transaction.paymentDesc)
             var paymentDesc = "None";
         else
             var paymentDesc = transaction.paymentDesc;
         var paymentPointDesc = transaction.paymentPointDesc;
+
+        globalTransactionsObject.push({
+            'empName': empName,
+            'empSurname': empSurname,
+            'empEmail': empEmail,
+            'amount': amount,
+            'dateTime': dateTime,
+            'paymentDesc': paymentDesc,
+            'paymentPointDesc': paymentPointDesc
+        });
 
         tableBody.append(
             `<tr>
@@ -104,7 +124,7 @@ function populateTable(transactionArr) {
             <td>${empSurname}</td>
             <td>${empEmail}</td>
             <td>${amount}</td>
-            <td>${moment(dateTime).format('YYYY-MM-DD HH:mm')}</td>
+            <td>${dateTime}</td>
             <td>${paymentDesc}</td>
             <td>${paymentPointDesc}</td>
             </tr>`
@@ -127,6 +147,8 @@ function clickedSearchAllTransactions() {
     $.post("/admin/getAllTransactionsByCompanyId", JSON.stringify(postObj), (data) => {
         if (data.success) {
             $('#searchQueryList').hide();
+            tableIsCustom = false;
+            customFields = undefined;
             populateTable(data.data);
             let results = `<li class="list-group-item list-group-item-primary">Showing Results for:</li>
                                     <li class="list-group-item">All transactions</li>`;
@@ -140,6 +162,9 @@ function clickedSearchAllTransactions() {
 }
 
 function researchClicked() {
+    tableIsCustom = undefined;
+    globalTransactionsObject = undefined;
+    customFields = undefined;
     $('#searchContainer').show();
     $('#searchQueryList').hide().html('');
     $('#fullTableContainer').hide();
@@ -154,11 +179,58 @@ function researchClicked() {
 }
 
 function downloadCsv() {
-    console.log("download csv clicked!");
+    const headers = ['Employee Name', 'Employee Surname', 'Employee Email', 'Amount Spent', 'Date Time', 'Payment Description', 'Payment Point Description'];
+    const rows = [];
+
+    rows.push(headers);
+    for(let i=0; i<globalTransactionsObject.length; i++){
+        rows.push(Object.values(globalTransactionsObject[i]));
+    }
+
+    let dataURI = "data:text/csv;charset=utf-8,";
+
+    rows.forEach(function(rowArray) {
+        let row = rowArray.join(",");
+        dataURI += row + "\r\n";
+    });
+
+    let date = new Date();
+    let link = document.createElement('a');
+    link.download = `Report_${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}.csv`;
+    link.href= dataURI;
+    link.textContent = 'Download CSV';
+    link.click();
 }
 
 function downloadPdf() {
-    console.log("download pdf clicked!");
+    // Add data that will be sent to generate the report
+    let postObj = {
+        "apiKey": apiKey,
+        "companyId": companyId,
+    };
+
+    if(tableIsCustom){
+        postObj.type = 'custom';
+        postObj.fields = customFields;
+    }else{
+        postObj.type = 'all';
+    }
+    postObj.transactions = globalTransactionsObject;
+
+    $.post("/admin/generatePdf", JSON.stringify(postObj), (data) => {
+        if (data.success) {
+            let dataURI = "data:application/pdf;base64," + data.data.base64;
+            let date = new Date();
+            let link = document.createElement('a');
+            link.download = `Report_${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}.pdf`;
+            link.href= dataURI;
+            link.textContent = 'Download PDF';
+            link.click();
+        }
+        else {
+            displayError("alertContainerTop", "Failed to find results for that query!");
+        }
+    });
 }
 
 function displayError(containerId, message) {

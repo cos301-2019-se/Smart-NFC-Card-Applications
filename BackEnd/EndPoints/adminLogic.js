@@ -12,6 +12,7 @@
  *	2019/05/19	Duncan		1.0		Original
  *  2019/05/22  Tjaart      1.1     Fixed require filename - sharedLogic.js
  *  2019/06/24  Duncan      2.0     Started functions for demo 3
+ *  2019/08/19  Tjaart      3.0     Added reporting function
  *
  *	Functional Description:		 This class is used by our Link Admin Application in order
  *	                            to facilitate all operations needed for the correct operation
@@ -24,6 +25,7 @@
 
 let SharedLogic = require('./../SharedLogic/sharedLogic.js');
 let ParentLogic = require('./parentLogic');
+
 /**
  * 	Purpose:	This class is to allow the admin application of Link to complete its needed operations
  *	Usage:		The class will be used by having /admin/functionName at the end of the http request where
@@ -157,6 +159,10 @@ class AdminLogic extends ParentLogic {
             //Reporting
             case "getAllTransactionsByCompanyId":
                 this.getAllTransactionsByCompanyId();
+                break;
+
+            case "generatePdf":
+                this.generatePdf();
                 break;
 
             default:
@@ -3006,7 +3012,100 @@ class AdminLogic extends ParentLogic {
         return this.sharedLogic.endServe(result.success, result.message, result.data);
     }
 
+    /**
+     * Function that generates a report based on the given data passed through from the website
+     *
+     * @param data JSON {
+     *                      apiKey: int API key
+     *                      companyID: int ID of the company
+     *                      [startDate: date Start time of the query]
+     *                      [endDate: date End time of the query]
+     *                  }
+     *
+     * @return PDF
+     */
+    async generatePdf(){
+        let data = {};
 
+        let companyData = await this.sharedLogic.crudController.getCompanyByCompanyId(this.body.companyId);
+
+        if(companyData.success){
+
+            // require dependencies
+            const PDFDocument = require('../HelperClasses/pdfkit-tables');
+            const {Base64Encode}  = require('base64-stream');
+
+            //dynamic data
+            let dynamData = {};
+            dynamData.companyName = companyData.data.companyName;
+            dynamData.type = this.body.type;
+            if(this.body.type === 'custom'){
+                dynamData.startDate = this.body.fields.startDate;
+                dynamData.endDate = this.body.fields.endDate;
+            }
+
+            // create pdf document
+            const doc = new PDFDocument({
+                margin: 20
+            },
+                dynamData
+            );
+
+            // base64 string that will be returned
+            let ret = '';
+            const stream = doc.pipe(new Base64Encode());
+
+            // Header
+            doc.fontSize(20);
+            doc.text(dynamData.companyName, {
+                    align: 'center'
+                }
+            );
+            doc.moveDown();
+            doc.fontSize(15);
+            if(dynamData.type === 'all'){
+                doc.text("All Transactions", {
+                    align: 'center'
+                });
+            }
+            else if(dynamData.type === 'custom'){
+                doc.text("All Transactions From " + dynamData.startDate + " To " + dynamData.endDate, {
+                    align: 'center'
+                });
+            }
+
+            // Body
+            let arr = [];
+            for(let i=0; i<this.body.transactions.length; i++){
+                arr.push(Object.values(this.body.transactions[i]));
+            }
+            const table0 = {
+                headers: ['Employee Name', 'Employee Surname', 'Employee Email', 'Amount Spent', 'Date Time', 'Payment Description', 'Payment Point Description'],
+                rows: arr
+            };
+
+            doc.moveDown();
+            doc.table(table0, {
+                    prepareHeader: () => doc.font('Helvetica-Bold').fontSize(12),
+                    prepareRow: () => doc.font('Helvetica').fontSize(10),
+                },
+            );
+
+            doc.end();
+
+            stream.on('data', function(chunk) {
+                ret += chunk;
+            });
+            stream.on('end', function () {
+                data.base64 = ret;
+            });
+
+            this.sharedLogic.endServe(true, "Generated Report", data);
+        }
+        else{
+            this.sharedLogic.endServe(companyData.success, companyData.message, companyData.data);
+        }
+    }
 
 }
 

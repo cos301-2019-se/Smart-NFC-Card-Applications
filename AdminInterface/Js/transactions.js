@@ -202,9 +202,15 @@ function downloadPdf() {
 
     $.post("/admin/generateReport", JSON.stringify(postObj), (data) => {
         if (data.success) {
-            let pdfWindow = window.open("")
-            pdfWindow.document.write("<iframe width='100%' height='100%' src='data:application/pdf;base64, " + encodeURI(data.data.base64) + "'></iframe>")
-        } else {
+            let dataURI = "data:application/pdf;base64," + data.data.base64;
+            let date = new Date();
+            let link = document.createElement('a');
+            link.download = `Report_${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}.pdf`;
+            link.href= dataURI;
+            link.textContent = 'Download PDF';
+            link.click();
+        }
+        else {
             displayError("alertContainerTop", "Failed to find results for that query!");
         }
     });

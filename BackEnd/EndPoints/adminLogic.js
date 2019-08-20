@@ -161,8 +161,8 @@ class AdminLogic extends ParentLogic {
                 this.getAllTransactionsByCompanyId();
                 break;
 
-            case "generateReport":
-                this.generateReport();
+            case "generatePdf":
+                this.generatePdf();
                 break;
 
             default:
@@ -3018,13 +3018,13 @@ class AdminLogic extends ParentLogic {
      * @param data JSON {
      *                      apiKey: int API key
      *                      companyID: int ID of the company
-     *                      [startTime: date Start time of the query]
-     *                      [endTime: date End time of the query]
+     *                      [startDate: date Start time of the query]
+     *                      [endDate: date End time of the query]
      *                  }
      *
      * @return PDF
      */
-    async generateReport(){
+    async generatePdf(){
         let data = {};
 
         let companyData = await this.sharedLogic.crudController.getCompanyByCompanyId(this.body.companyId);
@@ -3032,11 +3032,13 @@ class AdminLogic extends ParentLogic {
         if(companyData.success){
 
             // require dependencies
-            const PDFDocument = require('pdfkit');
+            const PDFDocument = require('../HelperClasses/pdfkit-tables');
             const {Base64Encode}  = require('base64-stream');
 
             // create a document the same way as above
-            const doc = new PDFDocument;
+            const doc = new PDFDocument({
+                margin: 10
+            });
             let ret = '';
             const stream = doc.pipe(new Base64Encode());
 
@@ -3044,24 +3046,41 @@ class AdminLogic extends ParentLogic {
             let headerData = companyData.data.companyName;
             doc.fontSize(20);
             doc.text(headerData, {
-                    width: 410,
                     align: 'center'
                 }
             );
 
             doc.moveDown();
             doc.fontSize(15);
-            if(this.body.startTime !== undefined && this.body.endTime !== undefined){
-                let startTime = this.body.startTime;
-                let endTime = this.body.endTime;
-                doc.text("Displaying all transactions for the dates " + startTime + " - " + endTime);
+            if(this.body.type === 'all'){
+                doc.text("All Transactions", {
+                    align: 'center'
+                });
             }
-            else{
-                doc.text("Displaying all transactions!"
-                );
+            else if(this.body.type === 'custom'){
+                let startTime = this.body.fields.startDate;
+                let endTime = this.body.fields.endDate;
+                doc.text("All Transactions From " + startTime + " To " + endTime, {
+                    align: 'center'
+                });
             }
 
-            // doc.image('AdminInterface/Image/linkLogo.jpeg', 0, 15, {width: 300});
+            doc.moveDown();
+
+            let arr = [];
+            for(let i=0; i<this.body.transactions.length; i++){
+                arr.push(Object.values(this.body.transactions[i]));
+            }
+            const table0 = {
+                headers: ['Employee Name', 'Employee Surname', 'Employee Email', 'Amount Spent', 'Date Time', 'Payment Description', 'Payment Point Description'],
+                rows: arr
+            };
+
+            doc.table(table0, {
+                    prepareHeader: () => doc.font('Helvetica-Bold').fontSize(12),
+                    prepareRow: () => doc.font('Helvetica').fontSize(10),
+                },
+            );
 
             doc.end();
             stream.on('data', function(chunk) {

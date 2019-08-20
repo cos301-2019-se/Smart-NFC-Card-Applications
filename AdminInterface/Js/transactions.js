@@ -200,7 +200,7 @@ function downloadPdf() {
     postObj.transactions = globalTransactionsObject;
     console.log(postObj);
 
-    $.post("/admin/generateReport", JSON.stringify(postObj), (data) => {
+    $.post("/admin/generatePdf", JSON.stringify(postObj), (data) => {
         if (data.success) {
             let dataURI = "data:application/pdf;base64," + data.data.base64;
             let date = new Date();

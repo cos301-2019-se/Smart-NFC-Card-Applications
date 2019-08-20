@@ -10,7 +10,17 @@ Link also allows for an employee of a company to easily setup hosting for this v
 #### Documents
 
 ---
-##### Demo 3
+##### Demo 4
+<a href="https://drive.google.com/open?id=1ay1wd_N4rkKJamkbREXJMVeAHndVg8Q4" target="_blank">SRS Document (Demo 4)</a>
+
+<a href="https://drive.google.com/open?id=1F6SBMhB_TgvC88bJHms20v-pKG1_QA7m" target="_blank">User Manual</a>
+
+<a href="https://drive.google.com/open?id=1sxHqut_B0ufqTrAmDPKUBG2HPeg6l9iq" target="_blank">Coding Standards Document</a>
+
+<a href="https://drive.google.com/open?id=1wfgW1cHVrW3hNl3-XXS8RW3AP192AoK7" target="_blank">Testing Policy</a>
+
+---
+###### Demo 3
 <a href="https://drive.google.com/open?id=1lH25d6df_F7wfD9T12_0LiPNBkLVJhDU" target="_blank">SRS Document (Demo 3)</a>
 
 <a href="https://drive.google.com/open?id=1cynmSySu-TgLqwUTzn0U6HebI_pZgzVv" target="_blank">User Manual</a>

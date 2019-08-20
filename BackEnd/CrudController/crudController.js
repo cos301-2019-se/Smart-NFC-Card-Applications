@@ -74,18 +74,18 @@ class CrudController {
 			this.mva[thisTable] = thisTable;
 		}
 
-		
-		this.client = new Client({
+
+		/*this.client = new Client({
 			user: 'postgres',
 			host: 'localhost',
 			database: 'link',
 			password: 'nbuser',
 			port: 5432,
+		});*/
+
+		this.client = new Client({
+			connectionString: process.env.DATABASE_URL
 		});
-		
-		// this.client = new Client({
-		// 	connectionString: process.env.DATABASE_URL
-		// });
 
 		this.client.connect();
 

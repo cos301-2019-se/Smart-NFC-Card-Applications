@@ -23,7 +23,7 @@ export class NfcControllerService {
    */
   CheckPermissions(){
     return this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.NFC).then(
-      result => console.log('Has nfc permission?',result.hasPermission),
+      result => console.log('Has nfc permission:',result.hasPermission),
       err => this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.NFC)
     );
   }

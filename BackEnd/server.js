@@ -44,7 +44,6 @@ function run(callback) {
 	const server = http.createServer((req, res) => {
 
 		var urlToSwitchOn = req.url.substring(1, req.url.substring(1).indexOf("/")+1);
-		//console.log("switch:" + urlToSwitchOn);
 		switch(urlToSwitchOn)
 		{
 			case "test":
@@ -54,12 +53,20 @@ function run(callback) {
 				break;
 
 			case "app":
+				//console.log("url:" + req.url);
 				var AppLogic = require('./EndPoints/appLogic.js');
 				var appLogic = new AppLogic(req, res);
 				appLogic.handle();
 				break;
 
+			case "client":
+				var ClientLogic = require('./EndPoints/clientLogic.js');
+				var clientLogic = new ClientLogic(req, res);
+				clientLogic.handle();
+				break;
+
 			case "admin":
+				//console.log("url:" + req.url);
 				var AdminLogic = require('./EndPoints/adminLogic.js');
 				var adminLogic = new AdminLogic(req, res);
 				adminLogic.handle();

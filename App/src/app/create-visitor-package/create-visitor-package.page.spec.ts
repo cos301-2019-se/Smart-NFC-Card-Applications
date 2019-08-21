@@ -27,6 +27,7 @@ import { RequestModuleService } from '../services/request-module.service';
 import { NFC, Ndef } from '@ionic-native/nfc/ngx';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
 import { IonicStorageModule } from '@ionic/storage';
+import { SharedModule } from '../shared.module';
 
 export class NavParamsMock {
   static returnParam = null;
@@ -50,7 +51,8 @@ describe('CreateVisitorPackagePage', () => {
       declarations: [ CreateVisitorPackagePage ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
       imports: [
-        IonicStorageModule.forRoot()
+        IonicStorageModule.forRoot(),
+        SharedModule
       ],
       providers: [
         ModalController, AngularDelegate,

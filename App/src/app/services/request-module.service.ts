@@ -13,6 +13,7 @@
 *	2019/06/27	Wian		  1.1		    Added Functions for Creating Visitor Packages
 *	2019/07/09	Wian		  1.2		    Service now automatcially adds api key to the json body using appendApiKey()
 *	2019/08/02	Wian		  1.3		    Added loading controller for when a request is pending
+*	2019/08/17	Wian		  1.4		    getVisitorPackage now uses device uniqueID instead of apiKey
 *
 *	Functional Description:   This class provides a request service to the application that
 *                           is used to make http requests to the back-end
@@ -26,12 +27,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LocalStorageService } from './local-storage.service';
 import { LoadingController } from '@ionic/angular';
+import { UniqueIdService } from './unique-id.service';
 
 /**
 * Purpose:	This class provides the injectable service
 *	Usage:		This class can be used to make http requests to the back-end by calling its public function
 *	@author:	Wian du Plooy
-*	@version:	1.2
+*	@version:	1.4
 */
 @Injectable({
   providedIn: 'root'
@@ -112,11 +114,13 @@ export class RequestModuleService {
    * @param http HttpClient injectable
    * @param storage LocalStorageService injectable
    * @param loadingController: LoadingController
+   * @param uidService: UniqueIdService
    */
   constructor(
     private storage: LocalStorageService,
     private http: HttpClient,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private uidService: UniqueIdService
   ) { }
 
   /**
@@ -329,8 +333,9 @@ export class RequestModuleService {
       });
     }
     else {
-      let json: JSON = JSON.parse(`{"visitorPackageId": ${packageId}}`);
-      return this.post(`${this.baseUrl}/app/getVisitorPackage`, json);
+      let uid = this.uidService.getUniqueId();
+      let json: JSON = JSON.parse(`{"visitorPackageId": ${packageId}, "macAddress":"${uid}"}`);
+      return this.post(`${this.baseUrl}/client/getVisitorPackage`, json);
     }
   }
 

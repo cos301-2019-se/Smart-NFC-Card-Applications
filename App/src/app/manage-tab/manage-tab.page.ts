@@ -55,6 +55,8 @@ export class ManageTabPage implements OnInit {
 
   messageTimeout: number = 4000;
   packages: VisitorPackage[] = [];
+  activePackages: VisitorPackage[] = [];
+  inactivePackages: VisitorPackage[] = [];
   detailToggles = [];
 
   /**
@@ -209,14 +211,33 @@ export class ManageTabPage implements OnInit {
    */
   loadPackages(){
     // Get cards
-    this.packageService.getSharedVisitorPackages().then((val) => {      
-      this.packages = val;
-      // If it is null, set it as an empty array
-      if (this.packages == null) {
-        this.packages = []
-        this.packageService.setSharedVisitorPackages([]);
+    this.packageService.getSharedVisitorPackages().then((val) => {   
+      let currDate = new Date();
+      if (val !== null) {
+        // Delete expired packages
+        val = val.filter(elem => {
+          return (new Date(elem.endDate)) > currDate;
+        })
+        this.packageService.setSharedVisitorPackages(val).then(() => {   
+          this.packages = val;
+          this.setupToggles();          
+          // Populate active and inactive packages
+          this.activePackages = this.packages.filter(elem => {
+            return this.checkInEffect(elem.startDate, elem.endDate);
+          });
+          this.inactivePackages = this.packages.filter(elem => {
+            return !this.checkInEffect(elem.startDate, elem.endDate);
+          });
+        });  
       }
-      this.setupToggles();
+      else {   
+        // If no packages has been saved previously     
+        this.packages = [];
+        this.activePackages = [];
+        this.inactivePackages = [];
+        this.packageService.setSharedVisitorPackages([]);
+        this.setupToggles();
+      }
     });
   }
 

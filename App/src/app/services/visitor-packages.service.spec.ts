@@ -25,13 +25,15 @@ import { VisitorPackage } from '../models/visitor-package.model';
 import { LocationModel } from '../models/location.model';
 import { RequestModuleService } from './request-module.service';
 import { HttpClientModule } from '@angular/common/http';
+import { SharedModule } from '../shared.module';
 
 describe('VisitorPackagesService', () => {
 
   beforeEach(() => TestBed.configureTestingModule({
     imports: [
       IonicStorageModule.forRoot(),
-      HttpClientModule
+      HttpClientModule,
+      SharedModule
     ],
     providers: [
       RequestModuleService

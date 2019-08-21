@@ -22,7 +22,7 @@
  */
 
 const SharedLogic = require("./../SharedLogic/sharedLogic.js");
-
+let ParentLogic = require('./parentLogic');
 /**
  * 	Purpose:    This class handles the functionality that will be requested by the
  *              application to the backend system.
@@ -31,7 +31,7 @@ const SharedLogic = require("./../SharedLogic/sharedLogic.js");
  *	@author:	Tjaart Booyens
  *	@version:	1.0
  */
-class AppLogic{
+class AppLogic extends ParentLogic{
     /**
      *  Constructor for the class that sets up certain properties as well as instantiate
      *  a new sharedLogic object.
@@ -40,20 +40,7 @@ class AppLogic{
      *  @param res JSON Response sent back to the application
      */
     constructor(req, res){
-        this.req = req;
-        this.res = res;
-        this.sharedLogic = new SharedLogic(this);
-        this.body = "{}";
-        this.endpoint = "";
-    }
-
-    /**
-     *  Function that is called by server.js and extracts the post body, parse it
-     *  into json object and validate the api key, sets up the endpoint and
-     *  afterwards calls the serve function.
-     */
-    handle(){
-        this.sharedLogic.initialHandle();
+        super(req,res);
     }
 
     /**
@@ -743,15 +730,18 @@ class AppLogic{
             let roomData = await this.sharedLogic.crudController.getRoomByRoomId(roomId);
 
             if(roomData.success){
-                let parentList = roomData.data.parentRoomList.split(',');
 
-                for(let i=0; i<parentList.length; i++){
-                    let ret = await this.sharedLogic.crudController.createTPAxRoom(tpaId, parentList[i]);
-                    if(ret.success){
-                        data.tpa_roomId = ret.data.tpa_roomId;
-                    }
-                    else{
-                        this.sharedLogic.endServe(ret.success, ret.message, ret.data);
+                if(roomData.data.parentRoomList !== "NULL"){
+                    let parentList = roomData.data.parentRoomList.split(',');
+
+                    for(let i=0; i<parentList.length; i++){
+                        let ret = await this.sharedLogic.crudController.createTPAxRoom(tpaId, parentList[i]);
+                        if(ret.success){
+                            data.tpa_roomId = ret.data.tpaxroomId;
+                        }
+                        else{
+                            this.sharedLogic.endServe(ret.success, ret.message, ret.data);
+                        }
                     }
                 }
 
@@ -795,12 +785,15 @@ class AppLogic{
             let roomData = await this.sharedLogic.crudController.getRoomByRoomId(roomIdCurrent);
 
             if(roomData.success){
-                let parentList = roomData.data.parentRoomList.split(',');
 
-                for(let i=0; i<parentList.length; i++){
-                    let ret = await this.sharedLogic.crudController.deleteTPAxRoom(tpaIdCurrent, parentList[i]);
-                    if(!ret.success){
-                        this.sharedLogic.endServe(ret.success, ret.message, ret.data);
+                if(roomData.data.parentRoomList !== "NULL"){
+                    let parentList = roomData.data.parentRoomList.split(',');
+
+                    for(let i=0; i<parentList.length; i++){
+                        let ret = await this.sharedLogic.crudController.deleteTPAxRoom(tpaIdCurrent, parentList[i]);
+                        if(!ret.success){
+                            this.sharedLogic.endServe(ret.success, ret.message, ret.data);
+                        }
                     }
                 }
 
@@ -1229,7 +1222,7 @@ class AppLogic{
                                     }
                                     else{
                                         let ret = await this.sharedLogic.crudController.getTPAxRoomsByTpaId(visitorPackage.data.tpaId);
-                                        tpa_room = await this.editTpaRoom(ret.data[0].tpaId, ret.data[0].roomId, ret.data[0].tpaId, this.body.roomId);
+                                        tpa_room = await this.editTpaRoom(ret.data[ret.data.length-1].tpaId, ret.data[ret.data.length-1].roomId, ret.data[0].tpaId, this.body.roomId);
                                     }
                                 }
                                 else if(this.body.roomId === null && visitorPackage.data.tpaId !== null){
@@ -1536,9 +1529,6 @@ class AppLogic{
                     if(companyData.success){
                         data.companyName = companyData.data.companyName;
                     }
-                    else{
-                        this.sharedLogic.endServe(companyData.success, companyData.message, companyData.data);
-                    }
 
                     let buildingData = await this.sharedLogic.crudController.getBuildingByBuildingId(employeeData.data.buildingId);
 
@@ -1553,20 +1543,11 @@ class AppLogic{
                                 data.password = wifiData.data.password;
                             }
                         }
-                        else{
-                            this.sharedLogic.endServe(wifiData.success, wifiData.message, wifiData.data);
-                        }
 
                         data.branchName = buildingData.data.branchName;
                         data.latitude = buildingData.data.latitude;
                         data.longitude = buildingData.data.longitude;
                     }
-                    else{
-                        this.sharedLogic.endServe(buildingData.success, buildingData.message, buildingData.data);
-                    }
-                }
-                else{
-                    this.sharedLogic.endServe(employeeData.success, employeeData.message, employeeData.data);
                 }
 
                 if(visitorPackageData.data.tpaId != null){
@@ -1578,12 +1559,6 @@ class AppLogic{
                         if(roomData.success){
                             data.roomName = roomData.data.roomName;
                         }
-                        else{
-                            this.sharedLogic.endServe(roomData.success, roomData.message, roomData.data);
-                        }
-                    }
-                    else{
-                        this.sharedLogic.endServe(tpaRoomData.success, tpaRoomData.message, tpaRoomData.data);
                     }
                 }
 
@@ -1594,17 +1569,11 @@ class AppLogic{
                         data.limit = walletData.data.maxLimit;
                         data.spent = walletData.data.spent;
                     }
-                    else{
-                        this.sharedLogic.endServe(walletData.success, walletData.message, walletData.data);
-                    }
                 }
 
                 data.startTime = visitorPackageData.data.startTime;
                 data.endTime = visitorPackageData.data.endTime;
             }
-        }
-        else {
-            this.sharedLogic.endServe(visitorPackageData.success, visitorPackageData.message, visitorPackageData.data);
         }
 
         return data;

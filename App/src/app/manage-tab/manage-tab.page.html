@@ -17,11 +17,44 @@
     <ion-label text-wrap> You have not shared visitor packages with anyone yet, or the packages has been deleted/expired. </ion-label>
   </ion-item>
 
-  <ion-list>
-    <ion-card *ngFor="let package of packages | filter: 'access': filterService.getFilter()">
+  <ion-list *ngIf='packages.length != 0'>
+    <ion-list-header color="light">
+      Active Packages:
+    </ion-list-header>
+    <ion-card *ngFor="let package of activePackages | filter: 'access': filterService.getFilter()">
         <ion-card-header (click)='toggleDetails(package.packageId)'>
           <ion-card-title>
-            <ion-icon *ngIf='checkInEffect(package.startDate, package.endDate)' color='success' name="calendar"></ion-icon> {{ package.access }}
+            <ion-icon color='success' name="calendar"></ion-icon> {{ package.access }}
+            <ion-icon class="trash" name="trash" (click)='$event.stopPropagation(); removeVisitorPackage(package.packageId)'></ion-icon>
+          </ion-card-title>
+          <ion-card-subtitle>{{ displayDate(package.startDate) }} to {{ displayDate(package.endDate) }}</ion-card-subtitle>
+        </ion-card-header>     
+        <ion-card-content *ngIf='detailToggles != [] && detailToggles[package.packageId]'>
+          <ion-item>
+            <ion-label *ngIf='package.wifiSsid !== null' ><ion-icon name="wifi"></ion-icon> Has WiFi access</ion-label>
+            <ion-label *ngIf='package.wifiSsid === null' ><ion-icon name="wifi"></ion-icon> Doesn't have WiFi access</ion-label>
+          </ion-item>
+          <ion-item *ngIf='package.spendingLimit !== null'>
+            <ion-label><ion-icon name="card"></ion-icon> Wallet Limit: {{ package.spendingLimit }}</ion-label>
+          </ion-item>
+          <ion-item *ngIf='package.spendingLimit == null'>
+            <ion-label><ion-icon name="card"></ion-icon> Wallet not set up</ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-button expand="block" fill="outline" (click)='editVisitorPackage(package.packageId)'>Edit Package</ion-button>
+          </ion-item>
+          <ion-item>
+            <ion-button expand="block" fill="outline" (click)='reshare(package.packageId)'>Reshare Package</ion-button>
+          </ion-item>
+        </ion-card-content>
+    </ion-card>
+    <ion-list-header color="light">
+      Inactive Packages:
+    </ion-list-header>
+    <ion-card *ngFor="let package of inactivePackages | filter: 'access': filterService.getFilter()">
+        <ion-card-header (click)='toggleDetails(package.packageId)'>
+          <ion-card-title>
+            {{ package.access }}
             <ion-icon class="trash" name="trash" (click)='$event.stopPropagation(); removeVisitorPackage(package.packageId)'></ion-icon>
           </ion-card-title>
           <ion-card-subtitle>{{ displayDate(package.startDate) }} to {{ displayDate(package.endDate) }}</ion-card-subtitle>

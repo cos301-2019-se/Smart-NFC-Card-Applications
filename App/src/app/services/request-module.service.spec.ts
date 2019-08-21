@@ -23,12 +23,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LocalStorageService } from './local-storage.service';
 import { IonicStorageModule } from '@ionic/storage';
+import { SharedModule } from '../shared.module';
 
 describe('RequestModuleService', () => {
   beforeEach(() => TestBed.configureTestingModule({
     imports: [
       HttpClientModule,
-      IonicStorageModule.forRoot()
+      IonicStorageModule.forRoot(),
+      SharedModule
     ],
     providers: [
       LocalStorageService

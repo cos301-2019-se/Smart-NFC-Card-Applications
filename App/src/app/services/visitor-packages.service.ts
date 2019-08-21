@@ -189,9 +189,10 @@ export class VisitorPackagesService {
               }
             });  
           } 
-          this.setSharedVisitorPackages(packages);       
-          subject.next({success: true, message: `Got all Employee Visitor Packages.`});
-          subject.complete();
+          this.setSharedVisitorPackages(packages).then(() => {
+            subject.next({success: true, message: `Got all Employee Visitor Packages.`});
+            subject.complete();
+          });       
           this.req.dismissLoading();
         }
         else {
@@ -298,6 +299,10 @@ export class VisitorPackagesService {
           subject.complete();
           this.req.dismissLoading();
         }
+      }, err => {
+        subject.next({success: false, message: `Something went wrong: Ensure that you have an internet connection.`});
+        subject.complete();
+        this.req.dismissLoading();
       });
     }, 50);
     return subject.asObservable();

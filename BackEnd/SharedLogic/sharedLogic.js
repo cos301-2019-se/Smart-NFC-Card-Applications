@@ -108,64 +108,6 @@ class SharedLogic {
      */
 	validateBody() {
 
-		/*
-		var me = this;
-		
-		me.crudController.createPassword("username1",'hash','salt','apiKey1','2019-06-26 18:00:00.123', function(passwordId)
-		{
-			console.log(passwordId);
-		me.crudController.createClient("macaddress1", function(clientId)
-			{
-				console.log(clientId);
-		me.crudController.createWallet(300.0,100.0,function(linkWalletId)
-				{
-					console.log(linkWalletId);
-		me.crudController.createTPA(function(tpaId)
-					{
-						console.log(tpaId);
-		me.crudController.createCompany('companyName','companyWebsite',passwordId.data.passwordId,function(companyId)
-						{
-							console.log(companyId);
-		me.crudController.createWiFiParams('ssid','networkType','password',function(wifiParamsId)
-							{
-								console.log(wifiParamsId);
-		me.crudController.createBuilding('latitude','longitude','branchName',companyId.data.companyId,wifiParamsId.data.wifiParamsId,function(buildingId)
-								{
-									console.log(buildingId);
-		me.crudController.createRoom('roomName','parentRoomList',buildingId.data.buildingId,function(roomId)
-									{
-										console.log(roomId);
-		me.crudController.createNFCAccessPoints(roomId.data.roomId,function(nfcReaderId)
-										{
-											console.log(nfcReaderId);
-		me.crudController.createTempWifiAccess(wifiParamsId.data.wifiParamsId,function(tempWifiAccessId)
-											{
-												console.log(tempWifiAccessId);
-		me.crudController.createTPAxRoom(tpaId.data.tpaId,roomId.data.roomId,function(tpaxroomId)
-												{
-													console.log(tpaxroomId);
-		me.crudController.createEmployee('firstName','surname','title','cellphone','email',companyId.data.companyId,buildingId.data.buildingId,passwordId.data.passwordId,function(employeeId)
-													{
-														console.log(employeeId);
-		me.crudController.createVisitorPackage(null,null,linkWalletId.data.linkWalletId,employeeId.data.employeeId,clientId.data.clientId,'2019-06-26 12:00:00.123','2019-06-26 19:00:00.123',function(visitorPackageId)
-														{
-															console.log(visitorPackageId);
-															
-														});
-													});
-												});
-											});
-										});
-									});
-								});
-							});
-						});
-					});
-				});
-			});
-		});
-		*/
-
 		if (this.from.body.apiKey === undefined) {
 			if (this.from.body.username === undefined || this.from.body.password === undefined) {
 				this.endServe(false, "No API Key or not all login details provided", null);
@@ -175,7 +117,6 @@ class SharedLogic {
 			}
 		}
 		else {
-			this.crudController.initialize(this.from.body.apiKey);
 			this.extractEndpoint();
 		}
 	}
@@ -229,50 +170,78 @@ class SharedLogic {
      */
 	async checkAPIToken() {
 
-		if (this.from.endpoint === "login") {
+		if (this.from.endpoint === "login") 
+		{
 			//two types of login - one with just api key and one with username and password
-			if (this.from.body.apiKey) {
+			if (this.from.body.apiKey) 
+			{
 				var passwordDetails = await this.crudController.getPasswordByApiKey(this.from.body.apiKey);
 				var data = {};
-				if (passwordDetails.success) {
+				if (passwordDetails.success) 
+				{
 					var subsystem = this.from.req.url.substring(1, this.from.req.url.substring(1).indexOf("/") + 1);
-					if (subsystem === "admin") {
+					if (subsystem === "admin") 
+					{
 						var companyDetails = await this.crudController.getCompanyByPasswordId(passwordDetails.data.passwordId);
-						if (companyDetails.success) {
+						if (companyDetails.success) 
+						{
 							data.apiKey = passwordDetails.data.apiKey;
 							data.id = companyDetails.data.companyId;
 							this.endServe(true, "Login successful.", data);
-						} else {
+						} 
+						else 
+						{
 							this.endServe(false, "Invalid API Key", null);
 						}
-					} else if (subsystem === "app") {
+					} 
+					else if (subsystem === "app") 
+					{
 						//try look if this is an employee
 						var employeeDetails = await this.crudController.getEmployeeByPasswordId(passwordDetails.data.passwordId);
-						if (employeeDetails.success) {
+						if (employeeDetails.success) 
+						{
 							data.apiKey = passwordDetails.data.apiKey;
 							data.id = employeeDetails.data.employeeId;
 							this.endServe(true, "Login successful.", data);
-						} else {
+						} 
+						else 
+						{
 							this.endServe(false, "Invalid API Key", null);
 						}
-					} else {
+					} 
+					else 
+					{
 						this.endServe(false, "Invalid Login Endpoint", null);
 					}
-				}else{
+				}
+				else
+				{
 					this.endServe(false, "Invalid API Key", null);
 				}
-			} else {
+			} 
+			else 
+			{
 				this.login();
 			}
 
 		}
-		else {
+		else 
+		{
 			
 			var validApiKey = await this.validAPITokenOnDB(this.from.body.apiKey)
-			if (validApiKey) {
+			if (validApiKey) 
+			{
+				if(this.from.body.demoMode)
+				{
+				}
+				else
+				{
+					var viewRes = await this.crudController.initialize(this.from.body.apiKey, this.from.body.demoMode);
+				}
 				this.from.serve();
 			}
-			else {
+			else 
+			{
 				this.endServe(false, "Invalid API Key", null);
 			}
 		}
@@ -364,7 +333,9 @@ class SharedLogic {
 	 *	@param message String The value of the message to be returned in the response to the user
 	 *	@param data Object The object containing the data values to be returned in the response to the user
 	 */
-	endServe(success, message, data) {
+	async endServe(success, message, data) {
+		
+		var viewRes = await this.crudController.deInitialize();
 		
 		this.crudController.client.end();
 		
@@ -380,6 +351,8 @@ class SharedLogic {
 			responseObject.data = {};
 			json = JSON.stringify(responseObject);
 		}
+		
+		//console.log("finished " + this.from.req.url);
 
 		this.from.res.statusCode = 200;
 		this.from.res.setHeader('Content-Type', 'application/json');

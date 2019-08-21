@@ -27,6 +27,7 @@ import { IonicStorageModule } from '@ionic/storage';
 import { RequestModuleService } from '../services/request-module.service';
 import { HttpClientModule } from '@angular/common/http';
 import { Toast } from '@ionic-native/toast/ngx';
+import { SharedModule } from '../shared.module';
 
 describe('TabsPage', () => {
   let component: TabsPage;
@@ -36,7 +37,8 @@ describe('TabsPage', () => {
     TestBed.configureTestingModule({
       imports: [
         HttpClientModule,
-        IonicStorageModule.forRoot()
+        IonicStorageModule.forRoot(),
+        SharedModule
       ],
       providers: [
         PopoverController,

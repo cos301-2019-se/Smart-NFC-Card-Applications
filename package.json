@@ -26,6 +26,8 @@
     "crypto": "^1.0.1",
     "nodemailer": "^6.3.0",
     "pg": "^7.11.0",
-    "rebuild": "^0.1.2"
+    "rebuild": "^0.1.2",
+    "base64-stream": "^1.0.0",
+    "pdfkit": "^0.10.0"
   }
 }

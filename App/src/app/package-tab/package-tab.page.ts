@@ -283,6 +283,7 @@ export class PackageTabPage implements OnInit{
    * @param type string algorithm type
    */
   connectToWiFi(ssid: string, password: string, type: string){
+    this.showMessage(`Attempting to connect to WiFi`, MessageType.info);
     this.wifiService.connectToWifi(ssid, password, type)
     .then(() => {
       this.showMessage('Connected to WiFi', MessageType.success, 2000);

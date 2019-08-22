@@ -68,8 +68,22 @@ export class BusinessCardsService {
     businessCard.contactNumber = contactNumber;
     businessCard.email = email;
     businessCard.location = location;
-    businessCard.website = website;
+    businessCard.website = this.createClickableLink(website);
     return businessCard;
+  }
+  
+  /**
+   * Function that creates a link that can be clicked by adding http if needed
+   * @param link string website link with or without http(s)
+   * @return string link that can be clicked on
+   */
+  createClickableLink(link: string){
+    if (link.indexOf('http') == 0) {
+      return link;
+    }
+    else {
+      return `http://${link}`;
+    }
   }
 
   /**

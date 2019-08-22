@@ -18,6 +18,7 @@ ion-tab-button {
     font-size: 1em;
     background-color: transparent;
     color: var(--ion-color-primary-light);
+    --color-selected: var(--ion-color-primary-contrast);
 }
 
 .active-tab {

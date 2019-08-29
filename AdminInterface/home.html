@@ -32,38 +32,69 @@
 	</script>
 	
 	<style>
+	
+		.middle
+		{
+			border-bottom: 1px solid lightgrey;
+		}
+		
+		button
+		{
+			margin-bottom: 20px;
+		}
+		
 		/* extra small */
-		@media only screen and (max-width : 575px) 
+		@media only screen and (max-width : 575px) and (min-width : 0px) 
 		{
 			.top-left
 			{
-				border: 1px solid lightgrey;
-				color: red;
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+				border-left: 1px solid lightgrey;
 			}
 			.top-other
 			{
 				border-right: 1px solid lightgrey;
 				border-left: 1px solid lightgrey;
-				border-bottom: 1px solid lightgrey;
-				color: red;
+				border-top: 1px solid lightgrey;
+			}
+			
+			.middle-odd, .middle-even
+			{
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+				border-left: 1px solid lightgrey;
 			}
 		}
 		
 		/* small */
-		@media only screen and (min-width : 576px) 
+		@media only screen and (max-width : 767px) and (min-width : 576px) 
 		{
 			.top-left
 			{
-				border: 1px solid lightgrey;
-				color: green;
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+				border-left: 1px solid lightgrey;
 			}
 			.top-other
 			{
 				border-right: 1px solid lightgrey;
 				border-top: 1px solid lightgrey;
-				border-bottom: 1px solid lightgrey;
-				color: green;
 			}
+			
+			.middle-odd
+			{
+				border-left: 1px solid lightgrey;
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+			}
+			
+			.middle-even
+			{
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+			}
+
 		}
 
 		/* medium and larger */
@@ -71,15 +102,25 @@
 		{
 			.top-left
 			{
-				border: 1px solid lightgrey;
-				color:blue;
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+				border-left: 1px solid lightgrey;
 			}
 			.top-other
 			{
 				border-right: 1px solid lightgrey;
 				border-top: 1px solid lightgrey;
-				border-bottom: 1px solid lightgrey;
-				color:blue;
+			}
+			
+			.middle-odd, .middle-even
+			{
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+			}
+			
+			.middle-odd:first-child
+			{
+				border-left: 1px solid lightgrey;
 			}
 		}
 
@@ -120,8 +161,8 @@
 			</li>
 		</ul>
 	</nav>
-	<div class="container col-12" style="margin:top:100px; margin-bottom:150px">
-		<h2 class="text-center" style="margin-top:150px; margin-bottom:20px" id="welcome">Welcome to Link!</h2>
+	<div class="container col-12" style="margin-bottom:150px">
+		<h2 class="text-center" style="margin-top:50px; margin-bottom:30px" id="welcome">Welcome to Link!</h2>
 
 		<div class="container col-12">
 			<div class="row">
@@ -132,41 +173,41 @@
 					style="padding-top:10px;font-size:18px;">
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 border-left" style="padding-top:20px;font-size:14px; text-align:center";>
+			<div class="row middle">
+				<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 middle-odd" style="padding-top:10px;font-size:14px; text-align:center";>
 					<div style="display:inline-block">
 						<p style="height:150px; width: 100%; max-width: 220px; display:table-cell; vertical-align: middle; margin:auto">Add buildings (composed of rooms) to your company, to represent your office spaces - which your
 						employees will work in.</p>
 					</div>
 					
 					<button id="btnBuildings" onclick="buildings()" class="btn btn-primary"
-						style="width: 80%; height:50px; font-size:16px;">Buildings</button>
+						style="width: 80%; height:60px; font-size:16px;margin-bottom: 30px;">Buildings</button>
 				</div>
-				<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 border-left" style="padding-top:20px;font-size:14px; text-align:center";>
+				<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 middle-even" style="padding-top:10px;font-size:14px; text-align:center";>
 					<div style="display:inline-block">
 						<p style="height:150px; width: 100%; max-width: 220px; display:table-cell; vertical-align: middle; margin:auto">Add employees to your company to allow them to use the Link app on their phones, view these
 					employees and edit their details.</p>
 					</div>
 					
 					<button id="btnCompany" onclick="employees()" class="btn btn-success"
-						style="width: 80%; height:50px; font-size:16px;">Employees</button>
+						style="width: 80%; height:60px; font-size:16px;margin-bottom: 30px;">Employees</button>
 				</div>
-				<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 border-left" style="padding-top:20px;font-size:14px; text-align:center";>
+				<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 middle-odd" style="padding-top:10px;font-size:14px; text-align:center";>
 					<div style="display:inline-block">
 						<p style="height:150px; width: 100%; max-width: 220px; display:table-cell; vertical-align: middle; margin:auto">Add NFC payment points to buildings in your company, to allow clients to buy items in-house using
 					credits on their Link Wallet.</p>
 					</div>
 					<button id="btnPaymentPoints" onclick="paymentpoints()" class="btn btn-danger"
-						style="width: 80%; height:50px; font-size:16px;">Payment
+						style="width: 80%; height:60px; font-size:16px;margin-bottom: 30px;">Payment
 						Points</button>
 				</div>
-				<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 border-left" style="padding-top:20px;font-size:14px; text-align:center";>
+				<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 middle-even" style="padding-top:10px;font-size:14px; text-align:center";>
 					<div style="display:inline-block">
 						<p style="height:150px; width: 100%; max-width: 220px; display:table-cell; vertical-align: middle; margin:auto">View transactions between certain dates, sort them and download PDF reports and CSV files containing 
 					the transaction data.</p>
 					</div>
 					<button id="btnTransactions" onclick="transactions()" class="btn btn-warning"
-						style="width: 80%; height:50px; font-size:16px;">Transactions</button>
+						style="width: 80%; height:60px; font-size:16px;margin-bottom: 30px;">Transactions</button>
 				</div>
 			</div>
 		</div>

@@ -43,8 +43,8 @@ import { RequestModuleService } from '../services/request-module.service';
 export class ShareTabPage implements OnInit{
 
   card: BusinessCard;
+  hasCard: Boolean = true;
   check;
-
 
   /**
    * Constructor that takes all injectables
@@ -80,6 +80,9 @@ export class ShareTabPage implements OnInit{
     // Gets and sets the business card
     this.cardService.getOwnBusinessCard().then((val) => {
       this.card = val;
+      if (!val) {
+        this.hasCard = false;
+      }
     });
   }
 

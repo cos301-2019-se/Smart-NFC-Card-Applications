@@ -58,6 +58,8 @@ export class ManageTabPage implements OnInit {
   activePackages: VisitorPackage[] = [];
   inactivePackages: VisitorPackage[] = [];
   detailToggles = [];
+
+  hasPackages: Boolean = true;
   
   @ViewChild('unameInput') unameInput : IonInput;
   @ViewChild('passInput') passInput : IonInput;
@@ -225,6 +227,9 @@ export class ManageTabPage implements OnInit {
         })
         this.packageService.setSharedVisitorPackages(val).then(() => {   
           this.packages = val;
+          if (val.length < 1) {
+            this.hasPackages = false;
+          }
           this.setupToggles();          
           // Populate active and inactive packages
           this.activePackages = this.packages.filter(elem => {

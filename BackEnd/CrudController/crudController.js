@@ -82,11 +82,11 @@ class CrudController {
 			password: 'nbuser',
 			port: 5432,
 		});*/
-
+		
 		this.client = new Client({
 			connectionString: process.env.DATABASE_URL
 		});
-
+		
 		this.client.connect();
 
 		

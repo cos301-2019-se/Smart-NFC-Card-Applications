@@ -1,7 +1,7 @@
 <ion-content padding >
     
-    <ion-item color='secondary' *ngIf='packages.length == 0'>
-      <ion-label text-wrap> No visitor packages have been shared with you yet, or the packages has been deleted/expired. </ion-label>
+    <ion-item color='secondary' *ngIf='!hasPackages'>
+      <ion-label text-wrap> No visitor packages have been shared with you yet, or the packages have been deleted/expired. </ion-label>
     </ion-item>
 
     <ion-list *ngIf='packages.length != 0'>

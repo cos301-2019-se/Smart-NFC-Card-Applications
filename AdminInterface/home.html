@@ -5,6 +5,8 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 	<title>Home</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<link rel="icon" href="Image/favicon.ico">
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js"
 		integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -30,89 +32,169 @@
 		}
 
 	</script>
+	
+	<style>
+	
+		.middle
+		{
+			border-bottom: 1px solid lightgrey;
+		}
+		
+		button
+		{
+			margin-bottom: 20px;
+		}
+		
+		/* extra small */
+		@media only screen and (max-width : 575px) and (min-width : 0px) 
+		{
+			.top-left
+			{
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+				border-left: 1px solid lightgrey;
+			}
+			.top-other
+			{
+				border-right: 1px solid lightgrey;
+				border-left: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+			}
+			
+			.middle-odd, .middle-even
+			{
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+				border-left: 1px solid lightgrey;
+			}
+		}
+		
+		/* small */
+		@media only screen and (max-width : 767px) and (min-width : 576px) 
+		{
+			.top-left
+			{
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+				border-left: 1px solid lightgrey;
+			}
+			.top-other
+			{
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+			}
+			
+			.middle-odd
+			{
+				border-left: 1px solid lightgrey;
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+			}
+			
+			.middle-even
+			{
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+			}
+
+		}
+
+		/* medium and larger */
+		@media only screen and (min-width : 768px) 
+		{
+			.top-left
+			{
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+				border-left: 1px solid lightgrey;
+			}
+			.top-other
+			{
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+			}
+			
+			.middle-odd, .middle-even
+			{
+				border-right: 1px solid lightgrey;
+				border-top: 1px solid lightgrey;
+			}
+			
+			.middle-odd:first-child
+			{
+				border-left: 1px solid lightgrey;
+			}
+		}
+
+
+	</style>
+	
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
 		integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 	<link rel="stylesheet" href="Css/styles.css">
 </head>
 
 <body style="display: none" onload="checkCompanies();">
-	<nav class="navbar navbar-expand-sm bg-light navbar-light fixed-top">
-		<a class="navbar-brand font-weight-bold" href="home.html">Link</a>
-		<ul class="navbar-nav" id="navBar">
-			<li class="nav-item active">
-				<a class="nav-link" href="home.html">Home</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="buildings.html">Buildings</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="employees.html">Employees</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="paymentpoints.html">Payment Points</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="transactions.html">Transactions</a>
-			</li>
-		</ul>
-		<ul class="navbar-nav ml-auto">
-			<li class="nav-item">
-				<a class="nav-link" href="company.html">Company Details</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="" onclick="logout();">Logout</a>
-			</li>
-		</ul>
-	</nav>
-	<div class="container col-md-10 col-10">
-		<h2 class="text-center" style="margin-top:30px; margin-bottom:20px" id="welcome">Welcome to Link!</h2>
+<div class="topnav" id="myTopnav">
+	<a class="font-weight-bold" href="home.html">Link</a>
+	<a class="active" href="home.html">Home</a>
+	<a href="buildings.html">Buildings</a>
+	<a href="employees.html">Employees</a>
+	<a href="paymentpoints.html">Payment Points</a>
+	<a href="transactions.html">Transactions</a>
+	<a style="float: right" href="" id="logoutTab" onclick="logout();">Logout</a>
+	<a style="float: right" href="company.html" id="companyTab">Company Details</a>
+	<a href="javascript:void(0);" class="icon" onclick="checkNav()">
+		<i class="fa fa-bars"></i>
+	</a>
+</div>
+	<div class="container col-12" style="margin-bottom:150px">
+		<h2 class="text-center" style="margin-top:50px; margin-bottom:30px" id="welcome">Welcome to Link!</h2>
 
-		<div class="container">
-			<div class="row border-top" style="height: 80px">
-				<div class="col-6 border-left center-block text-center" id="username"
-					style="padding-top:10px;font-size:calc(10px + 0.6vw)" ;>
+		<div class="container col-12">
+			<div class="row">
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 center-block text-center top-left" id="username"
+					style="padding-top:10px;font-size:18px;">
 				</div>
-				<div class="col-6 border-left border-right center-block text-center" id="companyName"
-					style="padding-top:10px;font-size:calc(10px + 0.6vw)" ;>
-				</div>
-			</div>
-			<div class="row border-top" style="height: 120px">
-				<div class="col-3 border-left text-center" style="padding-top:40px;font-size:calc(6px + 0.6vw)" ;>
-					Add buildings (composed of rooms) to your company, to represent your office spaces - which your
-					employees will work in.
-				</div>
-				<div class="col-3 border-left text-center" style="padding-top:40px;font-size:calc(6px + 0.6vw)" ;>
-					Add employees to your company to allow them to use the Link app on their phones, view these
-					employees and edit their details.
-				</div>
-				<div class="col-3 border-left text-center"
-					style="padding-top:40px;font-size:calc(6px + 0.6vw)" ;>
-					Add NFC payment points to buildings in your company, to allow clients to buy items in-house using
-					loaded credits on their Link Wallet.
-				</div>
-				<div class="col-3 border-left border-right text-center"
-					style="padding-top:40px;font-size:calc(6px + 0.6vw)" ;>
-					View transactions between certain dates, sort them and download PDF reports and CSV files containing 
-					the transaction data.
+				<div class="col-xs-12 col-sm-6 col-md-6 col-lg-6 center-block text-center top-other" id="companyName"
+					style="padding-top:10px;font-size:18px;">
 				</div>
 			</div>
-			<div class="row border-bottom" style="height: 120px">
-				<div class="col-3 border-left text-center">
+			<div class="row middle">
+				<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 middle-odd" style="padding-top:10px;font-size:14px; text-align:center";>
+					<div style="display:inline-block">
+						<p style="height:150px; width: 100%; max-width: 220px; display:table-cell; vertical-align: middle; margin:auto">Add buildings (composed of rooms) to your company, to represent your office spaces - which your
+						employees will work in.</p>
+					</div>
+					
 					<button id="btnBuildings" onclick="buildings()" class="btn btn-primary"
-						style="width: 80%; height:50px; margin-top:20px;font-size:calc(9px + 0.6vw)">Buildings</button>
+						style="width: 80%; height:60px; font-size:16px;margin-bottom: 30px;">Buildings</button>
 				</div>
-				<div class="col-3 border-left text-center">
+				<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 middle-even" style="padding-top:10px;font-size:14px; text-align:center";>
+					<div style="display:inline-block">
+						<p style="height:150px; width: 100%; max-width: 220px; display:table-cell; vertical-align: middle; margin:auto">Add employees to your company to allow them to use the Link app on their phones, view these
+					employees and edit their details.</p>
+					</div>
+					
 					<button id="btnCompany" onclick="employees()" class="btn btn-success"
-						style="width: 80%; height:50px; margin-top:20px;font-size:calc(8px + 0.6vw)">Employees</button>
+						style="width: 80%; height:60px; font-size:16px;margin-bottom: 30px;">Employees</button>
 				</div>
-				<div class="col-3 border-left border-right text-center">
+				<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 middle-odd" style="padding-top:10px;font-size:14px; text-align:center";>
+					<div style="display:inline-block">
+						<p style="height:150px; width: 100%; max-width: 220px; display:table-cell; vertical-align: middle; margin:auto">Add NFC payment points to buildings in your company, to allow clients to buy items in-house using
+					credits on their Link Wallet.</p>
+					</div>
 					<button id="btnPaymentPoints" onclick="paymentpoints()" class="btn btn-danger"
-						style="width: 80%; height:50px; margin-top:20px;font-size:calc(8px + 0.6vw)">Payment
+						style="width: 80%; height:60px; font-size:16px;margin-bottom: 30px;">Payment
 						Points</button>
 				</div>
-				<div class="col-3 border-left border-right text-center">
+				<div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 middle-even" style="padding-top:10px;font-size:14px; text-align:center";>
+					<div style="display:inline-block">
+						<p style="height:150px; width: 100%; max-width: 220px; display:table-cell; vertical-align: middle; margin:auto">View transactions between certain dates, sort them and download PDF reports and CSV files containing 
+					the transaction data.</p>
+					</div>
 					<button id="btnTransactions" onclick="transactions()" class="btn btn-warning"
-						style="width: 80%; height:50px; margin-top:20px;font-size:calc(8px + 0.6vw)">Transactions</button>
+						style="width: 80%; height:60px; font-size:16px;margin-bottom: 30px;">Transactions</button>
 				</div>
 			</div>
 		</div>

@@ -42,6 +42,7 @@ import { AlertController } from '@ionic/angular';
 })
 export class CardTabPage implements OnInit{
   cards: BusinessCard[] = [];
+  hasCards: Boolean = true;
   detailToggles = [];
   check;
   /**
@@ -101,9 +102,13 @@ export class CardTabPage implements OnInit{
    * Function that loads the cards from the service or sets it to empty if it doesn't exist
    */
   loadCards(){
+    this.hasCards = true;
     // Get cards
     this.cardService.getBusinessCards().then((val) => {    
       this.cards = val;
+      if (this.cards.length < 1) {
+        this.hasCards = false;
+      } 
       // If it is null, set it as an empty array
       if (this.cards == null) {
         this.cards = []

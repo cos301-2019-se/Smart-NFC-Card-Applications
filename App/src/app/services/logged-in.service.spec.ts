@@ -57,7 +57,7 @@ describe('LoggedInService', () => {
 
   it('login should ask for username and password if it was not supplied', (done) => {
     const service: LoggedInService = TestBed.get(LoggedInService);
-    service.login('','').subscribe(res => {      
+    service.login('','').subscribe(res => {   
       expect(res['success']).toBe(false);
       expect(res['message']).toBe('Please enter a username and password.');
       done();
@@ -66,7 +66,7 @@ describe('LoggedInService', () => {
 
   it('login should set the loggedIn status as well as the employeeId', (done) => {
     const service: LoggedInService = TestBed.get(LoggedInService);
-    service.login('admin','password').subscribe(res => {      
+    service.login('admin','password').subscribe(res => {    
       expect(res['success']).toBe(true);
       expect(res['message']).toBe('Login successful.');
       expect(service.isLoggedIn()).toBe(true);

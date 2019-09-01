@@ -60,14 +60,14 @@ export class BusinessCardsService {
    * @param location string Employee's branch location
    * @return BusinessCard created
    */
-  createBusinessCard(businessCardId: string, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: LocationModel) {
+  createBusinessCard(businessCardId: string, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: LocationModel) {  
     let businessCard: BusinessCard = new BusinessCard();
     businessCard.businessCardId = businessCardId;
     businessCard.companyName = companyName;
     businessCard.employeeName = employeeName;
     businessCard.contactNumber = contactNumber;
     businessCard.email = email;
-    businessCard.location = location;
+    businessCard.location = location;  
     businessCard.website = this.createClickableLink(website);
     return businessCard;
   }
@@ -78,6 +78,7 @@ export class BusinessCardsService {
    * @return string link that can be clicked on
    */
   createClickableLink(link: string){
+    if (link == undefined) return `http://smart-nfc-application.herokuapp.com`;
     if (link.indexOf('http') == 0) {
       return link;
     }
@@ -102,7 +103,7 @@ export class BusinessCardsService {
    * @retun Promise returns promise from saving to storage
    */
   setOwnBusinessCard({businessCardId, companyName, employeeTitle, employeeName, employeeSurname, employeeCellphone, employeeEmail, companyWebsite, branchName, latitude, longitude}) {
-    let employeeFullName = `${employeeTitle} ${employeeName} ${employeeSurname}`;
+    let employeeFullName = `${employeeTitle} ${employeeName} ${employeeSurname}`; 
     let location = new LocationModel(latitude, longitude, branchName);
     let businessCard: BusinessCard = this.createBusinessCard(businessCardId, companyName, employeeFullName, employeeCellphone, employeeEmail, companyWebsite, location);
     return this.storage.Save(this.ownBusinessCardKey, businessCard);

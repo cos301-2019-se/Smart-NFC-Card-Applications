@@ -201,7 +201,6 @@ export class VisitorPackagesService {
           this.req.dismissLoading();
         }
       }, err => {
-        console.log(err);
         subject.next({success: false, message: `Something went wrong.`});
         subject.complete();
         this.req.dismissLoading();

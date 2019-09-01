@@ -72,12 +72,4 @@ describe('ShareTab', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  it('createClickableLink should append http:// to a link without it', () => {
-    expect(component.createClickableLink('cs.up.ac.za')).toEqual('http://cs.up.ac.za');
-  });
-
-  it('createClickableLink should just return a link that starts with http(s)://', () => {
-    expect(component.createClickableLink('https://absa.co.za')).toEqual('https://absa.co.za');
-  });
 });

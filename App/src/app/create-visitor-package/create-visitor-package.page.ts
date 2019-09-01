@@ -209,7 +209,6 @@ export class CreateVisitorPackagePage implements OnInit {
         this.showMessage(`Error adding to DB: ${res['message']}`, MessageType.error);
       }
     }, err => {
-      console.log(err);
       this.showMessage(`Error adding to DB: Ensure that you have a stable internet connection`, MessageType.error);
     });
   }

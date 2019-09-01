@@ -31,7 +31,7 @@ function fetchDataAndPopulateTable() {
         tableBody = $('#tableBody');
         populateTable();
     }).catch((error) => {
-        displayError(error);
+        displayError("alertContainer", error);
     });
 }
 
@@ -84,6 +84,8 @@ function populateTable() {
 }
 
 function setupEditModal() {
+    $("#editEmployeeWarning").hide();
+    $("#alertContainerEditModal").html('');
     $("#successContainer").empty();
     $('#editPasswordContainer').empty();
     $("#btnSubmit").attr("disabled", false);
@@ -104,6 +106,10 @@ function submitEditEmployee() {
             var password = $('#editModalPass').val().trim();
             var confirmPassword = $('#editModalPassConfirm').val().trim();
             if (password === confirmPassword) {
+                if (password.length === 0) {
+                    $("#editEmployeePasswordWarning").html('<strong>Error!</strong> Please enter a new password').show();
+                    return; // do not continue with the posts
+                }
                 var passwordObject = {
                     "employeeId": submissionObject.employeeId,
                     "apiKey": apiKey,
@@ -113,16 +119,16 @@ function submitEditEmployee() {
                 passwordPromise = new Promise((resolve, reject) => {
                     $.post("/admin/editEmployeePassword", JSON.stringify(passwordObject), (data) => {
                         if (data.success) {
-                            console.log("successfully modified employee's password");
                             resolve();
                         } else {
-                            console.log("failed to modify employee" + data.message);
                             reject();
                         }
+                    }).fail(() => {
+                        reject();
                     });
                 })
             } else {
-                $("#editEmployeePasswordWarning").html(`<strong>Error!</strong> Passwords do not match.`).show();
+                $("#editEmployeePasswordWarning").html('<strong>Error!</strong> Passwords do not match').show();
                 return; // do not continue with the posts
             }
 
@@ -131,7 +137,7 @@ function submitEditEmployee() {
             passwordPromise.then(() => {
                 postEmployeeSubmission();
             }).catch(() => {
-                $("#editEmployeePasswordWarning").html(`<strong>Error!</strong> Failed to update password.`).show();
+                displayError("alertContainerEditModal", "Failed to modify employee. Please try again later");
             })
         } else {
             postEmployeeSubmission();
@@ -141,26 +147,23 @@ function submitEditEmployee() {
 }
 
 function postEmployeeSubmission() {
-    console.log(submissionObject);
     submissionObject.apiKey = apiKey;
     $.post("/admin/editEmployee", JSON.stringify(submissionObject), (data) => {
         if (data.success) {
-            console.log("successfully modified employee");
             $("#successContainer").empty().append(`
             <div class="alert alert-success hide" role="alert">
             <h4 class="alert-heading">Operation Successful!</h4>
             Employee modified successfully.`);
 
-            /*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
-            order to view the updated information in the table.
-            </div>
-            `);*/
             $("#btnSubmit").attr("disabled", true);
             //$('#editEmployeeModal').modal('hide');
             fetchDataAndPopulateTable();
         } else {
-            console.log("failed to modify employee" + data.message);
+            displayError("alertContainerEditModal", "Failed to modify employee, please try again later");
         }
+
+    }).fail(() => {
+        displayError("alertContainerEditModal", "Failed to modify employee. Please check your connection");
     });
 }
 
@@ -223,6 +226,7 @@ function initializeAddEmployee() {
 }
 
 function clearAddEmployeeModal() {
+    $("#alertContainerAddModal").html('');
     $("#addFirstName").val("");
     $("#addSurname").val("");
     $("#addTitle").val("");
@@ -235,30 +239,25 @@ function clearAddEmployeeModal() {
 function addEmployee() {
     var newEmployeeObj = {};
     if (retrieveValuesFromAddEmployee(newEmployeeObj)) {
-        console.log(newEmployeeObj);
         newEmployeeObj.apiKey = apiKey;
         $.post("/admin/addEmployee", JSON.stringify(newEmployeeObj), (data) => {
             if (data.success) {
-                console.log("successfully added employee");
                 $("#successContainerAddedEmployee").empty().append(`
             <div class="alert alert-success hide" role="alert">
             <h4 class="alert-heading">Operation Successful!</h4>
             Employee added successfully.`);
 
-                /*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
-                order to view the updated information in the table.
-                </div>
-                `);*/
                 $("#btnAddEmployee").attr("disabled", true);
                 //$('#addEmployeeModal').modal('hide');
                 fetchDataAndPopulateTable();
             } else {
-                console.log("failed to add employee");
-                console.log(data.message);
+                displayError("alertContainerAddModal", "Failed to add employee: " + data.message);
             }
+        }).fail(() => {
+            displayError("alertContainerAddModal", "Failed to add employee please check your connection");
         });
     } else {
-        console.log("Fix your inputs!")
+        displayError("alertContainerAddModal", "Please ensure all fields are filled in correctly");
     }
 }
 
@@ -361,10 +360,11 @@ function fetchCompanyName(resolve, reject) {
     });
 }
 
-function displayError(message) {
-    $('#mainErrorAlert').html(` 
+function displayError(containerId, message) {
+    let name = "#" + containerId;
+    $(name).html(`<div class="alert alert-danger alert-dismissible" id="mainErrorAlert" style="margin-top : 0.5rem" >
     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-    <strong>Error!</strong> ${message}`).show();
+    <strong>Error!</strong> ${message} </div>`).show();
 }
 
 function logout() {
@@ -372,8 +372,8 @@ function logout() {
     window.location.replace("login.html");
 }
 
-function checkCompanies(){
-    if(localStorage.getItem("id")==1) {
+function checkCompanies() {
+    if (localStorage.getItem("id") == 1) {
         $("#navBar").append('<li class="nav-item"><a class="nav-link" href="companies.html">Companies</a></li>');
     }
 }

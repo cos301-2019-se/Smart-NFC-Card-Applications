@@ -31,7 +31,7 @@ function fetchDataAndPopulateTable() {
         tableBody = $('#tableBody');
         populateTable();
     }).catch((error) => {
-        displayError(error);
+        displayError("alertContainer", error);
     });
 }
 
@@ -90,26 +90,21 @@ function submitEditPaymentPoint() {
 }
 
 function postPaymentPointSubmission() {
-    console.log(submissionObject);
     submissionObject.apiKey = apiKey;
     $.post("/admin/editPaymentPoint", JSON.stringify(submissionObject), (data) => {
         if (data.success) {
-            console.log("successfully modified payment point");
             $("#successContainer").empty().append(`
             <div class="alert alert-success hide" role="alert">
             <h4 class="alert-heading">Operation Successful!</h4>
             Payment Point modified successfully.`);
 
-            /*Please <a href="./paymentpoints.html" class="alert-link">refresh</a> the page in
-            order to view the updated information in the table.
-            </div>
-            `);*/
             $("#btnSubmit").attr("disabled", true);
-            //$('#editPaymentPointModal').modal('hide');
             fetchDataAndPopulateTable();
         } else {
-            console.log("failed to modify payment point" + data.message);
+            displayError("editPaymentPointWarning", "Failed to edit Payment Point")
         }
+    }).fail(()=>{
+            displayError("editPaymentPointWarning", "Failed to edit Payment Point. Please check your connection")
     });
 }
 
@@ -162,36 +157,31 @@ function initializeAddPaymentPoint() {
 }
 
 function clearAddPaymentPointModal() {
+    $("#addPaymentPointWarning").html('');
     $("#addDescription").val("");
 }
 
 function addPaymentPoint() {
     var newPaymentPointObj = {};
     if (retrieveValuesFromAddPaymentPoint(newPaymentPointObj)) {
-        console.log(newPaymentPointObj);
         newPaymentPointObj.apiKey = apiKey;
         $.post("/admin/addPaymentPoint", JSON.stringify(newPaymentPointObj), (data) => {
             if (data.success) {
-                console.log("successfully added payment point");
                 $("#successContainerAddedPaymentPoint").empty().append(`
             <div class="alert alert-success hide" role="alert">
             <h4 class="alert-heading">Operation Successful!</h4>
             Payment Point added successfully.`);
 
-                /*Please <a href="./paymentpoints.html" class="alert-link">refresh</a> the page in
-                order to view the updated information in the table.
-                </div>
-                `);*/
                 $("#btnAddPaymentPoint").attr("disabled", true);
-                //$('#addPaymentPointModal').modal('hide');
                 fetchDataAndPopulateTable();
             } else {
-                console.log("failed to add payment point");
-                console.log(data.message);
+                displayError("addPaymentPointWarning", "Failed to add payment point");
             }
+        }).fail(()=>{
+            displayError("addPaymentPointWarning", "Failed to add payment point. Please check your connection");
         });
     } else {
-        console.log("Fix your inputs!")
+        displayError("addPaymentPointWarning", "Please check your input fields");
     }
 }
 
@@ -260,11 +250,12 @@ function fetchCompanyName(resolve, reject) {
     });
 }
 
-function displayError(message) {
-    console.log("AWE")
-    $('#mainErrorAlert').html(` 
+function displayError(containerId, message) {
+    let name = "#" + containerId;
+    $(name).html(`<div class="alert alert-danger alert-dismissible" id="mainErrorAlert" style="margin-top : 0.5rem" >
     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-    <strong>Error!</strong> ${message}`).show();
+    <strong>Error!</strong> ${message}
+    </div>`).show();
 }
 
 function logout() {

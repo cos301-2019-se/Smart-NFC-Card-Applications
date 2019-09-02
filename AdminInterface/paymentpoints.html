@@ -53,7 +53,7 @@
     <h1 class="pb-1 text-center" style="margin-top:30px">Payment Points</h1>
 
     <div class="container col-md-11 border" style="padding-top:20px; padding-bottom:20px; margin-bottom:90px">
-        <div class="alert alert-warning alert-dismissible" id="mainErrorAlert" style="display:none"></div>
+        <div id="alertContainer"> </div>
         <div class="text-center">
 
         </div>
@@ -87,12 +87,6 @@
             <label class="custom-control-label" for="darkmode" style="margin-top:10px">Toggle this switch for dark
                 mode</label>
         </div>
-
-
-
-
-
-
     </div>
 
 
@@ -107,8 +101,8 @@
         </div>
     </footer>
 
-    <div class="modal fade" id="editPaymentPointModal" tabindex="-1" role="dialog" aria-labelledby="editPaymentPointModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="editPaymentPointModal" tabindex="-1" role="dialog"
+        aria-labelledby="editPaymentPointModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -119,12 +113,14 @@
                 </div>
                 <div id="successContainer"></div>
                 <div class="modal-body">
+                    <div id="editPaymentPointWarning"> </div>
                     <form id="form" class="was-validated">
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text font-weight-bold">Description</span>
                             </div>
-                            <input type="text" class="form-control" id="editDescription" placeholder="e.g Steers" required>
+                            <input type="text" class="form-control" id="editDescription" placeholder="e.g Steers"
+                                required>
                         </div>
                     </form>
                     <div class="input-group mb-3">
@@ -149,8 +145,8 @@
 
 
 
-    <div class="modal fade" id="addPaymentPointModal" tabindex="-1" role="dialog" aria-labelledby="addPaymentPointModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="addPaymentPointModal" tabindex="-1" role="dialog"
+        aria-labelledby="addPaymentPointModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -161,12 +157,14 @@
                 </div>
                 <div id="successContainerAddedPaymentPoint"></div>
                 <div class="modal-body">
+                    <div id="addPaymentPointWarning"> </div>
                     <form class="was-validated">
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text font-weight-bold">Description</span>
                             </div>
-                            <input type="text" class="form-control" id="addDescription" placeholder="e.g Steers" required>
+                            <input type="text" class="form-control" id="addDescription" placeholder="e.g Steers"
+                                required>
                         </div>
                     </form>
                     <div class="input-group mb-3">
@@ -177,13 +175,11 @@
                         </select>
                     </div>
 
-                    <div class="alert alert-danger collapse" id="editPaymentPointWarning">
-                        <strong>Error!</strong> Please fill in all the fields.
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <button type="button" id="btnAddPaymentPoint" class="btn btn-success" onclick="addPaymentPoint()">Add
+                    <button type="button" id="btnAddPaymentPoint" class="btn btn-success"
+                        onclick="addPaymentPoint()">Add
                         Payment Point</button>
                 </div>
             </div>

@@ -22,6 +22,7 @@
     "@angular/platform-browser-dynamic": "^7.2.2",
     "@angular/router": "^7.2.2",
     "@ionic-native/android-permissions": "^5.5.0",
+    "@ionic-native/barcode-scanner": "^5.13.0",
     "@ionic-native/core": "^5.0.0",
     "@ionic-native/device": "^5.8.0",
     "@ionic-native/diagnostic": "^5.10.0",
@@ -50,6 +51,7 @@
     "core-js": "^2.5.4",
     "es6-promise-plugin": "^4.1.0",
     "phonegap-nfc": "1.0.3",
+    "phonegap-plugin-barcodescanner": "8.1.0",
     "rxjs": "~6.5.1",
     "tslib": "^1.9.0",
     "uk.co.workingedge.phonegap.plugin.launchnavigator": "5.0.4",
@@ -113,7 +115,10 @@
       "cordova.plugins.diagnostic": {
         "ANDROID_SUPPORT_VERSION": "28.+"
       },
-      "cordova-plugin-dreamover-uid": {}
+      "cordova-plugin-dreamover-uid": {},
+      "phonegap-plugin-barcodescanner": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      }
     },
     "platforms": [
       "android"

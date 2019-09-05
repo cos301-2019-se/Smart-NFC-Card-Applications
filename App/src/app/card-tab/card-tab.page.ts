@@ -28,6 +28,7 @@ import { EventEmitterService } from '../services/event-emitter.service';
 import { FilterService } from '../services/filter.service';  
 import { MessageType } from '../tabs/tabs.page';
 import { AlertController } from '@ionic/angular';
+import { QrCodeService } from '../services/qr-code.service';
 
 /**
 * Purpose:	This class provides the component that allows viewing of shared cards as well as adding new ones
@@ -45,6 +46,8 @@ export class CardTabPage implements OnInit{
   hasCards: Boolean = true;
   detailToggles = [];
   check;
+  scannedData: {};
+
   /**
    * Constructor that takes all injectables
    * @param cardService BusinessCardsService injectable
@@ -60,10 +63,11 @@ export class CardTabPage implements OnInit{
     private locationService: LocationService,
     private eventEmitterService: EventEmitterService,
     public filterService: FilterService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private qrCodeService: QrCodeService
   ) { }
 
-  ngOnInit() {    
+  ngOnInit() {   
     this.eventEmitterService.menuSubscribe(
       this.eventEmitterService.invokeMenuButtonEvent.subscribe(functionName => {    
           this.menuEvent(functionName);
@@ -92,6 +96,8 @@ export class CardTabPage implements OnInit{
   menuEvent(functionName: string) {
     switch(functionName) {
       case 'Add Business Card': this.addCard()
+        break;
+      case 'Scan QR Code': this.scanQrCode()
         break;
       case 'Refresh All Cards': this.showMessage('Refresh feature coming soon.', MessageType.error);
         break;
@@ -264,5 +270,20 @@ export class CardTabPage implements OnInit{
    */
   showMessage(message: string, type: number, timeout: number = 5000) {
     this.eventEmitterService.messageEvent(message, type, timeout);
+  }
+
+  scanQrCode(){
+    this.qrCodeService.scanCode().subscribe(res => {
+      this.scannedData = res['message'];
+      let data = this.scannedData["text"];
+      let json = JSON.parse(data);
+      this.cardService.addBusinessCard(json.companyId, json.companyName, json.employeeName, json.contactNumber, json.email, json.website, json.location)
+      .then(() => {
+        this.loadCards();
+      })
+      .catch(err => {
+        this.showMessage(`Error adding card: ${err}`, MessageType.error);
+      });
+    });
   }
 }

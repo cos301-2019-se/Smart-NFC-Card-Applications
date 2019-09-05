@@ -51,6 +51,9 @@ import { LoggedInService } from './services/logged-in.service';
 import { UniqueIdService } from './services/unique-id.service';
 import { DateService } from './services/date.service';
 import { Uid } from '@ionic-native/uid/ngx';
+import { FormsModule } from '@angular/forms';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
+import { QrCodeService } from './services/qr-code.service';
 
 /**
 * Purpose:	This class provides the module for the app
@@ -73,7 +76,8 @@ import { Uid } from '@ionic-native/uid/ngx';
     IonicStorageModule.forRoot(),
     HttpClientModule,
     CreateVisitorPackagePageModule,
-    EditVisitorPackagePageModule
+    EditVisitorPackagePageModule,
+    FormsModule
   ],
   providers: [
     SplashScreen,
@@ -97,6 +101,8 @@ import { Uid } from '@ionic-native/uid/ngx';
     Diagnostic,
     Uid,
     UniqueIdService,
+    BarcodeScanner,
+    QrCodeService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

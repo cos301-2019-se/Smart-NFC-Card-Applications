@@ -97,7 +97,7 @@ export class LoggedInService {
     }
     else {
       setTimeout(() => {
-        this.req.login(username, password).subscribe(res => {
+        this.req.login(username, password).subscribe(res => {  
           if (res['success'] === true) {
             this.account.employeeId = res['data']['id'];
             this.setLoggedIn(true, this.account.employeeId);
@@ -105,7 +105,7 @@ export class LoggedInService {
             this.req.setApiKey(apiKey);
             this.storage.Save(this.apiKeyName, apiKey)
             .then(() => {
-              this.refreshAccountDetails().subscribe(response => {
+              this.refreshAccountDetails().subscribe(response => { 
                 if (response['success'] === true) {
                   subject.next({success: true, message: res['message']});
                   subject.complete();
@@ -155,11 +155,11 @@ export class LoggedInService {
           this.account.wifi = new WifiDetailsModel(wifiDetails['wifiParamsId'], wifiDetails['ssid'], wifiDetails['networkType'], wifiDetails['password']);
           this.req.getBusinessCard(this.account.employeeId).subscribe(response => {
             if (response['success'] === true) {
-              let cardDetails = response['data'];
-              this.account.company = cardDetails['companyName'];
+              let cardDetails = response['data'];  
+              this.account.company = cardDetails['companyName'];  
               this.cardService.setOwnBusinessCard(cardDetails);
-                            
-              this.packageService.loadAllSharedPackages(this.account.employeeId).subscribe(res => {
+                          
+              this.packageService.loadAllSharedPackages(this.account.employeeId).subscribe(res => { 
                 if (res['success'] === true) {
                   subject.next({success: true, message: 'Successfull refreshed account details.'});
                   subject.complete();

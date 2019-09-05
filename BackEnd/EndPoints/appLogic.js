@@ -12,6 +12,7 @@
  *	2019/05/19	Tjaart		1.0		    Original
  *  2019/06/24  Tjaart      2.0         Added functions for demo 3
  *  2019/08/04  Tjaart      2.1         Extended the addTpaRoom function
+ *  2019/09/05  Tjaart      3.0         Added deletes
  *
  *	Functional Description:	This class handles the functionality that will be requested by the
  *                          application to the backend system. It handles functionality like
@@ -72,6 +73,9 @@ class AppLogic extends ParentLogic{
                 break;
             case "getVisitorPackages":
                 this.getVisitorPackages();
+                break;
+            case "deleteVisitorPackage":
+                this.deleteVisitorPackage();
                 break;
 
             default:
@@ -344,60 +348,6 @@ class AppLogic extends ParentLogic{
     }
 
     /**
-     *  Function to return a client object
-     *
-     *  @param clientId int ID of client
-     *
-     *  @return JSON {
-     *                  clientId: int ID of client
-     *                  macAddress: string Mac Address of client device
-     *               }
-     */
-    async getClient(clientId){
-        let data = {};
-        if(this.demoMode){
-            data.clientId = 0;
-            data.macAddress = "0";
-        }
-        else{
-            let ret = await this.sharedLogic.crudController.getClientByClientId(clientId);
-
-            if(ret.success){
-                data.clientId = ret.data.clientId;
-                data.macAddress = ret.data.macAddress;
-            }
-            else{
-                this.sharedLogic.endServe(ret.success, ret.message, ret.data);
-            }
-        }
-        return data;
-    }
-
-    /**
-     *  Function to delete a client from the database
-     *
-     *  @param clientId int ID of client
-     *
-     *  @return JSON {
-     *                  clientId: int ID of client
-     *               }
-     *
-     *  @TODO complete
-     */
-    deleteClient(clientId){
-        let data = {};
-        if(this.demoMode){
-            data;
-        }
-        else{
-            this.sharedLogic.crudController.deleteClient(clientId, function (ret) {
-                data = ret.data;
-            });
-        }
-        return data;
-    }
-
-    /**
      *  Function to add temporary wifi access
      *
      *  @param wifiAccessParamsId int ID of WiFi access point
@@ -453,62 +403,6 @@ class AppLogic extends ParentLogic{
             }
         }
 
-        return data;
-    }
-
-    /**
-     *  Function to get temporary wifi access
-     *
-     *  @param wifiTempAccessId int ID of temporary wifi access
-     *
-     *  @return JSON {
-     *                  wifiTempAccessId: ID of temporary wifi access
-     *                  wifiAccessParamsId: ID of WiFi access point
-     *               }
-     */
-    async getTempWifi(wifiTempAccessId){
-        let data = {};
-
-        if(this.demoMode){
-            data.wifiTempAccessId = 0;
-            data.wifiAccessParamsId = 0;
-        }
-        else{
-            let ret = await this.sharedLogic.crudController.getTempWifiAccessByTempWifiAccessId(wifiTempAccessId);
-
-            if(ret.success){
-                data.wifiTempAccessId = ret.data.tempWifiAccessId;
-                data.wifiAccessParamsId = ret.data.wifiParamsId;
-            }
-            else{
-                this.sharedLogic.endServe(ret.success, ret.message, ret.data);
-            }
-        }
-
-        return data;
-    }
-
-    /**
-     *  Function to delete temporary wifi access
-     *
-     *  @param wifiTempAccessId int ID of temporary wifi access
-     *
-     *  @return JSON {
-     *                  wifiTempAccess: int ID of temporary wifi access
-     *               }
-     *
-     *  @TODO complete
-     */
-    deleteTempWifi(wifiTempAccessId){
-        let data = {};
-        if(this.demoMode){
-            data;
-        }
-        else{
-            this.sharedLogic.crudController.deleteTempWifiAccess(wifiTempAccessId, function (ret) {
-                data = ret.data;
-            });
-        }
         return data;
     }
 
@@ -573,64 +467,6 @@ class AppLogic extends ParentLogic{
     }
 
     /**
-     *  Function to retrieve wallet details
-     *
-     *  @param walletId int ID of the wallet to update
-     *
-     *  @return JSON {
-     *                  walletId: int ID of wallet
-     *                  limit: float Limit of the wallet
-     *                  spent: float Amount spent on the wallet
-     *               }
-     */
-    async getWallet(walletId){
-        let data = {};
-        if(this.demoMode){
-            data.walletId = 0;
-            data.limit = 0;
-            data.spent = 0;
-        }
-        else{
-            let ret = await this.sharedLogic.crudController.getWalletByLinkWalletId(walletId)
-
-            if(ret.success){
-                data.walletId = ret.data.linkWalletId;
-                data.limit = ret.data.maxLimit;
-                data.spent = ret.data.spent;
-            }
-            else{
-                this.sharedLogic.endServe(ret.success, ret.message, ret.data);
-            }
-        }
-
-        return data;
-    }
-
-    /**
-     *  Function to delete wallet details
-     *
-     *  @param walletId int ID of the wallet to update
-     *
-     *  @return JSON {
-     *
-     *               }
-
-     *  @TODO complete
-     */
-    deleteWallet(walletId){
-        let data = {};
-        if(this.demoMode){
-            data;
-        }
-        else{
-            this.sharedLogic.crudController.deleteWallet(walletId, function (ret) {
-                data = ret.data;
-            });
-        }
-        return data;
-    }
-
-    /**
      *  Function to add a new TPA
      *
      *  @return JSON {
@@ -654,59 +490,6 @@ class AppLogic extends ParentLogic{
             }
         }
 
-        return data;
-    }
-
-    /**
-     *  Function to retrieve a TPA
-     *
-     *  @param tpaId int ID of TPA
-     *
-     *  @return JSON {
-     *                  tpaId: int ID of TPA
-     *               }
-     */
-    async getTpa(tpaId){
-        let data = {};
-
-        if(this.demoMode){
-            data.tpaId = 0;
-        }
-        else{
-            let ret = await this.sharedLogic.crudController.getTPAByTpaId(tpaId);
-
-            if(ret.success){
-                data.tpaId = ret.data.tpaId;
-            }
-            else{
-                this.sharedLogic.endServe(ret.success, ret.message, ret.data);
-            }
-        }
-
-        return data;
-    }
-
-    /**
-     *  Function to delete a TPA
-     *
-     *  @param tpaId int ID of TPA
-     *
-     *  @return JSON {
-     *
-     *               }
-     *
-     *  @TODO complete
-     */
-    deleteTpa(tpaId){
-        let data = {};
-        if(this.demoMode){
-            data;
-        }
-        else{
-            this.sharedLogic.crudController.deleteTpa(tpaId, function (ret) {
-                data = ret.data;
-            });
-        }
         return data;
     }
 
@@ -810,60 +593,6 @@ class AppLogic extends ParentLogic{
             data = await this.addTpaRoom(tpaId, roomId);
         }
 
-        return data;
-    }
-
-    /**
-     *  Function to retrieve the rooms of a TPA
-     *
-     *  @param tpaId int ID of TPA
-     *
-     *  @return JSON {
-     *                  // return
-     *               }
-     */
-    async getTpaRoom(tpaId){
-        let data = {};
-
-        if(this.demoMode){
-            //data;
-        }
-        else{
-            let ret = await this.sharedLogic.crudController.getTPAxRoomsByTpaId(tpaId);
-
-            if(ret.success){
-                // return
-            }
-            else{
-                this.sharedLogic.endServe(ret.success, ret.message, ret.data);
-            }
-        }
-
-        return data;
-    }
-
-    /**
-     *  Function to delete a room from a TPA
-     *
-     *  @param tpaId int ID of TPA
-     *  @param roomId int ID of Room
-     *
-     *  @return JSON {
-     *
-     *               }
-     *
-     *  @TODO complete
-     */
-    deleteTpaRoom(tpaId, roomId){
-        let data = {};
-        if(this.demoMode){
-            data;
-        }
-        else{
-            this.sharedLogic.crudController.deleteTPAxRoom(tpaId, roomId,function (ret) {
-                data = ret.data;
-            });
-        }
         return data;
     }
 
@@ -976,21 +705,25 @@ class AppLogic extends ParentLogic{
                                     let visitorPackage = {};
 
                                     let ret = await this.sharedLogic.crudController.getClientByMacAddress(this.body.macAddress);
-                                    if(ret.success)
+                                    if(ret.success){
                                         client = ret.data;
-                                    else
+                                    }
+                                    else{
                                         client = await this.addClient(this.body.macAddress);
+                                    }
 
-                                    if(this.body.wifiAccessParamsId !== null)
+                                    if(this.body.wifiAccessParamsId !== null){
                                         wifi = await this.addTempWifi(this.body.wifiAccessParamsId);
+                                    }
 
                                     if(this.body.roomId !== null){
                                         tpa = await this.addTpa();
                                         tpa_room = await this.addTpaRoom(tpa.tpaId, this.body.roomId);
                                     }
 
-                                    if(this.body.limit !== null && this.body.spent !== null)
+                                    if(this.body.limit !== null && this.body.spent !== null){
                                         wallet = await this.addWallet(this.body.limit, this.body.spent);
+                                    }
 
                                     if(Object.entries(wifi).length !== 0 && Object.entries(tpa_room).length === 0 && Object.entries(wallet).length === 0){
                                         visitorPackage = await this.sharedLogic.crudController.createVisitorPackage(wifi.wifiTempAccessId,
@@ -1063,6 +796,15 @@ class AppLogic extends ParentLogic{
                                         this.sharedLogic.endServe(success, message, data);
                                     }
                                     else{
+                                        await this.sharedLogic.crudController.deleteClient(client.clientId);
+                                        await this.sharedLogic.crudController.deleteTempWifiAccess(wifi.wifiTempAccessId);
+                                        await this.sharedLogic.crudController.deleteWallet(wallet.walletId);
+                                        let tpa_rooms = await this.sharedLogic.crudController.getTPAxRoomsByTpaId(tpa.tpaId);
+                                        for(let i=0; i<tpa_rooms.data.length; i++){
+                                            await this.sharedLogic.crudController.deleteTPAxRoom(tpa_rooms.data[i].tpaId, tpa_rooms.data[i].roomId);
+                                        }
+                                        await this.sharedLogic.crudController.deleteTPA(tpa.tpaId);
+
                                         this.sharedLogic.endServe(visitorPackage.success, visitorPackage.message, visitorPackage.data);
                                     }
                                 }
@@ -1577,6 +1319,58 @@ class AppLogic extends ParentLogic{
         }
 
         return data;
+    }
+
+    /**
+     * Function that will delete a visitor package
+     * 
+     * @param int visitorPackageId
+     */
+    async deleteVisitorPackage(){
+        let success;
+        let message;
+        let data = {};
+
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.visitorPackageId === undefined){
+            presentParams = true;
+            presentReturn += "visitorPackageId, ";
+        }
+
+        if(!presentParams){
+            let invalidParams = false;
+            let invalidReturn = "";
+
+            if(!this.sharedLogic.validateNonEmpty(this.body.employeeId)){
+                invalidParams = true;
+                invalidReturn += "employeeId, ";
+            }
+
+            if(!invalidParams) {
+                let ret = await this.sharedLogic.crudController.deleteVisitorPackage(this.body.visitorPackageId);
+                success = ret.success;
+                message = ret.message;
+                data = ret.data
+            
+                this.sharedLogic.endServe(success, message, data);
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: " + invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                this.sharedLogic.endServe(success, message, data);
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: " + presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+            this.sharedLogic.endServe(success, message, data);
+        }
     }
 
     /**

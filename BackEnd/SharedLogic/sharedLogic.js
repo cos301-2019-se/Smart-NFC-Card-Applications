@@ -257,6 +257,7 @@ class SharedLogic {
 		 to search either the employee or the company table
      */
 	async login() {
+
 		var subsystem = this.from.req.url.substring(1, this.from.req.url.substring(1).indexOf("/") + 1);
 		var user = this.from.body.username;
 		var pass = this.from.body.password;
@@ -284,9 +285,17 @@ class SharedLogic {
 							//search for the employeeId in the employee table
 							var employeeDetails = await this.crudController.getEmployeeByPasswordId(passwordDetails.passwordId);
 							if (employeeDetails.success) {
+								let updateApi = false;
+								let newApi;
+								let passwordObj;
+								while(!updateApi){
+									newApi = this.genApiKey();
+									passwordObj = await this.crudController.updatePassword(passwordDetails.passwordId,undefined,undefined,undefined, newApi,undefined);
+									updateApi = passwordObj.success;
+								}
 								let emailMessage = "A user has logged into your Link profile.\n\n If this was not done by you, please contact your company representative. \n\nKind Regards\nLink Development Team";
 								this.sendEmail(employeeDetails.data.email,"Link Login", emailMessage);
-								apiKeyAndId = { correct: true, apiKey: passwordDetails.apiKey, id: employeeDetails.data.employeeId };
+								apiKeyAndId = { correct: true, apiKey: newApi, id: employeeDetails.data.employeeId };
 							} else {
 								apiKeyAndId = { correct: false };
 							}

@@ -65,7 +65,7 @@ export class CardTabPage implements OnInit{
     public filterService: FilterService,
     private alertController: AlertController,
     private qrCodeService: QrCodeService
-  ) { }
+  ) {  }
 
   ngOnInit() {   
     this.eventEmitterService.menuSubscribe(
@@ -78,10 +78,10 @@ export class CardTabPage implements OnInit{
   /**
    * Function triggers when the tab is navigated to
    */
-  ionViewDidEnter() {
+  ionViewDidEnter() { 
     this.showMessage('', MessageType.reset);
     // Gets the business cards
-    this.loadCards(); 
+    this.loadCards();
   }
 
   /**
@@ -163,6 +163,9 @@ export class CardTabPage implements OnInit{
         this.cardService.addBusinessCard(json.companyId, json.companyName, json.employeeName, json.contactNumber, json.email, json.website, json.location)
         .then(() => {
           this.loadCards();
+        })
+        .catch(err => {
+          this.showMessage(`Could not add business card: ${err}`, MessageType.error);
         });
       });
     })
@@ -282,7 +285,7 @@ export class CardTabPage implements OnInit{
         this.loadCards();
       })
       .catch(err => {
-        this.showMessage(`Error adding card: ${err}`, MessageType.error);
+        this.showMessage(`Could not add business card: ${err}`, MessageType.error);
       });
     });
   }

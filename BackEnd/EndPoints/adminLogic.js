@@ -81,7 +81,7 @@ class AdminLogic extends ParentLogic {
                 this.editBuilding();
                 break;
             case "deleteBuilding":
-                this.deleteBuilding();//DONT DO
+                this.deleteBuilding();
                 break;
             case "getBuildingByBuildingId":
                 this.getBuildingByBuildingId();

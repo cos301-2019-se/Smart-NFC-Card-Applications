@@ -25,7 +25,10 @@
           <ion-label><ion-icon name="pin"></ion-icon>&nbsp;<a (click)="navigate(card.location)">{{ card.location.label }}</a></ion-label>
         </ion-item>
         <br>
-        <ion-button expand="block" fill="outline" (click)="shareCard()">Share</ion-button>
+        <ion-button expand="block" fill="outline" (click)="shareCard()">Share (NFC)</ion-button>
+        <ion-button expand="block" fill="outline" (click)="showQrCode()">Share (QR Code)</ion-button>
+
+        <ion-input *ngIf='encodedData' type="text" [(ngModel)]="encodedData"></ion-input> 
       </ion-card-content>
     </ion-card>
 </ion-content>

@@ -33,4 +33,12 @@ export class BusinessCard {
     email: string;
     website: string;
     location: LocationModel;
+
+    /**
+     * Function that creates a CSV of the business card model
+     * @return String csv
+     */
+    toCSV(){
+        return `${this.businessCardId},${this.companyName},${this.employeeName},${this.contactNumber},${this.email},${this.website},${this.location.getLabel()},${this.location.getLatitude()},${this.location.getLongitude()}`;
+    }
 }

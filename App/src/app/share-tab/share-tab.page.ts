@@ -28,6 +28,7 @@ import { EventEmitterService } from '../services/event-emitter.service';
 import { MessageType } from '../tabs/tabs.page';
 import { LoggedInService } from '../services/logged-in.service';
 import { RequestModuleService } from '../services/request-module.service';
+import { QrCodeService } from '../services/qr-code.service';
 
 /**
 * Purpose:	This class provides the component that allows sharing of cards
@@ -43,6 +44,7 @@ import { RequestModuleService } from '../services/request-module.service';
 export class ShareTabPage implements OnInit{
 
   card: BusinessCard;
+  encodedData;
   hasCard: Boolean = true;
   check;
 
@@ -61,7 +63,8 @@ export class ShareTabPage implements OnInit{
     private locationService: LocationService,
     private eventEmitterService: EventEmitterService,
     private loginService: LoggedInService,
-    private req: RequestModuleService
+    private req: RequestModuleService,
+    private qrCodeService: QrCodeService
   ) { }
 
   ngOnInit() {    
@@ -101,6 +104,8 @@ export class ShareTabPage implements OnInit{
         break;
       case 'Share': this.shareCard()
         break;
+      case 'QR Code': this.showQrCode()
+        break;
     }
   }
 
@@ -127,6 +132,24 @@ export class ShareTabPage implements OnInit{
     .finally(() => {
       // Whether it failed or succeeded, turn of the sharing
       this.nfcService.Finish();
+    });
+  }
+
+  showQrCode(){
+    this.cardService.getOwnBusinessCard().then((val) => {
+      if (val === undefined || val === null) {
+        this.showMessage(`No card to share.`, MessageType.error);
+      }
+      else {
+        this.qrCodeService.encodeData(val).subscribe(res => {
+          if (res['success'] === true) {
+            this.encodedData = res['message'];
+          }
+          else {
+            this.showMessage(`Could not generate QR code.`, MessageType.error);
+          }
+        });
+      }
     });
   }
 

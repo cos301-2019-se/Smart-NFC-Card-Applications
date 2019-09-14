@@ -34,7 +34,7 @@
 */
 
 const { Pool, Client } = require('pg');
-
+const format = require('pg-format');
 
 class CrudController {
 
@@ -75,17 +75,19 @@ class CrudController {
 		}
 
 
-		/*this.client = new Client({
+		this.client = new Client({
 			user: 'postgres',
 			host: 'localhost',
 			database: 'link',
 			password: 'nbuser',
 			port: 5432,
-		});*/
+		});
 		
+		/*
 		this.client = new Client({
 			connectionString: process.env.DATABASE_URL
 		});
+		*/
 		
 		this.client.connect();
 
@@ -815,6 +817,24 @@ class CrudController {
 
 	}
 
+	async createPasswords(passwordsArr){
+		//passwordsArr is in format [[emp1], [emp2]....]
+		let query = format('INSERT INTO ' + this.mva['password'] + ' (username, hash, salt, apikey, expirationdate) VALUES %L RETURNING passwordid', passwordsArr);
+		try{
+			let {rows} = await this.client.query(query);
+			if(rows.length === 0 && passwordsArr.length !== 0){
+				return this.returnDatabaseError("No passwords were created");
+			}else{
+				let res =  this.buildDefaultResponseObject(true, "Successfully inserted passwords", false, false);
+				res.data = rows;
+				return res;
+			}
+		}catch(err){
+			console.log(err.stack);
+			return this.returnDatabaseError(err);
+		}
+	}
+
 	/**
 	*	Retrieves a password using passwordId
 	*	@param passwordId 
@@ -989,6 +1009,34 @@ class CrudController {
 			console.log(err.stack);
 			ret = this.returnDatabaseError(err);
 			return ret;
+		}
+	}
+
+
+	async deletePasswords(passwordIdArr) {
+		if(passwordIdArr.constructor !== Array || passwordIdArr.length ===0)
+			return this.returnDatabaseError("Expected array not provided");
+		var inString = '(';
+		for(var i=0; i < passwordIdArr.length; i++){
+			if(!this.validateNumeric(passwordIdArr[i]))
+				return this.returnDatabaseError("Invalid passwordID found at array index: " + i);
+
+			inString += '$' + (i + 1) + ', ';
+		}
+		inString = inString.substring(0, inString.length - 2) + ');';
+
+
+		// var query = 'DELETE FROM ' + this.mva['password'] + ' WHERE passwordid IN ' + inString;
+		var query = 'DELETE FROM ' + 'password' + ' WHERE passwordid IN ' + inString; //NB not using view here as it didnt work
+
+		try {
+			let res = await this.client.query(query, passwordIdArr);
+			return this.buildDefaultResponseObject(true, "Successfully deleted passwords", true);
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			return this.returnDatabaseError(err);
 		}
 	}
 
@@ -1372,7 +1420,25 @@ class CrudController {
 			ret = this.returnDatabaseError(err);
 			return ret;
 		}
+	}
 
+	async createEmployees(employeesArr){
+		//employeesArr is in format [[emp1], [emp2]....]
+
+		let query = format('INSERT INTO ' + this.mva['employee'] + '(firstname, surname, title, cellphone, email, companyid, buildingid, passwordid) VALUES %L RETURNING employeeid', employeesArr);
+		try{
+			let {rows} = await this.client.query(query);
+			if(rows.length === 0 && employeesArr.length !== 0){
+				return this.returnDatabaseError("No Employees were created");
+			}else{
+				let res =  this.buildDefaultResponseObject(true, "Successfully inserted employees", false, false);
+				res.data = rows;
+				return res;
+			}
+		}catch(err){
+			console.log(err.stack);
+			return this.returnDatabaseError(err);
+		}
 	}
 
 	/**

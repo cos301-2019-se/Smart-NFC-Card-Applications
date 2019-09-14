@@ -30,7 +30,8 @@
     <link rel="stylesheet" href="Css/styles.css">
     <!-- Data Table imports -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Fontawesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css">
 </head>
 
 <body style="display: none" onload="checkCompanies();">
@@ -40,7 +41,7 @@
         <a class="font-weight-bold" href="home.html">Link</a>
         <a href="home.html">Home</a>
         <a href="buildings.html">Buildings</a>
-        <a class="active "href="employees.html">Employees</a>
+        <a class="active " href="employees.html">Employees</a>
         <a href="paymentpoints.html">Payment Points</a>
         <a href="transactions.html">Transactions</a>
         <a style="float: right" href="" id="logoutTab" onclick="logout();">Logout</a>
@@ -81,7 +82,13 @@
                     style="height:40px;margin-top:10px">
                     Add Employee <i class="fa fa-plus fa-lg"></i>
                 </button>
+                <button type="button" class="btn btn-success btn-md pull-left" onclick="$('#hiddenInputFile').click()"
+                    style="height:40px;margin-top:10px; ;margin-left: 0.5em">
+                    Import Employees from CSV <i class="fa fa-file-csv fa-lg"></i>
+                </button>
+                <input id="hiddenInputFile" type="file" accept=".csv" style="visibility:hidden" />
             </div>
+
             <div class="btn-group" role="group">
                 <button id="btnBackHome" onclick="window.location.replace('home.html');"
                     class="btn btn-default pull-right" style="margin-top:10px">Back to Home</button>
@@ -281,6 +288,8 @@
         crossorigin="anonymous"></script>
     <!-- Data Tables Javascript -->
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.js"></script>
+    <!-- CSV parser -->
+    <script type="text/javascript" src="Js/papaparse.min.js"></script>
 
 </body>
 

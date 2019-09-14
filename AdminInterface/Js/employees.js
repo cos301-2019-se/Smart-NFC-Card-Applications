@@ -14,6 +14,112 @@ $(document).ready(function () {
     } else {
         fetchDataAndPopulateTable();
 
+        $("#hiddenInputFile").change(function (event) {
+            var input = event.target;
+            Papa.parse(input.files[0], {
+                complete: function (results) {
+                    lines = results.data;
+                    if (lines.length === 0)
+                        return;
+
+                    if (lines[0].length !== 7 || lines[0][0] !== "first_name" || lines[0][1] !== "surname" || lines[0][2] !== "title" || lines[0][3] !== "cellphone" || lines[0][4] !== "email" || lines[0][5] !== "create_password" || lines[0][6] !== "building_name") {
+                        displayError("alertContainer", "Invalid header for csv file. Header should be: first_name,surname,title,cellphone,email,create_password,building_name");
+                        return;
+                    }
+                    postArr = [];
+                    let parsedCompanyId = parseInt(companyId);
+                    for (var i = 1; i < lines.length; i++) {
+                        let line = lines[i];
+                        if (line.length <= 1)
+                            continue; //this skips empty lines
+
+                        if (line.length !== 7) {
+                            displayError("alertContainer", "Invalid number of columns on row " + (i + 1));
+                            return;
+                        }
+
+
+                        let firstName = line[0].trim();
+                        if (!isAlphabetic(firstName)) {
+                            displayError("alertContainer", "Invalid first name on row " + (i + 1));
+                            return;
+                        }
+
+                        let surname = line[1].trim();
+                        if (!isAlphabetic(surname)) {
+                            displayError("alertContainer", "Invalid surname on row " + (i + 1));
+                            return;
+                        }
+
+                        let title = line[2].trim();
+                        if (!isAlphabetic(title) && title.length <= 10) {
+                            displayError("alertContainer", "Invalid title on row " + (i + 1));
+                            return;
+                        }
+
+                        let cellphone = line[3].trim();
+                        if (!isCellphoneNumber(cellphone)) {
+                            displayError("alertContainer", "Invalid cellphone on row " + (i + 1));
+                            return;
+                        }
+
+                        let email = line[4].trim();
+                        if (!isEmail(email)) {
+                            displayError("alertContainer", "Invalid email on row " + (i + 1));
+                            return;
+                        }
+
+                        let password = line[5].trim();
+                        if (password.length === 0) {
+                            displayError("alertContainer", "Invalid password on row " + (i + 1));
+                            return;
+                        }
+
+                        let buildingName = line[6].trim();
+                        let buildingId = findBuildingIdFromBuildingName(buildingName.trim());
+                        if (buildingId === false) {
+                            displayError("alertContainer", "Invalid building name on row " + (i + 1));
+                            return;
+                        }
+
+                        postArr.push({
+                            'employeeName': firstName,
+                            'employeeSurname': surname,
+                            'employeeTitle': title,
+                            'employeeEmail': email,
+                            'employeeCellphone': cellphone,
+                            'buildingId': parseInt(buildingId),
+                            'employeePassword': password,
+                            'companyId': parsedCompanyId
+                        });
+
+                    }
+                    if (postArr.length === 0)
+                        return;
+                    let postObject = {};
+                    postObject.apiKey = apiKey;
+                    postObject.companyId = parseInt(companyId);
+                    postObject.data = postArr;
+                    console.log(postObject);
+
+
+                    $.post("/admin/addEmployees", JSON.stringify(postObject), (data) => {
+                        if (data.success) {
+                            $("#alertContainer").empty().append(`
+                            <div class="alert alert-success hide" role="alert">
+                            <h4 class="alert-heading">Operation Successful!</h4>
+                            Added Employees Successfully`);                        } else {
+                            displayError("alertContainer", "Failed to modify employee, please try again later");
+                        }
+                
+                    }).fail(() => {
+                        displayError("alertContainer", "Failed to modify employee. Please check your connection");
+                    });
+
+                }
+            });
+        });
+
         $('#darkmode').change(function () {
             $('#table').toggleClass("table-dark");
             $('body').toggleClass("dark-theme");
@@ -207,6 +313,7 @@ function findBuildingIdFromBuildingName(name) {
             return id;
         }
     }
+    return false;
 }
 
 function initializeAddEmployee() {
@@ -372,15 +479,15 @@ function logout() {
     window.location.replace("login.html");
 }
 
-function checkCompanies(){
-    if(localStorage.getItem("id")==1) {
+function checkCompanies() {
+    if (localStorage.getItem("id") == 1) {
         var a = document.createElement('a');
         var linkText = document.createTextNode("Companies");
         a.appendChild(linkText);
         a.title = "Companies";
         a.href = "companies.html";
         var nav = document.getElementById("myTopnav");
-        nav.insertBefore(a,nav.children[6]);
+        nav.insertBefore(a, nav.children[6]);
     }
 }
 function checkNav() {
@@ -395,5 +502,36 @@ function checkNav() {
         x.className = "topnav";
         comp.style = "float: right";
         log.style = "float: right";
+    }
+}
+
+function isAlphabetic(letters) {
+    //allows for A-Z or a-z as first char, then followed by A-Z/a-z/ (space)/-
+    if (/^([A-Za-z])([\-A-Za-z ])+$/.test(letters)) {
+        return true;
+    }
+    return false;
+}
+
+function isCellphoneNumber(cellphone) {
+    var regex = [
+        /^"?[0-9]{10}"?$/,
+        /^"?\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})"?$/,
+        /^"?\(\+([0-9]{2})\)?[-. ]?([0-9]{2})[-. ]?([0-9]{3})[-. ]?([0-9]{4})"?$/
+    ];
+    for (var countRegex = 0; countRegex < regex.length; ++countRegex) {
+        if (regex[countRegex].test(cellphone)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function isEmail(email) {
+    if (/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/.test(email)) {
+        return true;
+    }
+    else {
+        return false
     }
 }

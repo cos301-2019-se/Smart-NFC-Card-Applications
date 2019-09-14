@@ -1766,7 +1766,8 @@ class AdminLogic extends ParentLogic {
 
     /**
      * Function to add a bulk amount of employees, it will create employees belonging to a company ID
-     * Params are an array of objects containing the parameters
+     * Params are an array of objects containing the parameters in the form [{emp1}, {emp2}, ...] where each emp 
+     * has the following fields
      *
      * @param   employeeName string The name of the employee
      * @param   employeeSurname string The surname of the employee
@@ -1848,6 +1849,8 @@ class AdminLogic extends ParentLogic {
                     return this.sharedLogic.endServe(false, "Failed to add Employees. Reverting to previous state resulted in " + deletePasswordObj.success + " status: " +  deletePasswordObj.message, null);
                 }
                   
+            }else{
+                return this.sharedLogic.endServe(false, "Failed to create employee passwords: employees not added", null);
             }
     }
 

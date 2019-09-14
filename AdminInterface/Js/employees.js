@@ -13,17 +13,43 @@ $(document).ready(function () {
         window.location.replace("login.html");
     } else {
         fetchDataAndPopulateTable();
+        $("#hiddenInputFile").get(0).addEventListener('change', handleFile, false); //bind event listener for select button
+        $("#csvModal").get(0).addEventListener('dragover', handleDragOver, false);
+        $("#csvModal").get(0).addEventListener('drop', handleFile, false);
 
-        $("#hiddenInputFile").change(function (event) {
-            var input = event.target;
-            Papa.parse(input.files[0], {
+        function handleDragOver(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+        }
+
+        function handleFile(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            var input;
+            if (event.type === 'drop') {
+                input = event.dataTransfer.files[0];
+            } else {
+                input = event.target.files[0]; // this is for normal file picker events
+            }
+            if (input === undefined){
+                displayError("alertContainerImportCSV", "No CSV File provided");
+                return;
+            }
+            if(!input.name.endsWith('.csv')){
+                displayError("alertContainerImportCSV", "Invalid file provided. File must be of .csv format");
+                return;
+            }
+
+
+            Papa.parse(input, {
                 complete: function (results) {
                     lines = results.data;
                     if (lines.length === 0)
                         return;
 
                     if (lines[0].length !== 7 || lines[0][0] !== "first_name" || lines[0][1] !== "surname" || lines[0][2] !== "title" || lines[0][3] !== "cellphone" || lines[0][4] !== "email" || lines[0][5] !== "create_password" || lines[0][6] !== "building_name") {
-                        displayError("alertContainer", "Invalid header for csv file. Header should be: first_name,surname,title,cellphone,email,create_password,building_name");
+                        displayError("alertContainerImportCSV", "Invalid header for csv file. Header should be: first_name,surname,title,cellphone,email,create_password,building_name");
                         return;
                     }
                     postArr = [];
@@ -34,51 +60,51 @@ $(document).ready(function () {
                             continue; //this skips empty lines
 
                         if (line.length !== 7) {
-                            displayError("alertContainer", "Invalid number of columns on row " + (i + 1));
+                            displayError("alertContainerImportCSV", "Invalid number of columns on row " + (i + 1));
                             return;
                         }
 
 
                         let firstName = line[0].trim();
                         if (!isAlphabetic(firstName)) {
-                            displayError("alertContainer", "Invalid first name on row " + (i + 1));
+                            displayError("alertContainerImportCSV", "Invalid first name on row " + (i + 1));
                             return;
                         }
 
                         let surname = line[1].trim();
                         if (!isAlphabetic(surname)) {
-                            displayError("alertContainer", "Invalid surname on row " + (i + 1));
+                            displayError("alertContainerImportCSV", "Invalid surname on row " + (i + 1));
                             return;
                         }
 
                         let title = line[2].trim();
                         if (!isAlphabetic(title) && title.length <= 10) {
-                            displayError("alertContainer", "Invalid title on row " + (i + 1));
+                            displayError("alertContainerImportCSV", "Invalid title on row " + (i + 1));
                             return;
                         }
 
                         let cellphone = line[3].trim();
                         if (!isCellphoneNumber(cellphone)) {
-                            displayError("alertContainer", "Invalid cellphone on row " + (i + 1));
+                            displayError("alertContainerImportCSV", "Invalid cellphone on row " + (i + 1));
                             return;
                         }
 
                         let email = line[4].trim();
                         if (!isEmail(email)) {
-                            displayError("alertContainer", "Invalid email on row " + (i + 1));
+                            displayError("alertContainerImportCSV", "Invalid email on row " + (i + 1));
                             return;
                         }
 
                         let password = line[5].trim();
                         if (password.length === 0) {
-                            displayError("alertContainer", "Invalid password on row " + (i + 1));
+                            displayError("alertContainerImportCSV", "Invalid password on row " + (i + 1));
                             return;
                         }
 
                         let buildingName = line[6].trim();
                         let buildingId = findBuildingIdFromBuildingName(buildingName.trim());
                         if (buildingId === false) {
-                            displayError("alertContainer", "Invalid building name on row " + (i + 1));
+                            displayError("alertContainerImportCSV", "Invalid building name on row " + (i + 1));
                             return;
                         }
 
@@ -100,25 +126,27 @@ $(document).ready(function () {
                     postObject.apiKey = apiKey;
                     postObject.companyId = parseInt(companyId);
                     postObject.data = postArr;
-                    console.log(postObject);
-
 
                     $.post("/admin/addEmployees", JSON.stringify(postObject), (data) => {
                         if (data.success) {
+                            $('#csvModal').modal('hide');
+                            fetchDataAndPopulateTable();
                             $("#alertContainer").empty().append(`
-                            <div class="alert alert-success hide" role="alert">
+                            <div class="alert alert-success hide alert-dismissible" role="alert">
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
                             <h4 class="alert-heading">Operation Successful!</h4>
-                            Added Employees Successfully`);                        } else {
-                            displayError("alertContainer", "Failed to modify employee, please try again later");
+                            Added Employees Successfully </div>`);
+                        } else {
+                            displayError("alertContainerImportCSV", "Failed to add employees, please check that only unadded employees appear in the file");
                         }
-                
+
                     }).fail(() => {
-                        displayError("alertContainer", "Failed to modify employee. Please check your connection");
+                        displayError("alertContainerImportCSV", "Failed to add employees. Please check your connection");
                     });
 
                 }
             });
-        });
+        }
 
         $('#darkmode').change(function () {
             $('#table').toggleClass("table-dark");
@@ -466,6 +494,27 @@ function fetchCompanyName(resolve, reject) {
         }
     });
 }
+
+function showCSVModal() {
+
+
+
+    // $('#hiddenInputFile').click();
+
+
+
+
+
+
+
+
+
+
+
+}
+
+
+
 
 function displayError(containerId, message) {
     let name = "#" + containerId;

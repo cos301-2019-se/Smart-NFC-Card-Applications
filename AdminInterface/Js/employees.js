@@ -495,26 +495,6 @@ function fetchCompanyName(resolve, reject) {
     });
 }
 
-function showCSVModal() {
-
-
-
-    // $('#hiddenInputFile').click();
-
-
-
-
-
-
-
-
-
-
-
-}
-
-
-
 
 function displayError(containerId, message) {
     let name = "#" + containerId;

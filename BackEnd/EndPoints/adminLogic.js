@@ -61,7 +61,7 @@ class AdminLogic extends ParentLogic {
                 this.editCompany();
                 break;
             case "deleteCompany":
-                this.deleteCompany();//DONT DO
+                this.deleteCompany();
                 break;
             case "getCompanyByCompanyId":
                 this.getCompanyByCompanyId();
@@ -81,7 +81,7 @@ class AdminLogic extends ParentLogic {
                 this.editBuilding();
                 break;
             case "deleteBuilding":
-                this.deleteBuilding();//DONT DO
+                this.deleteBuilding();
                 break;
             case "getBuildingByBuildingId":
                 this.getBuildingByBuildingId();
@@ -98,7 +98,7 @@ class AdminLogic extends ParentLogic {
                 this.editRoom();
                 break;
             case "deleteRoom":
-                this.deleteRoom();//DONT DO
+                this.deleteRoom();
                 break;
             case "getRoomByRoomId":
                 this.getRoomByRoomId();
@@ -118,7 +118,7 @@ class AdminLogic extends ParentLogic {
                 this.editEmployee();
                 break;
             case "deleteEmployee":
-                this.deleteEmployee();//DONT DO
+                this.deleteEmployee();
                 break;
             case "getEmployeeByEmployeeId":
                 this.getEmployeeByEmployeeId();
@@ -148,6 +148,9 @@ class AdminLogic extends ParentLogic {
 			//Payment Points
 			case "addPaymentPoint":
                 this.addPaymentPoint();
+                break;
+            case "deletePaymentPoint":
+                this.deletePaymentPoint();
                 break;
             case "editPaymentPoint":
                 this.editPaymentPoint();
@@ -444,9 +447,17 @@ class AdminLogic extends ParentLogic {
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Delete Company not implemented";
-                    data = null;
+                    let deleteObj = await this.sharedLogic.crudController.deleteCompany(this.body.companyId);
+                    if (deleteObj.success){
+                        success =deleteObj.success;
+                        message =deleteObj.message;
+                        data =deleteObj.data;
+                    }
+                    else{
+                        success =deleteObj.success;
+                        message =deleteObj.message;
+                        data = null;
+                    }
                 }
             }
             else{
@@ -963,9 +974,17 @@ class AdminLogic extends ParentLogic {
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Delete building not implemented";
-                    data = null;
+                    let deleteBuildingObj = await this.sharedLogic.crudController.deleteBuilding(this.body.buildingId);
+                    if(deleteBuildingObj.success){
+                        success =deleteBuildingObj.success;
+                        message =deleteBuildingObj.message;
+                        data =deleteBuildingObj.data;
+                    }
+                    else{
+                        success =deleteBuildingObj.success;
+                        message =deleteBuildingObj.message;
+                        data = null;
+                    }
                 }
             }
             else{
@@ -1428,9 +1447,17 @@ class AdminLogic extends ParentLogic {
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Delete room not implemented";
-                    data = null;
+                    let deleteRoomObj = await this.sharedLogic.crudController.deleteRoom(this.body.roomId);
+                    if(deleteRoomObj.success){
+                        success =deleteRoomObj.success;
+                        message =deleteRoomObj.message;
+                        data =deleteRoomObj.data;
+                    }
+                    else{
+                        success =deleteRoomObj.success;
+                        message =deleteRoomObj.message;
+                        data = null;
+                    }
                 }
             }
             else{
@@ -1972,19 +1999,14 @@ class AdminLogic extends ParentLogic {
                 }
                 else{
                     //return data from crudController
-                    let employeeObj = await this.sharedLogic.crudController.getEmployeeByEmployeeId(this.body.employeeId);
+                    let employeeObj = await this.sharedLogic.crudController.deleteEmployee(this.body.employeeId);
 
                     if(employeeObj.success){
-                        console.log(employeeObj);
-                        let deleteEmployeeObj = await this.sharedLogic.crudController.deleteEmployee(this.body.employeeId);
-                        if(deleteEmployeeObj.success){
-                            let passwordObj = await this.sharedLogic.crudController.deletePassword(employeeObj.data.passwordId);
-                        }
 
                         this.sharedLogic.endServe(true,"Employee Deleted", {employeeId: this.body.employeeId});
 
                     }else {
-                        this.sharedLogic.endServe(false, "Employee Does not Exists", false)
+                        this.sharedLogic.endServe(false, "Employee Does not Exists", null)
                     }
                 }
             }
@@ -2672,8 +2694,7 @@ class AdminLogic extends ParentLogic {
             this.sharedLogic.endServe(success, message, data);
         }
     }
-	
-	
+
 	/**
      * Function that is called to create a payment point, will use SharedLogic's crudController in order
      * to complete the operation. It will create a Payment Point belonging to the Building ID passed in through
@@ -2761,8 +2782,75 @@ class AdminLogic extends ParentLogic {
             this.sharedLogic.endServe(success, message, data);
         }
     }
-	
-	
+
+    /**
+     *  This function is used by the company admin to delete an existing payment Point
+     *
+     *  @param paymentPointId int The Employee to be deleted
+     *
+     *  @return JSON {
+     *                  paymentPointId : int The ID of the payment just deleted
+     *               }
+     */
+    async deletePaymentPoint(){
+        let message;
+        let data = new Object();
+        let success;
+
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.paymentPointId === undefined){
+            presentParams = true;
+            presentReturn += "paymentPointId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            let invalidParams = false;
+            let invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.paymentPointId) || !this.sharedLogic.validateNumeric(this.body.paymentPointId)){
+                invalidParams = true;
+                invalidReturn += "paymentPointId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.paymentPointId = this.body.paymentPointId;
+                    message = "paymentPointId Deleted! - Mock";
+                    success = true;
+                    this.sharedLogic.endServe(success, message, data);
+                }
+                else{
+                    //return data from crudController
+                    let paymentPointObj = await this.sharedLogic.crudController.deleteNfcPaymentPoint(this.body.paymentPointId);
+
+                    if(paymentPointObj.success){
+                        this.sharedLogic.endServe(true,"PaymentPoint Deleted", {paymentPointId: this.body.paymentPointId});
+                    }else {
+                        this.sharedLogic.endServe(false, "PaymentPoint Does not Exists", null)
+                    }
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                this.sharedLogic.endServe(success, message, data);
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+            this.sharedLogic.endServe(success, message, data);
+        }
+
+    }
+
 	/**
      * Function used to change a payment points details
      *
@@ -2868,9 +2956,7 @@ class AdminLogic extends ParentLogic {
             this.sharedLogic.endServe(success, message, data);
         }
     }
-	
-	
-	
+
 	/**
      * This function will be used to return an array of payment points
      *

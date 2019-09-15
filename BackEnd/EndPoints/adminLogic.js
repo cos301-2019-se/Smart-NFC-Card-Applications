@@ -1793,7 +1793,8 @@ class AdminLogic extends ParentLogic {
 
     /**
      * Function to add a bulk amount of employees, it will create employees belonging to a company ID
-     * Params are an array of objects containing the parameters
+     * Params are an array of objects containing the parameters in the form [{emp1}, {emp2}, ...] where each emp 
+     * has the following fields
      *
      * @param   employeeName string The name of the employee
      * @param   employeeSurname string The surname of the employee
@@ -1804,7 +1805,81 @@ class AdminLogic extends ParentLogic {
      * @param   buildingId int The building that the employee works at
      * @param   employeePassword string The Password chosen by the employee - for login purposes
      */
-    async addEmployees(){}
+    async addEmployees(){
+
+        if(!this.body.companyId || !this.sharedLogic.validateNumeric(this.body.companyId))
+            return this.sharedLogic.endServe(false, "No valid companyId provided", null);
+
+        
+        let employeesArr = this.body.data;
+        if(employeesArr.length ==0 )
+            return this.sharedLogic.endServe(false, "No employees data sent", null);
+
+        let passwordsArr = [];
+        let expDate = this.sharedLogic.getDate(0); //only calculate expiration date once
+        //prepare passwords as we iterate and check employees
+        for(var i =0; i < employeesArr.length; i++){
+                let firstName = employeesArr[i].employeeName;
+                if (!firstName || !this.sharedLogic.validateAlpha(firstName)) 
+                    return this.sharedLogic.endServe(false, "Invalid first name for employee index " + i, null);
+
+                let surname = employeesArr[i].employeeSurname;
+                if (!this.sharedLogic.validateAlpha(surname)) 
+                    return this.sharedLogic.endServe(false, "Invalid surname for employee index " + i, null);
+
+                let title = employeesArr[i].employeeTitle;
+                if (!this.sharedLogic.validateAlpha(title) && title.length <= 10) 
+                    return this.sharedLogic.endServe(false, "Invalid title for employee index " + i, null);
+
+                let cellphone = employeesArr[i].employeeCellphone;
+                if (!this.sharedLogic.validateCellphone(cellphone)) 
+                    return this.sharedLogic.endServe(false, "Invalid cellphone for employee index " + i, null);
+
+                let email = employeesArr[i].employeeEmail;
+                if (!this.sharedLogic.validateEmail(email)) 
+                    return this.sharedLogic.endServe(false, "Invalid email for employee index " + i, null);
+
+                let password = employeesArr[i].employeePassword;
+                if (password.length === 0) 
+                    return this.sharedLogic.endServe(false, "Invalid password for employee index " + i, null);
+
+                let buildingId  = employeesArr[i].buildingId;
+                if (!this.sharedLogic.validateNumeric(buildingId)) 
+                    return this.sharedLogic.endServe(false, "Invalid building ID for employee index " + i, null);
+
+                let salt = this.sharedLogic.genSalt();
+                let hash = this.sharedLogic.passwordHash(password,salt);
+                let apiKey = this.sharedLogic.genApiKey(); //need to check for duplicates
+                passwordsArr.push([email, hash, salt, apiKey, expDate]); // prepare passwords
+            }
+
+            let passwordResults = await this.sharedLogic.crudController.createPasswords(passwordsArr);
+            if(passwordResults.success){
+                //now that passwords are inserted, need to insert the employees
+                let employeesArrFormatted = [];
+                for(var i =0; i < employeesArr.length; i++){
+                    employeesArrFormatted.push([employeesArr[i].employeeName,  employeesArr[i].employeeSurname, 
+                        employeesArr[i].employeeTitle, employeesArr[i].employeeCellphone, employeesArr[i].employeeEmail, 
+                        this.body.companyId , employeesArr[i].buildingId, passwordResults.data[i].passwordid]);
+                }
+
+                let employeeResults = await this.sharedLogic.crudController.createEmployees(employeesArrFormatted);
+                if(employeeResults.success){
+                    return this.sharedLogic.endServe(employeeResults.success, "Employees Added!", employeeResults.data);
+                }else{
+                    //need to delete the passwords that were created
+                    let deletePassArr = [];    
+                    for(let i =0; i < passwordResults.data.length; i++){
+                        deletePassArr.push(passwordResults.data[i].passwordid);
+                    }
+                    let deletePasswordObj = await this.sharedLogic.crudController.deletePasswords(deletePassArr);
+                    return this.sharedLogic.endServe(false, "Failed to add Employees. Reverting to previous state resulted in " + deletePasswordObj.success + " status: " +  deletePasswordObj.message, null);
+                }
+                  
+            }else{
+                return this.sharedLogic.endServe(false, "Failed to create employee passwords: employees not added", null);
+            }
+    }
 
     /**
      * Function used to change an employees details

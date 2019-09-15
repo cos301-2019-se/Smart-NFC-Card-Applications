@@ -15,6 +15,7 @@
  *	2019/07/08	Jared		2.0			Make async into sync for all
  *	2019/07/17	Savvas		2.1			Added necessary comments and removed unnecessary comments
  *	2019/07/27	Savvas		2.2			Added Update and Deletes for NFC Payment Points and Transactions
+*	2019/09/15	Savvas		3.0			Added CSV import functionality
  *
  *	Functional Description:		 This class is the interface used by the Logic Components of the Link System to 
  *                               interact with the database. This class facilitates communication with the database.
@@ -34,7 +35,7 @@
 */
 
 const { Pool, Client } = require('pg');
-
+const format = require('pg-format');
 
 class CrudController {
 
@@ -75,13 +76,15 @@ class CrudController {
 		}
 
 
-		/*this.client = new Client({
+		/*
+		this.client = new Client({
 			user: 'postgres',
 			host: 'localhost',
 			database: 'link',
 			password: 'nbuser',
 			port: 5432,
-		});*/
+		});
+		*/
 		
 		this.client = new Client({
 			connectionString: process.env.DATABASE_URL
@@ -816,6 +819,30 @@ class CrudController {
 	}
 
 	/**
+	*	Creates multiple passwords
+	*	@param passwordsArr An array of passwords [[pass1], [pass2]....], where each pass is of the form [username, hash, salt, apikey, expirationdate]
+	*
+	*	@return [{ passwordId : 1 }, {passwordId : 2 } ...]
+	*/
+	async createPasswords(passwordsArr){
+		//passwordsArr is in format [[emp1], [emp2]....]
+		let query = format('INSERT INTO ' + this.mva['password'] + ' (username, hash, salt, apikey, expirationdate) VALUES %L RETURNING passwordid', passwordsArr);
+		try{			
+			let {rows} = await this.client.query(query);
+			if(rows.length === 0 && passwordsArr.length !== 0){
+				return this.returnDatabaseError("No passwords were created");
+			}else{
+				let res =  this.buildDefaultResponseObject(true, "Successfully inserted passwords", false, false);
+				res.data = rows;
+				return res;
+			}
+		}catch(err){
+			console.log(err.stack);
+			return this.returnDatabaseError(err);
+		}
+	}
+
+	/**
 	*	Retrieves a password using passwordId
 	*	@param passwordId 
 	*
@@ -989,6 +1016,38 @@ class CrudController {
 			console.log(err.stack);
 			ret = this.returnDatabaseError(err);
 			return ret;
+		}
+	}
+
+	/**
+    * Deletes multiple passwords given an array of password IDs
+    * @param passwordIdArr An array of passwordIds where passwords should be deleted
+	* @return {success, message, data : null}
+    */
+	async deletePasswords(passwordIdArr) {
+		if(passwordIdArr.constructor !== Array || passwordIdArr.length ===0)
+			return this.returnDatabaseError("Expected array not provided");
+		var inString = '(';
+		for(var i=0; i < passwordIdArr.length; i++){
+			if(!this.validateNumeric(passwordIdArr[i]))
+				return this.returnDatabaseError("Invalid passwordID found at array index: " + i);
+
+			inString += '$' + (i + 1) + ', ';
+		}
+		inString = inString.substring(0, inString.length - 2) + ');';
+
+
+		// var query = 'DELETE FROM ' + this.mva['password'] + ' WHERE passwordid IN ' + inString;
+		var query = 'DELETE FROM ' + 'password' + ' WHERE passwordid IN ' + inString; //NB not using view here as it didnt work
+
+		try {
+			let res = await this.client.query(query, passwordIdArr);
+			return this.buildDefaultResponseObject(true, "Successfully deleted passwords", true);
+
+		}
+		catch (err) {
+			console.log(err.stack);
+			return this.returnDatabaseError(err);
 		}
 	}
 
@@ -1372,7 +1431,30 @@ class CrudController {
 			ret = this.returnDatabaseError(err);
 			return ret;
 		}
+	}
 
+	/**
+	*	Creates multiple employees
+	*	@param passwordsArr An array of employees [[emp1], [emp2]....], where each emp is of the form [firstname, surname, title, cellphone, email, companyid, buildingid, passwordid]
+	*
+	*	@return The employee ids of the created employees as follows: [{ employeeId : 1 }, {employeeId : 2 } ...]
+	*/
+	async createEmployees(employeesArr){
+
+		let query = format('INSERT INTO ' + this.mva['employee'] + '(firstname, surname, title, cellphone, email, companyid, buildingid, passwordid) VALUES %L RETURNING employeeid', employeesArr);
+		try{
+			let {rows} = await this.client.query(query);
+			if(rows.length === 0 && employeesArr.length !== 0){
+				return this.returnDatabaseError("No Employees were created");
+			}else{
+				let res =  this.buildDefaultResponseObject(true, "Successfully inserted employees", false, false);
+				res.data = rows;
+				return res;
+			}
+		}catch(err){
+			console.log(err.stack);
+			return this.returnDatabaseError(err);
+		}
 	}
 
 	/**

@@ -13,6 +13,140 @@ $(document).ready(function () {
         window.location.replace("login.html");
     } else {
         fetchDataAndPopulateTable();
+        $("#hiddenInputFile").get(0).addEventListener('change', handleFile, false); //bind event listener for select button
+        $("#csvModal").get(0).addEventListener('dragover', handleDragOver, false);
+        $("#csvModal").get(0).addEventListener('drop', handleFile, false);
+
+        function handleDragOver(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+        }
+
+        function handleFile(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            var input;
+            if (event.type === 'drop') {
+                input = event.dataTransfer.files[0];
+            } else {
+                input = event.target.files[0]; // this is for normal file picker events
+            }
+            if (input === undefined){
+                displayError("alertContainerImportCSV", "No CSV File provided");
+                return;
+            }
+            if(!input.name.endsWith('.csv')){
+                displayError("alertContainerImportCSV", "Invalid file provided. File must be of .csv format");
+                return;
+            }
+
+
+            Papa.parse(input, {
+                complete: function (results) {
+                    lines = results.data;
+                    if (lines.length === 0)
+                        return;
+
+                    if (lines[0].length !== 7 || lines[0][0] !== "first_name" || lines[0][1] !== "surname" || lines[0][2] !== "title" || lines[0][3] !== "cellphone" || lines[0][4] !== "email" || lines[0][5] !== "create_password" || lines[0][6] !== "building_name") {
+                        displayError("alertContainerImportCSV", "Invalid header for csv file. Header should be: first_name,surname,title,cellphone,email,create_password,building_name");
+                        return;
+                    }
+                    postArr = [];
+                    let parsedCompanyId = parseInt(companyId);
+                    for (var i = 1; i < lines.length; i++) {
+                        let line = lines[i];
+                        if (line.length <= 1)
+                            continue; //this skips empty lines
+
+                        if (line.length !== 7) {
+                            displayError("alertContainerImportCSV", "Invalid number of columns on row " + (i + 1));
+                            return;
+                        }
+
+
+                        let firstName = line[0].trim();
+                        if (!isAlphabetic(firstName)) {
+                            displayError("alertContainerImportCSV", "Invalid first name on row " + (i + 1));
+                            return;
+                        }
+
+                        let surname = line[1].trim();
+                        if (!isAlphabetic(surname)) {
+                            displayError("alertContainerImportCSV", "Invalid surname on row " + (i + 1));
+                            return;
+                        }
+
+                        let title = line[2].trim();
+                        if (!isAlphabetic(title) && title.length <= 10) {
+                            displayError("alertContainerImportCSV", "Invalid title on row " + (i + 1));
+                            return;
+                        }
+
+                        let cellphone = line[3].trim();
+                        if (!isCellphoneNumber(cellphone)) {
+                            displayError("alertContainerImportCSV", "Invalid cellphone on row " + (i + 1));
+                            return;
+                        }
+
+                        let email = line[4].trim();
+                        if (!isEmail(email)) {
+                            displayError("alertContainerImportCSV", "Invalid email on row " + (i + 1));
+                            return;
+                        }
+
+                        let password = line[5].trim();
+                        if (password.length === 0) {
+                            displayError("alertContainerImportCSV", "Invalid password on row " + (i + 1));
+                            return;
+                        }
+
+                        let buildingName = line[6].trim();
+                        let buildingId = findBuildingIdFromBuildingName(buildingName.trim());
+                        if (buildingId === false) {
+                            displayError("alertContainerImportCSV", "Invalid building name on row " + (i + 1));
+                            return;
+                        }
+
+                        postArr.push({
+                            'employeeName': firstName,
+                            'employeeSurname': surname,
+                            'employeeTitle': title,
+                            'employeeEmail': email,
+                            'employeeCellphone': cellphone,
+                            'buildingId': parseInt(buildingId),
+                            'employeePassword': password,
+                            'companyId': parsedCompanyId
+                        });
+
+                    }
+                    if (postArr.length === 0)
+                        return;
+                    let postObject = {};
+                    postObject.apiKey = apiKey;
+                    postObject.companyId = parseInt(companyId);
+                    postObject.data = postArr;
+
+                    $.post("/admin/addEmployees", JSON.stringify(postObject), (data) => {
+                        if (data.success) {
+                            $('#csvModal').modal('hide');
+                            fetchDataAndPopulateTable();
+                            $("#alertContainer").empty().append(`
+                            <div class="alert alert-success hide alert-dismissible" role="alert">
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                            <h4 class="alert-heading">Operation Successful!</h4>
+                            Added Employees Successfully </div>`);
+                        } else {
+                            displayError("alertContainerImportCSV", "Failed to add employees, please check that only unadded employees appear in the file");
+                        }
+
+                    }).fail(() => {
+                        displayError("alertContainerImportCSV", "Failed to add employees. Please check your connection");
+                    });
+
+                }
+            });
+        }
 
         $('#darkmode').change(function () {
             $('#table').toggleClass("table-dark");
@@ -207,6 +341,7 @@ function findBuildingIdFromBuildingName(name) {
             return id;
         }
     }
+    return false;
 }
 
 function initializeAddEmployee() {
@@ -360,6 +495,7 @@ function fetchCompanyName(resolve, reject) {
     });
 }
 
+
 function displayError(containerId, message) {
     let name = "#" + containerId;
     $(name).html(`<div class="alert alert-danger alert-dismissible" id="mainErrorAlert" style="margin-top : 0.5rem" >
@@ -372,15 +508,15 @@ function logout() {
     window.location.replace("login.html");
 }
 
-function checkCompanies(){
-    if(localStorage.getItem("id")==1) {
+function checkCompanies() {
+    if (localStorage.getItem("id") == 1) {
         var a = document.createElement('a');
         var linkText = document.createTextNode("Companies");
         a.appendChild(linkText);
         a.title = "Companies";
         a.href = "companies.html";
         var nav = document.getElementById("myTopnav");
-        nav.insertBefore(a,nav.children[6]);
+        nav.insertBefore(a, nav.children[6]);
     }
 }
 function checkNav() {
@@ -395,5 +531,36 @@ function checkNav() {
         x.className = "topnav";
         comp.style = "float: right";
         log.style = "float: right";
+    }
+}
+
+function isAlphabetic(letters) {
+    //allows for A-Z or a-z as first char, then followed by A-Z/a-z/ (space)/-
+    if (/^([A-Za-z])([\-A-Za-z ])+$/.test(letters)) {
+        return true;
+    }
+    return false;
+}
+
+function isCellphoneNumber(cellphone) {
+    var regex = [
+        /^"?[0-9]{10}"?$/,
+        /^"?\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})"?$/,
+        /^"?\(\+([0-9]{2})\)?[-. ]?([0-9]{2})[-. ]?([0-9]{3})[-. ]?([0-9]{4})"?$/
+    ];
+    for (var countRegex = 0; countRegex < regex.length; ++countRegex) {
+        if (regex[countRegex].test(cellphone)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function isEmail(email) {
+    if (/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/.test(email)) {
+        return true;
+    }
+    else {
+        return false
     }
 }

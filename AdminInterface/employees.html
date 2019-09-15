@@ -25,12 +25,26 @@
         }
 
     </script>
+
+    <style>
+        #drop_zone {
+            border: 2px dashed #bbb;
+            -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+            border-radius: 5px;
+            padding: 25px;
+            text-align: center;
+            font: 20pt bold 'Vollkorn';
+            color: #bbb;
+        }
+    </style>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="Css/styles.css">
     <!-- Data Table imports -->
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Fontawesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css">
 </head>
 
 <body style="display: none" onload="checkCompanies();">
@@ -40,7 +54,7 @@
         <a class="font-weight-bold" href="home.html">Link</a>
         <a href="home.html">Home</a>
         <a href="buildings.html">Buildings</a>
-        <a class="active "href="employees.html">Employees</a>
+        <a class="active " href="employees.html">Employees</a>
         <a href="paymentpoints.html">Payment Points</a>
         <a href="transactions.html">Transactions</a>
         <a style="float: right" href="" id="logoutTab" onclick="logout();">Logout</a>
@@ -81,7 +95,14 @@
                     style="height:40px;margin-top:10px">
                     Add Employee <i class="fa fa-plus fa-lg"></i>
                 </button>
+                <button type="button" class="btn btn-success btn-md pull-left"
+                    onclick="$('#csvModal').modal('show'); $('#alertContainerImportCSV').empty();"
+                    style="height:40px;margin-top:10px; ;margin-left: 0.5em">
+                    Import Employees from CSV <i class="fa fa-file-csv fa-lg"></i>
+                </button>
+                <input id="hiddenInputFile" type="file" accept=".csv" style="visibility:hidden" />
             </div>
+
             <div class="btn-group" role="group">
                 <button id="btnBackHome" onclick="window.location.replace('home.html');"
                     class="btn btn-default pull-right" style="margin-top:10px">Back to Home</button>
@@ -271,6 +292,41 @@
         </div>
     </div>
 
+    <div class="modal fade" id="csvModal" tabindex="-1" role="dialog" aria-labelledby="addEmployeeModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Employees from a CSV File</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="successContainerAddedEmployee"></div>
+                <div class="modal-body">
+                    <div id="alertContainerImportCSV"> </div>
+                    <strong>CSV format</strong>
+                    <p>The CSV file must consist of 7 columns with the correct heading row as the first line of the csv
+                        file.
+                        The example CSV snippet below demonstrates how to add two employees: John and Jeremy. The first
+                        line of the CSV file must be as in the example below.
+                    </p>
+                    <p class="text-center border border-dark">
+                        first_name,surname,title,cellphone,email,create_password,building_name
+                        John,Snow,Mr,0221522154,john@snow.co.za,mypass123,Link Johannesburg
+                        Jeremy,Clarkson,Mr,0755512158,jctp@gmail.com,MyPassword,Link Pretoria</p>
+                    <div id="drop_zone">Drop a CSV File Here or Click the 'Select File' Button</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    <button type="button" id="btnAddEmployee" class="btn btn-success"
+                        onclick="$('#hiddenInputFile').click();">Select File</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Scripts loaded at end of page -->
     <script type="text/javascript" src="Js/employees.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
@@ -281,6 +337,8 @@
         crossorigin="anonymous"></script>
     <!-- Data Tables Javascript -->
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.18/datatables.min.js"></script>
+    <!-- CSV parser -->
+    <script type="text/javascript" src="Js/papaparse.min.js"></script>
 
 </body>
 

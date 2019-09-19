@@ -170,6 +170,7 @@ class ClientLogic extends ParentLogic{
                     data.endTime = "10:00";
                     data.limit = "100.00";
                     data.spent = "50.00";
+                    data.visitorPackageId = this.body.visitorPackageId;
                     this.sharedLogic.endServe(true, "Retrieved Visitor Package - MOCK", data);
                 }
                 else{

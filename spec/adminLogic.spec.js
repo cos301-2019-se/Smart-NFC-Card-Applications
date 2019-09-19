@@ -284,6 +284,18 @@ describe('adminLogic.js Unit Testing', function () {
             });
     });
 
+    // --------------------------------------------
+    // getCompany
+    // --------------------------------------------
+
+    const Company = {
+        companyName: "",
+        companyWebsite: "",
+        companyId: 0,
+        passwordId: 0,
+        username: ""
+    }
+
     describe("POST " + endpoint + "/admin/getCompanyByCompanyId", function () {
         let data = new Object();
         beforeAll(function (done) {
@@ -354,31 +366,9 @@ describe('adminLogic.js Unit Testing', function () {
             expect(data.contentType).toEqual('application/json');
         });
 
-        it('should return a json object = \n\t{\n\t' +
-            '    "success": true,\n\t' +
-            '    "message": "Retrieved Vast Expanse! - Mock",\n\t' +
-            '    "data": {\n\t' +
-            '        "companyName": "Vast Expanse",\n\t' +
-            '        "companyWebsite": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications",\n\t' +
-            '        "companyId": 0,\n\t' +
-            '        "username": "piet.pompies@gmail.com",\n\t' +
-            '        "passwordId": 0\n\t' +
-            '    }\n\t' +
-            '}'
-            , function () {
-                expect(data.body).toEqual({
-                    "success": true,
-                    "message": "Retrieved Vast Expanse! - Mock",
-                    "data": {
-                        "companyName": "Vast Expanse",
-                        "companyWebsite": "https://github.com/cos301-2019-se/Smart-NFC-Card-Applications",
-                        "companyId": 0,
-                        "username": "piet.pompies@gmail.com",
-                        "passwordId": 0
-                    }
-                });
-
-            });
+        it('should return a valid Company object', function () {
+            expect(JSON.stringify(Object.keys(Company).sort())).toEqual(JSON.stringify(Object.keys(data.body.data).sort()));
+        });
     });
 
     describe("POST " + endpoint + "/admin/getCompanies", function () {
@@ -408,49 +398,12 @@ describe('adminLogic.js Unit Testing', function () {
             expect(data.contentType).toEqual('application/json');
         });
 
-        it('should return a json object = \n\t{\n\t' +
-            '    "success": true,\n\t' +
-            '    "message": "Successfully Retrieved - Mock!",\n\t' +
-            '    "data": [\n\t' +
-            '        {\n\t' +
-            '            "companyId": 0,\n\t' +
-            '            "companyName": "Comp1",\n\t' +
-            '            "companyWebsite": "www.Comp1.com",\n\t' +
-            '            "passwordId": 0,\n\t' +
-            '            "username": "comp1"\n\t' +
-            '        },\n\t' +
-            '        {\n\t' +
-            '            "companyId": 1,\n\t' +
-            '            "companyName": "Comp2",\n\t' +
-            '            "companyWebsite": "www.Comp2.com",\n\t' +
-            '            "passwordId": 1,\n\t' +
-            '            "username": "comp2"\n\t' +
-            '        }\n\t' +
-            '    ]\n\t' +
-            '}'
-            , function () {
-                expect(data.body).toEqual({
-                    "success": true,
-                    "message": "Successfully Retrieved - Mock!",
-                    "data": [
-                        {
-                            "companyId": 0,
-                            "companyName": "Comp1",
-                            "companyWebsite": "www.Comp1.com",
-                            "passwordId": 0,
-                            "username": "comp1"
-                        },
-                        {
-                            "companyId": 1,
-                            "companyName": "Comp2",
-                            "companyWebsite": "www.Comp2.com",
-                            "passwordId": 1,
-                            "username": "comp2"
-                        }
-                    ]
-                });
-
+        it('should return a valid array of Company objects', function () {
+            let companies = data.body.data;
+            const companyRows = companies.map((companyRow) => {
+                expect(JSON.stringify(Object.keys(Company).sort())).toEqual(JSON.stringify(Object.keys(companyRow).sort()));
             });
+        });
     });
 
     describe("POST " + endpoint + "/admin/addEmployee", function () {
@@ -730,6 +683,23 @@ describe('adminLogic.js Unit Testing', function () {
             });
     });
 
+    // --------------------------------------------
+    // getEmployee
+    // --------------------------------------------
+
+    const Employee = {
+        employeeId: 0,
+        firstName: "",
+        surname: "",
+        title: "",
+        cellphone: "",
+        email: "",
+        companyId: 0,
+        buildingId: 0,
+        passwordId: 0,
+        username: ""
+    }
+
     describe("POST " + endpoint + "/admin/getEmployeeByEmployeeId", function () {
         let data = new Object();
         beforeAll(function (done) {
@@ -799,40 +769,9 @@ describe('adminLogic.js Unit Testing', function () {
             expect(data.contentType).toEqual('application/json');
         });
 
-        it('should return a json object \n\t{\n\t' +
-            '    "success": true,\n\t' +
-            '    "message": "Employee Retrieved! - Mock",\n\t' +
-            '    "data": {\n\t' +
-            '        "employeeId": 0,\n\t' +
-            '        "firstName": "Piet",\n\t' +
-            '        "surname": "Pompies",\n\t' +
-            '        "title": "Mr",\n\t' +
-            '        "cellphone": "0791637273",\n\t' +
-            '        "email": "piet.pompies@gmail.com",\n\t' +
-            '        "companyId": 0,\n\t' +
-            '        "buildingId": 0,\n\t' +
-            '        "passwordId": 0\n\t' +
-            '        "username": "piet12"\n\t' +
-            '    }\n\t' +
-            '}'
-            , function () {
-                expect(data.body).toEqual({
-                    "success": true,
-                    "message": "Employee Retrieved! - Mock",
-                    "data": {
-                        "employeeId": 0,
-                        "firstName": "Piet",
-                        "surname": "Pompies",
-                        "title": "Mr",
-                        "cellphone": "0791637273",
-                        "email": "piet.pompies@gmail.com",
-                        "companyId": 0,
-                        "buildingId": 0,
-                        "passwordId": 0,
-                        "username": "piet12"
-                    }
-                });
-            });
+        it('should return a valid Employee object', function () {
+            expect(JSON.stringify(Object.keys(Employee).sort())).toEqual(JSON.stringify(Object.keys(data.body.data).sort()));
+        });
     });
 
     describe("POST " + endpoint + "/admin/getEmployeesByCompanyId", function () {
@@ -904,68 +843,12 @@ describe('adminLogic.js Unit Testing', function () {
             expect(data.contentType).toEqual('application/json');
         });
 
-        it('should return a json object \n\t{\n\t' +
-            '    "success": true,\n\t' +
-            '    "message": "Employees Retrieved!- Mock",\n\t' +
-            '    "data": [\n\t' +
-            '        {\n\t' +
-            '            "employeeId": 0,\n\t' +
-            '            "firstName": "Duncan",\n\t' +
-            '            "surname": "Vodden",\n\t' +
-            '            "title": "Mr",\n\t' +
-            '            "cellphone": "0724904115",\n\t' +
-            '            "email": "duncan@gmail.com",\n\t' +
-            '            "companyId": 0,\n\t' +
-            '            "buildingId": 0,\n\t' +
-            '            "passwordId": 0,\n\t' +
-            '            "username": "dunc1"\n\t' +
-            '        },\n\t' +
-            '        {\n\t' +
-            '            "employeeId": 1,\n\t' +
-            '            "firstName": "Piet",\n\t' +
-            '            "surname": "Pompies",\n\t' +
-            '            "title": "Mr",\n\t' +
-            '            "cellphone": "0791637273",\n\t' +
-            '            "email": "piet.pompies@gmail.com",\n\t' +
-            '            "companyId": 0,\n\t' +
-            '            "buildingId": 0,\n\t' +
-            '            "passwordId": 0,\n\t' +
-            '            "username": "dunc2"\n\t' +
-            '        }\n\t' +
-            '    ]\n\t' +
-            '}'
-            , function () {
-                expect(data.body).toEqual({
-                    "success": true,
-                    "message": "Employees Retrieved!- Mock",
-                    "data": [
-                        {
-                            "employeeId": 0,
-                            "firstName": "Duncan",
-                            "surname": "Vodden",
-                            "title": "Mr",
-                            "cellphone": "0724904115",
-                            "email": "duncan@gmail.com",
-                            "companyId": 0,
-                            "buildingId": 0,
-                            "passwordId": 0,
-                            "username": "dunc1"
-                        },
-                        {
-                            "employeeId": 1,
-                            "firstName": "Piet",
-                            "surname": "Pompies",
-                            "title": "Mr",
-                            "cellphone": "0791637273",
-                            "email": "piet.pompies@gmail.com",
-                            "companyId": 0,
-                            "buildingId": 0,
-                            "passwordId": 0,
-                            "username": "dunc2"
-                        }
-                    ]
-                });
+        it('should return a valid array of Employee objects', function () {
+            let employees = data.body.data;
+            const employeeRows = employees.map((employeeRow) => {
+                expect(JSON.stringify(Object.keys(Employee).sort())).toEqual(JSON.stringify(Object.keys(employeeRow).sort()));
             });
+        });
     });
 
     describe("POST " + endpoint + "/admin/getEmployeesByBuildingId", function () {
@@ -1037,68 +920,12 @@ describe('adminLogic.js Unit Testing', function () {
             expect(data.contentType).toEqual('application/json');
         });
 
-        it('should return a json object \n\t{\n\t' +
-            '    "success": true,\n\t' +
-            '    "message": "Employees Retrieved!- Mock",\n\t' +
-            '    "data": [\n\t' +
-            '        {\n\t' +
-            '            "employeeId": 0,\n\t' +
-            '            "firstName": "Duncan",\n\t' +
-            '            "surname": "Vodden",\n\t' +
-            '            "title": "Mr",\n\t' +
-            '            "cellphone": "0724904115",\n\t' +
-            '            "email": "duncan@gmail.com",\n\t' +
-            '            "companyId": 0,\n\t' +
-            '            "buildingId": 0,\n\t' +
-            '            "passwordId": 0,\n\t' +
-            '            "username": "dunc1"\n\t' +
-            '        },\n\t' +
-            '        {\n\t' +
-            '            "employeeId": 1,\n\t' +
-            '            "firstName": "Piet",\n\t' +
-            '            "surname": "Pompies",\n\t' +
-            '            "title": "Mr",\n\t' +
-            '            "cellphone": "0791637273",\n\t' +
-            '            "email": "piet.pompies@gmail.com",\n\t' +
-            '            "companyId": 0,\n\t' +
-            '            "buildingId": 0,\n\t' +
-            '            "passwordId": 1,\n\t' +
-            '            "username": "dunc2"\n\t' +
-            '        }\n\t' +
-            '    ]\n\t' +
-            '}'
-            , function () {
-                expect(data.body).toEqual({
-                    "success": true,
-                    "message": "Employees Retrieved!- Mock",
-                    "data": [
-                        {
-                            "employeeId": 0,
-                            "firstName": "Duncan",
-                            "surname": "Vodden",
-                            "title": "Mr",
-                            "cellphone": "0724904115",
-                            "email": "duncan@gmail.com",
-                            "companyId": 0,
-                            "buildingId": 0,
-                            "passwordId": 0,
-                            "username": "dunc1"
-                        },
-                        {
-                            "employeeId": 1,
-                            "firstName": "Piet",
-                            "surname": "Pompies",
-                            "title": "Mr",
-                            "cellphone": "0791637273",
-                            "email": "piet.pompies@gmail.com",
-                            "companyId": 0,
-                            "buildingId": 0,
-                            "passwordId": 1,
-                            "username": "dunc2"
-                        }
-                    ]
-                });
+        it('should return a valid array of Employee objects', function () {
+            let employees = data.body.data;
+            const employeeRows = employees.map((employeeRow) => {
+                expect(JSON.stringify(Object.keys(Employee).sort())).toEqual(JSON.stringify(Object.keys(employeeRow).sort()));
             });
+        });
     });
 
     describe("POST " + endpoint + "/admin/addBuilding", function () {
@@ -1371,6 +1198,22 @@ describe('adminLogic.js Unit Testing', function () {
             });
     });
 
+    // --------------------------------------------
+    // getBuilding
+    // --------------------------------------------
+
+    const Building = {
+        buildingId: 0,
+        latitude: "",
+        longitude: "",
+        branchName: "",
+        companyId: 0,
+        wifiParamsId: 0,
+        networkSsid: "",
+        networkType: "",
+        networkPassword: ""
+    }
+
     describe("POST " + endpoint + "/admin/getBuildingByBuildingId", function () {
         let data = new Object();
         beforeAll(function (done) {
@@ -1440,38 +1283,9 @@ describe('adminLogic.js Unit Testing', function () {
             expect(data.contentType).toEqual('application/json');
         });
 
-        it('should return a json object \n\t{\n\t' +
-            '    "success": true,\n\t' +
-            '    "message": "Retrieved Building! - mock",\n\t' +
-            '    "data": {\n\t' +
-            '        "buildingId": 0,\n\t' +
-            '        "latitude": "20,120,10",\n\t' +
-            '        "longitude": "20,120,10",\n\t' +
-            '        "branchName": "Vast Expanse JHB",\n\t' +
-            '        "companyId": 0,\n\t' +
-            '        "wifiParamsId": 0,\n\t' +
-            '        "networkSsid": "SSID",\n\t' +
-            '        "networkType": "TYPE",\n\t' +
-            '        "networkPassword": "PASS123"\n\t' +
-            '    }\n\t' +
-            '}'
-            , function () {
-                expect(data.body).toEqual({
-                    "success": true,
-                    "message": "Retrieved Building! - mock",
-                    "data": {
-                        "buildingId": 0,
-                        "latitude": "20,120,10",
-                        "longitude": "20,120,10",
-                        "branchName": "Vast Expanse JHB",
-                        "companyId": 0,
-                        "wifiParamsId": 0,
-                        "networkSsid": "SSID",
-                        "networkType": "TYPE",
-                        "networkPassword": "PASS123"
-                    }
-                });
-            });
+        it('should return a valid Building object', function () {
+            expect(JSON.stringify(Object.keys(Building).sort())).toEqual(JSON.stringify(Object.keys(data.body.data).sort()));
+        });
     });
 
     describe("POST " + endpoint + "/admin/getBuildingsByCompanyId", function () {
@@ -1543,64 +1357,12 @@ describe('adminLogic.js Unit Testing', function () {
             expect(data.contentType).toEqual('application/json');
         });
 
-        it('should return a json object \n\t{\n\t' +
-            '    "success": true,\n\t' +
-            '    "message": "Retrieved Building! - mock",\n\t' +
-            '    "data": [\n\t' +
-            '        {\n\t' +
-            '            "buildingId": 0,\n\t' +
-            '            "buildingLatitude": "20,120,10",\n\t' +
-            '            "buildingLongitude": "20,120,10",\n\t' +
-            '            "buildingBranchName": "Vast Expanse JHB",\n\t' +
-            '            "companyId": 0,\n\t' +
-            '            "wifiParamsId": 0,\n\t' +
-            '            "networkSsid": "Vast Expanse Guests",\n\t' +
-            '            "networkType": "TYPE",\n\t' +
-            '            "networkPassword": "1234"\n\t' +
-            '        },\n\t' +
-            '        {\n\t' +
-            '            "buildingId": 1,\n\t' +
-            '            "buildingLatitude": "20,120,10",\n\t' +
-            '            "buildingLongitude": "20,120,10",\n\t' +
-            '            "buildingBranchName": "Vast Expanse PTA",\n\t' +
-            '            "companyId": 0,\n\t' +
-            '            "wifiParamsId": 1,\n\t' +
-            '            "networkSsid": "Vast Expanse Guests",\n\t' +
-            '            "networkType": "TYPE",\n\t' +
-            '            "networkPassword": "1234"\n\t' +
-            '        }\n\t' +
-            '    ]\n\t' +
-            '}'
-            , function () {
-                expect(data.body).toEqual({
-                    "success": true,
-                    "message": "Retrieved Building! - mock",
-                    "data": [
-                        {
-                            "buildingId": 0,
-                            "buildingLatitude": "20,120,10",
-                            "buildingLongitude": "20,120,10",
-                            "buildingBranchName": "Vast Expanse JHB",
-                            "companyId": 0,
-                            "wifiParamsId": 0,
-                            "networkSsid": "Vast Expanse Guests",
-                            "networkType": "TYPE",
-                            "networkPassword": "1234"
-                        },
-                        {
-                            "buildingId": 1,
-                            "buildingLatitude": "20,120,10",
-                            "buildingLongitude": "20,120,10",
-                            "buildingBranchName": "Vast Expanse PTA",
-                            "companyId": 0,
-                            "wifiParamsId": 1,
-                            "networkSsid": "Vast Expanse Guests",
-                            "networkType": "TYPE",
-                            "networkPassword": "1234"
-                        }
-                    ]
-                });
+        it('should return a valid array of Business objects', function () {
+            let buildings = data.body.data;
+            const buildingRows = buildings.map((buildingRow) => {
+                expect(JSON.stringify(Object.keys(Building).sort())).toEqual(JSON.stringify(Object.keys(buildingRow).sort()));
             });
+        });
     });
 
     describe("POST " + endpoint + "/admin/addRoom", function () {
@@ -1868,6 +1630,17 @@ describe('adminLogic.js Unit Testing', function () {
             });
     });
 
+    // --------------------------------------------
+    // getRoom
+    // --------------------------------------------
+
+    const Room = {
+        roomId: 0,
+        roomName: "",
+        parentRoomList: "",
+        buildingId: 0
+    }
+
     describe("POST " + endpoint + "/admin/getRoomByRoomId", function () {
         let data = new Object();
         beforeAll(function (done) {
@@ -1937,28 +1710,9 @@ describe('adminLogic.js Unit Testing', function () {
             expect(data.contentType).toEqual('application/json');
         });
 
-        it('should return a json object \n\t{\n\t' +
-            '    "success": true,\n\t' +
-            '    "message": "Room Retrieved!- Mock",\n\t' +
-            '    "data": {\n\t' +
-            '        "roomId": 0,\n\t' +
-            '        "roomName": "Houston",\n\t' +
-            '        "parentRoomList": "0,1",\n\t' +
-            '        "buildingId": 0\n\t' +
-            '    }\n\t' +
-            '}'
-            , function () {
-                expect(data.body).toEqual({
-                    "success": true,
-                    "message": "Room Retrieved!- Mock",
-                    "data": {
-                        "roomId": 0,
-                        "roomName": "Houston",
-                        "parentRoomList": "0,1",
-                        "buildingId": 0
-                    }
-                });
-            });
+        it('should return a valid Room object', function () {
+            expect(JSON.stringify(Object.keys(Room).sort())).toEqual(JSON.stringify(Object.keys(data.body.data).sort()));
+        });
     });
 
     describe("POST " + endpoint + "/admin/getRoomsByBuildingId", function () {
@@ -2002,6 +1756,7 @@ describe('adminLogic.js Unit Testing', function () {
             });
     });
 
+    // change
     describe("POST " + endpoint + "/admin/getRoomsByBuildingId", function () {
         let data = new Object();
         beforeAll(function (done) {
@@ -2030,44 +1785,12 @@ describe('adminLogic.js Unit Testing', function () {
             expect(data.contentType).toEqual('application/json');
         });
 
-        it('should return a json object \n\t{\n\t' +
-            '    "success": true,\n\t' +
-            '    "message": "Rooms Retrieved!- Mock",\n\t' +
-            '    "data": [\n\t' +
-            '        {\n\t' +
-            '            "roomId": 2,\n\t' +
-            '            "roomName": "Houston",\n\t' +
-            '            "parentRoomList": "0,1",\n\t' +
-            '            "buildingId": 0\n\t' +
-            '        },\n\t' +
-            '        {\n\t' +
-            '            "roomId": 3,\n\t' +
-            '            "roomName": "Houston",\n\t' +
-            '            "parentRoomList": "0,1,2",\n\t' +
-            '            "buildingId": 0\n\t' +
-            '        }\n\t' +
-            '    ]\n\t' +
-            '}'
-            , function () {
-                expect(data.body).toEqual({
-                    "success": true,
-                    "message": "Rooms Retrieved!- Mock",
-                    "data": [
-                        {
-                            "roomId": 2,
-                            "roomName": "Houston",
-                            "parentRoomList": "0,1",
-                            "buildingId": 0
-                        },
-                        {
-                            "roomId": 3,
-                            "roomName": "Houston",
-                            "parentRoomList": "0,1,2",
-                            "buildingId": 0
-                        }
-                    ]
-                });
+        it('should return a valid array of Room objects', function () {
+            let rooms = data.body.data;
+            const roomRows = rooms.map((roomRow) => {
+                expect(JSON.stringify(Object.keys(Room).sort())).toEqual(JSON.stringify(Object.keys(roomRow).sort()));
             });
+        });
     });
 
     describe("POST " + endpoint + "/admin/editPassword", function () {
@@ -2172,7 +1895,7 @@ describe('adminLogic.js Unit Testing', function () {
                 done();
             });
         });
-
+        
         it('should return with statusCode 200', function () {
             expect(data.status).toEqual(200);
         });
@@ -2244,6 +1967,20 @@ describe('adminLogic.js Unit Testing', function () {
             });
     });
 
+    // --------------------------------------------
+    // getTransactions
+    // --------------------------------------------
+
+    const Transaction = {
+        employeeName: "", 
+        employeeSurname: "", 
+        employeeEmail: "", 
+        amountSpent: 0, 
+        paymentDesc: "", 
+        paymentPointDesc: "", 
+        transactiontime: ""
+    }
+
     describe("POST " + endpoint + "/admin/getAllTransactionsByCompanyId", function () {
         let data = new Object();
         beforeAll(function (done) {
@@ -2275,38 +2012,12 @@ describe('adminLogic.js Unit Testing', function () {
             expect(data.contentType).toEqual('application/json');
         });
 
-        it(`should return a json object: {
-            "success": true,
-            "message": "Demo Mode Transactions Fetched",
-            "data": [
-                {
-                    "employeeName": "DemoName",
-                    "employeeSurname": "DemoSurname",
-                    "employeeEmail": "demo@gmail.com",
-                    "amountSpent": 50,
-                    "paymentDesc": "",
-                    "paymentPointDesc": "New desc",
-                    "transactiontime": "2019-07-21T19:15:18.028Z"
-                }
-            ]
-        }`
-            , function () {
-                expect(data.body).toEqual({
-                    "success": true,
-                    "message": "Demo Mode Transactions Fetched",
-                    "data": [
-                        {
-                            "employeeName": "DemoName",
-                            "employeeSurname": "DemoSurname",
-                            "employeeEmail": "demo@gmail.com",
-                            "amountSpent": 50,
-                            "paymentDesc": "",
-                            "paymentPointDesc": "New desc",
-                            "transactiontime": "2019-07-21T19:15:18.028Z"
-                        }
-                    ]
-                });
+        it('should return a valid array of Transaction objects', function () {
+            let transactions = data.body.data;
+            const transactionRows = transactions.map((transactionRow) => {
+                expect(JSON.stringify(Object.keys(Transaction).sort())).toEqual(JSON.stringify(Object.keys(transactionRow).sort()));
             });
+        });
     });
 
 });

@@ -64,11 +64,11 @@ $(document).ready(function () {
                     populateTable(data.data);
                     customFields = {
                         'startDate': moment(startDate).format('YYYY-MM-DD'),
-                        'endDate' : moment(endDate).format('YYYY-MM-DD')
+                        'endDate': moment(endDate).format('YYYY-MM-DD')
                     }
 
                     let employeeString = "";
-                    if (employeeUsername){
+                    if (employeeUsername) {
                         employeeString = `<li class="list-group-item">Employee Username: ${employeeUsername}</li>`;
                         customFields.employeeUsername = employeeUsername;
                     }
@@ -80,6 +80,8 @@ $(document).ready(function () {
                 } else {
                     displayError("alertContainer", "Failed to find results for that query!");
                 }
+            }).fail(()=>{
+                displayError("alertContainerTop", "Failed to find results for that query. Please check your connection");
             });
 
         });
@@ -156,8 +158,9 @@ function clickedSearchAllTransactions() {
 
         } else {
             displayError("alertContainerTop", "Failed to find results for that query!");
-
         }
+    }).fail(() => {
+        displayError("alertContainerTop", "Failed to find results for that query. Please check your connnection");
     });
 }
 
@@ -183,13 +186,13 @@ function downloadCsv() {
     const rows = [];
 
     rows.push(headers);
-    for(let i=0; i<globalTransactionsObject.length; i++){
+    for (let i = 0; i < globalTransactionsObject.length; i++) {
         rows.push(Object.values(globalTransactionsObject[i]));
     }
 
     let dataURI = "data:text/csv;charset=utf-8,";
 
-    rows.forEach(function(rowArray) {
+    rows.forEach(function (rowArray) {
         let row = rowArray.join(",");
         dataURI += row + "\r\n";
     });
@@ -197,7 +200,7 @@ function downloadCsv() {
     let date = new Date();
     let link = document.createElement('a');
     link.download = `Report_${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}.csv`;
-    link.href= dataURI;
+    link.href = dataURI;
     link.textContent = 'Download CSV';
     link.click();
 }
@@ -209,10 +212,10 @@ function downloadPdf() {
         "companyId": companyId,
     };
 
-    if(tableIsCustom){
+    if (tableIsCustom) {
         postObj.type = 'custom';
         postObj.fields = customFields;
-    }else{
+    } else {
         postObj.type = 'all';
     }
     postObj.transactions = globalTransactionsObject;
@@ -223,29 +226,54 @@ function downloadPdf() {
             let date = new Date();
             let link = document.createElement('a');
             link.download = `Report_${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}.pdf`;
-            link.href= dataURI;
+            link.href = dataURI;
             link.textContent = 'Download PDF';
             link.click();
         }
         else {
-            displayError("alertContainerTop", "Failed to find results for that query!");
+            displayError("alertContainerTop", "Failed to find results for that query");
         }
+    }).fail(() => {
+        displayError("alertContainerTop", "Failed to download PDF. Please check your connection");
     });
 }
 
 function displayError(containerId, message) {
     let name = "#" + containerId;
-    $(name).html(`<div class="alert alert-warning alert-dismissible" id="mainErrorAlert" style="margin-top : 0.5rem" >
+    $(name).html(`<div class="alert alert-danger alert-dismissible" id="mainErrorAlert" style="margin-top : 0.5rem" >
     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
     <strong>Error!</strong> ${message}
     </div>`).show();
 }
 
-
-
-function checkCompanies() {
-    if (localStorage.getItem("id") == 1) {
-        $("#navBar").append('<li class="nav-item"><a class="nav-link" href="companies.html">Companies</a></li>');
-    }
+function logout() {
+    localStorage.clear();
+    window.location.replace("login.html");
 }
 
+
+function checkCompanies(){
+    if(localStorage.getItem("id")==1) {
+        var a = document.createElement('a');
+        var linkText = document.createTextNode("Companies");
+        a.appendChild(linkText);
+        a.title = "Companies";
+        a.href = "companies.html";
+        var nav = document.getElementById("myTopnav");
+        nav.insertBefore(a,nav.children[6]);
+    }
+}
+function checkNav() {
+    var x = document.getElementById("myTopnav");
+    var comp = document.getElementById("companyTab");
+    var log = document.getElementById("logoutTab");
+    if (x.className === "topnav") {
+        comp.style = "";
+        log.style = "";
+        x.className += " responsive";
+    } else {
+        x.className = "topnav";
+        comp.style = "float: right";
+        log.style = "float: right";
+    }
+}

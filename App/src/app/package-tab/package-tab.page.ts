@@ -47,6 +47,7 @@ import { UniqueIdService } from '../services/unique-id.service';
 })
 export class PackageTabPage implements OnInit{
   packages: VisitorPackage[] = [];
+  hasPackages: Boolean = true;
   activePackages: VisitorPackage[] = [];
   inactivePackages: VisitorPackage[] = [];
   detailToggles = [];
@@ -117,6 +118,7 @@ export class PackageTabPage implements OnInit{
    * Function that loads the visitor packages from the service or sets it to empty if it doesn't exist
    */
   loadPackages(){
+    this.hasPackages = true;
     // Get cards
     this.packageService.getVisitorPackages().then((val) => {   
       let currDate = new Date();
@@ -127,6 +129,9 @@ export class PackageTabPage implements OnInit{
         })
         this.packageService.setVisitorPackages(val).then(() => {   
           this.packages = val;
+          if (this.packages.length < 1) {            
+            this.hasPackages = false;
+          }
           this.setupToggles();
         }).then(() => {
           // Populate active and inactive packages
@@ -139,7 +144,8 @@ export class PackageTabPage implements OnInit{
         });  
       }
       else {   
-        // If no packages has been saved previously     
+        // If no packages has been saved previously    
+        this.hasPackages = false; 
         this.packages = [];
         this.activePackages = [];
         this.inactivePackages = [];
@@ -283,6 +289,7 @@ export class PackageTabPage implements OnInit{
    * @param type string algorithm type
    */
   connectToWiFi(ssid: string, password: string, type: string){
+    this.showMessage(`Attempting to connect to WiFi`, MessageType.info);
     this.wifiService.connectToWifi(ssid, password, type)
     .then(() => {
       this.showMessage('Connected to WiFi', MessageType.success, 2000);

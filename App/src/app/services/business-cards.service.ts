@@ -10,6 +10,7 @@
 *	Date		    Author		Version		Changes
 *	-----------------------------------------------------------------------------------------
 *	2019/05/19	Wian		  1.0		    Original
+*	2019/09/12	Wian		  1.1		    Added function that can check for valid card details
 *
 *	Functional Description:   This class provides the business card service to other components
 *	Error Messages:   “Error”
@@ -26,7 +27,7 @@ import { LocationModel } from '../models/location.model';
 * Purpose:	This class provides the business card service injectable
 *	Usage:		This class can be used to setting and getting business cards
 *	@author:	Wian du Plooy
-*	@version:	1.0
+*	@version:	1.1
 */
 @Injectable({
   providedIn: 'root'
@@ -60,16 +61,31 @@ export class BusinessCardsService {
    * @param location string Employee's branch location
    * @return BusinessCard created
    */
-  createBusinessCard(businessCardId: string, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: LocationModel) {
+  createBusinessCard(businessCardId: string, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: LocationModel) {  
     let businessCard: BusinessCard = new BusinessCard();
     businessCard.businessCardId = businessCardId;
     businessCard.companyName = companyName;
     businessCard.employeeName = employeeName;
     businessCard.contactNumber = contactNumber;
     businessCard.email = email;
-    businessCard.location = location;
-    businessCard.website = website;
+    businessCard.location = location;  
+    businessCard.website = this.createClickableLink(website);
     return businessCard;
+  }
+  
+  /**
+   * Function that creates a link that can be clicked by adding http if needed
+   * @param link string website link with or without http(s)
+   * @return string link that can be clicked on
+   */
+  createClickableLink(link: string){
+    if (link == undefined) return `http://smart-nfc-application.herokuapp.com`;
+    if (link.indexOf('http') == 0) {
+      return link;
+    }
+    else {
+      return `http://${link}`;
+    }
   }
 
   /**
@@ -88,7 +104,7 @@ export class BusinessCardsService {
    * @retun Promise returns promise from saving to storage
    */
   setOwnBusinessCard({businessCardId, companyName, employeeTitle, employeeName, employeeSurname, employeeCellphone, employeeEmail, companyWebsite, branchName, latitude, longitude}) {
-    let employeeFullName = `${employeeTitle} ${employeeName} ${employeeSurname}`;
+    let employeeFullName = `${employeeTitle} ${employeeName} ${employeeSurname}`; 
     let location = new LocationModel(latitude, longitude, branchName);
     let businessCard: BusinessCard = this.createBusinessCard(businessCardId, companyName, employeeFullName, employeeCellphone, employeeEmail, companyWebsite, location);
     return this.storage.Save(this.ownBusinessCardKey, businessCard);
@@ -114,6 +130,9 @@ export class BusinessCardsService {
    */
   addBusinessCard(businessCardId: string, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: LocationModel) {
     return this.getBusinessCards().then((cards) => {
+      if (this.checkValidDetails(businessCardId, companyName, employeeName, contactNumber, email, website, location) !== true) {
+        throw new Error("Invalid Details");
+      }
       let businessCard: BusinessCard = this.createBusinessCard(businessCardId, companyName, employeeName, contactNumber, email, website, location);
       let index = cards.findIndex(card => card.businessCardId == businessCardId);
       if (index > -1) {
@@ -161,5 +180,23 @@ export class BusinessCardsService {
       })
       this.setBusinessCards(cards);
     });
+  }
+
+  /**
+   * Function that checks that the details of a business card are valid
+   * @return Boolean whether or not all the details are acceptable
+   */
+  checkValidDetails(businessCardId: string, companyName: string, employeeName: string, contactNumber: string, email: string, website: string, location: LocationModel){
+    let details = Array.from(arguments);
+    for (let i = 0; i < details.length; ++i){
+      let detail = details[i];
+      if (detail === undefined || detail === null) {
+        return false;
+      }
+      if (typeof(detail) == "string" && detail.trim() == "") {
+        return false;
+      }
+    }
+    return true;
   }
 }

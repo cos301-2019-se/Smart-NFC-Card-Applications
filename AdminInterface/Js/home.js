@@ -41,6 +41,8 @@ function loadHomeContents(callback)
 				
 			
 			$("#welcome").html(msg);
+
+			callback();
         } 
 		else 
 		{
@@ -48,8 +50,6 @@ function loadHomeContents(callback)
 					
 		}
     });
-	
-	callback();
 }
 
 function details()
@@ -83,6 +83,26 @@ function logout(){
 
 function checkCompanies(){
 	if(localStorage.getItem("id")==1) {
-		$("#navBar").append('<li class="nav-item"><a class="nav-link" href="companies.html">Companies</a></li>');
+		var a = document.createElement('a');
+		var linkText = document.createTextNode("Companies");
+		a.appendChild(linkText);
+		a.title = "Companies";
+		a.href = "companies.html";
+		var nav = document.getElementById("myTopnav");
+		nav.insertBefore(a,nav.children[6]);
+	}
+}
+function checkNav() {
+	var x = document.getElementById("myTopnav");
+	var comp = document.getElementById("companyTab");
+	var log = document.getElementById("logoutTab");
+	if (x.className === "topnav") {
+		comp.style = "";
+		log.style = "";
+		x.className += " responsive";
+	} else {
+		x.className = "topnav";
+		comp.style = "float: right";
+		log.style = "float: right";
 	}
 }

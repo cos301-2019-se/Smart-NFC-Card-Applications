@@ -13,6 +13,140 @@ $(document).ready(function () {
         window.location.replace("login.html");
     } else {
         fetchDataAndPopulateTable();
+        $("#hiddenInputFile").get(0).addEventListener('change', handleFile, false); //bind event listener for select button
+        $("#csvModal").get(0).addEventListener('dragover', handleDragOver, false);
+        $("#csvModal").get(0).addEventListener('drop', handleFile, false);
+
+        function handleDragOver(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+        }
+
+        function handleFile(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            var input;
+            if (event.type === 'drop') {
+                input = event.dataTransfer.files[0];
+            } else {
+                input = event.target.files[0]; // this is for normal file picker events
+            }
+            if (input === undefined){
+                displayError("alertContainerImportCSV", "No CSV File provided");
+                return;
+            }
+            if(!input.name.endsWith('.csv')){
+                displayError("alertContainerImportCSV", "Invalid file provided. File must be of .csv format");
+                return;
+            }
+
+
+            Papa.parse(input, {
+                complete: function (results) {
+                    lines = results.data;
+                    if (lines.length === 0)
+                        return;
+
+                    if (lines[0].length !== 7 || lines[0][0] !== "first_name" || lines[0][1] !== "surname" || lines[0][2] !== "title" || lines[0][3] !== "cellphone" || lines[0][4] !== "email" || lines[0][5] !== "create_password" || lines[0][6] !== "building_name") {
+                        displayError("alertContainerImportCSV", "Invalid header for csv file. Header should be: first_name,surname,title,cellphone,email,create_password,building_name");
+                        return;
+                    }
+                    postArr = [];
+                    let parsedCompanyId = parseInt(companyId);
+                    for (var i = 1; i < lines.length; i++) {
+                        let line = lines[i];
+                        if (line.length <= 1)
+                            continue; //this skips empty lines
+
+                        if (line.length !== 7) {
+                            displayError("alertContainerImportCSV", "Invalid number of columns on row " + (i + 1));
+                            return;
+                        }
+
+
+                        let firstName = line[0].trim();
+                        if (!isAlphabetic(firstName)) {
+                            displayError("alertContainerImportCSV", "Invalid first name on row " + (i + 1));
+                            return;
+                        }
+
+                        let surname = line[1].trim();
+                        if (!isAlphabetic(surname)) {
+                            displayError("alertContainerImportCSV", "Invalid surname on row " + (i + 1));
+                            return;
+                        }
+
+                        let title = line[2].trim();
+                        if (!isAlphabetic(title) && title.length <= 10) {
+                            displayError("alertContainerImportCSV", "Invalid title on row " + (i + 1));
+                            return;
+                        }
+
+                        let cellphone = line[3].trim();
+                        if (!isCellphoneNumber(cellphone)) {
+                            displayError("alertContainerImportCSV", "Invalid cellphone on row " + (i + 1));
+                            return;
+                        }
+
+                        let email = line[4].trim();
+                        if (!isEmail(email)) {
+                            displayError("alertContainerImportCSV", "Invalid email on row " + (i + 1));
+                            return;
+                        }
+
+                        let password = line[5].trim();
+                        if (password.length === 0) {
+                            displayError("alertContainerImportCSV", "Invalid password on row " + (i + 1));
+                            return;
+                        }
+
+                        let buildingName = line[6].trim();
+                        let buildingId = findBuildingIdFromBuildingName(buildingName.trim());
+                        if (buildingId === false) {
+                            displayError("alertContainerImportCSV", "Invalid building name on row " + (i + 1));
+                            return;
+                        }
+
+                        postArr.push({
+                            'employeeName': firstName,
+                            'employeeSurname': surname,
+                            'employeeTitle': title,
+                            'employeeEmail': email,
+                            'employeeCellphone': cellphone,
+                            'buildingId': parseInt(buildingId),
+                            'employeePassword': password,
+                            'companyId': parsedCompanyId
+                        });
+
+                    }
+                    if (postArr.length === 0)
+                        return;
+                    let postObject = {};
+                    postObject.apiKey = apiKey;
+                    postObject.companyId = parseInt(companyId);
+                    postObject.data = postArr;
+
+                    $.post("/admin/addEmployees", JSON.stringify(postObject), (data) => {
+                        if (data.success) {
+                            $('#csvModal').modal('hide');
+                            fetchDataAndPopulateTable();
+                            $("#alertContainer").empty().append(`
+                            <div class="alert alert-success hide alert-dismissible" role="alert">
+                            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                            <h4 class="alert-heading">Operation Successful!</h4>
+                            Added Employees Successfully </div>`);
+                        } else {
+                            displayError("alertContainerImportCSV", "Failed to add employees, please check that only unadded employees appear in the file");
+                        }
+
+                    }).fail(() => {
+                        displayError("alertContainerImportCSV", "Failed to add employees. Please check your connection");
+                    });
+
+                }
+            });
+        }
 
         $('#darkmode').change(function () {
             $('#table').toggleClass("table-dark");
@@ -31,7 +165,7 @@ function fetchDataAndPopulateTable() {
         tableBody = $('#tableBody');
         populateTable();
     }).catch((error) => {
-        displayError(error);
+        displayError("alertContainer", error);
     });
 }
 
@@ -84,6 +218,8 @@ function populateTable() {
 }
 
 function setupEditModal() {
+    $("#editEmployeeWarning").hide();
+    $("#alertContainerEditModal").html('');
     $("#successContainer").empty();
     $('#editPasswordContainer').empty();
     $("#btnSubmit").attr("disabled", false);
@@ -104,6 +240,10 @@ function submitEditEmployee() {
             var password = $('#editModalPass').val().trim();
             var confirmPassword = $('#editModalPassConfirm').val().trim();
             if (password === confirmPassword) {
+                if (password.length === 0) {
+                    $("#editEmployeePasswordWarning").html('<strong>Error!</strong> Please enter a new password').show();
+                    return; // do not continue with the posts
+                }
                 var passwordObject = {
                     "employeeId": submissionObject.employeeId,
                     "apiKey": apiKey,
@@ -113,16 +253,16 @@ function submitEditEmployee() {
                 passwordPromise = new Promise((resolve, reject) => {
                     $.post("/admin/editEmployeePassword", JSON.stringify(passwordObject), (data) => {
                         if (data.success) {
-                            console.log("successfully modified employee's password");
                             resolve();
                         } else {
-                            console.log("failed to modify employee" + data.message);
                             reject();
                         }
+                    }).fail(() => {
+                        reject();
                     });
                 })
             } else {
-                $("#editEmployeePasswordWarning").html(`<strong>Error!</strong> Passwords do not match.`).show();
+                $("#editEmployeePasswordWarning").html('<strong>Error!</strong> Passwords do not match').show();
                 return; // do not continue with the posts
             }
 
@@ -131,7 +271,7 @@ function submitEditEmployee() {
             passwordPromise.then(() => {
                 postEmployeeSubmission();
             }).catch(() => {
-                $("#editEmployeePasswordWarning").html(`<strong>Error!</strong> Failed to update password.`).show();
+                displayError("alertContainerEditModal", "Failed to modify employee. Please try again later");
             })
         } else {
             postEmployeeSubmission();
@@ -141,26 +281,23 @@ function submitEditEmployee() {
 }
 
 function postEmployeeSubmission() {
-    console.log(submissionObject);
     submissionObject.apiKey = apiKey;
     $.post("/admin/editEmployee", JSON.stringify(submissionObject), (data) => {
         if (data.success) {
-            console.log("successfully modified employee");
             $("#successContainer").empty().append(`
             <div class="alert alert-success hide" role="alert">
             <h4 class="alert-heading">Operation Successful!</h4>
             Employee modified successfully.`);
 
-            /*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
-            order to view the updated information in the table.
-            </div>
-            `);*/
             $("#btnSubmit").attr("disabled", true);
             //$('#editEmployeeModal').modal('hide');
             fetchDataAndPopulateTable();
         } else {
-            console.log("failed to modify employee" + data.message);
+            displayError("alertContainerEditModal", "Failed to modify employee, please try again later");
         }
+
+    }).fail(() => {
+        displayError("alertContainerEditModal", "Failed to modify employee. Please check your connection");
     });
 }
 
@@ -204,6 +341,7 @@ function findBuildingIdFromBuildingName(name) {
             return id;
         }
     }
+    return false;
 }
 
 function initializeAddEmployee() {
@@ -223,6 +361,7 @@ function initializeAddEmployee() {
 }
 
 function clearAddEmployeeModal() {
+    $("#alertContainerAddModal").html('');
     $("#addFirstName").val("");
     $("#addSurname").val("");
     $("#addTitle").val("");
@@ -235,30 +374,25 @@ function clearAddEmployeeModal() {
 function addEmployee() {
     var newEmployeeObj = {};
     if (retrieveValuesFromAddEmployee(newEmployeeObj)) {
-        console.log(newEmployeeObj);
         newEmployeeObj.apiKey = apiKey;
         $.post("/admin/addEmployee", JSON.stringify(newEmployeeObj), (data) => {
             if (data.success) {
-                console.log("successfully added employee");
                 $("#successContainerAddedEmployee").empty().append(`
             <div class="alert alert-success hide" role="alert">
             <h4 class="alert-heading">Operation Successful!</h4>
             Employee added successfully.`);
 
-                /*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
-                order to view the updated information in the table.
-                </div>
-                `);*/
                 $("#btnAddEmployee").attr("disabled", true);
                 //$('#addEmployeeModal').modal('hide');
                 fetchDataAndPopulateTable();
             } else {
-                console.log("failed to add employee");
-                console.log(data.message);
+                displayError("alertContainerAddModal", "Failed to add employee: " + data.message);
             }
+        }).fail(() => {
+            displayError("alertContainerAddModal", "Failed to add employee please check your connection");
         });
     } else {
-        console.log("Fix your inputs!")
+        displayError("alertContainerAddModal", "Please ensure all fields are filled in correctly");
     }
 }
 
@@ -361,10 +495,12 @@ function fetchCompanyName(resolve, reject) {
     });
 }
 
-function displayError(message) {
-    $('#mainErrorAlert').html(` 
+
+function displayError(containerId, message) {
+    let name = "#" + containerId;
+    $(name).html(`<div class="alert alert-danger alert-dismissible" id="mainErrorAlert" style="margin-top : 0.5rem" >
     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-    <strong>Error!</strong> ${message}`).show();
+    <strong>Error!</strong> ${message} </div>`).show();
 }
 
 function logout() {
@@ -372,8 +508,59 @@ function logout() {
     window.location.replace("login.html");
 }
 
-function checkCompanies(){
-    if(localStorage.getItem("id")==1) {
-        $("#navBar").append('<li class="nav-item"><a class="nav-link" href="companies.html">Companies</a></li>');
+function checkCompanies() {
+    if (localStorage.getItem("id") == 1) {
+        var a = document.createElement('a');
+        var linkText = document.createTextNode("Companies");
+        a.appendChild(linkText);
+        a.title = "Companies";
+        a.href = "companies.html";
+        var nav = document.getElementById("myTopnav");
+        nav.insertBefore(a, nav.children[6]);
+    }
+}
+function checkNav() {
+    var x = document.getElementById("myTopnav");
+    var comp = document.getElementById("companyTab");
+    var log = document.getElementById("logoutTab");
+    if (x.className === "topnav") {
+        comp.style = "";
+        log.style = "";
+        x.className += " responsive";
+    } else {
+        x.className = "topnav";
+        comp.style = "float: right";
+        log.style = "float: right";
+    }
+}
+
+function isAlphabetic(letters) {
+    //allows for A-Z or a-z as first char, then followed by A-Z/a-z/ (space)/-
+    if (/^([A-Za-z])([\-A-Za-z ])+$/.test(letters)) {
+        return true;
+    }
+    return false;
+}
+
+function isCellphoneNumber(cellphone) {
+    var regex = [
+        /^"?[0-9]{10}"?$/,
+        /^"?\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})"?$/,
+        /^"?\(\+([0-9]{2})\)?[-. ]?([0-9]{2})[-. ]?([0-9]{3})[-. ]?([0-9]{4})"?$/
+    ];
+    for (var countRegex = 0; countRegex < regex.length; ++countRegex) {
+        if (regex[countRegex].test(cellphone)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function isEmail(email) {
+    if (/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/.test(email)) {
+        return true;
+    }
+    else {
+        return false
     }
 }

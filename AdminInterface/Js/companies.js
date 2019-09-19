@@ -21,13 +21,13 @@ $(document).ready(function () {
 
 
 function fetchDataAndPopulateTable() {
-    let fetchCompaniesdata  = new Promise((resolve, reject) => { fetchCompanies(resolve, reject); });
+    let fetchCompaniesdata = new Promise((resolve, reject) => { fetchCompanies(resolve, reject); });
 
     Promise.all([fetchCompaniesdata]).then(() => {
         tableBody = $('#tableBody');
         populateTable();
     }).catch((error) => {
-        displayError(error);
+        displayError("alertContainer", error);
     });
 }
 
@@ -90,6 +90,12 @@ function submitEditCompany() {
             var password = $('#editModalPass').val().trim();
             var confirmPassword = $('#editModalPassConfirm').val().trim();
             if (password === confirmPassword) {
+                if (password.length === 0) {
+                    $("#editCompanyPasswordWarning").html('<strong>Error!</strong> Please enter a new password').show();
+                    return; // do not continue with the posts
+                }
+
+
                 var passwordObject = {
                     "companyId": submissionObject.companyId,
                     "apiKey": apiKey,
@@ -99,16 +105,16 @@ function submitEditCompany() {
                 passwordPromise = new Promise((resolve, reject) => {
                     $.post("/admin/editCompanyPassword", JSON.stringify(passwordObject), (data) => {
                         if (data.success) {
-                            console.log("successfully modified Company's password");
                             resolve();
                         } else {
-                            console.log("failed to modify Company" + data.message);
                             reject();
                         }
+                    }).fail(() => {
+                        reject();
                     });
                 })
             } else {
-                $("#editCompanyPasswordWarning").html(`<strong>Error!</strong> Passwords do not match.`).show();
+                $("#editCompanyPasswordWarning").html('<strong>Error!</strong> Passwords do not match').show();
                 return; // do not continue with the posts
             }
 
@@ -117,7 +123,7 @@ function submitEditCompany() {
             passwordPromise.then(() => {
                 postCompanySubmission();
             }).catch(() => {
-                $("#editCompanyPasswordWarning").html(`<strong>Error!</strong> Failed to update password.`).show();
+                $("#editCompanyPasswordWarning").html('<strong>Error!</strong> Failed to update company').show();
             })
         } else {
             postCompanySubmission();
@@ -127,26 +133,21 @@ function submitEditCompany() {
 }
 
 function postCompanySubmission() {
-    console.log(submissionObject);
     submissionObject.apiKey = apiKey;
     $.post("/admin/editCompany", JSON.stringify(submissionObject), (data) => {
         if (data.success) {
-            console.log("successfully modified company");
             $("#successContainer").empty().append(`
             <div class="alert alert-success hide" role="alert">
             <h4 class="alert-heading">Operation Successful!</h4>
             Company modified successfully.`);
 
-            /*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
-            order to view the updated information in the table.
-            </div>
-            `);*/
             $("#btnSubmit").attr("disabled", true);
-            //$('#editCompanyModal').modal('hide');
             fetchDataAndPopulateTable();
         } else {
-            console.log("failed to modify company" + data.message);
+            $("#editCompanyWarning").html('<strong>Error!</strong> Failed to update company.').show();
         }
+    }).fail(() => {
+        $("#editCompanyWarning").html('<strong>Error!</strong> Failed to update company. Please check your connection').show();
     });
 }
 
@@ -173,6 +174,7 @@ function initializeAddCompany() {
 }
 
 function clearAddCompanyModal() {
+    $("#addCompanyWarning").html('').hide();
     $("#addName").val("");
     $("#addWebsite").val("");
     $("#addUsername").val("");
@@ -182,34 +184,27 @@ function clearAddCompanyModal() {
 
 function addCompany() {
     var newCompanyObj = {};
-    $("#addCompanyWarning").html(`<strong>Error!</strong> Please fill in all the fields.`);
     if (retrieveValuesFromAddCompany(newCompanyObj)) {
-        console.log(newCompanyObj);
         newCompanyObj.apiKey = apiKey;
         $.post("/admin/addCompany", JSON.stringify(newCompanyObj), (data) => {
             if (data.success) {
-                console.log("successfully added companny");
                 $("#addCompanyWarning").hide();
                 $("#successContainerCompany").empty().append(`
             <div class="alert alert-success hide" role="alert">
             <h4 class="alert-heading">Operation Successful!</h4>
             Company added successfully.`);
-
-                /*Please <a href="./employees.html" class="alert-link">refresh</a> the page in
-                order to view the updated information in the table.
-                </div>
-                `);*/
                 $("#btnAddCompany").attr("disabled", true);
-                //$('#addEmployeeModal').modal('hide');
                 fetchDataAndPopulateTable();
             } else {
-                console.log("failed to add company");
-                console.log(data.message);
+                $("#addCompanyWarning").html(`<strong>Error!</strong>` + data.message);
                 $("#addCompanyWarning").show();
-                $("#addCompanyWarning").html(`<strong>Error!</strong>`+data.message);
             }
+        }).fail(() => {
+            $("#addCompanyWarning").html("<strong>Error!</strong> Failed to add company. Please check your connection");
+            $("#addCompanyWarning").show();
         });
     } else {
+        $("#addCompanyWarning").html("<strong>Error!</strong> Please check your input fields");
         $("#addCompanyWarning").show();
         return; // do not continue with the posts
     }
@@ -226,9 +221,9 @@ function retrieveValuesFromAddCompany(newCompanyObj) {
     if (isEmpty(newCompanyObj.companyUsername)) return false;
 
     newCompanyObj.companyPassword = $('#addPassword').val().trim();
-    if(isEmpty(newCompanyObj.companyPassword)) return false;
+    if (isEmpty(newCompanyObj.companyPassword)) return false;
 
-    if (newCompanyObj.companyPassword !== $("#addPasswordConfirm").val().trim()){
+    if (newCompanyObj.companyPassword !== $("#addPasswordConfirm").val().trim()) {
         $("#addCompanyWarning").html(`<strong>Error!</strong> Passwords Dont Match.`);
         return false;
     }
@@ -264,7 +259,7 @@ function expandEditPassword() {
 }
 
 function fetchCompanies(resolve, reject) {
-    $.post("/admin/getCompanies", JSON.stringify({ "apiKey": apiKey,}), (data) => {
+    $.post("/admin/getCompanies", JSON.stringify({ "apiKey": apiKey, }), (data) => {
         if (data.success) {
             companies = data.data;
             resolve();
@@ -274,10 +269,12 @@ function fetchCompanies(resolve, reject) {
     });
 }
 
-function displayError(message) {
-    $('#mainErrorAlert').html(` 
+function displayError(containerId, message) {
+    let name = "#" + containerId;
+    $(name).html(`<div class="alert alert-warning alert-dismissible" id="mainErrorAlert" style="margin-top : 0.5rem" >
     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-    <strong>Error!</strong> ${message}`).show();
+    <strong>Error!</strong> ${message}
+    </div>`).show();
 }
 
 function logout() {
@@ -287,6 +284,27 @@ function logout() {
 
 function checkCompanies(){
     if(localStorage.getItem("id")==1) {
-        $("#navBar").append('<li class="nav-item active"><a class="nav-link" href="companies.html">Companies</a></li>');
+        var a = document.createElement('a');
+        var linkText = document.createTextNode("Companies");
+        a.appendChild(linkText);
+        a.title = "Companies";
+        a.href = "companies.html";
+        a.className = "active";
+        var nav = document.getElementById("myTopnav");
+        nav.insertBefore(a,nav.children[6]);
+    }
+}
+function checkNav() {
+    var x = document.getElementById("myTopnav");
+    var comp = document.getElementById("companyTab");
+    var log = document.getElementById("logoutTab");
+    if (x.className === "topnav") {
+        comp.style = "";
+        log.style = "";
+        x.className += " responsive";
+    } else {
+        x.className = "topnav";
+        comp.style = "float: right";
+        log.style = "float: right";
     }
 }

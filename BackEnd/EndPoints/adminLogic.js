@@ -61,7 +61,7 @@ class AdminLogic extends ParentLogic {
                 this.editCompany();
                 break;
             case "deleteCompany":
-                this.deleteCompany();//DONT DO
+                this.deleteCompany();
                 break;
             case "getCompanyByCompanyId":
                 this.getCompanyByCompanyId();
@@ -81,7 +81,7 @@ class AdminLogic extends ParentLogic {
                 this.editBuilding();
                 break;
             case "deleteBuilding":
-                this.deleteBuilding();//DONT DO
+                this.deleteBuilding();
                 break;
             case "getBuildingByBuildingId":
                 this.getBuildingByBuildingId();
@@ -98,7 +98,7 @@ class AdminLogic extends ParentLogic {
                 this.editRoom();
                 break;
             case "deleteRoom":
-                this.deleteRoom();//DONT DO
+                this.deleteRoom();
                 break;
             case "getRoomByRoomId":
                 this.getRoomByRoomId();
@@ -118,7 +118,7 @@ class AdminLogic extends ParentLogic {
                 this.editEmployee();
                 break;
             case "deleteEmployee":
-                this.deleteEmployee();//DONT DO
+                this.deleteEmployee();
                 break;
             case "getEmployeeByEmployeeId":
                 this.getEmployeeByEmployeeId();
@@ -148,6 +148,9 @@ class AdminLogic extends ParentLogic {
 			//Payment Points
 			case "addPaymentPoint":
                 this.addPaymentPoint();
+                break;
+            case "deletePaymentPoint":
+                this.deletePaymentPoint();
                 break;
             case "editPaymentPoint":
                 this.editPaymentPoint();
@@ -444,9 +447,17 @@ class AdminLogic extends ParentLogic {
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Delete Company not implemented";
-                    data = null;
+                    let deleteObj = await this.sharedLogic.crudController.deleteCompany(this.body.companyId);
+                    if (deleteObj.success){
+                        success =deleteObj.success;
+                        message =deleteObj.message;
+                        data =deleteObj.data;
+                    }
+                    else{
+                        success =deleteObj.success;
+                        message =deleteObj.message;
+                        data = null;
+                    }
                 }
             }
             else{
@@ -963,9 +974,17 @@ class AdminLogic extends ParentLogic {
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Delete building not implemented";
-                    data = null;
+                    let deleteBuildingObj = await this.sharedLogic.crudController.deleteBuilding(this.body.buildingId);
+                    if(deleteBuildingObj.success){
+                        success =deleteBuildingObj.success;
+                        message =deleteBuildingObj.message;
+                        data =deleteBuildingObj.data;
+                    }
+                    else{
+                        success =deleteBuildingObj.success;
+                        message =deleteBuildingObj.message;
+                        data = null;
+                    }
                 }
             }
             else{
@@ -1132,9 +1151,9 @@ class AdminLogic extends ParentLogic {
                     data = [];
                     data.push({
                         buildingId : 0,
-                        buildingLatitude : "20,120,10",
-                        buildingLongitude : "20,120,10",
-                        buildingBranchName : "Vast Expanse JHB",
+                        latitude : "20,120,10",
+                        longitude : "20,120,10",
+                        branchName : "Vast Expanse JHB",
                         companyId : this.body.companyId,
                         wifiParamsId : 0,
                         networkSsid: "Vast Expanse Guests",
@@ -1144,9 +1163,9 @@ class AdminLogic extends ParentLogic {
 
                     data.push({
                         buildingId : 1,
-                        buildingLatitude : "20,120,10",
-                        buildingLongitude : "20,120,10",
-                        buildingBranchName : "Vast Expanse PTA",
+                        latitude : "20,120,10",
+                        longitude : "20,120,10",
+                        branchName : "Vast Expanse PTA",
                         companyId : this.body.companyId,
                         wifiParamsId : 1,
                         networkSsid: "Vast Expanse Guests",
@@ -1428,9 +1447,17 @@ class AdminLogic extends ParentLogic {
                 }
                 else{
                     //return data from crudController
-                    success = false;
-                    message = "Delete room not implemented";
-                    data = null;
+                    let deleteRoomObj = await this.sharedLogic.crudController.deleteRoom(this.body.roomId);
+                    if(deleteRoomObj.success){
+                        success =deleteRoomObj.success;
+                        message =deleteRoomObj.message;
+                        data =deleteRoomObj.data;
+                    }
+                    else{
+                        success =deleteRoomObj.success;
+                        message =deleteRoomObj.message;
+                        data = null;
+                    }
                 }
             }
             else{
@@ -1766,7 +1793,8 @@ class AdminLogic extends ParentLogic {
 
     /**
      * Function to add a bulk amount of employees, it will create employees belonging to a company ID
-     * Params are an array of objects containing the parameters
+     * Params are an array of objects containing the parameters in the form [{emp1}, {emp2}, ...] where each emp 
+     * has the following fields
      *
      * @param   employeeName string The name of the employee
      * @param   employeeSurname string The surname of the employee
@@ -1777,7 +1805,81 @@ class AdminLogic extends ParentLogic {
      * @param   buildingId int The building that the employee works at
      * @param   employeePassword string The Password chosen by the employee - for login purposes
      */
-    async addEmployees(){}
+    async addEmployees(){
+
+        if(!this.body.companyId || !this.sharedLogic.validateNumeric(this.body.companyId))
+            return this.sharedLogic.endServe(false, "No valid companyId provided", null);
+
+        
+        let employeesArr = this.body.data;
+        if(employeesArr.length ==0 )
+            return this.sharedLogic.endServe(false, "No employees data sent", null);
+
+        let passwordsArr = [];
+        let expDate = this.sharedLogic.getDate(0); //only calculate expiration date once
+        //prepare passwords as we iterate and check employees
+        for(var i =0; i < employeesArr.length; i++){
+                let firstName = employeesArr[i].employeeName;
+                if (!firstName || !this.sharedLogic.validateAlpha(firstName)) 
+                    return this.sharedLogic.endServe(false, "Invalid first name for employee index " + i, null);
+
+                let surname = employeesArr[i].employeeSurname;
+                if (!this.sharedLogic.validateAlpha(surname)) 
+                    return this.sharedLogic.endServe(false, "Invalid surname for employee index " + i, null);
+
+                let title = employeesArr[i].employeeTitle;
+                if (!this.sharedLogic.validateAlpha(title) && title.length <= 10) 
+                    return this.sharedLogic.endServe(false, "Invalid title for employee index " + i, null);
+
+                let cellphone = employeesArr[i].employeeCellphone;
+                if (!this.sharedLogic.validateCellphone(cellphone)) 
+                    return this.sharedLogic.endServe(false, "Invalid cellphone for employee index " + i, null);
+
+                let email = employeesArr[i].employeeEmail;
+                if (!this.sharedLogic.validateEmail(email)) 
+                    return this.sharedLogic.endServe(false, "Invalid email for employee index " + i, null);
+
+                let password = employeesArr[i].employeePassword;
+                if (password.length === 0) 
+                    return this.sharedLogic.endServe(false, "Invalid password for employee index " + i, null);
+
+                let buildingId  = employeesArr[i].buildingId;
+                if (!this.sharedLogic.validateNumeric(buildingId)) 
+                    return this.sharedLogic.endServe(false, "Invalid building ID for employee index " + i, null);
+
+                let salt = this.sharedLogic.genSalt();
+                let hash = this.sharedLogic.passwordHash(password,salt);
+                let apiKey = this.sharedLogic.genApiKey(); //need to check for duplicates
+                passwordsArr.push([email, hash, salt, apiKey, expDate]); // prepare passwords
+            }
+
+            let passwordResults = await this.sharedLogic.crudController.createPasswords(passwordsArr);
+            if(passwordResults.success){
+                //now that passwords are inserted, need to insert the employees
+                let employeesArrFormatted = [];
+                for(var i =0; i < employeesArr.length; i++){
+                    employeesArrFormatted.push([employeesArr[i].employeeName,  employeesArr[i].employeeSurname, 
+                        employeesArr[i].employeeTitle, employeesArr[i].employeeCellphone, employeesArr[i].employeeEmail, 
+                        this.body.companyId , employeesArr[i].buildingId, passwordResults.data[i].passwordid]);
+                }
+
+                let employeeResults = await this.sharedLogic.crudController.createEmployees(employeesArrFormatted);
+                if(employeeResults.success){
+                    return this.sharedLogic.endServe(employeeResults.success, "Employees Added!", employeeResults.data);
+                }else{
+                    //need to delete the passwords that were created
+                    let deletePassArr = [];    
+                    for(let i =0; i < passwordResults.data.length; i++){
+                        deletePassArr.push(passwordResults.data[i].passwordid);
+                    }
+                    let deletePasswordObj = await this.sharedLogic.crudController.deletePasswords(deletePassArr);
+                    return this.sharedLogic.endServe(false, "Failed to add Employees. Reverting to previous state resulted in " + deletePasswordObj.success + " status: " +  deletePasswordObj.message, null);
+                }
+                  
+            }else{
+                return this.sharedLogic.endServe(false, "Failed to create employee passwords: employees not added", null);
+            }
+    }
 
     /**
      * Function used to change an employees details
@@ -1972,19 +2074,14 @@ class AdminLogic extends ParentLogic {
                 }
                 else{
                     //return data from crudController
-                    let employeeObj = await this.sharedLogic.crudController.getEmployeeByEmployeeId(this.body.employeeId);
+                    let employeeObj = await this.sharedLogic.crudController.deleteEmployee(this.body.employeeId);
 
                     if(employeeObj.success){
-                        console.log(employeeObj);
-                        let deleteEmployeeObj = await this.sharedLogic.crudController.deleteEmployee(this.body.employeeId);
-                        if(deleteEmployeeObj.success){
-                            let passwordObj = await this.sharedLogic.crudController.deletePassword(employeeObj.data.passwordId);
-                        }
 
                         this.sharedLogic.endServe(true,"Employee Deleted", {employeeId: this.body.employeeId});
 
                     }else {
-                        this.sharedLogic.endServe(false, "Employee Does not Exists", false)
+                        this.sharedLogic.endServe(false, "Employee Does not Exists", null)
                     }
                 }
             }
@@ -2672,8 +2769,7 @@ class AdminLogic extends ParentLogic {
             this.sharedLogic.endServe(success, message, data);
         }
     }
-	
-	
+
 	/**
      * Function that is called to create a payment point, will use SharedLogic's crudController in order
      * to complete the operation. It will create a Payment Point belonging to the Building ID passed in through
@@ -2761,8 +2857,75 @@ class AdminLogic extends ParentLogic {
             this.sharedLogic.endServe(success, message, data);
         }
     }
-	
-	
+
+    /**
+     *  This function is used by the company admin to delete an existing payment Point
+     *
+     *  @param paymentPointId int The Employee to be deleted
+     *
+     *  @return JSON {
+     *                  paymentPointId : int The ID of the payment just deleted
+     *               }
+     */
+    async deletePaymentPoint(){
+        let message;
+        let data = new Object();
+        let success;
+
+        let presentParams = false;
+        let presentReturn = "";
+
+        if(this.body.paymentPointId === undefined){
+            presentParams = true;
+            presentReturn += "paymentPointId, ";
+        }
+        //check if the parameters are valid if parameters are present
+        if(!presentParams){
+            let invalidParams = false;
+            let invalidReturn = "";
+            if(!this.sharedLogic.validateNonEmpty(this.body.paymentPointId) || !this.sharedLogic.validateNumeric(this.body.paymentPointId)){
+                invalidParams = true;
+                invalidReturn += "paymentPointId, ";
+            }
+
+            //if parameters are valid then execute function
+            if(!invalidParams){
+                if(this.demoMode){
+                    //return mock data
+                    data.paymentPointId = this.body.paymentPointId;
+                    message = "paymentPointId Deleted! - Mock";
+                    success = true;
+                    this.sharedLogic.endServe(success, message, data);
+                }
+                else{
+                    //return data from crudController
+                    let paymentPointObj = await this.sharedLogic.crudController.deleteNfcPaymentPoint(this.body.paymentPointId);
+
+                    if(paymentPointObj.success){
+                        this.sharedLogic.endServe(true,"PaymentPoint Deleted", {paymentPointId: this.body.paymentPointId});
+                    }else {
+                        this.sharedLogic.endServe(false, "PaymentPoint Does not Exists", null)
+                    }
+                }
+            }
+            else{
+                success = false;
+                message = "Invalid Parameters: "+invalidReturn;
+                message = message.slice(0, message.length-2);
+                data = null;
+                this.sharedLogic.endServe(success, message, data);
+            }
+        }
+        else{
+            success = false;
+            message = "Missing Parameters: "+presentReturn;
+            message = message.slice(0, message.length-2);
+            data = null;
+            this.sharedLogic.endServe(success, message, data);
+        }
+
+    }
+
 	/**
      * Function used to change a payment points details
      *
@@ -2868,9 +3031,7 @@ class AdminLogic extends ParentLogic {
             this.sharedLogic.endServe(success, message, data);
         }
     }
-	
-	
-	
+
 	/**
      * This function will be used to return an array of payment points
      *

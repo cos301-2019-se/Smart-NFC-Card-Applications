@@ -28,6 +28,7 @@ import { EventEmitterService } from '../services/event-emitter.service';
 import { FilterService } from '../services/filter.service';  
 import { MessageType } from '../tabs/tabs.page';
 import { AlertController } from '@ionic/angular';
+import { QrCodeService } from '../services/qr-code.service';
 
 /**
 * Purpose:	This class provides the component that allows viewing of shared cards as well as adding new ones
@@ -42,8 +43,11 @@ import { AlertController } from '@ionic/angular';
 })
 export class CardTabPage implements OnInit{
   cards: BusinessCard[] = [];
+  hasCards: Boolean = true;
   detailToggles = [];
   check;
+  scannedData: {};
+
   /**
    * Constructor that takes all injectables
    * @param cardService BusinessCardsService injectable
@@ -59,10 +63,11 @@ export class CardTabPage implements OnInit{
     private locationService: LocationService,
     private eventEmitterService: EventEmitterService,
     public filterService: FilterService,
-    private alertController: AlertController
-  ) { }
+    private alertController: AlertController,
+    private qrCodeService: QrCodeService
+  ) {  }
 
-  ngOnInit() {    
+  ngOnInit() {   
     this.eventEmitterService.menuSubscribe(
       this.eventEmitterService.invokeMenuButtonEvent.subscribe(functionName => {    
           this.menuEvent(functionName);
@@ -73,10 +78,10 @@ export class CardTabPage implements OnInit{
   /**
    * Function triggers when the tab is navigated to
    */
-  ionViewDidEnter() {
+  ionViewDidEnter() { 
     this.showMessage('', MessageType.reset);
     // Gets the business cards
-    this.loadCards(); 
+    this.loadCards();
   }
 
   /**
@@ -92,6 +97,8 @@ export class CardTabPage implements OnInit{
     switch(functionName) {
       case 'Add Business Card': this.addCard()
         break;
+      case 'Scan QR Code': this.scanQrCode()
+        break;
       case 'Refresh All Cards': this.showMessage('Refresh feature coming soon.', MessageType.error);
         break;
     }
@@ -101,9 +108,13 @@ export class CardTabPage implements OnInit{
    * Function that loads the cards from the service or sets it to empty if it doesn't exist
    */
   loadCards(){
+    this.hasCards = true;
     // Get cards
     this.cardService.getBusinessCards().then((val) => {    
       this.cards = val;
+      if (this.cards.length < 1) {
+        this.hasCards = false;
+      } 
       // If it is null, set it as an empty array
       if (this.cards == null) {
         this.cards = []
@@ -152,6 +163,9 @@ export class CardTabPage implements OnInit{
         this.cardService.addBusinessCard(json.companyId, json.companyName, json.employeeName, json.contactNumber, json.email, json.website, json.location)
         .then(() => {
           this.loadCards();
+        })
+        .catch(err => {
+          this.showMessage(`Could not add business card: ${err}`, MessageType.error);
         });
       });
     })
@@ -260,18 +274,19 @@ export class CardTabPage implements OnInit{
   showMessage(message: string, type: number, timeout: number = 5000) {
     this.eventEmitterService.messageEvent(message, type, timeout);
   }
-  
-  /**
-   * Function that creates a link that can be clicked by adding http if needed
-   * @param link string website link with or without http(s)
-   * @return string link that can be clicked on
-   */
-  createClickableLink(link: string){
-    if (link.indexOf('http') == 0) {
-      return link;
-    }
-    else {
-      return `http://${link}`;
-    }
+
+  scanQrCode(){
+    this.qrCodeService.scanCode().subscribe(res => {
+      this.scannedData = res['message'];
+      let data = this.scannedData["text"];
+      let json = JSON.parse(data);
+      this.cardService.addBusinessCard(json.companyId, json.companyName, json.employeeName, json.contactNumber, json.email, json.website, json.location)
+      .then(() => {
+        this.loadCards();
+      })
+      .catch(err => {
+        this.showMessage(`Could not add business card: ${err}`, MessageType.error);
+      });
+    });
   }
 }

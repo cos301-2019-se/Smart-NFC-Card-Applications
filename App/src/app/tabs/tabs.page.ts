@@ -73,10 +73,12 @@ export class TabsPage implements OnInit, OnDestroy{
     ],
     'share-tab': [
       {name: 'Refresh', requiresLogin: true},
-      {name: 'Share'}
+      {name: 'Share'},
+      {name: 'QR Code'}
     ],
     'card-tab': [
       {name: 'Add Business Card'},
+      {name: 'Scan QR Code'},
       {name: 'Refresh All Cards', requiresLogin: true}
     ],
     'package-tab': [

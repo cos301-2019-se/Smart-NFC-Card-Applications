@@ -21,6 +21,7 @@ import { CommonModule } from '@angular/common';
 import { FilterPipe } from './services/filter.pipe';
 import { Uid } from '@ionic-native/uid/ngx';
 import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
 
 /**
 *   Purpose:	This class provides the shared module for the app
@@ -40,7 +41,8 @@ import { AndroidPermissions } from '@ionic-native/android-permissions/ngx';
     ],
     providers: [
         Uid,
-        AndroidPermissions
+        AndroidPermissions,
+        BarcodeScanner
     ]
 })
 export class SharedModule{}

@@ -18,13 +18,13 @@
 *	Constraints: 	None
 */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { BusinessCard } from '../models/business-card.model';
 import { BusinessCardsService } from '../services/business-cards.service';
 import { LocalStorageService } from '../services/local-storage.service';
 import { RequestModuleService } from '../services/request-module.service';
 import { Observable } from 'rxjs';
-import { ModalController, AlertController } from '@ionic/angular';
+import { ModalController, AlertController, IonInput } from '@ionic/angular';
 import { CreateVisitorPackagePage } from '../create-visitor-package/create-visitor-package.page';
 import { EventEmitterService } from '../services/event-emitter.service';   
 import { LoggedInService } from '../services/logged-in.service';
@@ -58,6 +58,11 @@ export class ManageTabPage implements OnInit {
   activePackages: VisitorPackage[] = [];
   inactivePackages: VisitorPackage[] = [];
   detailToggles = [];
+
+  hasPackages: Boolean = true;
+  
+  @ViewChild('unameInput') unameInput : IonInput;
+  @ViewChild('passInput') passInput : IonInput;
 
   /**
    * Constructor that takes all injectables
@@ -126,6 +131,8 @@ export class ManageTabPage implements OnInit {
    */
   login(){
     this.resetMessages();
+    this.unameInput.ionBlur;
+    this.passInput.ionBlur;
     this.loginService.login(this.username, this.password).subscribe(res => {
       if (res['success'] === true) {
         this.loggedIn = true;
@@ -220,6 +227,9 @@ export class ManageTabPage implements OnInit {
         })
         this.packageService.setSharedVisitorPackages(val).then(() => {   
           this.packages = val;
+          if (val.length < 1) {
+            this.hasPackages = false;
+          }
           this.setupToggles();          
           // Populate active and inactive packages
           this.activePackages = this.packages.filter(elem => {
@@ -368,7 +378,6 @@ export class ManageTabPage implements OnInit {
                 this.showMessage(`Could not delete package: ${json['message']}`, MessageType.error)
               }
             }, err => {
-              console.log(err);
               this.showMessage(`Error adding to DB: Ensure that you have a stable internet connection`, MessageType.error);
             });
           }

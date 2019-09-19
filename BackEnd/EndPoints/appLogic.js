@@ -1056,6 +1056,7 @@ class AppLogic extends ParentLogic {
                     data.endTime = "10:00";
                     data.limit = "100.00";
                     data.spent = "50.00";
+                    data.visitorPackageId = 0;
                     this.sharedLogic.endServe(true, "Retrieved Visitor Package - MOCK", data);
                 }
                 else {
@@ -1130,6 +1131,7 @@ class AppLogic extends ParentLogic {
                     let arr = [];
 
                     let data1 = {};
+                    data1.visitorPackageId = 1;
                     data1.companyName = "Vast Expanse";
                     data1.latitude = "2000";
                     data1.longitude = "2000";
@@ -1144,6 +1146,7 @@ class AppLogic extends ParentLogic {
                     data1.spent = "50.00";
 
                     let data2 = {};
+                    data2.visitorPackageId = 2;
                     data2.companyName = "Vast Expanse";
                     data2.latitude = "2000";
                     data2.longitude = "2000";

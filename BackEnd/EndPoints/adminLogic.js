@@ -1151,9 +1151,9 @@ class AdminLogic extends ParentLogic {
                     data = [];
                     data.push({
                         buildingId : 0,
-                        buildingLatitude : "20,120,10",
-                        buildingLongitude : "20,120,10",
-                        buildingBranchName : "Vast Expanse JHB",
+                        latitude : "20,120,10",
+                        longitude : "20,120,10",
+                        branchName : "Vast Expanse JHB",
                         companyId : this.body.companyId,
                         wifiParamsId : 0,
                         networkSsid: "Vast Expanse Guests",
@@ -1163,9 +1163,9 @@ class AdminLogic extends ParentLogic {
 
                     data.push({
                         buildingId : 1,
-                        buildingLatitude : "20,120,10",
-                        buildingLongitude : "20,120,10",
-                        buildingBranchName : "Vast Expanse PTA",
+                        latitude : "20,120,10",
+                        longitude : "20,120,10",
+                        branchName : "Vast Expanse PTA",
                         companyId : this.body.companyId,
                         wifiParamsId : 1,
                         networkSsid: "Vast Expanse Guests",

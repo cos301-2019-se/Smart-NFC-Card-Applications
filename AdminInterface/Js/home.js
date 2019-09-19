@@ -41,6 +41,8 @@ function loadHomeContents(callback)
 				
 			
 			$("#welcome").html(msg);
+
+			callback();
         } 
 		else 
 		{
@@ -48,8 +50,6 @@ function loadHomeContents(callback)
 					
 		}
     });
-	
-	callback();
 }
 
 function details()

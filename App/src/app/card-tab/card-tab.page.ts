@@ -95,9 +95,9 @@ export class CardTabPage implements OnInit{
 
   menuEvent(functionName: string) {
     switch(functionName) {
-      case 'Add Business Card': this.addCard()
+      case 'Receive Card (NFC)': this.addCard()
         break;
-      case 'Scan QR Code': this.scanQrCode()
+      case 'Receive Card (QR Code)': this.scanQrCode()
         break;
       case 'Refresh All Cards': this.showMessage('Refresh feature coming soon.', MessageType.error);
         break;

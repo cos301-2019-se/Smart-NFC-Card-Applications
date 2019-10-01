@@ -43,8 +43,8 @@ export class QrCodeService {
     private barcodeScanner: BarcodeScanner
   ) {
     this.barcodeScannerOptions = {
-      showTorchButton: true,
-      showFlipCameraButton: true
+      resultDisplayDuration: 0,
+      prompt: "Place card QR code inside scan area"
     };
   }
 
@@ -55,7 +55,7 @@ export class QrCodeService {
   scanCode(){  
     let subject = new Subject<Object>();  
     setTimeout(() => {
-      this.barcodeScanner.scan()
+      this.barcodeScanner.scan(this.barcodeScannerOptions)
       .then(barcodeData => {
         subject.next({ success: true, message: barcodeData });
         subject.complete();

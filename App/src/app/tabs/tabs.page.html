@@ -4,7 +4,7 @@
     <ion-searchbar #search *ngIf='showSearchBar' [(ngModel)]="searchFilter" (ionChange)="updateSearch()" (ionCancel)="toggleSearchBar()" showCancelButton="always"></ion-searchbar>
     <ion-buttons slot='primary'>
         <ion-button (click)='openMenu($event)'>
-          <ion-icon slot="icon-only" name="more"></ion-icon>
+          <ion-icon slot="icon-only" name="menu"></ion-icon>
         </ion-button>
     </ion-buttons>
     <ion-buttons *ngIf='!showSearchBar' slot='secondary'>
@@ -21,9 +21,9 @@
   </ion-toolbar>
 
   <ion-tab-bar slot="bottom">
-      <ion-tab-button tab="manage-tab" [class.active-tab]="(activeTab=='manage-tab')" (click)="setActive('manage-tab')">
-        <ion-label>Manage</ion-label>
-      </ion-tab-button>
+    <ion-tab-button tab="manage-tab" [class.active-tab]="(activeTab=='manage-tab')" (click)="setActive('manage-tab')">
+      <ion-label>Manage</ion-label>
+    </ion-tab-button>
       
     <ion-tab-button tab="share-tab" [class.active-tab]="(activeTab=='share-tab')" (click)="setActive('share-tab')">
       <ion-label>Share</ion-label>

@@ -242,6 +242,7 @@ export class ManageTabPage implements OnInit {
       }
       else {   
         // If no packages has been saved previously     
+        this.hasPackages = false;
         this.packages = [];
         this.activePackages = [];
         this.inactivePackages = [];

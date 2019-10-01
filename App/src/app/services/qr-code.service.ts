@@ -20,6 +20,7 @@
 import { Injectable } from '@angular/core';
 import { BarcodeScanner, BarcodeScannerOptions } from '@ionic-native/barcode-scanner/ngx';
 import { Subject } from 'rxjs';
+import { SharedModule } from '../shared.module';
 
 /**
 * Purpose:	This class provides the qr code service injectable
@@ -63,7 +64,7 @@ export class QrCodeService {
         subject.next({success: false, message: `Couldn't scan code: ${err.message}`});
         subject.complete();
       });
-    }, 50);
+    }, SharedModule.timeoutDelay);
     return subject.asObservable();
   }
 
@@ -82,7 +83,7 @@ export class QrCodeService {
         subject.next({success: false, message: `Couldn't encode: ${err.message}`});
         subject.complete();
       });  
-    }, 50);
+    }, SharedModule.timeoutDelay);
     return subject.asObservable();               
   }
 }

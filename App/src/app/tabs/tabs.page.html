@@ -1,6 +1,6 @@
 <ion-tabs>
   <ion-toolbar slot="top">
-    <ion-title *ngIf='!showSearchBar'> Project Link Beta </ion-title>
+    <ion-title *ngIf='!showSearchBar'> Link </ion-title>
     <ion-searchbar #search *ngIf='showSearchBar' [(ngModel)]="searchFilter" (ionChange)="updateSearch()" (ionCancel)="toggleSearchBar()" showCancelButton="always"></ion-searchbar>
     <ion-buttons slot='primary'>
         <ion-button (click)='openMenu($event)'>

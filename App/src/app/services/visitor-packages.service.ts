@@ -24,6 +24,7 @@ import { VisitorPackage } from '../models/visitor-package.model';
 import { LocationModel } from '../models/location.model';
 import { RequestModuleService } from './request-module.service';
 import { Subject } from 'rxjs';
+import { SharedModule } from '../shared.module';
 
 /**
 * Purpose:	This class provides the visitor packages service injectable
@@ -205,7 +206,7 @@ export class VisitorPackagesService {
         subject.complete();
         this.req.dismissLoading();
       });
-    }, 50);
+    }, SharedModule.timeoutDelay);
     return subject.asObservable();
   }
 
@@ -303,7 +304,7 @@ export class VisitorPackagesService {
         subject.complete();
         this.req.dismissLoading();
       });
-    }, 50);
+    }, SharedModule.timeoutDelay);
     return subject.asObservable();
   }
 

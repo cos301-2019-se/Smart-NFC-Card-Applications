@@ -105,4 +105,22 @@ describe('BusinessCardsService', () => {
     const service: BusinessCardsService = TestBed.get(BusinessCardsService);
     expect(service.createClickableLink('https://absa.co.za')).toEqual('https://absa.co.za');
   });
+
+  it('checkValidDetails should return true when valid data given', () => {
+    const service: BusinessCardsService = TestBed.get(BusinessCardsService);
+    expect(service.checkValidDetails(
+      service.stub.businessCardId, 
+      service.stub.companyName,
+      service.stub.employeeName,
+      service.stub.contactNumber,
+      service.stub.email,
+      service.stub.website,
+      service.stub.location
+    )).toEqual(true);
+  });
+
+  it('checkValidDetails should return false whne invalid data given', () => {
+    const service: BusinessCardsService = TestBed.get(BusinessCardsService);
+    expect(service.checkValidDetails('', '', '', '', '', '', new LocationModel(0,0,''))).toEqual(false);
+  });
 });

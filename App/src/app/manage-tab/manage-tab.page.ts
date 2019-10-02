@@ -242,6 +242,7 @@ export class ManageTabPage implements OnInit {
       }
       else {   
         // If no packages has been saved previously     
+        this.hasPackages = false;
         this.packages = [];
         this.activePackages = [];
         this.inactivePackages = [];
@@ -369,16 +370,20 @@ export class ManageTabPage implements OnInit {
                 this.packageService.removeSharedVisitorPackage(packageId).then(() => {
                   this.showMessage(`Deleted the ${visitorPackage.access} package`, MessageType.success);
                   this.loadPackages();
+                  this.req.dismissLoading();
                 })
                 .catch(err => {
                   this.showMessage(`Couldn't delete: ${err}`, MessageType.error);
+                  this.req.dismissLoading();
                 });
               }
               else {
-                this.showMessage(`Could not delete package: ${json['message']}`, MessageType.error)
+                this.showMessage(`Could not delete package: ${json['message']}`, MessageType.error);
+                this.req.dismissLoading();
               }
             }, err => {
               this.showMessage(`Error adding to DB: Ensure that you have a stable internet connection`, MessageType.error);
+              this.req.dismissLoading();
             });
           }
         }

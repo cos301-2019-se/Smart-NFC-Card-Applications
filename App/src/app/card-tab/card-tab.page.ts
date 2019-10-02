@@ -95,9 +95,9 @@ export class CardTabPage implements OnInit{
 
   menuEvent(functionName: string) {
     switch(functionName) {
-      case 'Add Business Card': this.addCard()
+      case 'Receive Card (NFC)': this.addCard()
         break;
-      case 'Scan QR Code': this.scanQrCode()
+      case 'Receive Card (QR Code)': this.scanQrCode()
         break;
       case 'Refresh All Cards': this.showMessage('Refresh feature coming soon.', MessageType.error);
         break;
@@ -160,7 +160,7 @@ export class CardTabPage implements OnInit{
         let json = JSON.parse(payload.slice(3));
         this.showMessage(`Received ${json.companyName} Business Card.`, MessageType.success, 5000);
         // Add the card to the local storage
-        this.cardService.addBusinessCard(json.companyId, json.companyName, json.employeeName, json.contactNumber, json.email, json.website, json.location)
+        this.cardService.addBusinessCard(json.businessCardId, json.companyName, json.employeeName, json.contactNumber, json.email, json.website, json.location)
         .then(() => {
           this.loadCards();
         })
@@ -227,10 +227,10 @@ export class CardTabPage implements OnInit{
 
   /**
    * Function toggles the business card detail of a company
-   * @param companyId number Id of business card to toggle
+   * @param businessCardId number Id of business card to toggle
    */
-  toggleDetails(companyId: number){
-    this.detailToggles[companyId] = !this.detailToggles[companyId];
+  toggleDetails(businessCardId: number){
+    this.detailToggles[businessCardId] = !this.detailToggles[businessCardId];
   }
 
   /**
@@ -280,7 +280,7 @@ export class CardTabPage implements OnInit{
       this.scannedData = res['message'];
       let data = this.scannedData["text"];
       let json = JSON.parse(data);
-      this.cardService.addBusinessCard(json.companyId, json.companyName, json.employeeName, json.contactNumber, json.email, json.website, json.location)
+      this.cardService.addBusinessCard(json.businessCardId, json.companyName, json.employeeName, json.contactNumber, json.email, json.website, json.location)
       .then(() => {
         this.loadCards();
       })

@@ -102,9 +102,9 @@ export class ShareTabPage implements OnInit{
     switch(functionName) {
       case 'Refresh': this.reloadCard()
         break;
-      case 'Share': this.shareCard()
+      case 'Share (NFC)': this.shareCard()
         break;
-      case 'QR Code': this.showQrCode()
+      case 'Share (QR Code)': this.showQrCode()
         break;
     }
   }

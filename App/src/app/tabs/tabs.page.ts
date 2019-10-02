@@ -19,7 +19,7 @@
 */
 import { Component, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Toast } from '@ionic-native/toast/ngx';
-import { PopoverController, IonSearchbar, Platform, ToastController, LoadingController } from '@ionic/angular';
+import { PopoverController, IonSearchbar, Platform, ToastController, LoadingController, NavController } from '@ionic/angular';
 import { PopoverMenuComponent } from '../popover-menu/popover-menu.component';
 import { EventEmitterService } from '../services/event-emitter.service';   
 import { FilterService } from '../services/filter.service';
@@ -73,17 +73,19 @@ export class TabsPage implements OnInit, OnDestroy{
     ],
     'share-tab': [
       {name: 'Refresh', requiresLogin: true},
-      {name: 'Share'},
-      {name: 'QR Code'}
+      {name: 'Share (NFC)'},
+      {name: 'Share (QR Code)'}
     ],
     'card-tab': [
-      {name: 'Add Business Card'},
-      {name: 'Scan QR Code'},
+      {name: 'Receive Card (NFC)'},
+      {name: 'Receive Card (QR Code)'},
+      {name: 'Share Own Card', nav: 'share-tab'},
       {name: 'Refresh All Cards', requiresLogin: true}
     ],
     'package-tab': [
       {name: 'Link to Package'},
       {name: 'Receive Package'},
+      {name: 'Create Package', nav: 'manage-tab'},
       {name: 'Refresh All Packages', requiresLogin: true}
     ]
   };
@@ -92,6 +94,7 @@ export class TabsPage implements OnInit, OnDestroy{
   /**
    * Constructor that takes all the injectables and registers back button event
    * @param platform Platform Injectable
+   * @param router NavController Injectable for changing tabs
    * @param toastController Toast Injectable
    * @param popoverController PopoverController Injectable
    * @param eventEmitterService EventEmitterService Injectable
@@ -100,6 +103,7 @@ export class TabsPage implements OnInit, OnDestroy{
    */
   constructor(
     private platform: Platform,
+    private router: NavController,
     private toastController: Toast,
     private popoverController: PopoverController,    
     private eventEmitterService: EventEmitterService,
@@ -168,7 +172,14 @@ export class TabsPage implements OnInit, OnDestroy{
     menu.present();
     menu.onDidDismiss().then(res => {
       if (res.data != undefined) {        
-        this.eventEmitterService.menuButtonEvent(res.data.name);   
+        if (res.data.nav != undefined) {
+          let tabName = Object.keys(this.tabButtons);
+          this.router.navigateForward('tabs/' + res.data.nav);
+          this.setActive(res.data.nav);
+        }
+        else {
+          this.eventEmitterService.menuButtonEvent(res.data.name);   
+        }
       }
     });
   }

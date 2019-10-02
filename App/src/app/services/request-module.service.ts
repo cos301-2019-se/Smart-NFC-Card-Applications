@@ -309,16 +309,16 @@ export class RequestModuleService {
    * @return Observable<Object> response containing json from back-end server
    */
   deleteVisitorPackage(packageId: number) {
-    //if (this.demoMode) {
+    if (RequestModuleService.demoMode) {
       return new Observable<Object>(observer => {
         observer.next(this.visitorPackageStub);
         observer.complete();
       });
-    /*}
+    }
     else {
-      let json: JSON = JSON.parse(`{"packageId": ${packageId}}`);
+      let json: JSON = JSON.parse(`{"visitorPackageId": ${packageId}}`);
       return this.post(`${this.baseUrl}/app/deleteVisitorPackage`, json);
-    }*/
+    }
   }
 
   /**

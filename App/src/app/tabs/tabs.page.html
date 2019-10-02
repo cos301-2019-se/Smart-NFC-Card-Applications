@@ -3,6 +3,9 @@
     <ion-title *ngIf='!showSearchBar'> Link </ion-title>
     <ion-searchbar #search *ngIf='showSearchBar' [(ngModel)]="searchFilter" (ionChange)="updateSearch()" (ionCancel)="toggleSearchBar()" showCancelButton="always"></ion-searchbar>
     <ion-buttons slot='primary'>
+        <ion-button href='https://drive.google.com/file/d/1F6SBMhB_TgvC88bJHms20v-pKG1_QA7m/view'>
+          <ion-icon slot="icon-only" name="help-circle"></ion-icon>
+        </ion-button>
         <ion-button (click)='openMenu($event)'>
           <ion-icon slot="icon-only" name="menu"></ion-icon>
         </ion-button>

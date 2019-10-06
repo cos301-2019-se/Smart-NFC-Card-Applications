@@ -13,20 +13,20 @@ Link also allows for an employee of a company to easily setup hosting for this v
 
 <a href="https://drive.google.com/open?id=1ay1wd_N4rkKJamkbREXJMVeAHndVg8Q4" target="_blank">SRS Document</a>
 
-<a href="https://drive.google.com/open?id=1Bu39yaYqkcFi7-lgHMhodhPux5pG8g_k" target="_blank">User Manual</a>
-
 <a href="https://drive.google.com/open?id=1sxHqut_B0ufqTrAmDPKUBG2HPeg6l9iq" target="_blank">Coding Standards Document</a>
 
-<a href="https://drive.google.com/open?id=1wfgW1cHVrW3hNl3-XXS8RW3AP192AoK7" target="_blank">Testing Policy</a>
+<a href="https://drive.google.com/file/d/1qPD-8ZHiMs34mC-MJ1clGzw413FvAzJM/view?usp=sharing" target="_blank">Testing Policy</a>
+
+<a href="https://drive.google.com/open?id=1Bu39yaYqkcFi7-lgHMhodhPux5pG8g_k" target="_blank">User Manual</a>
 
 ---
 
 #### Team and Project Management 
-<a href="https://drive.google.com/file/d/1OyJc7dfuPfS_QooenRgpfOm_bGZHxOpg/view?usp=sharing" target="_blank">Team Vast Expanse ![Github](https://i.imgur.com/Xqy7DfH.png)</a>
-
 <a href="https://github.com/cos301-2019-se/Smart-NFC-Card-Applications#workspaces/vastexpanseworkspace-5cc2c99dba27a75ea1e3f5d1/board?repos=182156651" target="_blank">Vast Expanse Project Management tool (Accessed via GitHub) ![ZenHub](https://i.imgur.com/Qqg8JhO.png)</a>
 
 <a href="https://app.zenhub.com/workspaces/vastexpanseworkspace-5cc2c99dba27a75ea1e3f5d1/board?repos=182156651" target="_blank">Vast Expanse Project Management tool (Accessed via ZenHub) ![ZenHub](https://i.imgur.com/Qqg8JhO.png)</a>
+
+<a href="https://drive.google.com/file/d/1bK9SKggZxN7CpH2jFu8W5B72jPnoSX8B/view?usp=sharing" target="_blank">Team Vast Expanse Profiles ![Github](https://i.imgur.com/Xqy7DfH.png)</a>
 
 ---
 

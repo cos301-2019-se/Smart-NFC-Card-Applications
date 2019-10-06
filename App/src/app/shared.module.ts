@@ -45,4 +45,6 @@ import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
         BarcodeScanner
     ]
 })
-export class SharedModule{}
+export class SharedModule{
+    static timeoutDelay: number = 50;
+}

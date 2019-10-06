@@ -28,6 +28,7 @@ import { Observable } from 'rxjs';
 import { LocalStorageService } from './local-storage.service';
 import { LoadingController } from '@ionic/angular';
 import { UniqueIdService } from './unique-id.service';
+import { SharedModule } from '../shared.module';
 
 /**
 * Purpose:	This class provides the injectable service
@@ -308,16 +309,16 @@ export class RequestModuleService {
    * @return Observable<Object> response containing json from back-end server
    */
   deleteVisitorPackage(packageId: number) {
-    //if (this.demoMode) {
+    if (RequestModuleService.demoMode) {
       return new Observable<Object>(observer => {
         observer.next(this.visitorPackageStub);
         observer.complete();
       });
-    /*}
+    }
     else {
-      let json: JSON = JSON.parse(`{"packageId": ${packageId}}`);
+      let json: JSON = JSON.parse(`{"visitorPackageId": ${packageId}}`);
       return this.post(`${this.baseUrl}/app/deleteVisitorPackage`, json);
-    }*/
+    }
   }
 
   /**
@@ -400,9 +401,11 @@ export class RequestModuleService {
    * Function that closes the loading modal - should be called by functions calling request functions
    */
   dismissLoading(){
-    if (this.loadingModal) {
-      this.loadingModal.dismiss();
-      this.loadingModal = null;
-    }
+    setTimeout(() => {
+      if (this.loadingModal) {
+        this.loadingModal.dismiss();
+        this.loadingModal = null;
+      }
+    }, 2 * SharedModule.timeoutDelay + 1);
   }
 }

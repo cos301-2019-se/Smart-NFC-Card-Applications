@@ -28,6 +28,7 @@ import { LocationModel } from '../models/location.model';
 import { RoomModel } from '../models/room.model';
 import { WifiDetailsModel } from '../models/wifi-details.model';
 import { VisitorPackagesService } from './visitor-packages.service';
+import { SharedModule } from '../shared.module';
 
 /**
 * Purpose:	This class provides the logged in service injectable
@@ -93,6 +94,7 @@ export class LoggedInService {
       return new Observable<Object>(observer => {
         observer.next({success: false, message: "Please enter a username and password."});
         observer.complete();
+        this.req.dismissLoading();
       });
     }
     else {
@@ -109,10 +111,12 @@ export class LoggedInService {
                 if (response['success'] === true) {
                   subject.next({success: true, message: res['message']});
                   subject.complete();
+                  this.req.dismissLoading();
                 }
                 else {
                   subject.next({success: true, message: `${res['message']}, but could not load details: ${response['message']}`});
                   subject.complete();
+                  this.req.dismissLoading();
                 }
               });
             });
@@ -120,12 +124,14 @@ export class LoggedInService {
           else {
             subject.next({success: false, message: res['message']});
             subject.complete();
+            this.req.dismissLoading();
           }
         }, err => {
           subject.next({success: false, message: `Something went wrong: Ensure that you have an internet connection.`});
           subject.complete();
+          this.req.dismissLoading();
         });
-      }, 50);
+      }, SharedModule.timeoutDelay);
       return subject.asObservable();
     }
   }
@@ -187,7 +193,7 @@ export class LoggedInService {
         subject.next({success: false, message: 'Error refreshing account details.'});
         subject.complete();
       });
-    },50);
+    },SharedModule.timeoutDelay);
     return subject.asObservable();
   }
 
@@ -215,7 +221,7 @@ export class LoggedInService {
         subject.next({success: false, message: `Something went wrong: ${err.message}`});
         subject.complete();
       });
-    }, 50);
+    }, SharedModule.timeoutDelay);
     return subject.asObservable();
   }
 
@@ -247,7 +253,7 @@ export class LoggedInService {
         subject.next({success: false, message: `Something went wrong: ${err.message}`});
         subject.complete();
       });
-    }, 50);
+    }, SharedModule.timeoutDelay);
     return subject.asObservable();
   }
 

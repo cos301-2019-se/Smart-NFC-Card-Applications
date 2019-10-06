@@ -1,10 +1,13 @@
 <ion-tabs>
   <ion-toolbar slot="top">
-    <ion-title *ngIf='!showSearchBar'> Project Link Beta </ion-title>
+    <ion-title *ngIf='!showSearchBar'> Link </ion-title>
     <ion-searchbar #search *ngIf='showSearchBar' [(ngModel)]="searchFilter" (ionChange)="updateSearch()" (ionCancel)="toggleSearchBar()" showCancelButton="always"></ion-searchbar>
     <ion-buttons slot='primary'>
+        <ion-button href='https://drive.google.com/open?id=1F6SBMhB_TgvC88bJHms20v-pKG1_QA7m'>
+          <ion-icon slot="icon-only" name="help-circle"></ion-icon>
+        </ion-button>
         <ion-button (click)='openMenu($event)'>
-          <ion-icon slot="icon-only" name="more"></ion-icon>
+          <ion-icon slot="icon-only" name="menu"></ion-icon>
         </ion-button>
     </ion-buttons>
     <ion-buttons *ngIf='!showSearchBar' slot='secondary'>
@@ -21,9 +24,9 @@
   </ion-toolbar>
 
   <ion-tab-bar slot="bottom">
-      <ion-tab-button tab="manage-tab" [class.active-tab]="(activeTab=='manage-tab')" (click)="setActive('manage-tab')">
-        <ion-label>Manage</ion-label>
-      </ion-tab-button>
+    <ion-tab-button tab="manage-tab" [class.active-tab]="(activeTab=='manage-tab')" (click)="setActive('manage-tab')">
+      <ion-label>Manage</ion-label>
+    </ion-tab-button>
       
     <ion-tab-button tab="share-tab" [class.active-tab]="(activeTab=='share-tab')" (click)="setActive('share-tab')">
       <ion-label>Share</ion-label>

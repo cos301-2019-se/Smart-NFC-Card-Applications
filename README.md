@@ -33,9 +33,11 @@ Link also allows for an employee of a company to easily setup and share temporar
 </details>
 
 <details>
-  <summary><b>Video and Project Links</b></summary> <br>
+  <summary><b>Videos and Project Links</b></summary> <br>
   
-  <a href="https://www.youtube.com/watch?v=-cNhUfKaruU" target="_blank">YouTube Demo (Overview)</a>
+  <a href="https://www.youtube.com/watch?v=-cNhUfKaruU" target="_blank">YouTube: Project Demo (Overview)</a>
+  
+  <a href="https://www.youtube.com/watch?v=xTzHqBzHMik" target="_blank">YouTube: Project Testing (User Testing)</a>
 
   <a href="https://smart-nfc-application.herokuapp.com" target="_blank">Website (Backend)</a>
 
